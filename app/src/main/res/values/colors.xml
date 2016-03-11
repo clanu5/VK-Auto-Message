@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+    <color name="user_name">#6F4081</color>
+    <color name="message">#7F9091</color>
+    <color name="picker_button_background">#EEE</color>
+
+</resources>

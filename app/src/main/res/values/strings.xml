@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">VK Auto Message</string>
+    <string name="action_settings">Settings</string>
+    <string name="log_out">Log out</string>
+    <string name="enter_your_message">Enter your message</string>
+    <string name="time">Time</string>
+    <string name="period">Period</string>
+    <string name="close">Close</string>
+    <string name="open">Open</string>
+</resources>
