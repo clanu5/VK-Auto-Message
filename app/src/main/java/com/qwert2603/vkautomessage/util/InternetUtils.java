@@ -1,9 +1,9 @@
-package com.qwert2603.vkautomessage.utils;
+package com.qwert2603.vkautomessage.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 
-public class InternetUtils {
+public final class InternetUtils {
 
     /**
      * Проверить наличие подключения к интернету.

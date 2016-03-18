@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.activities;
+package com.qwert2603.vkautomessage.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -13,7 +13,7 @@ public class RecordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record);
+        setContentView(R.layout.fragment_record);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);

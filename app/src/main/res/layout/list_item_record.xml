@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/photo_image_view"
+        android:layout_width="48dp"
+        android:layout_height="48dp"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -10,34 +17,48 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-    <TextView android:id="@+id/user_name_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/user_name"
-        android:layout_margin="8dp"
-        android:text="Alex Zhdanov"/>
+        <TextView
+            android:id="@+id/user_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Alex Zhdanov"
+            android:textColor="@color/user_name"
+            android:textSize="20sp"/>
 
-
-    <TextView android:id="@+id/message_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="@color/message"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="This is message"/>
+        <TextView
+            android:id="@+id/message_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:text="This is message"
+            android:textColor="@color/message"
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
-
-    <CheckBox android:id="@+id/enable_check_box"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:checked="true"
-        android:enabled="false"
-        android:focusable="false" />
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/enable_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:checked="true"/>
+
+        <TextView
+            android:id="@+id/time_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="19:18"
+            android:textColor="@color/time"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

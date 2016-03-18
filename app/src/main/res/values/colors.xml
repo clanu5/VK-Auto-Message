@@ -7,6 +7,7 @@
 
     <color name="user_name">#6F4081</color>
     <color name="message">#7F9091</color>
+    <color name="time">#AF6091</color>
     <color name="picker_button_background">#EEE</color>
 
 </resources>
