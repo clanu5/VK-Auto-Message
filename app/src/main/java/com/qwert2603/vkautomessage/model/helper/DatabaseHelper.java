@@ -5,7 +5,9 @@ import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
@@ -21,28 +23,37 @@ public final class DatabaseHelper {
         return sDatabaseHelper;
     }
 
-    public Observable<List<Record>> loadRecords() {
-        // TODO: 18.03.2016
-        List<Record> records = new ArrayList<>();
+    private Map<Integer, Record> mRecordMap = new HashMap<>();
 
+    {
         VKApiUserFull userFull = new VKApiUserFull();
         userFull.first_name = "Alex";
         userFull.last_name = "Zhdanov";
-        records.add(new Record(userFull, "Test message", new Date(), true));
+        mRecordMap.put(0, new Record(0, userFull, "Test message", new Date(), true));
 
         userFull = new VKApiUserFull();
         userFull.first_name = "Fernando";
         userFull.last_name = "Alonso";
-        records.add(new Record(userFull, "Another", new Date(System.currentTimeMillis() + 19181918), false));
+        mRecordMap.put(1, new Record(1, userFull, "Another", new Date(System.currentTimeMillis() + 19181918), false));
 
         userFull = new VKApiUserFull();
         userFull.first_name = "Another";
         userFull.last_name = "Man";
-        records.add(new Record(userFull, "Wonderful", new Date(System.currentTimeMillis() + 20000000), true));
+        mRecordMap.put(2, new Record(2, userFull, "Wonderful", new Date(System.currentTimeMillis() + 20000000), true));
+    }
 
+    public Observable<List<Record>> loadRecords() {
+        // TODO: 18.03.2016
         return Observable.interval(3, TimeUnit.SECONDS)
                 .take(1)
-                .map(aLong -> records);
+                .map(aLong -> new ArrayList<>(mRecordMap.values()));
+    }
+
+    public Observable<Record> getRecordById(int recordId) {
+        // TODO: 18.03.2016
+        return Observable.interval(300, TimeUnit.MILLISECONDS)
+                .take(1)
+                .map(aLong -> mRecordMap.get(recordId));
     }
 
     public void addRecord(Record record) {

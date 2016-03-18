@@ -1,14 +1,17 @@
 package com.qwert2603.vkautomessage.activity;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.fragment.RecordFragment;
 
-public class RecordActivity extends AppCompatActivity {
+public class RecordActivity extends NavigationActivity {
+
+    public static final String EXTRA_RECORD_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +20,16 @@ public class RecordActivity extends AppCompatActivity {
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+        if (fragment == null) {
+            int recordId = getIntent().getIntExtra(EXTRA_RECORD_ID, -1);
+            fragment = RecordFragment.newInstance(recordId);
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fragment_container, fragment)
+                    .commitAllowingStateLoss();
         }
     }
 

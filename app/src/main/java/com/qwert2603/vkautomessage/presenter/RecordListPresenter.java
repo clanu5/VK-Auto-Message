@@ -52,8 +52,8 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         // TODO: 18.03.2016
     }
 
-    public void onRecordClicked() {
-        // TODO: 18.03.2016
+    public void onRecordClicked(int recordId) {
+        getView().moveToRecordDetails(recordId);
     }
 
     public void onRecordRemoveClicked(int recordId) {

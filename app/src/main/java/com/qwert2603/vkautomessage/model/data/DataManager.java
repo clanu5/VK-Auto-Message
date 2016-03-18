@@ -28,6 +28,13 @@ public final class DataManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<Record> getRecordById(int recordId) {
+        return DatabaseHelper.getInstance()
+                .getRecordById(recordId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Observable<List<VKApiUserFull>> getAllFriends() {
         return VkApiHelper.getInstance()
                 .getFriends()

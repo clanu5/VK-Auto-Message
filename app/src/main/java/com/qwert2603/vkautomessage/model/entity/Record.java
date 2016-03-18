@@ -6,16 +6,18 @@ import java.util.Date;
 
 public class Record {
 
+    private int mId;
     private VKApiUserFull mUser;
     private String mMessage;
     private boolean mIsEnabled;
     private Date mTime;
 
-    public Record() {
-        this(new VKApiUserFull(), "", new Date(), false);
+    public Record(int id) {
+        this(id, new VKApiUserFull(), "", new Date(), false);
     }
 
-    public Record(VKApiUserFull userName, String message, Date time, boolean isEnabled) {
+    public Record(int id, VKApiUserFull userName, String message, Date time, boolean isEnabled) {
+        mId = id;
         mUser = userName;
         mMessage = message;
         mTime = time;
@@ -52,5 +54,13 @@ public class Record {
 
     public void setIsEnabled(boolean isEnabled) {
         mIsEnabled = isEnabled;
+    }
+
+    public int getId() {
+        return mId;
+    }
+
+    public void setId(int id) {
+        mId = id;
     }
 }
