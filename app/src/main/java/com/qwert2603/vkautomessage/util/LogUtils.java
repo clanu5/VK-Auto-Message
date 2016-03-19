@@ -4,8 +4,10 @@ import android.util.Log;
 
 public class LogUtils {
 
+    public static final String APP_TAG = "AASSDD";
+
     public static void d(String s) {
-        d("AASSDD", s);
+        d(APP_TAG, s);
     }
 
     public static void d(String tag, String s) {
@@ -13,7 +15,7 @@ public class LogUtils {
     }
 
     public static void e(String s) {
-        e("AASSDD", s);
+        e(APP_TAG, s);
     }
 
     public static void e(String tag, String s) {

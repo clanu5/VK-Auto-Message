@@ -68,7 +68,9 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         mSubscription = DataManager.getInstance()
                 .getAllFriends()
                 .subscribe(
-                        UserListPresenter.this::setModel,
+                        model -> {
+                            UserListPresenter.this.setModel(model);
+                        },
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();

@@ -8,21 +8,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.util.VkApiUtils;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 public class NavigationActivity extends AppCompatActivity implements DrawerView {
 
-    @Bind(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
-
-    @Bind(R.id.navigation_view)
-    NavigationView mNavigationView;
-
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
 
     private DrawerPresenter mDrawerPresenter;
@@ -31,17 +25,18 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-        ButterKnife.bind(this);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         mDrawerPresenter = new DrawerPresenter();
         mDrawerPresenter.bindView(this);
         mDrawerPresenter.onViewReady();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
-        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-        mNavigationView.setNavigationItemSelectedListener(item -> {
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
             mDrawerLayout.closeDrawers();
             switch (item.getItemId()) {
                 case R.id.settings:
@@ -58,13 +53,17 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mActionBarDrawerToggle.syncState();
+        if (v) {
+            mActionBarDrawerToggle.syncState();
+        }
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mActionBarDrawerToggle.onConfigurationChanged(newConfig);
+        if (v) {
+            mActionBarDrawerToggle.onConfigurationChanged(newConfig);
+        }
     }
 
     @Override
@@ -74,13 +73,13 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
         super.onDestroy();
     }
 
-    public DrawerPresenter getDrawerPresenter() {
-        return mDrawerPresenter;
-    }
-
-    @Override
-    public void openDrawer() {
-        mDrawerLayout.openDrawer(GravityCompat.START);
+    private boolean v;
+    protected void setNavigationButtonVisibility(boolean visibility) {
+        if (v = visibility) {
+            mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+            mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+            mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+        }
     }
 
     @Override

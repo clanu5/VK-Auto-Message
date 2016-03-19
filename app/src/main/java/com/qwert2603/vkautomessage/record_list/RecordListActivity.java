@@ -12,6 +12,9 @@ public class RecordListActivity extends NavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setNavigationButtonVisibility(true);
+
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);

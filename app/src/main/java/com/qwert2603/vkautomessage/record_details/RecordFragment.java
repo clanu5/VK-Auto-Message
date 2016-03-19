@@ -16,9 +16,6 @@ import android.widget.Switch;
 
 import com.qwert2603.vkautomessage.R;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 public class RecordFragment extends Fragment implements RecordView {
 
     private static final String recordIdKey = "recordId";
@@ -33,20 +30,11 @@ public class RecordFragment extends Fragment implements RecordView {
 
     private RecordPresenter mRecordPresenter;
 
-    @Bind(R.id.photo_image_view)
-    ImageView mPhotoImageView;
-
-    @Bind(R.id.user_name_button)
-    Button mUsernameButton;
-
-    @Bind(R.id.enable_switch)
-    Switch mEnableSwitch;
-
-    @Bind(R.id.message_edit_text)
-    EditText mMessageEditText;
-
-    @Bind(R.id.time_button)
-    Button mTimeButton;
+    private ImageView mPhotoImageView;
+    private Button mUsernameButton;
+    private Switch mEnableSwitch;
+    private EditText mMessageEditText;
+    private Button mTimeButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +54,13 @@ public class RecordFragment extends Fragment implements RecordView {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_record, container, false);
-        ButterKnife.bind(this, view);
+
+        mPhotoImageView = (ImageView) view.findViewById(R.id.photo_image_view);
+        mUsernameButton = (Button) view.findViewById(R.id.user_name_button);
+        mEnableSwitch = (Switch) view.findViewById(R.id.enable_switch);
+        mMessageEditText = (EditText) view.findViewById(R.id.message_edit_text);
+        mTimeButton = (Button) view.findViewById(R.id.time_button);
+
         mUsernameButton.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -85,14 +79,19 @@ public class RecordFragment extends Fragment implements RecordView {
         });
         mTimeButton.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
 
-        mRecordPresenter.onViewReady();
         return view;
     }
 
     @Override
-    public void onDestroyView() {
+    public void onResume() {
+        super.onResume();
+        mRecordPresenter.onViewReady();
+    }
+
+    @Override
+    public void onPause() {
         mRecordPresenter.onViewNotReady();
-        super.onDestroyView();
+        super.onPause();
     }
 
     @Override

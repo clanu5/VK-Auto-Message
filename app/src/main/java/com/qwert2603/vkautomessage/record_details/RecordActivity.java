@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
@@ -16,7 +15,9 @@ public class RecordActivity extends NavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_record);
+
+        setNavigationButtonVisibility(false);
+
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
@@ -37,7 +38,7 @@ public class RecordActivity extends NavigationActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

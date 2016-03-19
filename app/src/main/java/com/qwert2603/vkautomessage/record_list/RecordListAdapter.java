@@ -5,10 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.Switch;
+import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.model.entity.Record;
@@ -19,15 +18,13 @@ import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordViewHolder> {
 
     private List<Record> mRecordList;
     private RecordListPresenter mRecordListPresenter;
 
     public RecordListAdapter(List<Record> recordList, RecordListPresenter recordListPresenter) {
+        LogUtils.d("RecordListAdapter " + recordList + " " + recordListPresenter);
         mRecordList = recordList;
         mRecordListPresenter = recordListPresenter;
     }
@@ -47,7 +44,7 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mRecordList.size();
     }
 
     @Override
@@ -63,26 +60,17 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         return super.onFailedToRecycleView(holder);
     }
 
-    protected class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
+    public class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
 
         private static final int MESSAGE_LENGTH_LIMIT = 26;
 
         private RecordPresenter mRecordPresenter;
 
-        @Bind(R.id.photo_image_view)
-        ImageView mPhotoImageView;
-
-        @Bind(R.id.user_name_text_view)
-        Button mUsernameButton;
-
-        @Bind(R.id.enable_check_box)
-        Switch mEnableSwitch;
-
-        @Bind(R.id.message_text_view)
-        EditText mMessageEditText;
-
-        @Bind(R.id.time_text_view)
-        Button mTimeButton;
+        private ImageView mPhotoImageView;
+        private TextView mUsernameTextView;
+        private CheckBox mEnableCheckBox;
+        private TextView mMessageTextView;
+        private TextView mTimeTextView;
 
         public void bindPresenter(RecordPresenter recordPresenter) {
             LogUtils.d("bindPresenter");
@@ -98,9 +86,13 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
 
         public RecordViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mPhotoImageView = (ImageView) itemView.findViewById(R.id.photo_image_view);
+            mUsernameTextView = (TextView) itemView.findViewById(R.id.user_name_text_view);
+            mEnableCheckBox = (CheckBox) itemView.findViewById(R.id.enable_check_box);
+            mMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view);
+            mTimeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
             itemView.setOnClickListener(v -> mRecordListPresenter.onRecordClicked(mRecordPresenter.getModelId()));
-            mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
+            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         }
 
         @Override
@@ -110,22 +102,22 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
 
         @Override
         public void showUserName(String userName) {
-            mUsernameButton.setText(userName);
+            mUsernameTextView.setText(userName);
         }
 
         @Override
         public void showMessage(String message) {
-            mMessageEditText.setText(StringUtils.noMore(message, MESSAGE_LENGTH_LIMIT));
+            mMessageTextView.setText(StringUtils.noMore(message, MESSAGE_LENGTH_LIMIT));
         }
 
         @Override
         public void showEnabled(boolean enabled) {
-            mEnableSwitch.setChecked(enabled);
+            mEnableCheckBox.setChecked(enabled);
         }
 
         @Override
         public void showTime(String time) {
-            mTimeButton.setText(time);
+            mTimeTextView.setText(time);
         }
 
         @Override
