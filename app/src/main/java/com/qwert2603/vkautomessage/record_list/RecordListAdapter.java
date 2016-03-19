@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.adapter;
+package com.qwert2603.vkautomessage.record_list;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
@@ -12,34 +12,37 @@ import android.widget.Switch;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.presenter.RecordListPresenter;
-import com.qwert2603.vkautomessage.presenter.RecordPresenter;
-import com.qwert2603.vkautomessage.view.RecordView;
+import com.qwert2603.vkautomessage.record_details.RecordPresenter;
+import com.qwert2603.vkautomessage.record_details.RecordView;
+import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordViewHolder> {
+public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordViewHolder> {
 
     private List<Record> mRecordList;
     private RecordListPresenter mRecordListPresenter;
 
-    public RecordAdapter(List<Record> recordList, RecordListPresenter recordListPresenter) {
+    public RecordListAdapter(List<Record> recordList, RecordListPresenter recordListPresenter) {
         mRecordList = recordList;
         mRecordListPresenter = recordListPresenter;
     }
 
     @Override
     public RecordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LogUtils.d("onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_record, parent, false);
         return new RecordViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecordViewHolder holder, int position) {
-        holder.mRecordPresenter.setModelId(mRecordList.get(position).getId());
+        LogUtils.d("onBindViewHolder " + position);
+        holder.bindPresenter(new RecordPresenter(mRecordList.get(position).getId()));
     }
 
     @Override
@@ -47,7 +50,22 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         return 0;
     }
 
+    @Override
+    public void onViewRecycled(RecordViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.unbindPresenter();
+    }
+
+    @Override
+    public boolean onFailedToRecycleView(RecordViewHolder holder) {
+        holder.mRecordPresenter.onViewNotReady();
+        holder.mRecordPresenter.unbindView();
+        return super.onFailedToRecycleView(holder);
+    }
+
     protected class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
+
+        private static final int MESSAGE_LENGTH_LIMIT = 26;
 
         private RecordPresenter mRecordPresenter;
 
@@ -66,11 +84,21 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         @Bind(R.id.time_text_view)
         Button mTimeButton;
 
+        public void bindPresenter(RecordPresenter recordPresenter) {
+            LogUtils.d("bindPresenter");
+            mRecordPresenter = recordPresenter;
+            mRecordPresenter.bindView(RecordViewHolder.this);
+            mRecordPresenter.onViewReady();
+        }
+
+        public void unbindPresenter() {
+            LogUtils.d("unbindPresenter");
+            mRecordPresenter = null;
+        }
+
         public RecordViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mRecordPresenter = new RecordPresenter();
-            mRecordPresenter.bindView(this);
             itemView.setOnClickListener(v -> mRecordListPresenter.onRecordClicked(mRecordPresenter.getModelId()));
             mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         }
@@ -87,7 +115,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
 
         @Override
         public void showMessage(String message) {
-            mMessageEditText.setText(message);
+            mMessageEditText.setText(StringUtils.noMore(message, MESSAGE_LENGTH_LIMIT));
         }
 
         @Override

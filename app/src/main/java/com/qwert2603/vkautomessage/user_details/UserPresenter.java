@@ -1,9 +1,9 @@
-package com.qwert2603.vkautomessage.presenter;
+package com.qwert2603.vkautomessage.user_details;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.util.StringUtils;
-import com.qwert2603.vkautomessage.view.UserView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {

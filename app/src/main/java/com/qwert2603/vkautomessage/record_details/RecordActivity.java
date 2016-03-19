@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.activity;
+package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.fragment.RecordFragment;
+import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 
 public class RecordActivity extends NavigationActivity {
 

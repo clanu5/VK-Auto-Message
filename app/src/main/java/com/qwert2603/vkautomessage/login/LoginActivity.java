@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.activity;
+package com.qwert2603.vkautomessage.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKScope;
@@ -27,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         if (! VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
             @Override
             public void onResult(VKAccessToken res) {
-                startActivity(new Intent(LoginActivity.this, RecordsListActivity.class));
+                startActivity(new Intent(LoginActivity.this, RecordListActivity.class));
                 finish();
             }
 

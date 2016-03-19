@@ -1,13 +1,13 @@
-package com.qwert2603.vkautomessage.activity;
+package com.qwert2603.vkautomessage.record_list;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.fragment.RecordListFragment;
+import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 
-public class RecordsListActivity extends NavigationActivity {
+public class RecordListActivity extends NavigationActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

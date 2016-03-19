@@ -1,5 +1,6 @@
-package com.qwert2603.vkautomessage.view;
+package com.qwert2603.vkautomessage.user_list;
 
+import com.qwert2603.vkautomessage.base.ListView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 public interface UserListView extends ListView<VKApiUserFull> {

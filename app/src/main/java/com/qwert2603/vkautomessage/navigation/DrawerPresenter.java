@@ -1,8 +1,8 @@
-package com.qwert2603.vkautomessage.presenter;
+package com.qwert2603.vkautomessage.navigation;
 
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.view.DrawerView;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 
 public class DrawerPresenter extends BasePresenter<Object, DrawerView> {
     @Override

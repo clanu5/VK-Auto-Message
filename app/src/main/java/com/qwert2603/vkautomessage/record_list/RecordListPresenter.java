@@ -1,10 +1,11 @@
-package com.qwert2603.vkautomessage.presenter;
+package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.data.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.view.RecordListView;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -49,7 +50,9 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onNewRecordClicked() {
-        // TODO: 18.03.2016
+        if (getModel() != null) {
+            // TODO: 18.03.2016
+        }
     }
 
     public void onRecordClicked(int recordId) {
@@ -64,7 +67,9 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         mSubscription = DataManager.getInstance()
                 .getAllRecords()
                 .subscribe(
-                        this::setModel,
+                        records -> {
+                            RecordListPresenter.this.setModel(records);
+                        },
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();

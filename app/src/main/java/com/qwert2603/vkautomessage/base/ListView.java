@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.view;
+package com.qwert2603.vkautomessage.base;
 
 import java.util.List;
 

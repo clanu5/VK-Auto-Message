@@ -1,9 +1,10 @@
-package com.qwert2603.vkautomessage.activity;
+package com.qwert2603.vkautomessage.login;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.vk.sdk.VKSdk;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent intent;
         if (VKSdk.isLoggedIn()) {
-            intent = new Intent(this, RecordsListActivity.class);
+            intent = new Intent(this, RecordListActivity.class);
         } else {
             intent = new Intent(this, LoginActivity.class);
         }

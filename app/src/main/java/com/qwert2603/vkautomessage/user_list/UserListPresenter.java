@@ -1,10 +1,10 @@
-package com.qwert2603.vkautomessage.presenter;
+package com.qwert2603.vkautomessage.user_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.data.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.view.UserListView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
@@ -68,7 +68,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         mSubscription = DataManager.getInstance()
                 .getAllFriends()
                 .subscribe(
-                        this::setModel,
+                        UserListPresenter.this::setModel,
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();

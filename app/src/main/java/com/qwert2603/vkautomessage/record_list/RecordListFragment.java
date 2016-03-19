@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.fragment;
+package com.qwert2603.vkautomessage.record_list;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -14,12 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.activity.NavigationActivity;
-import com.qwert2603.vkautomessage.activity.RecordActivity;
-import com.qwert2603.vkautomessage.adapter.RecordAdapter;
+import com.qwert2603.vkautomessage.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.presenter.RecordListPresenter;
-import com.qwert2603.vkautomessage.view.RecordListView;
 
 import java.util.List;
 
@@ -58,6 +55,12 @@ public class RecordListFragment extends Fragment implements RecordListView {
         mRecordListPresenter.bindView(this);
     }
 
+    @Override
+    public void onDestroy() {
+        mRecordListPresenter.unbindView();
+        super.onDestroy();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,13 +77,15 @@ public class RecordListFragment extends Fragment implements RecordListView {
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 
+        mRecordListPresenter.onViewReady();
+
         return view;
     }
 
     @Override
-    public void onDestroy() {
-        mRecordListPresenter.unbindView();
-        super.onDestroy();
+    public void onDestroyView() {
+        mRecordListPresenter.onViewNotReady();
+        super.onDestroyView();
     }
 
     @Override
@@ -101,7 +106,7 @@ public class RecordListFragment extends Fragment implements RecordListView {
     @Override
     public void showList(List<Record> list) {
         mViewAnimator.setDisplayedChild(POSITION_RECYCLER_VIEW);
-        mRecyclerView.setAdapter(new RecordAdapter(list, mRecordListPresenter));
+        mRecyclerView.setAdapter(new RecordListAdapter(list, mRecordListPresenter));
     }
 
     @Override

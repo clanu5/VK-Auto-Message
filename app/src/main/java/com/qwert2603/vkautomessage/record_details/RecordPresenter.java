@@ -1,11 +1,11 @@
-package com.qwert2603.vkautomessage.presenter;
+package com.qwert2603.vkautomessage.record_details;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.data.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.util.StringUtils;
-import com.qwert2603.vkautomessage.view.RecordView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.text.DateFormat;
@@ -17,22 +17,20 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     private Subscription mSubscription;
 
-    public void setModelId(int recordId) {
-        mSubscription = DataManager.getInstance().getRecordById(recordId).subscribe(
-                this::setModel,
-                throwable -> {
-                    if (mSubscription != null) {
-                        mSubscription.unsubscribe();
-                        mSubscription = null;
-                    }
-                    updateView();
-                    throwable.printStackTrace();
-                }
-        );
-    }
-
-    public int getModelId() {
-        return getModel().getId();
+    public RecordPresenter(int recordId) {
+        mSubscription = DataManager.getInstance()
+                .getRecordById(recordId)
+                .subscribe(
+                        RecordPresenter.this::setModel,
+                        throwable -> {
+                            if (mSubscription != null) {
+                                mSubscription.unsubscribe();
+                                mSubscription = null;
+                            }
+                            updateView();
+                            throwable.printStackTrace();
+                        }
+                );
     }
 
     @Override
@@ -55,6 +53,10 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         view.showEnabled(record.isEnabled());
         String timeString = DateFormat.getTimeInstance().format(record.getTime());
         view.showTime(timeString);
+    }
+
+    public int getModelId() {
+        return getModel() == null ? -1 : getModel().getId();
     }
 
     public void onUserChosen(VKApiUserFull user) {

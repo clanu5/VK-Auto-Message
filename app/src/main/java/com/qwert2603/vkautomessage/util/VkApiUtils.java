@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import com.qwert2603.vkautomessage.activity.LoginActivity;
+import com.qwert2603.vkautomessage.login.LoginActivity;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKRequest;
 

@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage;
 
-import android.util.Log;
-
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.util.VKUtil;
 
@@ -13,7 +12,7 @@ public class Application extends android.app.Application {
         super.onCreate();
         VKSdk.initialize(this);
         for (String s : VKUtil.getCertificateFingerprint(this, this.getPackageName())) {
-            Log.d("CertificateFingerprint", "CertificateFingerprint == " + s);
+            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
         }
     }
 

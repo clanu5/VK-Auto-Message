@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.activity;
+package com.qwert2603.vkautomessage.navigation;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -10,9 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.presenter.DrawerPresenter;
 import com.qwert2603.vkautomessage.util.VkApiUtils;
-import com.qwert2603.vkautomessage.view.DrawerView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,6 +35,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
 
         mDrawerPresenter = new DrawerPresenter();
         mDrawerPresenter.bindView(this);
+        mDrawerPresenter.onViewReady();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -70,6 +69,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
 
     @Override
     protected void onDestroy() {
+        mDrawerPresenter.onViewNotReady();
         mDrawerPresenter.unbindView();
         super.onDestroy();
     }

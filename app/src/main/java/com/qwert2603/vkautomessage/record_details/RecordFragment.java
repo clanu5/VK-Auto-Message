@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.fragment;
+package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
@@ -15,8 +15,6 @@ import android.widget.ImageView;
 import android.widget.Switch;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.presenter.RecordPresenter;
-import com.qwert2603.vkautomessage.view.RecordView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -54,8 +52,7 @@ public class RecordFragment extends Fragment implements RecordView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mRecordPresenter = new RecordPresenter();
-        mRecordPresenter.setModelId(getArguments().getInt(recordIdKey));
+        mRecordPresenter = new RecordPresenter(getArguments().getInt(recordIdKey));
         mRecordPresenter.bindView(this);
     }
 
@@ -87,7 +84,15 @@ public class RecordFragment extends Fragment implements RecordView {
             }
         });
         mTimeButton.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
+
+        mRecordPresenter.onViewReady();
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        mRecordPresenter.onViewNotReady();
+        super.onDestroyView();
     }
 
     @Override
