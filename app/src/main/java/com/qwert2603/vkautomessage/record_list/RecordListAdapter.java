@@ -13,7 +13,6 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.List;
@@ -24,22 +23,19 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
     private RecordListPresenter mRecordListPresenter;
 
     public RecordListAdapter(List<Record> recordList, RecordListPresenter recordListPresenter) {
-        LogUtils.d("RecordListAdapter " + recordList + " " + recordListPresenter);
         mRecordList = recordList;
         mRecordListPresenter = recordListPresenter;
     }
 
     @Override
     public RecordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LogUtils.d("onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_record, parent, false);
         return new RecordViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecordViewHolder holder, int position) {
-        LogUtils.d("onBindViewHolder " + position);
-        holder.bindPresenter(new RecordPresenter(mRecordList.get(position).getId()));
+        holder.bindPresenter(new RecordPresenter(mRecordList.get(position)));
     }
 
     @Override
@@ -55,9 +51,12 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
 
     @Override
     public boolean onFailedToRecycleView(RecordViewHolder holder) {
-        holder.mRecordPresenter.onViewNotReady();
-        holder.mRecordPresenter.unbindView();
+        holder.unbindPresenter();
         return super.onFailedToRecycleView(holder);
+    }
+
+    public boolean isShowingList(List<Record> list) {
+        return mRecordList.equals(list);
     }
 
     public class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
@@ -73,14 +72,13 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         private TextView mTimeTextView;
 
         public void bindPresenter(RecordPresenter recordPresenter) {
-            LogUtils.d("bindPresenter");
             mRecordPresenter = recordPresenter;
             mRecordPresenter.bindView(RecordViewHolder.this);
             mRecordPresenter.onViewReady();
         }
 
         public void unbindPresenter() {
-            LogUtils.d("unbindPresenter");
+            mRecordPresenter.unbindView();
             mRecordPresenter = null;
         }
 

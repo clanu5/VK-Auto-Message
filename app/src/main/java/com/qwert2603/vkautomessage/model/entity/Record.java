@@ -1,34 +1,34 @@
 package com.qwert2603.vkautomessage.model.entity;
 
-import com.vk.sdk.api.model.VKApiUserFull;
+import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.Date;
 
 public class Record {
 
     private int mId;
-    private VKApiUserFull mUser;
+    private VKApiUser mUser;
     private String mMessage;
     private boolean mIsEnabled;
     private Date mTime;
 
-    public Record(int id) {
-        this(id, new VKApiUserFull(), "", new Date(), false);
+    public Record() {
+        this(-1, new VKApiUser(), "", new Date(), false);
     }
 
-    public Record(int id, VKApiUserFull userName, String message, Date time, boolean isEnabled) {
+    public Record(int id, VKApiUser user, String message, Date time, boolean isEnabled) {
         mId = id;
-        mUser = userName;
+        mUser = user;
         mMessage = message;
         mTime = time;
         mIsEnabled = isEnabled;
     }
 
-    public VKApiUserFull getUser() {
+    public VKApiUser getUser() {
         return mUser;
     }
 
-    public void setUser(VKApiUserFull userName) {
+    public void setUser(VKApiUser userName) {
         mUser = userName;
     }
 

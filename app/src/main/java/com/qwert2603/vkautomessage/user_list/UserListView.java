@@ -4,7 +4,7 @@ import com.qwert2603.vkautomessage.base.ListView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 public interface UserListView extends ListView<VKApiUserFull> {
-    void showUserSelected(VKApiUserFull user);
-    void submitDode(VKApiUserFull user);
-    void showCantWrite(VKApiUserFull user);
+    void showUserSelected(int userId);
+    void submitDode(int userId);
+    void showCantWrite();
 }

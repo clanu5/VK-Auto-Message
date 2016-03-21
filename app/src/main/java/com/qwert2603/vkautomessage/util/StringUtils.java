@@ -1,6 +1,6 @@
 package com.qwert2603.vkautomessage.util;
 
-import com.vk.sdk.api.model.VKApiUserFull;
+import com.vk.sdk.api.model.VKApiUser;
 
 public final class StringUtils {
 
@@ -14,8 +14,8 @@ public final class StringUtils {
     /**
      * Полное имя пользователя.
      */
-    public static String getUserName(VKApiUserFull user) {
-        return user.first_name + " " + user.last_name;
+    public static String getUserName(VKApiUser user) {
+        return user.first_name == null ? "N/A" : user.first_name + " " + user.last_name;
     }
 
 }

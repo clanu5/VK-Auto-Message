@@ -13,10 +13,13 @@ public class RecordActivity extends NavigationActivity {
     public static final String EXTRA_RECORD_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_ID";
 
     @Override
+    protected boolean isNavigationButtonVisible() {
+        return false;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setNavigationButtonVisibility(false);
 
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {

@@ -79,19 +79,15 @@ public class RecordFragment extends Fragment implements RecordView {
         });
         mTimeButton.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
 
+        mRecordPresenter.onViewReady();
+
         return view;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mRecordPresenter.onViewReady();
-    }
-
-    @Override
-    public void onPause() {
+    public void onDestroyView() {
         mRecordPresenter.onViewNotReady();
-        super.onPause();
+        super.onDestroyView();
     }
 
     @Override

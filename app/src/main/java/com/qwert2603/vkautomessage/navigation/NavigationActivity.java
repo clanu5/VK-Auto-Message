@@ -13,13 +13,16 @@ import android.support.v7.widget.Toolbar;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.util.VkApiUtils;
 
-public class NavigationActivity extends AppCompatActivity implements DrawerView {
+public abstract class NavigationActivity extends AppCompatActivity implements DrawerView {
 
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private boolean mIsNavigationButtonVisible;
 
     private DrawerPresenter mDrawerPresenter;
+
+    protected abstract boolean isNavigationButtonVisible();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +51,20 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
             }
             return false;
         });
+
+        mIsNavigationButtonVisible = isNavigationButtonVisible();
+
+        if (mIsNavigationButtonVisible) {
+            mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+            mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+            mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+        }
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (v) {
+        if (mIsNavigationButtonVisible) {
             mActionBarDrawerToggle.syncState();
         }
     }
@@ -61,7 +72,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (v) {
+        if (mIsNavigationButtonVisible) {
             mActionBarDrawerToggle.onConfigurationChanged(newConfig);
         }
     }
@@ -71,15 +82,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerView 
         mDrawerPresenter.onViewNotReady();
         mDrawerPresenter.unbindView();
         super.onDestroy();
-    }
-
-    private boolean v;
-    protected void setNavigationButtonVisibility(boolean visibility) {
-        if (v = visibility) {
-            mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
-            mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-            mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
-        }
     }
 
     @Override

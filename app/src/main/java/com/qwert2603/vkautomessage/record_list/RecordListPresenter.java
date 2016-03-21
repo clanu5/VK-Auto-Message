@@ -7,6 +7,7 @@ import com.qwert2603.vkautomessage.model.data.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
+import java.util.Date;
 import java.util.List;
 
 import rx.Subscription;
@@ -51,7 +52,16 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
 
     public void onNewRecordClicked() {
         if (getModel() != null) {
-            // TODO: 18.03.2016
+            Record record = new Record();
+            record.setTime(new Date());
+            record.getUser().first_name = null;
+            record.getUser().last_name = null;
+            getModel().add(record);
+            DataManager.getInstance().addRecord(record)
+                    .subscribe(aLong -> {
+                        record.setId(aLong.intValue());
+                        updateView();
+                    });
         }
     }
 
@@ -76,7 +86,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
                                 mSubscription = null;
                             }
                             updateView();
-                            throwable.printStackTrace();
+                            LogUtils.e(throwable);
                         }
                 );
     }

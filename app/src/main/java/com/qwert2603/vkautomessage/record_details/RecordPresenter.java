@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.data.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
@@ -30,9 +31,13 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
                                 mSubscription = null;
                             }
                             updateView();
-                            throwable.printStackTrace();
+                            LogUtils.e(throwable);
                         }
                 );
+    }
+
+    public RecordPresenter(Record record) {
+        setModel(record);
     }
 
     @Override
@@ -63,18 +68,22 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     public void onUserChosen(VKApiUserFull user) {
         getModel().setUser(user);
+        DataManager.getInstance().justUpdateRecord(getModel());
     }
 
     public void onTimeChosen(Date time) {
         getModel().setTime(time);
+        DataManager.getInstance().justUpdateRecord(getModel());
     }
 
     public void onEnableClicked(boolean enable) {
         getModel().setIsEnabled(enable);
+        DataManager.getInstance().justUpdateRecord(getModel());
     }
 
     public void onMessageEdited(String message) {
         getModel().setMessage(message);
+        DataManager.getInstance().justUpdateRecord(getModel());
     }
 
     public void onChooseUserClicked() {

@@ -63,41 +63,51 @@ public class RecordListFragment extends Fragment implements RecordListView {
         FloatingActionButton newRecordFAB = (FloatingActionButton) view.findViewById(R.id.new_record_fab);
         newRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
+        mRecordListPresenter.onViewReady();
+
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        mRecordListPresenter.onViewNotReady();
+        super.onDestroyView();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mRecordListPresenter.onViewReady();
-    }
-
-    @Override
-    public void onPause() {
-        mRecordListPresenter.onViewNotReady();
-        super.onPause();
+        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void showLoading() {
-        mViewAnimator.setDisplayedChild(POSITION_LOADING_TEXT_VIEW);
+        setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
 
     @Override
     public void showError() {
-        mViewAnimator.setDisplayedChild(POSITION_ERROR_TEXT_VIEW);
+        setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
     @Override
     public void showEmpty() {
-        mViewAnimator.setDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
+        setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
     }
 
     @Override
     public void showList(List<Record> list) {
         LogUtils.d("showList " + list);
-        mViewAnimator.setDisplayedChild(POSITION_RECYCLER_VIEW);
-        mRecyclerView.setAdapter(new RecordListAdapter(list, mRecordListPresenter));
+        setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
+        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null && adapter.isShowingList(list)) {
+            adapter.notifyDataSetChanged();
+        } else {
+            mRecyclerView.setAdapter(new RecordListAdapter(list, mRecordListPresenter));
+        }
     }
 
     @Override
@@ -105,5 +115,11 @@ public class RecordListFragment extends Fragment implements RecordListView {
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
         getActivity().startActivity(intent);
+    }
+
+    private void setViewAnimatorDisplayedChild(int position) {
+        if (mViewAnimator.getDisplayedChild() != position) {
+            mViewAnimator.setDisplayedChild(position);
+        }
     }
 }

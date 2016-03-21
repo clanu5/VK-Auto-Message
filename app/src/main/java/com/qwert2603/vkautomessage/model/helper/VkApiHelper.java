@@ -14,14 +14,6 @@ import java.util.List;
 import rx.Observable;
 
 public final class VkApiHelper {
-    private static VkApiHelper sVkApiHelper = new VkApiHelper();
-
-    private VkApiHelper() {
-    }
-
-    public static VkApiHelper getInstance() {
-        return sVkApiHelper;
-    }
 
     public Observable<List<VKApiUserFull>> getFriends() {
         return Observable

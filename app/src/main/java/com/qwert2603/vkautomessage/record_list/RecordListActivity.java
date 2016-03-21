@@ -10,10 +10,13 @@ import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 public class RecordListActivity extends NavigationActivity {
 
     @Override
+    protected boolean isNavigationButtonVisible() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setNavigationButtonVisibility(true);
 
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {

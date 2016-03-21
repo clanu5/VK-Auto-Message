@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.data.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
@@ -14,11 +15,11 @@ import rx.Subscription;
 public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserListView> {
 
     private Subscription mSubscription;
-    private VKApiUserFull mSelectedUser;
+    private int mSelectedUserId;
 
     public UserListPresenter(Record record) {
         loadFriendsList();
-        mSelectedUser = record.getUser();
+        mSelectedUserId = record.getUser().id;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                 view.showEmpty();
             } else {
                 view.showList(userList);
-                view.showUserSelected(mSelectedUser);
+                view.showUserSelected(mSelectedUserId);
             }
         }
     }
@@ -54,14 +55,14 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
 
     public void onUserSelected(VKApiUserFull user) {
         if (user.can_write_private_message) {
-            mSelectedUser = user;
+            mSelectedUserId = user.id;
         } else {
-            getView().showCantWrite(user);
+            getView().showCantWrite();
         }
     }
 
     public void onSubmitClicked() {
-        getView().submitDode(mSelectedUser);
+        getView().submitDode(mSelectedUserId);
     }
 
     public void loadFriendsList() {
@@ -77,7 +78,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                                 mSubscription = null;
                             }
                             updateView();
-                            throwable.printStackTrace();
+                            LogUtils.e(throwable);
                         }
                 );
     }

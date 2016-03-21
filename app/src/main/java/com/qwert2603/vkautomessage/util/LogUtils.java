@@ -22,4 +22,8 @@ public class LogUtils {
         Log.e(tag, s);
     }
 
+    public static void e(Throwable t) {
+        Log.e(APP_TAG, "ERROR!!!", t);
+    }
+
 }

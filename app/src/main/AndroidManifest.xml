@@ -14,8 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".login.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".login.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -24,9 +23,7 @@
         </activity>
 
         <activity
-            android:name=".login.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
+            android:name=".login.LoginActivity">
         </activity>
 
         <activity
@@ -37,7 +34,8 @@
         <activity
             android:name=".record_details.RecordActivity"
             android:parentActivityName=".record_list.RecordListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".record_list.RecordListActivity"/>
