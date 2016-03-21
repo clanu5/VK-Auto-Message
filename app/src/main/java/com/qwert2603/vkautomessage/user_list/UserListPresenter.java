@@ -3,8 +3,7 @@ package com.qwert2603.vkautomessage.user_list;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
-import com.qwert2603.vkautomessage.model.data.DataManager;
-import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
@@ -17,9 +16,9 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     private Subscription mSubscription;
     private int mSelectedUserId;
 
-    public UserListPresenter(Record record) {
+    public UserListPresenter(int selectedUserId) {
         loadFriendsList();
-        mSelectedUserId = record.getUser().id;
+        mSelectedUserId = selectedUserId;
     }
 
     @Override

@@ -2,9 +2,10 @@ package com.qwert2603.vkautomessage.util;
 
 import android.util.Log;
 
-public class LogUtils {
+public final class LogUtils {
 
     public static final String APP_TAG = "AASSDD";
+    public static final String ERROR_MSG = "AASSDD";
 
     public static void d(String s) {
         d(APP_TAG, s);
@@ -23,7 +24,7 @@ public class LogUtils {
     }
 
     public static void e(Throwable t) {
-        Log.e(APP_TAG, "ERROR!!!", t);
+        Log.e(APP_TAG, ERROR_MSG, t);
     }
 
 }

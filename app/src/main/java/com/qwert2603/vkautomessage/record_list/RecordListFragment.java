@@ -10,12 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -33,7 +33,6 @@ public class RecordListFragment extends Fragment implements RecordListView {
     private RecordListPresenter mRecordListPresenter;
 
     private ViewAnimator mViewAnimator;
-
     private RecyclerView mRecyclerView;
 
     @Override
@@ -59,6 +58,7 @@ public class RecordListFragment extends Fragment implements RecordListView {
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
+        ((TextView) mViewAnimator.getChildAt(POSITION_EMPTY_TEXT_VIEW)).setText(R.string.empty_records_list);
 
         FloatingActionButton newRecordFAB = (FloatingActionButton) view.findViewById(R.id.new_record_fab);
         newRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
@@ -100,7 +100,6 @@ public class RecordListFragment extends Fragment implements RecordListView {
 
     @Override
     public void showList(List<Record> list) {
-        LogUtils.d("showList " + list);
         setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
         RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
         if (adapter != null && adapter.isShowingList(list)) {

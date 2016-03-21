@@ -90,6 +90,10 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
             mMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view);
             mTimeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
             itemView.setOnClickListener(v -> mRecordListPresenter.onRecordClicked(mRecordPresenter.getModelId()));
+            itemView.setOnLongClickListener(v -> {
+                mRecordListPresenter.onRecordRemoveClicked(mRecordPresenter.getModelId());
+                return true;
+            });
             mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         }
 

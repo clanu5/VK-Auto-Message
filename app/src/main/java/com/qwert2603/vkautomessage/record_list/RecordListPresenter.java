@@ -3,7 +3,7 @@ package com.qwert2603.vkautomessage.record_list;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
-import com.qwert2603.vkautomessage.model.data.DataManager;
+import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -53,13 +53,13 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     public void onNewRecordClicked() {
         if (getModel() != null) {
             Record record = new Record();
+            record.getUser().first_name = "";
+            record.getUser().last_name = "";
             record.setTime(new Date());
-            record.getUser().first_name = null;
-            record.getUser().last_name = null;
             getModel().add(record);
             DataManager.getInstance().addRecord(record)
                     .subscribe(aLong -> {
-                        record.setId(aLong.intValue());
+                        //record.setId(aLong.intValue()); todo это можно удалить...
                         updateView();
                     });
         }
@@ -70,7 +70,10 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onRecordRemoveClicked(int recordId) {
-        // TODO: 18.03.2016
+            DataManager.getInstance().removeRecord(recordId)
+                    .subscribe(aLong -> {
+                        updateView();
+                    });
     }
 
     private void loadRecordList() {

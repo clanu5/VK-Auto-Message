@@ -4,40 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ViewAnimator
-        android:id="@+id/view_animator"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:inAnimation="@android:anim/fade_in"
-        android:outAnimation="@android:anim/fade_out">
-
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/loading"
-            android:textColor="@android:color/black"
-            android:textSize="24sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/error"
-            android:textColor="@color/colorAccent"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/empty_records_list"
-            android:textColor="@color/colorPrimaryDark"/>
-
-    </ViewAnimator>
+    <include layout="@layout/list_view_animator" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_record_fab"

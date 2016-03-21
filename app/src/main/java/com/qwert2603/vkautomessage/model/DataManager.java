@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.model.data;
+package com.qwert2603.vkautomessage.model;
 
 import android.content.Context;
 
@@ -32,16 +32,26 @@ public final class DataManager {
     private DatabaseHelper mDatabaseHelper;
     private VkApiHelper mVkApiHelper;
 
+    private volatile List<Record> mRecordList;
+
     public Observable<List<Record>> getAllRecords() {
-        return mDatabaseHelper
-                .getAllRecords()
+        return Observable.just(mRecordList)
+                .flatMap(records -> records != null ? Observable.just(records) : mDatabaseHelper.getAllRecords())
+                .flatMap(records1 -> {
+                    if (mRecordList == null) {
+                        mRecordList = records1;
+                    }
+                    return Observable.just(mRecordList);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Record> getRecordById(int recordId) {
-        return mDatabaseHelper
-                .getRecordById(recordId)
+        return getAllRecords()
+                .flatMap(Observable::from)
+                .filter(record -> record.getId() == recordId)
+                .take(1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -53,9 +63,9 @@ public final class DataManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<Integer> removeRecord(Record record) {
+    public Observable<Integer> removeRecord(int recordId) {
         return mDatabaseHelper
-                .deleteRecord(record)
+                .deleteRecord(recordId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

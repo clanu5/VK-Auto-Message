@@ -3,7 +3,7 @@ package com.qwert2603.vkautomessage.record_details;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
-import com.qwert2603.vkautomessage.model.data.DataManager;
+import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
