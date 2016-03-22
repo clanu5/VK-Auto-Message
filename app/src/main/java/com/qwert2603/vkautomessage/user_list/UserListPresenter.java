@@ -43,18 +43,19 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                 view.showEmpty();
             } else {
                 view.showList(userList);
-                view.showUserSelected(mSelectedUserId);
             }
         }
     }
 
     public void onReload() {
         loadFriendsList();
+        updateView();
     }
 
     public void onUserSelected(VKApiUserFull user) {
         if (user.can_write_private_message) {
             mSelectedUserId = user.id;
+            updateView();
         } else {
             getView().showCantWrite();
         }
@@ -64,7 +65,14 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         getView().submitDode(mSelectedUserId);
     }
 
+    public int getSelectedUserId() {
+        return mSelectedUserId;
+    }
+
     public void loadFriendsList() {
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
         mSubscription = DataManager.getInstance()
                 .getAllFriends()
                 .subscribe(

@@ -7,7 +7,6 @@ import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
-import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -30,7 +29,6 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
                                 mSubscription.unsubscribe();
                                 mSubscription = null;
                             }
-                            updateView();
                             LogUtils.e(throwable);
                         }
                 );
@@ -54,7 +52,12 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         if (record == null) {
             return;
         }
-        // TODO: 18.03.2016  view.showPhoto();
+        DataManager.getInstance()
+                .getPhotoByUrl(record.getUser().photo_100)
+                .subscribe(
+                        view::showPhoto,
+                        LogUtils::e
+                );
         view.showUserName(StringUtils.getUserName(record.getUser()));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
@@ -66,9 +69,17 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         return getModel() == null ? -1 : getModel().getId();
     }
 
-    public void onUserChosen(VKApiUserFull user) {
-        getModel().setUser(user);
-        DataManager.getInstance().justUpdateRecord(getModel());
+    public void onUserChosen(int userId) {
+        DataManager.getInstance()
+                .getVkUserById(userId)
+                .subscribe(
+                        user -> {
+                            getModel().setUser(user);
+                            updateView();
+                            DataManager.getInstance().justUpdateRecord(getModel());
+                        },
+                        LogUtils::e
+                );
     }
 
     public void onTimeChosen(Date time) {
@@ -87,7 +98,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onChooseUserClicked() {
-        getView().showChooseUser();
+        getView().showChooseUser(getModelId());
     }
 
     public void onChooseTimeClicked() {

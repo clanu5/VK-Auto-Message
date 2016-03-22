@@ -48,6 +48,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
 
     public void onReload() {
         loadRecordList();
+        updateView();
     }
 
     public void onNewRecordClicked() {
@@ -56,12 +57,14 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
             record.getUser().first_name = "";
             record.getUser().last_name = "";
             record.setTime(new Date());
-            getModel().add(record);
-            DataManager.getInstance().addRecord(record)
-                    .subscribe(aLong -> {
-                        //record.setId(aLong.intValue()); todo это можно удалить...
-                        updateView();
-                    });
+            DataManager.getInstance()
+                    .addRecord(record)
+                    .subscribe(
+                            aLong -> {
+                                updateView();
+                            },
+                            LogUtils::e
+                    );
         }
     }
 
@@ -70,13 +73,20 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onRecordRemoveClicked(int recordId) {
-            DataManager.getInstance().removeRecord(recordId)
-                    .subscribe(aLong -> {
-                        updateView();
-                    });
+        DataManager.getInstance()
+                .removeRecord(recordId)
+                .subscribe(
+                        aLong -> {
+                            updateView();
+                        },
+                        LogUtils::e
+                );
     }
 
     private void loadRecordList() {
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
         mSubscription = DataManager.getInstance()
                 .getAllRecords()
                 .subscribe(

@@ -8,16 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public final class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -56,7 +54,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE " + TABLE_RECORD + " ("
                         + COLUMN_RECORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + COLUMN_RECORD_USER_ID + " INTEGER REFERENCES " + TABLE_USER + "(" + COLUMN_USER_ID + ")" + ", "
+                        + COLUMN_RECORD_USER_ID + " INTEGER, "
                         + COLUMN_RECORD_MESSAGE + " TEXT, "
                         + COLUMN_RECORD_ENABLED + " INTEGER, "
                         + COLUMN_RECORD_TIME + " INTEGER" + ")"
@@ -81,41 +79,24 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<List<Record>> getAllRecords() {
-        return Observable
-                .create((Subscriber<? super Record> subscriber) -> {
-                    RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
-                            .rawQuery(SELECT_RECORDS_QUERY, null));
-                    recordCursor.moveToFirst();
-                    while (!recordCursor.isAfterLast()) {
-                        subscriber.onNext(recordCursor.getRecord());
-                        recordCursor.moveToNext();
-                    }
-                    recordCursor.close();
-                    subscriber.onCompleted();
-                })
-                .toList();
+        return Observable.just(doGetAllRecords());
     }
 
     public Observable<Record> getRecordById(int recordId) {
-        return Observable
-                .create((Subscriber<? super Record> subscriber) -> {
-                    RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
-                            .rawQuery(SELECT_RECORDS_QUERY
-                                    + " AND (" + QUERY_COLUMN_RECORD_ID + " = " + recordId + ")"
-                                    + " LIMIT 1", null));
-                    recordCursor.moveToFirst();
-                    if (!recordCursor.isAfterLast()) {
-                        subscriber.onNext(recordCursor.getRecord());
-                    }
-                    recordCursor.close();
-                    subscriber.onCompleted();
-                });
+        return Observable.just(doGetRecordById(recordId));
     }
 
+    /**
+     * Добавить запись record в БД, переданному объекту record будет назначен id.
+     *
+     * @param record запись для добавления.
+     * @return id добавленной записи
+     */
     public Observable<Long> insertRecord(Record record) {
         return Observable.create(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(Subscriber<? super Long> subscriber) {
+                // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
                 if (getRecordCountForUser(record.getUser().id) == 0) {
                     doInsertUser(record.getUser());
                 }
@@ -127,25 +108,29 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         });
     }
 
+    /**
+     * Удалить запись по id.
+     * @return Observable для кол-ва удаленных записей. (не должно быть больше 1).
+     */
     public Observable<Integer> deleteRecord(int recordId) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
-                getRecordById(recordId)
-                        .doOnNext(record -> {
-                            if (getRecordCountForUser(record.getUser().id) == 0) {
-                                doDeleteUser(record.getUser().id);
-                            }
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
+                Record record = doGetRecordById(recordId);
+                // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
+                if (record != null && getRecordCountForUser(record.getUser().id) == 1) {
+                    doDeleteUser(record.getUser().id);
+                }
                 subscriber.onNext(doDeleteRecord(recordId));
                 subscriber.onCompleted();
             }
         });
     }
 
+    /**
+     * Обновить запись.
+     * @return Observable для кол-ва обновленных записей. (не должно быть больше 1).
+     */
     public Observable<Integer> updateRecord(Record record) {
         return Observable.just(doUpdateRecord(record));
     }
@@ -191,21 +176,59 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private int doDeleteRecord(int recordId) {
-        return getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_ID, new String[]{String.valueOf(recordId)});
+        return getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(recordId)});
     }
 
     private int doDeleteUser(int userId) {
-        return getWritableDatabase().delete(TABLE_USER, COLUMN_USER_ID, new String[]{String.valueOf(userId)});
+        return getWritableDatabase().delete(TABLE_USER, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
     private int doUpdateRecord(Record record) {
+        // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
+        Record oldRecord = doGetRecordById(record.getId());
+        if (oldRecord != null && getRecordCountForUser(oldRecord.getUser().id) == 1) {
+            doDeleteUser(record.getUser().id);
+        }
+
+        // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
+        if (getRecordCountForUser(record.getUser().id) == 0) {
+            doInsertUser(record.getUser());
+        }
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_RECORD_ID, record.getId());
         contentValues.put(COLUMN_RECORD_USER_ID, record.getUser().id);
         contentValues.put(COLUMN_RECORD_MESSAGE, record.getMessage());
         contentValues.put(COLUMN_RECORD_ENABLED, record.isEnabled() ? 1 : 0);
         contentValues.put(COLUMN_RECORD_TIME, record.getTime().getTime());
-        return getWritableDatabase().update(TABLE_RECORD, contentValues, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(record.getId())});
+        return getWritableDatabase()
+                .update(TABLE_RECORD, contentValues, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(record.getId())});
+    }
+
+    private List<Record> doGetAllRecords() {
+        RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
+                .rawQuery(SELECT_RECORDS_QUERY, null));
+        recordCursor.moveToFirst();
+        List<Record> recordList = new ArrayList<>();
+        while (!recordCursor.isAfterLast()) {
+            recordList.add(recordCursor.getRecord());
+        }
+        recordCursor.close();
+        return recordList;
+    }
+
+    private Record doGetRecordById(int recordId) {
+        RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
+                .rawQuery(SELECT_RECORDS_QUERY
+                        + " AND (" + QUERY_COLUMN_RECORD_ID + " = " + recordId + ")"
+                        + " LIMIT 1", null));
+        recordCursor.moveToFirst();
+        Record record = null;
+        if (!recordCursor.isAfterLast()) {
+            record = recordCursor.getRecord();
+        }
+        recordCursor.close();
+        return record;
     }
 
     private int getRecordCountForUser(int userId) {

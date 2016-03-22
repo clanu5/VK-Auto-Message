@@ -71,17 +71,6 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         private TextView mMessageTextView;
         private TextView mTimeTextView;
 
-        public void bindPresenter(RecordPresenter recordPresenter) {
-            mRecordPresenter = recordPresenter;
-            mRecordPresenter.bindView(RecordViewHolder.this);
-            mRecordPresenter.onViewReady();
-        }
-
-        public void unbindPresenter() {
-            mRecordPresenter.unbindView();
-            mRecordPresenter = null;
-        }
-
         public RecordViewHolder(View itemView) {
             super(itemView);
             mPhotoImageView = (ImageView) itemView.findViewById(R.id.photo_image_view);
@@ -95,6 +84,17 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
                 return true;
             });
             mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
+        }
+
+        public void bindPresenter(RecordPresenter recordPresenter) {
+            mRecordPresenter = recordPresenter;
+            mRecordPresenter.bindView(RecordViewHolder.this);
+            mRecordPresenter.onViewReady();
+        }
+
+        public void unbindPresenter() {
+            mRecordPresenter.unbindView();
+            mRecordPresenter = null;
         }
 
         @Override
@@ -123,7 +123,7 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         }
 
         @Override
-        public void showChooseUser() {
+        public void showChooseUser(int currentUserId) {
         }
 
         @Override

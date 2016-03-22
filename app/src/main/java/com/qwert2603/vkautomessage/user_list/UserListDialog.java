@@ -7,6 +7,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +17,6 @@ import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 public class UserListDialog extends DialogFragment implements UserListView {
 
     private static final String selectedUserIdKey = "selectedUserId";
-    private static final String EXTRA_SELECTED_USER_ID = "com.qwert2603.vkautomessage.EXTRA_SELECTED_USER_ID";
+    public static final String EXTRA_SELECTED_USER_ID = "com.qwert2603.vkautomessage.EXTRA_SELECTED_USER_ID";
 
     public static UserListDialog newInstance(int selectedUserId) {
         UserListDialog userListDialog = new UserListDialog();
@@ -34,11 +35,14 @@ public class UserListDialog extends DialogFragment implements UserListView {
     }
 
     private static final int POSITION_RECYCLER_VIEW = 0;
+    @SuppressWarnings("unused")
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
 
     private UserListPresenter mUserListPresenter;
+
+    private SwipeRefreshLayout mRefreshLayout;
     private ViewAnimator mViewAnimator;
     private RecyclerView mRecyclerView;
 
@@ -60,8 +64,11 @@ public class UserListDialog extends DialogFragment implements UserListView {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
+        mRefreshLayout.setOnRefreshListener(() -> mUserListPresenter.onReload());
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         ((TextView) mViewAnimator.getChildAt(POSITION_EMPTY_TEXT_VIEW)).setText(R.string.no_friends);
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
@@ -83,11 +90,6 @@ public class UserListDialog extends DialogFragment implements UserListView {
     }
 
     @Override
-    public void showUserSelected(int userId) {
-
-    }
-
-    @Override
     public void submitDode(int userId) {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_SELECTED_USER_ID, userId);
@@ -101,21 +103,24 @@ public class UserListDialog extends DialogFragment implements UserListView {
 
     @Override
     public void showLoading() {
-        setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
+        setRefreshLayoutRefreshing(true);
     }
 
     @Override
     public void showError() {
+        setRefreshLayoutRefreshing(false);
         setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
     @Override
     public void showEmpty() {
+        setRefreshLayoutRefreshing(false);
         setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
     }
 
     @Override
     public void showList(List<VKApiUserFull> list) {
+        setRefreshLayoutRefreshing(false);
         setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
         UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
         if (adapter != null && adapter.isShowingList(list)) {
@@ -129,5 +134,9 @@ public class UserListDialog extends DialogFragment implements UserListView {
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
+    }
+
+    private void setRefreshLayoutRefreshing(boolean refreshing) {
+        mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(refreshing));
     }
 }

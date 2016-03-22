@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.navigation;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.util.VkApiUtils;
+import com.qwert2603.vkautomessage.login.MainActivity;
 
 public abstract class NavigationActivity extends AppCompatActivity implements DrawerView {
 
@@ -91,7 +92,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Dr
     }
 
     @Override
-    public void logOut() {
-        VkApiUtils.logOut(this);
+    public void showLogOut() {
+        Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

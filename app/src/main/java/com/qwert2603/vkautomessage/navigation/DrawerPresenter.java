@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.navigation;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.model.DataManager;
 
 public class DrawerPresenter extends BasePresenter<Object, DrawerView> {
     @Override
@@ -14,6 +15,7 @@ public class DrawerPresenter extends BasePresenter<Object, DrawerView> {
     }
 
     public void onLogOutClicked() {
-        getView().logOut();
+        DataManager.getInstance().logOutVk();
+        getView().showLogOut();
     }
 }

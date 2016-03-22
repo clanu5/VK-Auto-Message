@@ -1,6 +1,8 @@
 package com.qwert2603.vkautomessage.record_details;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,10 +17,14 @@ import android.widget.ImageView;
 import android.widget.Switch;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 public class RecordFragment extends Fragment implements RecordView {
 
     private static final String recordIdKey = "recordId";
+
+    private static final int REQUEST_CHOOSE_USER = 1;
+    private static final int REQUEST_CHOOSE_TIME = 2;
 
     public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
@@ -91,6 +97,20 @@ public class RecordFragment extends Fragment implements RecordView {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        switch (requestCode) {
+            case REQUEST_CHOOSE_USER:
+                int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
+                mRecordPresenter.onUserChosen(userId);
+                break;
+        }
+    }
+
+    @Override
     public void showPhoto(Bitmap photo) {
         mPhotoImageView.setImageBitmap(photo);
     }
@@ -116,8 +136,10 @@ public class RecordFragment extends Fragment implements RecordView {
     }
 
     @Override
-    public void showChooseUser() {
-        // TODO: 18.03.2016
+    public void showChooseUser(int currentUserId) {
+        UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
+        userListDialog.setTargetFragment(RecordFragment.this, REQUEST_CHOOSE_USER);
+        userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
     }
 
     @Override
