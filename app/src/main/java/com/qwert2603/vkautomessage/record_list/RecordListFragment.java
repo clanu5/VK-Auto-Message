@@ -96,7 +96,7 @@ public class RecordListFragment extends Fragment implements RecordListView {
         switch (requestCode) {
             case REQUEST_CHOOSE_USER:
                 int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
-                mRecordListPresenter.onUserChosen(userId);
+                mRecordListPresenter.onUserForNewRecordChosen(userId);
                 break;
         }
     }

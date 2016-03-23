@@ -11,5 +11,6 @@ public interface RecordView extends BaseView {
     void showEnabled(boolean enabled);
     void showTime(String time);
     void showChooseUser(int currentUserId);
+    void showEditMessage(String message);
     void showChooseTime();
 }

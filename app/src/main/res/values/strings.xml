@@ -17,4 +17,5 @@
     <string name="cancel">Cancel</string>
     <string name="empty">Empty.</string>
     <string name="no_friends">No friends!</string>
+    <string name="empty_message_toast">Message can\'t be empty!</string>
 </resources>

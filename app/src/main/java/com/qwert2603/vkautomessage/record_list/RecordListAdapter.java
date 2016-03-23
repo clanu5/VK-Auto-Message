@@ -128,6 +128,10 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         }
 
         @Override
+        public void showEditMessage(String message) {
+        }
+
+        @Override
         public void showChooseTime() {
         }
     }

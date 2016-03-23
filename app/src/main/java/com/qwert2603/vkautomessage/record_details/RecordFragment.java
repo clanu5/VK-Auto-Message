@@ -6,17 +6,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 public class RecordFragment extends Fragment implements RecordView {
@@ -24,7 +23,8 @@ public class RecordFragment extends Fragment implements RecordView {
     private static final String recordIdKey = "recordId";
 
     private static final int REQUEST_CHOOSE_USER = 1;
-    private static final int REQUEST_CHOOSE_TIME = 2;
+    private static final int REQUEST_EDIT_MESSAGE = 2;
+    private static final int REQUEST_CHOOSE_TIME = 3;
 
     public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
@@ -37,10 +37,14 @@ public class RecordFragment extends Fragment implements RecordView {
     private RecordPresenter mRecordPresenter;
 
     private ImageView mPhotoImageView;
-    private Button mUsernameButton;
+    private TextView mUsernameTextView;
     private Switch mEnableSwitch;
-    private EditText mMessageEditText;
-    private Button mTimeButton;
+    private TextView mMessageTextView;
+    private TextView mTimeTextView;
+
+    private CardView mUserCardView;
+    private CardView mMessageCardView;
+    private CardView mTimeCardView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,28 +66,19 @@ public class RecordFragment extends Fragment implements RecordView {
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
         mPhotoImageView = (ImageView) view.findViewById(R.id.photo_image_view);
-        mUsernameButton = (Button) view.findViewById(R.id.user_name_button);
+        mUsernameTextView = (TextView) view.findViewById(R.id.user_name_text_view);
         mEnableSwitch = (Switch) view.findViewById(R.id.enable_switch);
-        mMessageEditText = (EditText) view.findViewById(R.id.message_edit_text);
-        mTimeButton = (Button) view.findViewById(R.id.time_button);
+        mMessageTextView = (TextView) view.findViewById(R.id.message_text_view);
+        mTimeTextView = (TextView) view.findViewById(R.id.time_text_view);
 
-        mUsernameButton.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
+        mUserCardView = (CardView) view.findViewById(R.id.user_card);
+        mMessageCardView = (CardView) view.findViewById(R.id.message_card);
+        mTimeCardView = (CardView) view.findViewById(R.id.time_card);
+
+        mUserCardView.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
-        mMessageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mRecordPresenter.onMessageEdited(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        mTimeButton.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
+        mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
+        mTimeCardView.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
 
         mRecordPresenter.onViewReady();
 
@@ -107,6 +102,10 @@ public class RecordFragment extends Fragment implements RecordView {
                 int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
                 mRecordPresenter.onUserChosen(userId);
                 break;
+            case REQUEST_EDIT_MESSAGE:
+                String message = data.getStringExtra(EditMessageDialog.EXTRA_MESSAGE);
+                mRecordPresenter.onMessageEdited(message);
+                break;
         }
     }
 
@@ -117,12 +116,12 @@ public class RecordFragment extends Fragment implements RecordView {
 
     @Override
     public void showUserName(String userName) {
-        mUsernameButton.setText(userName);
+        mUsernameTextView.setText(userName);
     }
 
     @Override
     public void showMessage(String message) {
-        mMessageEditText.setText(message);
+        mMessageTextView.setText(message);
     }
 
     @Override
@@ -132,7 +131,7 @@ public class RecordFragment extends Fragment implements RecordView {
 
     @Override
     public void showTime(String time) {
-        mTimeButton.setText(time);
+        mTimeTextView.setText(time);
     }
 
     @Override
@@ -140,6 +139,13 @@ public class RecordFragment extends Fragment implements RecordView {
         UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
         userListDialog.setTargetFragment(RecordFragment.this, REQUEST_CHOOSE_USER);
         userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
+    }
+
+    @Override
+    public void showEditMessage(String message) {
+        EditMessageDialog editMessageDialog = EditMessageDialog.newInstance(message);
+        editMessageDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_MESSAGE);
+        editMessageDialog.show(getFragmentManager(), editMessageDialog.getClass().getName());
     }
 
     @Override

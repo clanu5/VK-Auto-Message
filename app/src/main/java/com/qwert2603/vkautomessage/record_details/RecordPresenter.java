@@ -75,37 +75,48 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onUserChosen(int userId) {
-        DataManager.getInstance()
-                .getVkUserById(userId)
-                .subscribe(
-                        user -> {
-                            getModel().setUser(user);
-                            updateView();
-                            DataManager.getInstance().justUpdateRecord(getModel());
-                        },
-                        LogUtils::e
-                );
+        if (getModel().getUser().id != userId) {
+            DataManager.getInstance()
+                    .getVkUserById(userId)
+                    .subscribe(
+                            user -> {
+                                getModel().setUser(user);
+                                updateView();
+                                DataManager.getInstance().justUpdateRecord(getModel());
+                            },
+                            LogUtils::e
+                    );
+        }
     }
 
     public void onTimeChosen(Date time) {
-        getModel().setTime(time);
-        DataManager.getInstance().justUpdateRecord(getModel());
+        if (getModel().getTime().getTime() != time.getTime()) {
+            getModel().setTime(time);
+            DataManager.getInstance().justUpdateRecord(getModel());
+        }
     }
 
     public void onEnableClicked(boolean enable) {
-        // TODO: 23.03.2016  проверять что не пустое сообщение
-        getModel().setIsEnabled(enable);
-        // TODO: 23.03.2016  не обновлять, если не было изменений.
-        DataManager.getInstance().justUpdateRecord(getModel());
+        if (getModel().isEnabled() != enable) {
+            getModel().setIsEnabled(enable);
+            DataManager.getInstance().justUpdateRecord(getModel());
+        }
     }
 
     public void onMessageEdited(String message) {
-        getModel().setMessage(message);
-        DataManager.getInstance().justUpdateRecord(getModel());
+        if (!getModel().getMessage().equals(message)) {
+            getModel().setMessage(message);
+            DataManager.getInstance().justUpdateRecord(getModel());
+            getView().showMessage(message);
+        }
     }
 
     public void onChooseUserClicked() {
         getView().showChooseUser(getModel().getUser().id);
+    }
+
+    public void onEditMessageClicked() {
+        getView().showEditMessage(getModel().getMessage());
     }
 
     public void onChooseTimeClicked() {

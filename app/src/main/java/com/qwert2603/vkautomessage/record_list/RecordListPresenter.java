@@ -55,7 +55,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         getView().showChooseUser(0);
     }
 
-    public void onUserChosen(int userId) {
+    public void onUserForNewRecordChosen(int userId) {
         DataManager.getInstance()
                 .getVkUserById(userId)
                 .flatMap(
