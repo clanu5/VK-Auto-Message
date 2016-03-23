@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.ArrayList;
@@ -45,11 +44,6 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
                     + ", U." + COLUMN_USER_LAST_NAME + ", U." + COLUMN_USER_PHOTO_100
                     + " FROM " + TABLE_RECORD + " AS R , " + TABLE_USER + " AS U "
                     + " WHERE (R." + COLUMN_RECORD_USER_ID + " = U." + COLUMN_USER_ID + ") ";
-
-    /**
-     * Объект на котором происходит синхронизация при добавлении и удалении зписей из {@link #TABLE_USER}.
-     */
-    private final Object mObject = new Object();
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -96,15 +90,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         return Observable.create(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(Subscriber<? super Long> subscriber) {
-                // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
-                if (getRecordCountForUser(record.getUser().id) == 0) {
-                    synchronized (mObject) {
-                        if (getRecordCountForUser(record.getUser().id) == 0) {
-                            doInsertUser(record.getUser());
-                            LogUtils.d("doInsertUser " + record.getUser().first_name);
-                        }
-                    }
-                }
+                insertUserIfAbsent(record.getUser());
                 long id = doInsertRecord(record);
                 record.setId((int) id);
                 subscriber.onNext(id);
@@ -123,16 +109,8 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
                 Record record = doGetRecordById(recordId);
-                // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
-                if (record != null && getRecordCountForUser(record.getUser().id) == 1) {
-                    synchronized (mObject) {
-                        if (getRecordCountForUser(record.getUser().id) == 1) {
-                            doDeleteUser(record.getUser().id);
-                            LogUtils.d("doDeleteUser " + record.getUser().first_name);
-                        }
-                    }
-                }
                 subscriber.onNext(doDeleteRecord(recordId));
+                deleteUserIfNoRecordsForHim(record.getUser().id);
                 subscriber.onCompleted();
             }
         });
@@ -197,22 +175,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     private int doUpdateRecord(Record record) {
         Record oldRecord = doGetRecordById(record.getId());
-        if (oldRecord != null && oldRecord.getUser().id != record.getUser().id) {
-            synchronized (mObject) {
-                LogUtils.d("oldRecord.getUser().id != record.getUser().id");
-                // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
-                if (getRecordCountForUser(oldRecord.getUser().id) == 1) {
-                    LogUtils.d("doUpdateRecord # doDeleteUser " + oldRecord.getUser().first_name);
-                    doDeleteUser(oldRecord.getUser().id);
-                }
-
-                // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
-                if (getRecordCountForUser(record.getUser().id) == 0) {
-                    LogUtils.d("doUpdateRecord # doInsertUser " + record.getUser().first_name);
-                    doInsertUser(record.getUser());
-                }
-            }
-        }
+        insertUserIfAbsent(record.getUser());
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_RECORD_ID, record.getId());
@@ -220,8 +183,12 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_RECORD_MESSAGE, record.getMessage());
         contentValues.put(COLUMN_RECORD_ENABLED, record.isEnabled() ? 1 : 0);
         contentValues.put(COLUMN_RECORD_TIME, record.getTime().getTime());
-        return getWritableDatabase()
+        int result = getWritableDatabase()
                 .update(TABLE_RECORD, contentValues, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(record.getId())});
+        if (oldRecord != null && oldRecord.getUser().id != record.getUser().id) {
+            deleteUserIfNoRecordsForHim(oldRecord.getUser().id);
+        }
+        return result;
     }
 
     private List<Record> doGetAllRecords() {
@@ -252,12 +219,53 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         return record;
     }
 
+    /**
+     * Объект на котором происходит синхронизация при добавлении и удалении зписей из {@link #TABLE_USER}.
+     */
+    private final Object mObject = new Object();
+
+    /**
+     * Удалить пользователя из {@link #TABLE_USER}, если в {@link #TABLE_RECORD} нет записей для этого пользователя.
+     */
+    private void deleteUserIfNoRecordsForHim(int userId) {
+        if (getRecordCountForUser(userId) == 0 && isUserExist(userId)) {
+            synchronized (mObject) {
+                if (getRecordCountForUser(userId) == 0 && isUserExist(userId)) {
+                    doDeleteUser(userId);
+                }
+            }
+        }
+    }
+
+    /**
+     * Добавить пользователя, если его еще нет в {@link #TABLE_USER}.
+     */
+    private void insertUserIfAbsent(VKApiUser user) {
+        if (!isUserExist(user.id)) {
+            synchronized (mObject) {
+                if (!isUserExist(user.id)) {
+                    doInsertUser(user);
+                }
+            }
+        }
+    }
+
     private int getRecordCountForUser(int userId) {
         Cursor cursor = getReadableDatabase()
                 .rawQuery("SElECT COUNT(*) FROM " + TABLE_RECORD + " WHERE " + COLUMN_RECORD_USER_ID + " = " + userId, null);
         int result;
         cursor.moveToFirst();
         result = cursor.getInt(0);
+        cursor.close();
+        return result;
+    }
+
+    private boolean isUserExist(int userId) {
+        Cursor cursor = getReadableDatabase()
+                .rawQuery("SElECT COUNT(*) FROM " + TABLE_USER + " WHERE " + COLUMN_USER_ID + " = " + userId, null);
+        boolean result;
+        cursor.moveToFirst();
+        result = cursor.getInt(0) > 0;
         cursor.close();
         return result;
     }

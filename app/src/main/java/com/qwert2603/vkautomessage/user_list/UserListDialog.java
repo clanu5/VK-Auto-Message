@@ -65,7 +65,7 @@ public class UserListDialog extends DialogFragment implements UserListView {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
-        mRefreshLayout.setOnRefreshListener(() -> mUserListPresenter.onReload());
+        mRefreshLayout.setOnRefreshListener(mUserListPresenter::onReload);
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

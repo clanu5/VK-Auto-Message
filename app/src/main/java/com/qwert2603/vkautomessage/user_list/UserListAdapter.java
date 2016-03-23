@@ -68,7 +68,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         public UserViewHolder(View itemView) {
             super(itemView);
             mItemView = itemView;
-            mItemView.setOnClickListener(v -> mUserListPresenter.onUserSelected(mUserPresenter.getUser()));
+            mItemView.setOnClickListener(v -> mUserListPresenter.onUserClicked(mUserPresenter.getUser()));
             mPhotoImageView = (ImageView) itemView.findViewById(R.id.photo_image_view);
             mUsernameTextView = (TextView) itemView.findViewById(R.id.user_name_text_view);
         }
@@ -80,6 +80,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         }
 
         public void unbindPresenter() {
+            mUserPresenter.onViewNotReady();
             mUserPresenter.unbindView();
             mUserPresenter = null;
         }

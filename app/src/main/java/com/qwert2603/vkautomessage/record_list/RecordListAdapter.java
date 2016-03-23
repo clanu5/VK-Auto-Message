@@ -93,6 +93,7 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         }
 
         public void unbindPresenter() {
+            mRecordPresenter.onViewNotReady();
             mRecordPresenter.unbindView();
             mRecordPresenter = null;
         }

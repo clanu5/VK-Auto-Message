@@ -93,7 +93,9 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onEnableClicked(boolean enable) {
+        // TODO: 23.03.2016  проверять что не пустое сообщение
         getModel().setIsEnabled(enable);
+        // TODO: 23.03.2016  не обновлять, если не было изменений.
         DataManager.getInstance().justUpdateRecord(getModel());
     }
 
@@ -103,7 +105,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onChooseUserClicked() {
-        getView().showChooseUser(getModelId());
+        getView().showChooseUser(getModel().getUser().id);
     }
 
     public void onChooseTimeClicked() {

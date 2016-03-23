@@ -132,7 +132,6 @@ public final class DataManager {
     }
 
     public Observable<Integer> updateRecord(Record record) {
-        LogUtils.d("DataManager ## updateRecord " + record.getUser().first_name);
         return mDatabaseHelper
                 .updateRecord(record)
                 .subscribeOn(Schedulers.io())
@@ -150,8 +149,13 @@ public final class DataManager {
                 .getFriends()
                 .flatMap(Observable::from)
                 .doOnNext(user -> {
-                    synchronized (mUserMap) {
-                        mUserMap.put(user.id, user);
+                    // Чтобы существовало только по 1 объекту юзера с каждым id.
+                    if (!mUserMap.containsKey(user.id)) {
+                        synchronized (mUserMap) {
+                            if (!mUserMap.containsKey(user.id)) {
+                                mUserMap.put(user.id, user);
+                            }
+                        }
                     }
                 })
                 .toList()

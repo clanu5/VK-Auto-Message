@@ -52,20 +52,29 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onNewRecordClicked() {
-        if (getModel() != null) {
-            Record record = new Record();
-            record.getUser().first_name = "";
-            record.getUser().last_name = "";
-            record.setTime(new Date());
-            DataManager.getInstance()
-                    .addRecord(record)
-                    .subscribe(
-                            aLong -> {
-                                updateView();
-                            },
-                            LogUtils::e
-                    );
-        }
+        getView().showChooseUser(0);
+    }
+
+    public void onUserChosen(int userId) {
+        DataManager.getInstance()
+                .getVkUserById(userId)
+                .flatMap(
+                        user -> {
+                            Record record = new Record();
+                            record.setMessage("VK Auto Message");
+                            record.setUser(user);
+                            record.setTime(new Date());
+                            return DataManager.getInstance().addRecord(record);
+                        }
+                )
+                .subscribe(
+                        recordId -> {
+                            RecordListView recordListView = getView();
+                            if (recordListView != null) {
+                                recordListView.moveToRecordDetails(recordId.intValue());
+                            }
+                        },
+                        LogUtils::e);
     }
 
     public void onRecordClicked(int recordId) {

@@ -33,7 +33,12 @@ public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {
         DataManager.getInstance()
                 .getPhotoByUrl(user.photo_100)
                 .subscribe(
-                        view::showPhoto,
+                        photo -> {
+                            UserView userView = getView();
+                            if (userView != null) {
+                                userView.showPhoto(photo);
+                            }
+                        },
                         LogUtils::e
                 );
         view.showSelected(false);

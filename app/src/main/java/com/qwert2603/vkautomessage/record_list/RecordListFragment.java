@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.record_list;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 import java.util.List;
 
@@ -29,6 +31,8 @@ public class RecordListFragment extends Fragment implements RecordListView {
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
+
+    private static final int REQUEST_CHOOSE_USER = 1;
 
     private RecordListPresenter mRecordListPresenter;
 
@@ -84,6 +88,20 @@ public class RecordListFragment extends Fragment implements RecordListView {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        switch (requestCode) {
+            case REQUEST_CHOOSE_USER:
+                int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
+                mRecordListPresenter.onUserChosen(userId);
+                break;
+        }
+    }
+
+    @Override
     public void showLoading() {
         setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
@@ -114,6 +132,13 @@ public class RecordListFragment extends Fragment implements RecordListView {
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
         getActivity().startActivity(intent);
+    }
+
+    @Override
+    public void showChooseUser(int currentUserId) {
+        UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
+        userListDialog.setTargetFragment(RecordListFragment.this, REQUEST_CHOOSE_USER);
+        userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

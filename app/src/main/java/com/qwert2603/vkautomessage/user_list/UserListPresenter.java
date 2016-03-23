@@ -52,7 +52,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         updateView();
     }
 
-    public void onUserSelected(VKApiUserFull user) {
+    public void onUserClicked(VKApiUserFull user) {
         if (user.can_write_private_message) {
             mSelectedUserId = user.id;
             updateView();
@@ -84,6 +84,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                                 mSubscription.unsubscribe();
                                 mSubscription = null;
                             }
+                            setModel(null);
                             updateView();
                             LogUtils.e(throwable);
                         }
