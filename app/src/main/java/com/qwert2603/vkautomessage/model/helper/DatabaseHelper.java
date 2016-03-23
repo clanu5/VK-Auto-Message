@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.ArrayList;
@@ -45,6 +46,11 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
                     + " FROM " + TABLE_RECORD + " AS R , " + TABLE_USER + " AS U "
                     + " WHERE (R." + COLUMN_RECORD_USER_ID + " = U." + COLUMN_USER_ID + ") ";
 
+    /**
+     * Объект на котором происходит синхронизация при добавлении и удалении зписей из {@link #TABLE_USER}.
+     */
+    private final Object mObject = new Object();
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
@@ -66,12 +72,6 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
                         + COLUMN_USER_LAST_NAME + " TEXT, "
                         + COLUMN_USER_PHOTO_100 + " TEXT" + ")"
         );
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_USER_ID, 0);
-        contentValues.put(COLUMN_USER_FIRST_NAME, "N/A");
-        contentValues.put(COLUMN_USER_LAST_NAME, "");
-        contentValues.put(COLUMN_USER_PHOTO_100, new VKApiUser().photo_100);
-        db.insert(TABLE_USER, null, contentValues);
     }
 
     @Override
@@ -79,11 +79,11 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<List<Record>> getAllRecords() {
-        return Observable.just(doGetAllRecords());
+        return Observable.defer(() -> Observable.just(doGetAllRecords()));
     }
 
     public Observable<Record> getRecordById(int recordId) {
-        return Observable.just(doGetRecordById(recordId));
+        return Observable.defer(() -> Observable.just(doGetRecordById(recordId)));
     }
 
     /**
@@ -98,7 +98,12 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
             public void call(Subscriber<? super Long> subscriber) {
                 // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
                 if (getRecordCountForUser(record.getUser().id) == 0) {
-                    doInsertUser(record.getUser());
+                    synchronized (mObject) {
+                        if (getRecordCountForUser(record.getUser().id) == 0) {
+                            doInsertUser(record.getUser());
+                            LogUtils.d("doInsertUser " + record.getUser().first_name);
+                        }
+                    }
                 }
                 long id = doInsertRecord(record);
                 record.setId((int) id);
@@ -110,6 +115,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Удалить запись по id.
+     *
      * @return Observable для кол-ва удаленных записей. (не должно быть больше 1).
      */
     public Observable<Integer> deleteRecord(int recordId) {
@@ -119,7 +125,12 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
                 Record record = doGetRecordById(recordId);
                 // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
                 if (record != null && getRecordCountForUser(record.getUser().id) == 1) {
-                    doDeleteUser(record.getUser().id);
+                    synchronized (mObject) {
+                        if (getRecordCountForUser(record.getUser().id) == 1) {
+                            doDeleteUser(record.getUser().id);
+                            LogUtils.d("doDeleteUser " + record.getUser().first_name);
+                        }
+                    }
                 }
                 subscriber.onNext(doDeleteRecord(recordId));
                 subscriber.onCompleted();
@@ -129,10 +140,11 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Обновить запись.
+     *
      * @return Observable для кол-ва обновленных записей. (не должно быть больше 1).
      */
     public Observable<Integer> updateRecord(Record record) {
-        return Observable.just(doUpdateRecord(record));
+        return Observable.defer(() -> Observable.just(doUpdateRecord(record)));
     }
 
     private static class RecordCursor extends CursorWrapper {
@@ -184,15 +196,22 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private int doUpdateRecord(Record record) {
-        // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
         Record oldRecord = doGetRecordById(record.getId());
-        if (oldRecord != null && getRecordCountForUser(oldRecord.getUser().id) == 1) {
-            doDeleteUser(record.getUser().id);
-        }
+        if (oldRecord != null && oldRecord.getUser().id != record.getUser().id) {
+            synchronized (mObject) {
+                LogUtils.d("oldRecord.getUser().id != record.getUser().id");
+                // если это была единственная запись для какого-либо пользователя, удаляем пользователя.
+                if (getRecordCountForUser(oldRecord.getUser().id) == 1) {
+                    LogUtils.d("doUpdateRecord # doDeleteUser " + oldRecord.getUser().first_name);
+                    doDeleteUser(oldRecord.getUser().id);
+                }
 
-        // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
-        if (getRecordCountForUser(record.getUser().id) == 0) {
-            doInsertUser(record.getUser());
+                // если запись предназначена новому пользователю (его еще нет в БД), добавляем его.
+                if (getRecordCountForUser(record.getUser().id) == 0) {
+                    LogUtils.d("doUpdateRecord # doInsertUser " + record.getUser().first_name);
+                    doInsertUser(record.getUser());
+                }
+            }
         }
 
         ContentValues contentValues = new ContentValues();
@@ -212,6 +231,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         List<Record> recordList = new ArrayList<>();
         while (!recordCursor.isAfterLast()) {
             recordList.add(recordCursor.getRecord());
+            recordCursor.moveToNext();
         }
         recordCursor.close();
         return recordList;
@@ -226,6 +246,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         Record record = null;
         if (!recordCursor.isAfterLast()) {
             record = recordCursor.getRecord();
+            recordCursor.moveToNext();
         }
         recordCursor.close();
         return record;
@@ -233,7 +254,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     private int getRecordCountForUser(int userId) {
         Cursor cursor = getReadableDatabase()
-                .rawQuery("SElECT COUNT(*) FROM " + TABLE_USER + " WHERE " + COLUMN_USER_ID + " = " + userId, null);
+                .rawQuery("SElECT COUNT(*) FROM " + TABLE_RECORD + " WHERE " + COLUMN_RECORD_USER_ID + " = " + userId, null);
         int result;
         cursor.moveToFirst();
         result = cursor.getInt(0);

@@ -34,5 +34,4 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.1'
 
     compile "com.vk:androidsdk:+"
-    compile 'org.jetbrains:annotations:15.0'
 }

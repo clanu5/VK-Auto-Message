@@ -55,7 +55,12 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         DataManager.getInstance()
                 .getPhotoByUrl(record.getUser().photo_100)
                 .subscribe(
-                        view::showPhoto,
+                        photo -> {
+                            RecordView recordView = getView();
+                            if (recordView != null) {
+                                recordView.showPhoto(photo);
+                            }
+                        },
                         LogUtils::e
                 );
         view.showUserName(StringUtils.getUserName(record.getUser()));
