@@ -49,7 +49,6 @@ public class UserListDialog extends DialogFragment implements UserListView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         mUserListPresenter = new UserListPresenter(getArguments().getInt(selectedUserIdKey));
         mUserListPresenter.bindView(this);
     }
@@ -66,6 +65,7 @@ public class UserListDialog extends DialogFragment implements UserListView {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(mUserListPresenter::onReload);
+        mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -103,6 +103,7 @@ public class UserListDialog extends DialogFragment implements UserListView {
 
     @Override
     public void showLoading() {
+        // TODO: 23.03.2016 показывать RefreshLayout только если уже есть загруженный список. иначе просто надпись.
         setRefreshLayoutRefreshing(true);
     }
 

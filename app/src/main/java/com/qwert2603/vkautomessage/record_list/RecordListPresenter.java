@@ -51,6 +51,10 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         updateView();
     }
 
+    public void onResume() {
+        updateView();
+    }
+
     public void onNewRecordClicked() {
         getView().showChooseUser(0);
     }

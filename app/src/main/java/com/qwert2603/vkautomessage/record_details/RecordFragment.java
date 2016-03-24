@@ -138,14 +138,14 @@ public class RecordFragment extends Fragment implements RecordView {
     public void showChooseUser(int currentUserId) {
         UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
         userListDialog.setTargetFragment(RecordFragment.this, REQUEST_CHOOSE_USER);
-        userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
+        userListDialog.show(getActivity().getFragmentManager(), userListDialog.getClass().getName());
     }
 
     @Override
     public void showEditMessage(String message) {
         EditMessageDialog editMessageDialog = EditMessageDialog.newInstance(message);
         editMessageDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_MESSAGE);
-        editMessageDialog.show(getFragmentManager(), editMessageDialog.getClass().getName());
+        editMessageDialog.show(getActivity().getFragmentManager(), editMessageDialog.getClass().getName());
     }
 
     @Override

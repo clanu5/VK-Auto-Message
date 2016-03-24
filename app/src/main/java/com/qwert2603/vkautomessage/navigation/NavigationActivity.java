@@ -2,26 +2,31 @@ package com.qwert2603.vkautomessage.navigation;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.login.MainActivity;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
-public abstract class NavigationActivity extends AppCompatActivity implements DrawerView {
+public abstract class NavigationActivity extends AppCompatActivity implements NavigationView {
 
-    private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mIsNavigationButtonVisible;
 
-    private DrawerPresenter mDrawerPresenter;
+    private ImageView mUserPhotoImageView;
+    private TextView mUserNameTextView;
+
+    private NavigationPresenter mNavigationPresenter;
 
     protected abstract boolean isNavigationButtonVisible();
 
@@ -30,24 +35,20 @@ public abstract class NavigationActivity extends AppCompatActivity implements Dr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-
-        mDrawerPresenter = new DrawerPresenter();
-        mDrawerPresenter.bindView(this);
-        mDrawerPresenter.onViewReady();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        android.support.design.widget.NavigationView navigationView = (android.support.design.widget.NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(item -> {
             mDrawerLayout.closeDrawers();
             switch (item.getItemId()) {
                 case R.id.settings:
-                    mDrawerPresenter.onSettingsClicked();
+                    mNavigationPresenter.onSettingsClicked();
                     return true;
                 case R.id.log_out:
-                    mDrawerPresenter.onLogOutClicked();
+                    mNavigationPresenter.onLogOutClicked();
                     return true;
             }
             return false;
@@ -58,8 +59,17 @@ public abstract class NavigationActivity extends AppCompatActivity implements Dr
         if (mIsNavigationButtonVisible) {
             mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
             mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-            mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+            toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
         }
+
+        mUserPhotoImageView = (ImageView) findViewById(R.id.user_photo_image_view);
+        mUserNameTextView = (TextView) findViewById(R.id.user_name_text_view);
+        LogUtils.d(mUserNameTextView + "");
+        LogUtils.d(mUserPhotoImageView + "");
+
+        mNavigationPresenter = new NavigationPresenter();
+        mNavigationPresenter.bindView(this);
+        mNavigationPresenter.onViewReady();
     }
 
     @Override
@@ -80,8 +90,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Dr
 
     @Override
     protected void onDestroy() {
-        mDrawerPresenter.onViewNotReady();
-        mDrawerPresenter.unbindView();
+        mNavigationPresenter.onViewNotReady();
+        mNavigationPresenter.unbindView();
         super.onDestroy();
     }
 
@@ -96,5 +106,15 @@ public abstract class NavigationActivity extends AppCompatActivity implements Dr
         Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void showUserName(String userName) {
+        mUserNameTextView.setText(userName);
+    }
+
+    @Override
+    public void showUserPhoto(Bitmap photo) {
+        mUserPhotoImageView.setImageBitmap(photo);
     }
 }

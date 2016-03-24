@@ -81,10 +81,7 @@ public class RecordListFragment extends Fragment implements RecordListView {
     @Override
     public void onResume() {
         super.onResume();
-        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
+        mRecordListPresenter.onResume();
     }
 
     @Override

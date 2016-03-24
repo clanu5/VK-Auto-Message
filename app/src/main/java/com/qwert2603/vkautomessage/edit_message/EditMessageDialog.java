@@ -11,7 +11,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,7 +36,6 @@ public class EditMessageDialog extends DialogFragment implements EditMessageView
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         mEditMessagePresenter = new EditMessagePresenter(getArguments().getString(messageKey));
         mEditMessagePresenter.bindView(EditMessageDialog.this);
     }
@@ -100,14 +98,10 @@ public class EditMessageDialog extends DialogFragment implements EditMessageView
         Intent intent = new Intent();
         intent.putExtra(EXTRA_MESSAGE, message);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
     @Override
     public void closeDialog() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         Toast.makeText(getActivity(), R.string.empty_message_toast, Toast.LENGTH_SHORT).show();
         dismiss();
     }

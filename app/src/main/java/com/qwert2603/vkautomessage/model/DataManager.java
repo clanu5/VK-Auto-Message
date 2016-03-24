@@ -2,12 +2,15 @@ package com.qwert2603.vkautomessage.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.LruCache;
 
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.model.helper.DatabaseHelper;
 import com.qwert2603.vkautomessage.model.helper.PhotoHelper;
+import com.qwert2603.vkautomessage.model.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.model.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.HashMap;
@@ -25,6 +28,7 @@ public final class DataManager {
         mDatabaseHelper = new DatabaseHelper(context);
         mVkApiHelper = new VkApiHelper();
         mPhotoHelper = new PhotoHelper();
+        mPreferenceHelper = new PreferenceHelper(context);
     }
 
     public static void initWithContext(Context context) {
@@ -38,6 +42,7 @@ public final class DataManager {
     private DatabaseHelper mDatabaseHelper;
     private VkApiHelper mVkApiHelper;
     private PhotoHelper mPhotoHelper;
+    private PreferenceHelper mPreferenceHelper;
 
     private volatile List<Record> mRecordList;
     private final Map<Integer, Record> mRecordMap = new HashMap<>();
@@ -139,7 +144,8 @@ public final class DataManager {
     }
 
     public void justUpdateRecord(Record record) {
-        updateRecord(record).subscribe(i -> {}, LogUtils::e);
+        updateRecord(record).subscribe(i -> {
+        }, LogUtils::e);
     }
 
     private final Map<Integer, VKApiUserFull> mUserMap = new HashMap<>();
@@ -181,13 +187,46 @@ public final class DataManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<VKApiUserFull> getVkUserMyself() {
+        VKApiUserFull user = new VKApiUserFull();
+        user.first_name = mPreferenceHelper.getUserName();
+        user.photo_100 = mPreferenceHelper.getUserPhoto();
+        LogUtils.d("datamanager $$ getMyself");
+        return Observable.just(user)
+                .flatMap(user1 -> "".equals(user1.photo_100) ? mVkApiHelper.getMyself() : Observable.just(user1))
+                .flatMap(user2 -> {
+                    if ("".equals(user.photo_100)) {
+                        mPreferenceHelper.setUserName(StringUtils.getUserName(user2));
+                        mPreferenceHelper.setUserPhoto(user2.photo_100);
+                    }
+                    LogUtils.d("datamanager $$ " + user2.first_name);
+                    return Observable.just(user2);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public void logOutVk() {
+        mRecordMap.clear();
+        mRecordList.clear();
+        mRecordList = null;
+        mUserMap.clear();
+        mPhotoCache.evictAll();
+        mDatabaseHelper.deleteAllRecordsAndUsers().subscribe(aVoid -> {}, LogUtils::e);
         mVkApiHelper.logOut();
     }
 
+    private LruCache<String, Bitmap> mPhotoCache = new LruCache<>(256);
+
     public Observable<Bitmap> getPhotoByUrl(String url) {
-        return mPhotoHelper
-                .downloadBitmap(url)
+        return Observable.just(mPhotoCache.get(url))
+                .flatMap(bitmap -> bitmap != null ? Observable.just(bitmap) : mPhotoHelper.downloadBitmap(url))
+                .flatMap(bitmap1 -> {
+                    if (mPhotoCache.get(url) == null) {
+                        mPhotoCache.put(url, bitmap1);
+                    }
+                    return Observable.just(mPhotoCache.get(url));
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

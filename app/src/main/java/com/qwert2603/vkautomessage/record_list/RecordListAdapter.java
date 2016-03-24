@@ -13,9 +13,10 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
-import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.List;
+
+import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordViewHolder> {
 
@@ -62,6 +63,7 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
     public class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
 
         private static final int MESSAGE_LENGTH_LIMIT = 26;
+        private static final int USERNAME_LENGTH_LIMIT = 26;
 
         private RecordPresenter mRecordPresenter;
 
@@ -110,7 +112,7 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
 
         @Override
         public void showMessage(String message) {
-            mMessageTextView.setText(StringUtils.noMore(message, MESSAGE_LENGTH_LIMIT));
+            mMessageTextView.setText(noMore(message, MESSAGE_LENGTH_LIMIT));
         }
 
         @Override

@@ -7,12 +7,16 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.user_list.UserListPresenter;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.lang.ref.WeakReference;
 
+import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
+import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
+
 public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {
+
+    private static final int USERNAME_LENGTH_LIMIT = 26;
 
     private WeakReference<UserListPresenter> mUserListPresenter;
 
@@ -29,7 +33,8 @@ public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {
         if (user == null) {
             return;
         }
-        view.showName(StringUtils.getUserName(user));
+        view.showName(noMore(getUserName(user), USERNAME_LENGTH_LIMIT));
+        view.showPhoto(null);
         DataManager.getInstance()
                 .getPhotoByUrl(user.photo_100)
                 .subscribe(

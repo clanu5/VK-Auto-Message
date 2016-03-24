@@ -15,7 +15,7 @@ public final class StringUtils {
      * Полное имя пользователя.
      */
     public static String getUserName(VKApiUser user) {
-        return "".equals(user.first_name) ? "N/A" : user.first_name + " " + user.last_name;
+        return user.first_name + " " + user.last_name;
     }
 
 }

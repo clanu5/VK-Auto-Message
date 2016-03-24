@@ -6,14 +6,18 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.entity.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
 
 import rx.Subscription;
 
+import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
+import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
+
 public class RecordPresenter extends BasePresenter<Record, RecordView> {
+
+    private static final int USERNAME_LENGTH_LIMIT = 26;
 
     private Subscription mSubscription;
 
@@ -50,6 +54,10 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     protected void onUpdateView(@NonNull RecordView view) {
         Record record = getModel();
         if (record == null) {
+            String loading = "Loading..";
+            view.showMessage(loading);
+            view.showUserName(loading);
+            view.showTime(loading);
             return;
         }
         DataManager.getInstance()
@@ -63,7 +71,8 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
                         },
                         LogUtils::e
                 );
-        view.showUserName(StringUtils.getUserName(record.getUser()));
+        view.showPhoto(null);
+        view.showUserName(noMore(getUserName(record.getUser()), USERNAME_LENGTH_LIMIT));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
         String timeString = DateFormat.getTimeInstance().format(record.getTime());

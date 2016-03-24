@@ -48,6 +48,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     }
 
     public void onReload() {
+        setModel(null);
         loadFriendsList();
         updateView();
     }

@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -55,10 +56,12 @@ public final class VkApiHelper {
         }
         if (nextRequestTime <= SystemClock.uptimeMillis()) {
             request.executeWithListener(listener);
+            LogUtils.d(nextRequestTime + " ## " + request);
             nextRequestTime = SystemClock.uptimeMillis();
         } else {
             mHandler.postAtTime(() -> {
                 if (VKSdk.isLoggedIn()) {
+                    LogUtils.d(nextRequestTime + " ## " + request);
                     request.executeWithListener(listener);
                 }
             }, nextRequestTime);
@@ -94,16 +97,28 @@ public final class VkApiHelper {
     }
 
     public Observable<VKApiUserFull> getUserById(int userId) {
+        VKParameters vkParameters = VKParameters.from(VKApiConst.USER_IDS, String.valueOf(userId),
+                VKApiConst.FIELDS, "photo_100");
+        return getUsers(vkParameters);
+    }
+
+    public Observable<VKApiUserFull> getMyself() {
+        LogUtils.d("vk api helper $$ getMyself");
+        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_100");
+        return getUsers(vkParameters);
+    }
+
+    private Observable<VKApiUserFull> getUsers(VKParameters vkParameters) {
         return Observable
                 .create(subscriber -> {
-                    VKParameters vkParameters = VKParameters.from(VKApiConst.USER_IDS, String.valueOf(userId),
-                            VKApiConst.FIELDS, "photo_100");
-                    VKRequest request = VKApi.users().get(VKParameters.from(vkParameters));
-                    request.setUseLooperForCallListener(false);
+                    LogUtils.d("vk api helper $$ 1");
+                    VKRequest request = VKApi.users().get(vkParameters);
+                    //request.setUseLooperForCallListener(false);
                     sendRequest(request, new VKRequest.VKRequestListener() {
                         @Override
                         public void onComplete(VKResponse response) {
                             subscriber.onNext(((VKUsersArray) response.parsedModel).get(0));
+                            LogUtils.d("vk api helper $$ 2 " + ((VKUsersArray) response.parsedModel).get(0).first_name);
                             subscriber.onCompleted();
                         }
 

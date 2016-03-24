@@ -101,7 +101,6 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Удалить запись по id.
-     *
      * @return Observable для кол-ва удаленных записей. (не должно быть больше 1).
      */
     public Observable<Integer> deleteRecord(int recordId) {
@@ -118,11 +117,14 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Обновить запись.
-     *
      * @return Observable для кол-ва обновленных записей. (не должно быть больше 1).
      */
     public Observable<Integer> updateRecord(Record record) {
         return Observable.defer(() -> Observable.just(doUpdateRecord(record)));
+    }
+
+    public Observable<Void> deleteAllRecordsAndUsers() {
+        return Observable.defer(() -> Observable.just(doDeleteAllRecordsAndUsers()));
     }
 
     private static class RecordCursor extends CursorWrapper {
@@ -217,6 +219,12 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         }
         recordCursor.close();
         return record;
+    }
+
+    private Void doDeleteAllRecordsAndUsers() {
+        getWritableDatabase().delete(TABLE_RECORD, null, null);
+        getWritableDatabase().delete(TABLE_USER, null, null);
+        return null;
     }
 
     /**
