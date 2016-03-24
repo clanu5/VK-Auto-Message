@@ -60,4 +60,12 @@ public final class PreferenceHelper {
         mSendMissedMessages = sendMissedMessages;
         mSharedPreferences.edit().putBoolean(sendMissedMessagesKey, mSendMissedMessages).apply();
     }
+
+    public void clear() {
+        mSharedPreferences.edit()
+                .remove(userNameKey)
+                .remove(userPhotoKey)
+                .remove(sendMissedMessagesKey)
+                .apply();
+    }
 }

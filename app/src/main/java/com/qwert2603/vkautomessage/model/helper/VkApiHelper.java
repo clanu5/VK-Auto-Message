@@ -15,6 +15,8 @@ import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUserFull;
 import com.vk.sdk.api.model.VKUsersArray;
 
+import org.json.JSONException;
+
 import java.util.List;
 
 import rx.Observable;
@@ -56,12 +58,10 @@ public final class VkApiHelper {
         }
         if (nextRequestTime <= SystemClock.uptimeMillis()) {
             request.executeWithListener(listener);
-            LogUtils.d(nextRequestTime + " ## " + request);
             nextRequestTime = SystemClock.uptimeMillis();
         } else {
             mHandler.postAtTime(() -> {
                 if (VKSdk.isLoggedIn()) {
-                    LogUtils.d(nextRequestTime + " ## " + request);
                     request.executeWithListener(listener);
                 }
             }, nextRequestTime);
@@ -103,7 +103,6 @@ public final class VkApiHelper {
     }
 
     public Observable<VKApiUserFull> getMyself() {
-        LogUtils.d("vk api helper $$ getMyself");
         VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_100");
         return getUsers(vkParameters);
     }
@@ -111,14 +110,17 @@ public final class VkApiHelper {
     private Observable<VKApiUserFull> getUsers(VKParameters vkParameters) {
         return Observable
                 .create(subscriber -> {
-                    LogUtils.d("vk api helper $$ 1");
                     VKRequest request = VKApi.users().get(vkParameters);
-                    //request.setUseLooperForCallListener(false);
+                    request.setUseLooperForCallListener(false);
                     sendRequest(request, new VKRequest.VKRequestListener() {
                         @Override
                         public void onComplete(VKResponse response) {
-                            subscriber.onNext(((VKUsersArray) response.parsedModel).get(0));
-                            LogUtils.d("vk api helper $$ 2 " + ((VKUsersArray) response.parsedModel).get(0).first_name);
+                            try {
+                                VKApiUserFull user = new VKApiUserFull().parse(response.json.getJSONArray("response").getJSONObject(0));
+                                subscriber.onNext(user);
+                            } catch (JSONException e) {
+                                LogUtils.e(e);
+                            }
                             subscriber.onCompleted();
                         }
 

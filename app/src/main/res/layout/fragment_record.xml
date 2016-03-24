@@ -38,7 +38,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="8dp"
+
                         android:text="Alex Zhdanov"
+                        android:singleLine="true"
                         android:textColor="@color/user_name"
                         android:textSize="20sp"/>
 

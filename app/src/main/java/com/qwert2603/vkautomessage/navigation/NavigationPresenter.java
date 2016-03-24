@@ -70,7 +70,6 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
                 .getVkUserMyself()
                 .subscribe(
                         user -> {
-                            LogUtils.d("nav presenter %% " + user);
                             NavigationPresenter.this.setModel(user);
                         },
                         throwable -> {

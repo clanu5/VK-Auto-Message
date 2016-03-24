@@ -28,6 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:singleLine="true"
                 android:text="Alex Zhdanov"
                 android:textColor="@color/user_name"
                 android:textSize="20sp"/>
@@ -39,6 +40,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
+                android:singleLine="true"
                 android:text="This is message"
                 android:textColor="@color/message"
                 android:textSize="14sp"/>

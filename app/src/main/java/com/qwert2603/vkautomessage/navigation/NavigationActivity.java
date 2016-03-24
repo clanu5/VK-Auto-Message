@@ -110,11 +110,11 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     @Override
     public void showUserName(String userName) {
-        mUserNameTextView.setText(userName);
+        //mUserNameTextView.setText(userName);
     }
 
     @Override
     public void showUserPhoto(Bitmap photo) {
-        mUserPhotoImageView.setImageBitmap(photo);
+        //mUserPhotoImageView.setImageBitmap(photo);
     }
 }

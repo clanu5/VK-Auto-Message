@@ -191,7 +191,6 @@ public final class DataManager {
         VKApiUserFull user = new VKApiUserFull();
         user.first_name = mPreferenceHelper.getUserName();
         user.photo_100 = mPreferenceHelper.getUserPhoto();
-        LogUtils.d("datamanager $$ getMyself");
         return Observable.just(user)
                 .flatMap(user1 -> "".equals(user1.photo_100) ? mVkApiHelper.getMyself() : Observable.just(user1))
                 .flatMap(user2 -> {
@@ -199,7 +198,6 @@ public final class DataManager {
                         mPreferenceHelper.setUserName(StringUtils.getUserName(user2));
                         mPreferenceHelper.setUserPhoto(user2.photo_100);
                     }
-                    LogUtils.d("datamanager $$ " + user2.first_name);
                     return Observable.just(user2);
                 })
                 .subscribeOn(Schedulers.io())
@@ -214,6 +212,7 @@ public final class DataManager {
         mPhotoCache.evictAll();
         mDatabaseHelper.deleteAllRecordsAndUsers().subscribe(aVoid -> {}, LogUtils::e);
         mVkApiHelper.logOut();
+        mPreferenceHelper.clear();
     }
 
     private LruCache<String, Bitmap> mPhotoCache = new LruCache<>(256);
