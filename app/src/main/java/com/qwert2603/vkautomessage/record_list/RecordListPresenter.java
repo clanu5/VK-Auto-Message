@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
-import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.Date;
@@ -85,7 +85,11 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         getView().moveToRecordDetails(recordId);
     }
 
-    public void onRecordRemoveClicked(int recordId) {
+    public void onRecordLongClicked(int recordId) {
+        getView().showDeleteRecord(recordId);
+    }
+
+    public void onRecordDeleteClicked(int recordId) {
         DataManager.getInstance()
                 .removeRecord(recordId)
                 .subscribe(

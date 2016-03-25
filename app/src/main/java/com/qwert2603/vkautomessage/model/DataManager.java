@@ -4,11 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import com.qwert2603.vkautomessage.model.entity.Record;
-import com.qwert2603.vkautomessage.model.helper.DatabaseHelper;
-import com.qwert2603.vkautomessage.model.helper.PhotoHelper;
-import com.qwert2603.vkautomessage.model.helper.PreferenceHelper;
-import com.qwert2603.vkautomessage.model.helper.VkApiHelper;
+import com.qwert2603.vkautomessage.helper.DatabaseHelper;
+import com.qwert2603.vkautomessage.helper.PhotoHelper;
+import com.qwert2603.vkautomessage.helper.PreferenceHelper;
+import com.qwert2603.vkautomessage.helper.SendMessageHelper;
+import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
@@ -29,10 +29,14 @@ public final class DataManager {
         mVkApiHelper = new VkApiHelper();
         mPhotoHelper = new PhotoHelper();
         mPreferenceHelper = new PreferenceHelper(context);
+        mSendMessageHelper = new SendMessageHelper(context);
+        // TODO: 25.03.2016 обновлять таблицу User (mDatabaseHelper). Так как аватарки и имена пользователей могли измениться.
     }
 
     public static void initWithContext(Context context) {
-        sDataManager = new DataManager(context.getApplicationContext());
+        if (sDataManager == null) {
+            sDataManager = new DataManager(context.getApplicationContext());
+        }
     }
 
     public static DataManager getInstance() {
@@ -43,6 +47,7 @@ public final class DataManager {
     private VkApiHelper mVkApiHelper;
     private PhotoHelper mPhotoHelper;
     private PreferenceHelper mPreferenceHelper;
+    private SendMessageHelper mSendMessageHelper;
 
     private volatile List<Record> mRecordList;
     private final Map<Integer, Record> mRecordMap = new HashMap<>();
@@ -90,7 +95,8 @@ public final class DataManager {
                         }
                     }
                     return Observable.just(mRecordMap.get(recordId));
-                }).subscribeOn(Schedulers.io())
+                })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -115,6 +121,7 @@ public final class DataManager {
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
     public Observable<Integer> removeRecord(int recordId) {
+        mSendMessageHelper.onRecordRemoved(recordId);
         return mDatabaseHelper
                 .deleteRecord(recordId)
                 .map(aLong -> {
@@ -137,6 +144,7 @@ public final class DataManager {
     }
 
     public Observable<Integer> updateRecord(Record record) {
+        putRecordToSendMessageService(record);
         return mDatabaseHelper
                 .updateRecord(record)
                 .subscribeOn(Schedulers.io())
@@ -148,18 +156,18 @@ public final class DataManager {
         }, LogUtils::e);
     }
 
-    private final Map<Integer, VKApiUserFull> mUserMap = new HashMap<>();
+    private final Map<Integer, VKApiUserFull> mVkUserMap = new HashMap<>();
 
-    public Observable<List<VKApiUserFull>> getAllFriends() {
+    public Observable<List<VKApiUserFull>> getAllVkFriends() {
         return mVkApiHelper
                 .getFriends()
                 .flatMap(Observable::from)
                 .doOnNext(user -> {
                     // Чтобы существовало только по 1 объекту юзера с каждым id.
-                    if (!mUserMap.containsKey(user.id)) {
-                        synchronized (mUserMap) {
-                            if (!mUserMap.containsKey(user.id)) {
-                                mUserMap.put(user.id, user);
+                    if (!mVkUserMap.containsKey(user.id)) {
+                        synchronized (mVkUserMap) {
+                            if (!mVkUserMap.containsKey(user.id)) {
+                                mVkUserMap.put(user.id, user);
                             }
                         }
                     }
@@ -170,18 +178,18 @@ public final class DataManager {
     }
 
     public Observable<VKApiUserFull> getVkUserById(int userId) {
-        return Observable.just(mUserMap.get(userId))
+        return Observable.just(mVkUserMap.get(userId))
                 .flatMap(user -> user != null ? Observable.just(user) : mVkApiHelper.getUserById(userId))
                 .flatMap(user1 -> {
                     // Чтобы существовало только по 1 объекту юзера с каждым id.
-                    if (!mUserMap.containsKey(userId)) {
-                        synchronized (mUserMap) {
-                            if (!mUserMap.containsKey(userId)) {
-                                mUserMap.put(userId, user1);
+                    if (!mVkUserMap.containsKey(userId)) {
+                        synchronized (mVkUserMap) {
+                            if (!mVkUserMap.containsKey(userId)) {
+                                mVkUserMap.put(userId, user1);
                             }
                         }
                     }
-                    return Observable.just(mUserMap.get(userId));
+                    return Observable.just(mVkUserMap.get(userId));
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -204,15 +212,41 @@ public final class DataManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<Object> sendVkMessage(int userId, String message, Object token) {
+        return mVkApiHelper.sendMessage(userId, message, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public int getLastNotificationId() {
+        return mPreferenceHelper.getLastNotificationId();
+    }
+
+    public void setLastNotificationId(int lastNotificationId) {
+        mPreferenceHelper.setLastNotificationId(lastNotificationId);
+    }
+
     public void logOutVk() {
-        mRecordMap.clear();
-        mRecordList.clear();
-        mRecordList = null;
-        mUserMap.clear();
-        mPhotoCache.evictAll();
-        mDatabaseHelper.deleteAllRecordsAndUsers().subscribe(aVoid -> {}, LogUtils::e);
-        mVkApiHelper.logOut();
-        mPreferenceHelper.clear();
+        getAllRecords()
+                .flatMap(Observable::from)
+                .map(record -> {
+                    mSendMessageHelper.onRecordRemoved(record.getId());
+                    return record;
+                })
+                .toList()
+                .flatMap(records -> {
+                    mRecordMap.clear();
+                    if (mRecordList != null) {
+                        mRecordList.clear();
+                        mRecordList = null;
+                    }
+                    mVkUserMap.clear();
+                    mPhotoCache.evictAll();
+                    mVkApiHelper.logOut();
+                    mPreferenceHelper.clear();
+                    return mDatabaseHelper.deleteAllRecordsAndUsers();
+                })
+                .subscribe(aVoid -> {}, LogUtils::e);
     }
 
     private LruCache<String, Bitmap> mPhotoCache = new LruCache<>(256);
@@ -228,5 +262,13 @@ public final class DataManager {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * Настроить отправку сообщений для записи record.
+     * Этот метод стоит вызывать, когда запись меняется и после включения устройства.
+     */
+    public void putRecordToSendMessageService(Record record) {
+        mSendMessageHelper.onRecordChanged(record);
     }
 }

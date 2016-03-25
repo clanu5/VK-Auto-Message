@@ -12,7 +12,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
 
@@ -98,11 +97,5 @@ public class EditMessageDialog extends DialogFragment implements EditMessageView
         Intent intent = new Intent();
         intent.putExtra(EXTRA_MESSAGE, message);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-    }
-
-    @Override
-    public void closeDialog() {
-        Toast.makeText(getActivity(), R.string.empty_message_toast, Toast.LENGTH_SHORT).show();
-        dismiss();
     }
 }

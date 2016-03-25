@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
+import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 public class RecordFragment extends Fragment implements RecordView {
@@ -24,7 +26,7 @@ public class RecordFragment extends Fragment implements RecordView {
 
     private static final int REQUEST_CHOOSE_USER = 1;
     private static final int REQUEST_EDIT_MESSAGE = 2;
-    private static final int REQUEST_CHOOSE_TIME = 3;
+    private static final int REQUEST_EDIT_TIME = 3;
 
     public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
@@ -41,10 +43,6 @@ public class RecordFragment extends Fragment implements RecordView {
     private Switch mEnableSwitch;
     private TextView mMessageTextView;
     private TextView mTimeTextView;
-
-    private CardView mUserCardView;
-    private CardView mMessageCardView;
-    private CardView mTimeCardView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,14 +69,14 @@ public class RecordFragment extends Fragment implements RecordView {
         mMessageTextView = (TextView) view.findViewById(R.id.message_text_view);
         mTimeTextView = (TextView) view.findViewById(R.id.time_text_view);
 
-        mUserCardView = (CardView) view.findViewById(R.id.user_card);
-        mMessageCardView = (CardView) view.findViewById(R.id.message_card);
-        mTimeCardView = (CardView) view.findViewById(R.id.time_card);
+        CardView userCardView = (CardView) view.findViewById(R.id.user_card);
+        CardView messageCardView = (CardView) view.findViewById(R.id.message_card);
+        CardView timeCardView = (CardView) view.findViewById(R.id.time_card);
 
-        mUserCardView.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
+        userCardView.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
-        mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
-        mTimeCardView.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
+        messageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
+        timeCardView.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
 
         mRecordPresenter.onViewReady();
 
@@ -105,6 +103,10 @@ public class RecordFragment extends Fragment implements RecordView {
             case REQUEST_EDIT_MESSAGE:
                 String message = data.getStringExtra(EditMessageDialog.EXTRA_MESSAGE);
                 mRecordPresenter.onMessageEdited(message);
+                break;
+            case REQUEST_EDIT_TIME:
+                long currentTimeInMillis = data.getLongExtra(EditTimeDialog.EXTRA_TIME_IN_MILLIS, 0);
+                mRecordPresenter.onTimeEdited(currentTimeInMillis);
                 break;
         }
     }
@@ -149,7 +151,14 @@ public class RecordFragment extends Fragment implements RecordView {
     }
 
     @Override
-    public void showChooseTime() {
-        // TODO: 18.03.2016
+    public void showEditTime(long currentTimeInMillis) {
+        EditTimeDialog editTimeDialog = EditTimeDialog.newInstance(currentTimeInMillis);
+        editTimeDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_TIME);
+        editTimeDialog.show(getActivity().getFragmentManager(), editTimeDialog.getClass().getName());
+    }
+
+    @Override
+    public void showToast(int stringRes) {
+        Toast.makeText(getActivity(), stringRes, Toast.LENGTH_SHORT).show();
     }
 }

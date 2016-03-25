@@ -10,11 +10,8 @@ import com.vk.sdk.api.model.VKApiUser;
 import rx.Subscription;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
-import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView> {
-
-    private static final int USERNAME_LENGTH_LIMIT = 26;
 
     private Subscription mSubscription;
 
@@ -26,7 +23,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
     protected void onUpdateView(@NonNull NavigationView view) {
         VKApiUser user = getModel();
         if (user != null) {
-            view.showUserName(noMore(getUserName(user), USERNAME_LENGTH_LIMIT));
+            view.showUserName(getUserName(user));
             view.showUserPhoto(null);
             DataManager.getInstance()
                     .getPhotoByUrl(user.photo_100)

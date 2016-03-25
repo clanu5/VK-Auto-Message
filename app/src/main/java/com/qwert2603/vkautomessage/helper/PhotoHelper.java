@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.model.helper;
+package com.qwert2603.vkautomessage.helper;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

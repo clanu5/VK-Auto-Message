@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.model.helper;
+package com.qwert2603.vkautomessage.helper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.model.Record;
 import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.ArrayList;

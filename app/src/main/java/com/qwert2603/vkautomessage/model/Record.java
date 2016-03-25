@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.model.entity;
+package com.qwert2603.vkautomessage.model;
 
 import com.vk.sdk.api.model.VKApiUser;
 

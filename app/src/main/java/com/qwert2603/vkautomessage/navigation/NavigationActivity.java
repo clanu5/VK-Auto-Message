@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.login.MainActivity;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView {
 
@@ -44,9 +43,10 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         navigationView.setNavigationItemSelectedListener(item -> {
             mDrawerLayout.closeDrawers();
             switch (item.getItemId()) {
-                case R.id.settings:
+                // TODO: 25.03.2016
+                /*case R.id.settings:
                     mNavigationPresenter.onSettingsClicked();
-                    return true;
+                    return true;*/
                 case R.id.log_out:
                     mNavigationPresenter.onLogOutClicked();
                     return true;
@@ -64,8 +64,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
         mUserPhotoImageView = (ImageView) findViewById(R.id.user_photo_image_view);
         mUserNameTextView = (TextView) findViewById(R.id.user_name_text_view);
-        LogUtils.d(mUserNameTextView + "");
-        LogUtils.d(mUserPhotoImageView + "");
 
         mNavigationPresenter = new NavigationPresenter();
         mNavigationPresenter.bindView(this);

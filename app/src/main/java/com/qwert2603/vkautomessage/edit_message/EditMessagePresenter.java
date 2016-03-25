@@ -22,11 +22,6 @@ public class EditMessagePresenter extends BasePresenter<String, EditMessageView>
     }
 
     void onSubmitClicked() {
-        String message = getModel();
-        if (message.isEmpty()) {
-            getView().closeDialog();
-        } else {
-            getView().submitDone(message);
-        }
+        getView().submitDone(getModel());
     }
 }

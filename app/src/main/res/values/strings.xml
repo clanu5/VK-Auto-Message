@@ -18,4 +18,7 @@
     <string name="empty">Empty.</string>
     <string name="no_friends">No friends!</string>
     <string name="empty_message_toast">Message can\'t be empty!</string>
+    <string name="notification_ticker_success">Message sent successfully</string>
+    <string name="notification_ticker_fail">Message was NOT sent!</string>
+    <string name="delete_record_dialog_title_prefix">Delete record?</string>
 </resources>

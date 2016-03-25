@@ -1,23 +1,21 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.support.annotation.NonNull;
+import android.text.format.DateFormat;
 
+import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
-import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
-import java.text.DateFormat;
 import java.util.Date;
 
 import rx.Subscription;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
-import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class RecordPresenter extends BasePresenter<Record, RecordView> {
-
-    private static final int USERNAME_LENGTH_LIMIT = 26;
 
     private Subscription mSubscription;
 
@@ -25,8 +23,8 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         mSubscription = DataManager.getInstance()
                 .getRecordById(recordId)
                 .subscribe(
-                        model -> {
-                            RecordPresenter.this.setModel(model);
+                        record -> {
+                            RecordPresenter.this.setModel(record);
                         },
                         throwable -> {
                             if (mSubscription != null) {
@@ -54,6 +52,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     protected void onUpdateView(@NonNull RecordView view) {
         Record record = getModel();
         if (record == null) {
+            // TODO: 25.03.2016  получать текст "loading" от view, чтобы зависело от языка.
             String loading = "Loading..";
             view.showMessage(loading);
             view.showUserName(loading);
@@ -72,11 +71,10 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
                         LogUtils::e
                 );
         view.showPhoto(null);
-        view.showUserName(noMore(getUserName(record.getUser()), USERNAME_LENGTH_LIMIT));
+        view.showUserName(getUserName(record.getUser()));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
-        String timeString = DateFormat.getTimeInstance().format(record.getTime());
-        view.showTime(timeString);
+        view.showTime(DateFormat.format("kk:mm", getModel().getTime()).toString());
     }
 
     public int getModelId() {
@@ -98,9 +96,10 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         }
     }
 
-    public void onTimeChosen(Date time) {
-        if (getModel().getTime().getTime() != time.getTime()) {
-            getModel().setTime(time);
+    public void onTimeEdited(long time) {
+        if (getModel().getTime().getTime() != time) {
+            getModel().setTime(new Date(time));
+            updateView();
             DataManager.getInstance().justUpdateRecord(getModel());
         }
     }
@@ -113,10 +112,14 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onMessageEdited(String message) {
+        if (message.isEmpty()) {
+            getView().showToast(R.string.empty_message_toast);
+            return;
+        }
         if (!getModel().getMessage().equals(message)) {
             getModel().setMessage(message);
+            updateView();
             DataManager.getInstance().justUpdateRecord(getModel());
-            getView().showMessage(message);
         }
     }
 
@@ -129,6 +132,6 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onChooseTimeClicked() {
-        getView().showChooseTime();
+        getView().showEditTime(getModel().getTime().getTime());
     }
 }

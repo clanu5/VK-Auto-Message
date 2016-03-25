@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_below="@id/user_photo_image_view"
+        android:singleLine="true"
         android:text="Alex Zhdanov"
         android:textColor="@color/user_name"
         android:textSize="20sp"/>

@@ -15,7 +15,8 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
@@ -33,6 +34,7 @@ public class RecordListFragment extends Fragment implements RecordListView {
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
 
     private static final int REQUEST_CHOOSE_USER = 1;
+    private static final int REQUEST_DELETE_RECORD = 2;
 
     private RecordListPresenter mRecordListPresenter;
 
@@ -95,6 +97,10 @@ public class RecordListFragment extends Fragment implements RecordListView {
                 int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
                 mRecordListPresenter.onUserForNewRecordChosen(userId);
                 break;
+            case REQUEST_DELETE_RECORD:
+                int recordId = data.getIntExtra(DeleteRecordDialog.EXTRA_RECORD_TO_DELETE_ID, 0);
+                mRecordListPresenter.onRecordDeleteClicked(recordId);
+                break;
         }
     }
 
@@ -136,6 +142,13 @@ public class RecordListFragment extends Fragment implements RecordListView {
         UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
         userListDialog.setTargetFragment(RecordListFragment.this, REQUEST_CHOOSE_USER);
         userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
+    }
+
+    @Override
+    public void showDeleteRecord(int recordId) {
+        DeleteRecordDialog deleteRecordDialog = DeleteRecordDialog.newInstance(recordId);
+        deleteRecordDialog.setTargetFragment(RecordListFragment.this, REQUEST_DELETE_RECORD);
+        deleteRecordDialog.show(getFragmentManager(), deleteRecordDialog.getClass().getName());
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

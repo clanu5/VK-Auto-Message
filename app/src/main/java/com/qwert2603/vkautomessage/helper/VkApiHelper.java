@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.model.helper;
+package com.qwert2603.vkautomessage.helper;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -116,7 +116,8 @@ public final class VkApiHelper {
                         @Override
                         public void onComplete(VKResponse response) {
                             try {
-                                VKApiUserFull user = new VKApiUserFull().parse(response.json.getJSONArray("response").getJSONObject(0));
+                                VKApiUserFull user = new VKApiUserFull()
+                                        .parse(response.json.getJSONArray("response").getJSONObject(0));
                                 subscriber.onNext(user);
                             } catch (JSONException e) {
                                 LogUtils.e(e);
@@ -127,6 +128,50 @@ public final class VkApiHelper {
                         @Override
                         public void onError(VKError error) {
                             subscriber.onError(new RuntimeException(error.toString()));
+                        }
+                    });
+                });
+    }
+
+    /**
+     * Исключение -- ошибка отправки сообщения
+     */
+    public static class SendMessageException extends Exception {
+        /**
+         * Объект для идентификации сообщения, которое не удалось отправить.
+         */
+        public Object mToken;
+
+        public SendMessageException(String detailMessage, Object token) {
+            super(detailMessage);
+            mToken = token;
+        }
+    }
+
+    /**
+     * Отправить сообщение.
+     * @param token объект, который будет передаст Observable, который вернет метод.
+     *              (для идентификации сообщения и адресата).
+     *              При ошибке будет передано исключение SendMessageException.
+     *              mToken этого иключения будет содержать переданный методу @param token.
+     */
+    public Observable<Object> sendMessage(int userId, String message, Object token) {
+        return Observable
+                .create(subscriber -> {
+                    VKParameters parameters = VKParameters.from(
+                            VKApiConst.USER_ID, userId, VKApiConst.MESSAGE, message);
+                    VKRequest request = new VKRequest("messages.send", parameters);
+                    request.setUseLooperForCallListener(false);
+                    sendRequest(request, new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            subscriber.onNext(token);
+                            subscriber.onCompleted();
+                        }
+
+                        @Override
+                        public void onError(VKError error) {
+                            subscriber.onError(new SendMessageException(error.toString(), token));
                         }
                     });
                 });

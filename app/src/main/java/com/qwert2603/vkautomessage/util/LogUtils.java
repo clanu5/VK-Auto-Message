@@ -5,7 +5,7 @@ import android.util.Log;
 public final class LogUtils {
 
     public static final String APP_TAG = "AASSDD";
-    public static final String ERROR_MSG = "AASSDD";
+    public static final String ERROR_MSG = "ERROR!!!";
 
     public static void d(String s) {
         d(APP_TAG, s);

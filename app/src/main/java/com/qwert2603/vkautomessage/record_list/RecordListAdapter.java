@@ -8,9 +8,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.model.entity.Record;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
 
@@ -46,8 +47,8 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
 
     @Override
     public void onViewRecycled(RecordViewHolder holder) {
-        super.onViewRecycled(holder);
         holder.unbindPresenter();
+        super.onViewRecycled(holder);
     }
 
     @Override
@@ -57,13 +58,12 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
     }
 
     public boolean isShowingList(List<Record> list) {
-        return mRecordList.equals(list);
+        return mRecordList == list;
     }
 
     public class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
 
-        private static final int MESSAGE_LENGTH_LIMIT = 26;
-        private static final int USERNAME_LENGTH_LIMIT = 26;
+        private static final int MESSAGE_LENGTH_LIMIT = 52;
 
         private RecordPresenter mRecordPresenter;
 
@@ -82,13 +82,16 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
             mTimeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
             itemView.setOnClickListener(v -> mRecordListPresenter.onRecordClicked(mRecordPresenter.getModelId()));
             itemView.setOnLongClickListener(v -> {
-                mRecordListPresenter.onRecordRemoveClicked(mRecordPresenter.getModelId());
+                mRecordListPresenter.onRecordLongClicked(mRecordPresenter.getModelId());
                 return true;
             });
             mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         }
 
         public void bindPresenter(RecordPresenter recordPresenter) {
+            if (mRecordPresenter != null) {
+                unbindPresenter();
+            }
             mRecordPresenter = recordPresenter;
             mRecordPresenter.bindView(RecordViewHolder.this);
             mRecordPresenter.onViewReady();
@@ -134,7 +137,12 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         }
 
         @Override
-        public void showChooseTime() {
+        public void showEditTime(long currentTimeInMillis) {
+        }
+
+        @Override
+        public void showToast(int stringRes) {
+            Toast.makeText(mPhotoImageView.getContext(), stringRes, Toast.LENGTH_SHORT).show();
         }
     }
 }
