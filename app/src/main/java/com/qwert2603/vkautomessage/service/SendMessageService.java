@@ -31,6 +31,7 @@ public class SendMessageService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        // TODO: 25.03.2016 проверить, надо ли выполнять #initWithContext.
         DataManager.initWithContext(getApplicationContext());
         DataManager.getInstance()
                 .getRecordById(intent.getIntExtra(EXTRA_RECORD_ID, 0))

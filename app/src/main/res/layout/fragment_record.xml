@@ -72,7 +72,7 @@
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
                 android:gravity="top"
-                android:hint="@string/enter_your_message"
+                android:text="enter_your_message"
                 android:textSize="16sp"/>
 
         </android.support.v7.widget.CardView>
