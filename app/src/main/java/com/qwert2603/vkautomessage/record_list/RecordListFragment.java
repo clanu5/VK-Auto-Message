@@ -23,6 +23,7 @@ import com.qwert2603.vkautomessage.user_list.UserListDialog;
 import java.util.List;
 
 public class RecordListFragment extends Fragment implements RecordListView {
+    // TODO: 26.03.2016  сделать базовый фрагмент для работы с presenter'ом
 
     public static RecordListFragment newInstance() {
         return new RecordListFragment();

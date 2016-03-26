@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.qwert2603.vkautomessage.R;
 
 public class EditMessageDialog extends DialogFragment implements EditMessageView {
+    // TODO: 26.03.2016  сделать базовый диалог-фрагмент для работы с presenter'ом
 
     private static final String messageKey = "message";
     public static final String EXTRA_MESSAGE = "com.qwert2603.vkautomessage.EXTRA_MESSAGE";

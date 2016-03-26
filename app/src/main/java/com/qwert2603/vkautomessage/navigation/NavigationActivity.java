@@ -43,8 +43,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         navigationView.setNavigationItemSelectedListener(item -> {
             mDrawerLayout.closeDrawers();
             switch (item.getItemId()) {
-                // TODO: 25.03.2016
                 /*case R.id.settings:
+                // todo добавить этот пункт меню
                     mNavigationPresenter.onSettingsClicked();
                     return true;*/
                 case R.id.log_out:
@@ -62,6 +62,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
             toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
         }
 
+        // TODO: 26.03.2016 показывать в них фото и имя пользователя
         mUserPhotoImageView = (ImageView) findViewById(R.id.user_photo_image_view);
         mUserNameTextView = (TextView) findViewById(R.id.user_name_text_view);
 
@@ -96,7 +97,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @Override
     public void showSettings() {
         Snackbar.make(mDrawerLayout, "SNACK", Snackbar.LENGTH_SHORT).show();
-        // TODO: 18.03.2016
+        // TODO: 18.03.2016 запускать Активити с настройками
     }
 
     @Override

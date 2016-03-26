@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.qwert2603.vkautomessage.R;
 
 public class DeleteRecordDialog extends DialogFragment implements DeleteRecordView {
+    // TODO: 26.03.2016  использовать RecordPresenter
 
     private static final String recordIdKey = "recordId";
     public static final String EXTRA_RECORD_TO_DELETE_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_TO_DELETE_ID";
