@@ -32,7 +32,9 @@ public final class SendMessageHelper {
             alarmCalendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
             alarmCalendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
             alarmCalendar.set(Calendar.SECOND, 0);
-
+            if (alarmCalendar.getTimeInMillis() < System.currentTimeMillis()) {
+                alarmCalendar.roll(Calendar.DATE, true);
+            }
             alarmManager.setRepeating(
                     AlarmManager.RTC_WAKEUP, alarmCalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         } else {
