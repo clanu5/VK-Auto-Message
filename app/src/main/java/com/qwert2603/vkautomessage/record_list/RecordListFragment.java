@@ -67,6 +67,7 @@ public class RecordListFragment extends Fragment implements RecordListView {
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
         ((TextView) mViewAnimator.getChildAt(POSITION_EMPTY_TEXT_VIEW)).setText(R.string.empty_records_list);
 
+        // TODO: 28.03.2016 скрывать fab при скроллинге вниз (behavior).
         FloatingActionButton newRecordFAB = (FloatingActionButton) view.findViewById(R.id.new_record_fab);
         newRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
