@@ -102,6 +102,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     @Override
     public void showLogOut() {
+        // TODO: 28.03.2016 очищать стек активити
         Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
