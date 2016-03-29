@@ -94,6 +94,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
                 .removeRecord(recordId)
                 .subscribe(
                         aLong -> {
+                            // TODO: 29.03.2016 не обновлять весь view, а #notifyItemRemoved
                             updateView();
                         },
                         LogUtils::e
@@ -107,9 +108,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         mSubscription = DataManager.getInstance()
                 .getAllRecords()
                 .subscribe(
-                        records -> {
-                            RecordListPresenter.this.setModel(records);
-                        },
+                        records -> RecordListPresenter.this.setModel(records),
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();

@@ -78,7 +78,9 @@ public final class VkApiHelper {
     public Observable<List<VKApiUserFull>> getFriends() {
         return Observable
                 .create(subscriber -> {
-                    VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_100, can_write_private_message");
+                    VKParameters vkParameters = VKParameters.from(
+                            VKApiConst.FIELDS, "photo_100, can_write_private_message",
+                            "order", "hints");
                     VKRequest request = VKApi.friends().get(vkParameters);
                     request.setUseLooperForCallListener(false);
                     sendRequest(request, new VKRequest.VKRequestListener() {

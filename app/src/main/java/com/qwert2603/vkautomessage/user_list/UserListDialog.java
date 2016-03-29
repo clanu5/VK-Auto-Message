@@ -17,7 +17,6 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 import com.qwert2603.vkautomessage.base.BasePresenter;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
@@ -36,10 +35,11 @@ public class UserListDialog extends BaseDialog implements UserListView {
     }
 
     private static final int POSITION_REFRESH_LAYOUT = 0;
-    @SuppressWarnings("unused")
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
+
+    private static final String UserListPresenterKey = "mUserListPresenter";
 
     private UserListPresenter mUserListPresenter;
 
@@ -49,17 +49,22 @@ public class UserListDialog extends BaseDialog implements UserListView {
 
     @Override
     protected BasePresenter getPresenter() {
-        if (mUserListPresenter == null) {
-            LogUtils.d("mUserListPresenter = new UserListPresenter(getArguments().getInt(selectedUserIdKey));");
+        return mUserListPresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mUserListPresenter = (UserListPresenter) savedInstanceState.getSerializable(UserListPresenterKey);
+        } else {
             mUserListPresenter = new UserListPresenter(getArguments().getInt(selectedUserIdKey));
         }
-        return mUserListPresenter;
+        super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // TODO: 29.03.2016 список зугражется заново при повороте.
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
 
@@ -70,11 +75,19 @@ public class UserListDialog extends BaseDialog implements UserListView {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
+
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setPositiveButton(getString(R.string.submit), (dialog, which) -> mUserListPresenter.onSubmitClicked())
                 .create();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(UserListPresenterKey, mUserListPresenter);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

@@ -23,9 +23,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         mSubscription = DataManager.getInstance()
                 .getRecordById(recordId)
                 .subscribe(
-                        record -> {
-                            RecordPresenter.this.setModel(record);
-                        },
+                        record -> RecordPresenter.this.setModel(record),
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();
