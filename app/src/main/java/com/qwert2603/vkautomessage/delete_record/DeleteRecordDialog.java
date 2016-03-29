@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,9 +11,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.base.BaseDialog;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 
-public class DeleteRecordDialog extends DialogFragment implements DeleteRecordView {
-    // TODO: 26.03.2016  использовать RecordPresenter
+public class DeleteRecordDialog extends BaseDialog implements DeleteRecordView {
 
     private static final String recordIdKey = "recordId";
     public static final String EXTRA_RECORD_TO_DELETE_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_TO_DELETE_ID";
@@ -33,16 +33,11 @@ public class DeleteRecordDialog extends DialogFragment implements DeleteRecordVi
     private TextView mMessageTextView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mDeleteRecordPresenter = new DeleteRecordPresenter(getArguments().getInt(recordIdKey));
-        mDeleteRecordPresenter.bindView(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        mDeleteRecordPresenter.unbindView();
-        super.onDestroy();
+    protected BasePresenter getPresenter() {
+        if (mDeleteRecordPresenter == null) {
+            mDeleteRecordPresenter = new DeleteRecordPresenter(getArguments().getInt(recordIdKey));
+        }
+        return mDeleteRecordPresenter;
     }
 
     @SuppressLint("InflateParams")
@@ -58,19 +53,6 @@ public class DeleteRecordDialog extends DialogFragment implements DeleteRecordVi
                 .create();
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mDeleteRecordPresenter.onViewReady();
-    }
-
-    @Override
-    public void onStop() {
-        mDeleteRecordPresenter.onViewNotReady();
-        super.onStop();
-    }
-
     @Override
     public void showUserName(String userName) {
         mUserNameTextView.setText(userName);
@@ -79,6 +61,12 @@ public class DeleteRecordDialog extends DialogFragment implements DeleteRecordVi
     @Override
     public void showMessage(String message) {
         mMessageTextView.setText(message);
+    }
+
+    @Override
+    public void showEmpty() {
+        mUserNameTextView.setText(R.string.loading);
+        mMessageTextView.setText(R.string.loading);
     }
 
     @Override

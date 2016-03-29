@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,9 +13,10 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.base.BaseDialog;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 
-public class EditMessageDialog extends DialogFragment implements EditMessageView {
-    // TODO: 26.03.2016  сделать базовый диалог-фрагмент для работы с presenter'ом
+public class EditMessageDialog extends BaseDialog implements EditMessageView {
 
     private static final String messageKey = "message";
     public static final String EXTRA_MESSAGE = "com.qwert2603.vkautomessage.EXTRA_MESSAGE";
@@ -34,16 +34,11 @@ public class EditMessageDialog extends DialogFragment implements EditMessageView
     private EditText mMessageEditText;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mEditMessagePresenter = new EditMessagePresenter(getArguments().getString(messageKey));
-        mEditMessagePresenter.bindView(EditMessageDialog.this);
-    }
-
-    @Override
-    public void onDestroy() {
-        mEditMessagePresenter.unbindView();
-        super.onDestroy();
+    protected BasePresenter getPresenter() {
+        if (mMessageEditText == null) {
+            mEditMessagePresenter = new EditMessagePresenter(getArguments().getString(messageKey));
+        }
+        return mEditMessagePresenter;
     }
 
     @SuppressLint("InflateParams")
@@ -72,18 +67,6 @@ public class EditMessageDialog extends DialogFragment implements EditMessageView
                     mEditMessagePresenter.onSubmitClicked();
                 })
                 .create();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mEditMessagePresenter.onViewReady();
-    }
-
-    @Override
-    public void onStop() {
-        mEditMessagePresenter.onViewNotReady();
-        super.onStop();
     }
 
     @Override

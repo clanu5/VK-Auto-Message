@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,10 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
@@ -22,8 +22,7 @@ import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 import java.util.List;
 
-public class RecordListFragment extends Fragment implements RecordListView {
-    // TODO: 26.03.2016  сделать базовый фрагмент для работы с presenter'ом
+public class RecordListFragment extends BaseFragment implements RecordListView {
 
     public static RecordListFragment newInstance() {
         return new RecordListFragment();
@@ -43,29 +42,22 @@ public class RecordListFragment extends Fragment implements RecordListView {
     private RecyclerView mRecyclerView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        mRecordListPresenter = new RecordListPresenter();
-        mRecordListPresenter.bindView(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        mRecordListPresenter.unbindView();
-        super.onDestroy();
+    protected BasePresenter getPresenter() {
+        if (mRecordListPresenter == null) {
+            mRecordListPresenter = new RecordListPresenter();
+        }
+        return mRecordListPresenter;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_record_list, container, false);
+                View view = inflater.inflate(R.layout.fragment_record_list, container, false);
 
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
-        ((TextView) mViewAnimator.getChildAt(POSITION_EMPTY_TEXT_VIEW)).setText(R.string.empty_records_list);
 
         // TODO: 28.03.2016 скрывать fab при скроллинге вниз (behavior).
         FloatingActionButton newRecordFAB = (FloatingActionButton) view.findViewById(R.id.new_record_fab);
@@ -74,12 +66,6 @@ public class RecordListFragment extends Fragment implements RecordListView {
         mRecordListPresenter.onViewReady();
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        mRecordListPresenter.onViewNotReady();
-        super.onDestroyView();
     }
 
     @Override

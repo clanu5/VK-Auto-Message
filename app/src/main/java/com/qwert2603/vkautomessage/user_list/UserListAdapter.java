@@ -17,6 +17,12 @@ import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserViewHolder> {
 
+    // TODO: 29.03.2016 передевать нажатие на элемент с помошью Callback, не использовать в этом классе UserListPresenter
+
+    /*public interface Callbacks {
+        void onItemClicked(int position);
+    }*/
+
     private List<VKApiUserFull> mUserList;
     private UserListPresenter mUserListPresenter;
 

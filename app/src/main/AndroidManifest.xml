@@ -30,7 +30,7 @@
         <activity
             android:name=".record_list.RecordListActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -39,10 +39,8 @@
         <activity
             android:name=".record_details.RecordActivity"
             android:parentActivityName=".record_list.RecordListActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".record_list.RecordListActivity"/>
         </activity>
 
         <service android:name=".service.SendMessageService"/>

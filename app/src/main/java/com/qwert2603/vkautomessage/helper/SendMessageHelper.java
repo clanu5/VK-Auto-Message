@@ -35,7 +35,7 @@ public final class SendMessageHelper {
             if (alarmCalendar.getTimeInMillis() < System.currentTimeMillis()) {
                 alarmCalendar.roll(Calendar.DATE, true);
             }
-            // TODO: 26.03.2016 перейти на minSdkVersion = 19, и использовать alarmManager.setExact(); (или нет)
+            // TODO: 26.03.2016 использовать alarmManager.setExact(); (или нет)
             alarmManager.setRepeating(
                     AlarmManager.RTC_WAKEUP, alarmCalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         } else {

@@ -39,10 +39,7 @@ public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordVie
     protected void onUpdateView(@NonNull DeleteRecordView view) {
         Record record = getModel();
         if (record == null) {
-            // TODO: 25.03.2016  получать текст "loading" от view, чтобы зависело от языка.
-            String loading = "Loading..";
-            view.showUserName(loading);
-            view.showMessage(loading);
+            view.showEmpty();
             return;
         }
         view.showUserName(getUserName(record.getUser()));

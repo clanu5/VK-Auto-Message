@@ -21,6 +21,13 @@ import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordViewHolder> {
 
+    // TODO: 29.03.2016 передевать нажатие на элемент с помошью Callback, не использовать в этом классе UserListPresenter
+
+    /*public interface Callbacks {
+        void onItemClicked(int position);
+        void onItemLongClicked(int position);
+    }*/
+
     private List<Record> mRecordList;
     private RecordListPresenter mRecordListPresenter;
 
@@ -126,6 +133,14 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         @Override
         public void showTime(String time) {
             mTimeTextView.setText(time);
+        }
+
+        @Override
+        public void showLoading() {
+            mPhotoImageView.setImageBitmap(null);
+            mUsernameTextView.setText(R.string.loading);
+            mMessageTextView.setText(R.string.loading);
+            mTimeTextView.setText(R.string.loading);
         }
 
         @Override

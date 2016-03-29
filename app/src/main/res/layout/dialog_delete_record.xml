@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         android:layout_gravity="center_horizontal"
-        android:text="@string/delete_record_dialog_title_prefix"
+        android:text="@string/delete_record_dialog_title"
         android:textColor="@color/dialog_delete_record_title"
         android:textSize="18sp"/>
 

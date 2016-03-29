@@ -4,13 +4,14 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
-import com.qwert2603.vkautomessage.record_list.RecordListActivity;
+import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.util.InternetUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -58,9 +59,15 @@ public class SendMessageService extends IntentService {
     @SuppressWarnings("deprecation")
     private void showResultNotification(Record record, boolean success) {
         String ticker = success ? getString(R.string.notification_ticker_success) : getString(R.string.notification_ticker_fail);
-        // TODO: 25.03.2016 запускать RecordActivity для этой записи, добавить в стек RecordListActivity
-        Intent intent = new Intent(SendMessageService.this, RecordListActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(SendMessageService.this, 0, intent, 0);
+
+        Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
+        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, record.getId());
+
+        PendingIntent pendingIntent = TaskStackBuilder.create(SendMessageService.this)
+                .addParentStack(RecordActivity.class)
+                .addNextIntent(intent)
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification notification = new Notification.Builder(SendMessageService.this)
                 .setSmallIcon(success ? android.R.drawable.stat_sys_upload_done : android.R.drawable.stat_notify_error)
                 .setTicker(ticker)

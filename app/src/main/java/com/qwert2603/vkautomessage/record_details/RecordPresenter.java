@@ -52,11 +52,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     protected void onUpdateView(@NonNull RecordView view) {
         Record record = getModel();
         if (record == null) {
-            // TODO: 25.03.2016  получать текст "loading" от view, чтобы зависело от языка.
-            String loading = "Loading..";
-            view.showMessage(loading);
-            view.showUserName(loading);
-            view.showTime(loading);
+            view.showLoading();
             return;
         }
         DataManager.getInstance()

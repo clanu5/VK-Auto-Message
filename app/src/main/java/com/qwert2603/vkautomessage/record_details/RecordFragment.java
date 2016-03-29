@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,11 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
-public class RecordFragment extends Fragment implements RecordView {
+public class RecordFragment extends BaseFragment implements RecordView {
 
     private static final String recordIdKey = "recordId";
 
@@ -45,17 +46,11 @@ public class RecordFragment extends Fragment implements RecordView {
     private TextView mTimeTextView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        mRecordPresenter = new RecordPresenter(getArguments().getInt(recordIdKey));
-        mRecordPresenter.bindView(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        mRecordPresenter.unbindView();
-        super.onDestroy();
+    protected BasePresenter getPresenter() {
+        if (mRecordPresenter == null) {
+            mRecordPresenter = new RecordPresenter(getArguments().getInt(recordIdKey));
+        }
+        return mRecordPresenter;
     }
 
     @Nullable
@@ -81,12 +76,6 @@ public class RecordFragment extends Fragment implements RecordView {
         mRecordPresenter.onViewReady();
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        mRecordPresenter.onViewNotReady();
-        super.onDestroyView();
     }
 
     @Override
@@ -137,24 +126,32 @@ public class RecordFragment extends Fragment implements RecordView {
     }
 
     @Override
+    public void showLoading() {
+        mPhotoImageView.setImageBitmap(null);
+        mUsernameTextView.setText(R.string.loading);
+        mMessageTextView.setText(R.string.loading);
+        mTimeTextView.setText(R.string.loading);
+    }
+
+    @Override
     public void showChooseUser(int currentUserId) {
         UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
         userListDialog.setTargetFragment(RecordFragment.this, REQUEST_CHOOSE_USER);
-        userListDialog.show(getActivity().getFragmentManager(), userListDialog.getClass().getName());
+        userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
     }
 
     @Override
     public void showEditMessage(String message) {
         EditMessageDialog editMessageDialog = EditMessageDialog.newInstance(message);
         editMessageDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_MESSAGE);
-        editMessageDialog.show(getActivity().getFragmentManager(), editMessageDialog.getClass().getName());
+        editMessageDialog.show(getFragmentManager(), editMessageDialog.getClass().getName());
     }
 
     @Override
     public void showEditTime(long currentTimeInMillis) {
         EditTimeDialog editTimeDialog = EditTimeDialog.newInstance(currentTimeInMillis);
         editTimeDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_TIME);
-        editTimeDialog.show(getActivity().getFragmentManager(), editTimeDialog.getClass().getName());
+        editTimeDialog.show(getFragmentManager(), editTimeDialog.getClass().getName());
     }
 
     @Override
