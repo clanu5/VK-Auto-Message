@@ -50,6 +50,7 @@ public class UserListDialog extends BaseDialog implements UserListView {
     @Override
     protected BasePresenter getPresenter() {
         if (mUserListPresenter == null) {
+            LogUtils.d("mUserListPresenter = new UserListPresenter(getArguments().getInt(selectedUserIdKey));");
             mUserListPresenter = new UserListPresenter(getArguments().getInt(selectedUserIdKey));
         }
         return mUserListPresenter;
@@ -81,12 +82,6 @@ public class UserListDialog extends BaseDialog implements UserListView {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_SELECTED_USER_ID, userId);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-    }
-
-    @Override
-    public void onDestroy() {
-        LogUtils.d("UserListDialog %% onDestroy");
-        super.onDestroy();
     }
 
     @Override

@@ -26,7 +26,6 @@ public class RecordActivity extends NavigationActivity {
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
-
         Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             int recordId = getIntent().getIntExtra(EXTRA_RECORD_ID, -1);

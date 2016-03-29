@@ -52,7 +52,7 @@ public class RecordListFragment extends BaseFragment implements RecordListView {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-                View view = inflater.inflate(R.layout.fragment_record_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_record_list, container, false);
 
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);

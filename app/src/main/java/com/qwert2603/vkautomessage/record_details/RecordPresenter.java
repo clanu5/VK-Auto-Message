@@ -70,7 +70,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         view.showUserName(getUserName(record.getUser()));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
-        view.showTime(DateFormat.format("kk:mm", getModel().getTime()).toString());
+        view.showTime(getTimeString());
     }
 
     public int getModelId() {
@@ -95,7 +95,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     public void onTimeEdited(long time) {
         if (getModel().getTime().getTime() != time) {
             getModel().setTime(new Date(time));
-            updateView();
+            getView().showTime(getTimeString());
             DataManager.getInstance().justUpdateRecord(getModel());
         }
     }
@@ -114,7 +114,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         }
         if (!getModel().getMessage().equals(message)) {
             getModel().setMessage(message);
-            updateView();
+            getView().showMessage(message);
             DataManager.getInstance().justUpdateRecord(getModel());
         }
     }
@@ -129,5 +129,9 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     public void onChooseTimeClicked() {
         getView().showEditTime(getModel().getTime().getTime());
+    }
+
+    private String getTimeString() {
+        return DateFormat.format("kk:mm", getModel().getTime()).toString();
     }
 }
