@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.support.v7.app.NotificationCompat;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
@@ -54,7 +55,6 @@ public class SendMessageService extends IntentService {
                 );
     }
 
-    @SuppressWarnings("deprecation")
     private void showResultNotification(Record record, boolean success) {
         String ticker = success ? getString(R.string.notification_ticker_success) : getString(R.string.notification_ticker_fail);
 
@@ -64,16 +64,16 @@ public class SendMessageService extends IntentService {
         PendingIntent pendingIntent = TaskStackBuilder.create(SendMessageService.this)
                 .addParentStack(RecordActivity.class)
                 .addNextIntent(intent)
-                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                .getPendingIntent(record.getId(), PendingIntent.FLAG_ONE_SHOT);
 
-        Notification notification = new Notification.Builder(SendMessageService.this)
+        Notification notification = new NotificationCompat.Builder(SendMessageService.this)
                 .setSmallIcon(success ? android.R.drawable.stat_sys_upload_done : android.R.drawable.stat_notify_error)
                 .setTicker(ticker)
                 .setContentTitle(ticker)
                 .setContentText(getUserName(record.getUser()) + "\n" + noMore(record.getMessage(), MESSAGE_LENGTH_LIMIT))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .getNotification();
+                .build();
 
         int lastNotificationId = DataManager.getInstance().getLastNotificationId();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
