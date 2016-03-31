@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,12 +17,11 @@ import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseDialog;
-import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
-public class UserListDialog extends BaseDialog implements UserListView {
+public class UserListDialog extends BaseDialog<UserListPresenter> implements UserListView {
 
     private static final String selectedUserIdKey = "selectedUserId";
     public static final String EXTRA_SELECTED_USER_ID = "com.qwert2603.vkautomessage.EXTRA_SELECTED_USER_ID";
@@ -39,55 +39,37 @@ public class UserListDialog extends BaseDialog implements UserListView {
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
 
-    private static final String UserListPresenterKey = "mUserListPresenter";
-
-    private UserListPresenter mUserListPresenter;
-
     private SwipeRefreshLayout mRefreshLayout;
     private ViewAnimator mViewAnimator;
     private RecyclerView mRecyclerView;
 
+    @NonNull
     @Override
-    protected BasePresenter getPresenter() {
-        return mUserListPresenter;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            mUserListPresenter = (UserListPresenter) savedInstanceState.getSerializable(UserListPresenterKey);
-        } else {
-            mUserListPresenter = new UserListPresenter(getArguments().getInt(selectedUserIdKey));
-        }
-        super.onCreate(savedInstanceState);
+    protected UserListPresenter createPresenter() {
+        return new UserListPresenter(getArguments().getInt(selectedUserIdKey));
     }
 
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // TODO: 31.03.2016 добавить поиск по списку друзей.
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
 
         mRefreshLayout = (SwipeRefreshLayout) mViewAnimator.getChildAt(POSITION_REFRESH_LAYOUT);
-        mRefreshLayout.setOnRefreshListener(mUserListPresenter::onReload);
+        mRefreshLayout.setOnRefreshListener(getPresenter()::onReload);
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.submit), (dialog, which) -> mUserListPresenter.onSubmitClicked())
+                .setPositiveButton(getString(R.string.submit), (dialog, which) -> getPresenter().onSubmitClicked())
                 .create();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(UserListPresenterKey, mUserListPresenter);
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -128,7 +110,7 @@ public class UserListDialog extends BaseDialog implements UserListView {
         if (adapter != null && adapter.isShowingList(list)) {
             adapter.notifyDataSetChanged();
         } else {
-            mRecyclerView.setAdapter(new UserListAdapter(list, mUserListPresenter));
+            mRecyclerView.setAdapter(new UserListAdapter(list, getPresenter()));
         }
     }
 
