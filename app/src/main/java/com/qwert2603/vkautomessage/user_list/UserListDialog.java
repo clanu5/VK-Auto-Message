@@ -73,6 +73,12 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     }
 
     @Override
+    public void setRefreshingConfig(boolean enable, boolean refreshing) {
+        mRefreshLayout.setEnabled(enable);
+        mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(refreshing));
+    }
+
+    @Override
     public void submitDode(int userId) {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_SELECTED_USER_ID, userId);
@@ -86,25 +92,21 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
 
     @Override
     public void showLoading() {
-        // TODO: 23.03.2016 показывать RefreshLayout только если уже есть загруженный список. иначе просто надпись.
-        setRefreshLayoutRefreshing(true);
+        setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
 
     @Override
     public void showError() {
-        setRefreshLayoutRefreshing(false);
         setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
     @Override
     public void showEmpty() {
-        setRefreshLayoutRefreshing(false);
         setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
     }
 
     @Override
     public void showList(List<VKApiUserFull> list) {
-        setRefreshLayoutRefreshing(false);
         setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
         UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
         if (adapter != null && adapter.isShowingList(list)) {
@@ -120,7 +122,4 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
         }
     }
 
-    private void setRefreshLayoutRefreshing(boolean refreshing) {
-        mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(refreshing));
-    }
 }

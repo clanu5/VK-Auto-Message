@@ -27,21 +27,23 @@
         android:gravity="center"
         android:text="@string/loading"
         android:textColor="@android:color/black"
-        android:textSize="24sp"/>
+        android:textSize="@dimen/loading_error_empty_text_size"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/text_error"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/error"
+        android:textSize="@dimen/loading_error_empty_text_size"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/no_friends"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/loading_error_empty_text_size"/>
 
 </ViewAnimator>
 

@@ -4,6 +4,7 @@ import com.qwert2603.vkautomessage.base.ListView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 public interface UserListView extends ListView<VKApiUserFull> {
+    void setRefreshingConfig(boolean enable, boolean refreshing);
     void submitDode(int userId);
     void showCantWrite();
 }

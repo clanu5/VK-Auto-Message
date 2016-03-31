@@ -8,5 +8,6 @@
     <color name="user_name">#6F4081</color>
     <color name="message">#6F8586</color>
     <color name="time">#AF6091</color>
+    <color name="error">#E00</color>
 
 </resources>

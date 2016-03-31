@@ -14,6 +14,7 @@ import rx.Subscription;
 public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserListView> {
 
     private Subscription mSubscription;
+    private boolean mIsLoading;
     private int mSelectedUserId;
 
     public UserListPresenter(int selectedUserId) {
@@ -33,12 +34,14 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     protected void onUpdateView(@NonNull UserListView view) {
         List<VKApiUserFull> userList = getModel();
         if (userList == null) {
+            view.setRefreshingConfig(false, false);
             if (mSubscription == null) {
                 view.showError();
             } else {
                 view.showLoading();
             }
         } else {
+            view.setRefreshingConfig(true, mIsLoading);
             if (userList.isEmpty()) {
                 view.showEmpty();
             } else {
@@ -48,7 +51,6 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     }
 
     public void onReload() {
-        setModel(null);
         loadFriendsList();
         updateView();
     }
@@ -74,11 +76,16 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
+        mIsLoading = true;
         mSubscription = DataManager.getInstance()
                 .getAllVkFriends()
                 .subscribe(
-                        model -> UserListPresenter.this.setModel(model),
+                        model -> {
+                            mIsLoading = false;
+                            UserListPresenter.this.setModel(model);
+                        },
                         throwable -> {
+                            mIsLoading = false;
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();
                                 mSubscription = null;
