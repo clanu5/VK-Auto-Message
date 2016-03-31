@@ -133,6 +133,14 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         deleteRecordDialog.show(getFragmentManager(), deleteRecordDialog.getClass().getName());
     }
 
+    @Override
+    public void notifyItemRemoved(int position) {
+        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.notifyItemRemoved(position);
+        }
+    }
+
     private void setViewAnimatorDisplayedChild(int position) {
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);

@@ -140,6 +140,10 @@ public final class DataManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public void justRemoveRecord(int recordId) {
+        removeRecord(recordId).subscribe(aLong -> {}, LogUtils::e);
+    }
+
     public Observable<Integer> updateRecord(Record record) {
         putRecordToSendMessageService(record);
         return mDatabaseHelper
@@ -149,8 +153,7 @@ public final class DataManager {
     }
 
     public void justUpdateRecord(Record record) {
-        updateRecord(record).subscribe(i -> {
-        }, LogUtils::e);
+        updateRecord(record).subscribe(i -> {}, LogUtils::e);
     }
 
     private final Map<Integer, VKApiUserFull> mVkUserMap = new HashMap<>();

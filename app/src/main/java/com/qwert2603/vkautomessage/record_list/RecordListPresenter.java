@@ -73,9 +73,9 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
                 )
                 .subscribe(
                         recordId -> {
-                            RecordListView recordListView = getView();
-                            if (recordListView != null) {
-                                recordListView.moveToRecordDetails(recordId.intValue());
+                            RecordListView view = getView();
+                            if (view != null) {
+                                view.moveToRecordDetails(recordId.intValue());
                             }
                         },
                         LogUtils::e);
@@ -90,15 +90,19 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onRecordDeleteClicked(int recordId) {
+        int position = getRecordPosition(recordId);
         DataManager.getInstance()
                 .removeRecord(recordId)
-                .subscribe(
-                        aLong -> {
-                            // TODO: 29.03.2016 не обновлять весь view, а #notifyItemRemoved
-                            updateView();
-                        },
-                        LogUtils::e
-                );
+                .subscribe(aLong -> {
+                    if (getModel().size() > 1) {
+                        RecordListView view = getView();
+                        if (view != null) {
+                            view.notifyItemRemoved(position);
+                        }
+                    } else {
+                        updateView();
+                    }
+                }, LogUtils::e);
     }
 
     private void loadRecordList() {
@@ -118,6 +122,16 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
                             LogUtils.e(throwable);
                         }
                 );
+    }
+
+    private int getRecordPosition(int recordId) {
+        List<Record> recordList = getModel();
+        for (int i = 0, size = (recordList == null ? 0 : recordList.size()); i < size; i++) {
+            if (recordList.get(i).getId() == recordId) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

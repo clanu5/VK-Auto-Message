@@ -11,6 +11,7 @@ public class Record {
     private String mMessage;
     private boolean mIsEnabled;
     private Date mTime;
+    // TODO: 31.03.2016 добавить разные интервалы отправки - выбираемое кол-во [1, 168] часов.
 
     public Record() {
         this(-1, new VKApiUser(), "", new Date(), false);

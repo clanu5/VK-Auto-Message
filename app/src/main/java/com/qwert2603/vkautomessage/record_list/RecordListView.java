@@ -7,4 +7,5 @@ public interface RecordListView extends ListView<Record> {
     void moveToRecordDetails(int recordId);
     void showChooseUser(int currentUserId);
     void showDeleteRecord(int recordId);
+    void notifyItemRemoved(int position);
 }
