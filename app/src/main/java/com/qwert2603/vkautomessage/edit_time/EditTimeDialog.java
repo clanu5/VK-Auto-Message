@@ -5,11 +5,11 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BaseDialog;
-import com.qwert2603.vkautomessage.base.BasePresenter;
 
-public class EditTimeDialog extends BaseDialog implements EditTimeView {
+public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements EditTimeView {
 
     private static final String timeInMillisKey = "timeInMillis";
     public static final String EXTRA_TIME_IN_MILLIS = "com.qwert2603.vkautomessage.EXTRA_TIME_IN_MILLIS";
@@ -22,21 +22,17 @@ public class EditTimeDialog extends BaseDialog implements EditTimeView {
         return editTimeDialog;
     }
 
-    private EditTimePresenter mEditTimePresenter;
-
+    @NonNull
     @Override
-    protected BasePresenter getPresenter() {
-        if (mEditTimePresenter == null) {
-            mEditTimePresenter = new EditTimePresenter(getArguments().getLong(timeInMillisKey));
-        }
-        return mEditTimePresenter;
+    protected EditTimePresenter createPresenter() {
+        return new EditTimePresenter(getArguments().getLong(timeInMillisKey));
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new TimePickerDialog(getActivity(),
-                (view, hourOfDay, minute) -> mEditTimePresenter.onSubmitClicked(hourOfDay, minute),
-                mEditTimePresenter.getHours(), mEditTimePresenter.getMinutes(), true);
+                (view, hourOfDay, minute) -> getPresenter().onSubmitClicked(hourOfDay, minute),
+                getPresenter().getHours(), getPresenter().getMinutes(), true);
     }
 
     @Override

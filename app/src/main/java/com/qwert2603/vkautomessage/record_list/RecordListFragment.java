@@ -14,7 +14,6 @@ import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseFragment;
-import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
@@ -22,7 +21,7 @@ import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 import java.util.List;
 
-public class RecordListFragment extends BaseFragment implements RecordListView {
+public class RecordListFragment extends BaseFragment<RecordListPresenter> implements RecordListView {
 
     public static RecordListFragment newInstance() {
         return new RecordListFragment();
@@ -36,17 +35,12 @@ public class RecordListFragment extends BaseFragment implements RecordListView {
     private static final int REQUEST_CHOOSE_USER = 1;
     private static final int REQUEST_DELETE_RECORD = 2;
 
-    private RecordListPresenter mRecordListPresenter;
-
     private ViewAnimator mViewAnimator;
     private RecyclerView mRecyclerView;
 
     @Override
-    protected BasePresenter getPresenter() {
-        if (mRecordListPresenter == null) {
-            mRecordListPresenter = new RecordListPresenter();
-        }
-        return mRecordListPresenter;
+    protected RecordListPresenter createPresenter() {
+        return new RecordListPresenter();
     }
 
     @Nullable
@@ -57,13 +51,13 @@ public class RecordListFragment extends BaseFragment implements RecordListView {
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
 
         // TODO: 28.03.2016 скрывать fab при скроллинге вниз (behavior).
         FloatingActionButton newRecordFAB = (FloatingActionButton) view.findViewById(R.id.new_record_fab);
-        newRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
+        newRecordFAB.setOnClickListener(v -> getPresenter().onNewRecordClicked());
 
-        mRecordListPresenter.onViewReady();
+        getPresenter().onViewReady();
 
         return view;
     }
@@ -71,7 +65,7 @@ public class RecordListFragment extends BaseFragment implements RecordListView {
     @Override
     public void onResume() {
         super.onResume();
-        mRecordListPresenter.onResume();
+        getPresenter().onResume();
     }
 
     @Override
@@ -83,11 +77,11 @@ public class RecordListFragment extends BaseFragment implements RecordListView {
         switch (requestCode) {
             case REQUEST_CHOOSE_USER:
                 int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
-                mRecordListPresenter.onUserForNewRecordChosen(userId);
+                getPresenter().onUserForNewRecordChosen(userId);
                 break;
             case REQUEST_DELETE_RECORD:
                 int recordId = data.getIntExtra(DeleteRecordDialog.EXTRA_RECORD_TO_DELETE_ID, 0);
-                mRecordListPresenter.onRecordDeleteClicked(recordId);
+                getPresenter().onRecordDeleteClicked(recordId);
                 break;
         }
     }
@@ -114,7 +108,7 @@ public class RecordListFragment extends BaseFragment implements RecordListView {
         if (adapter != null && adapter.isShowingList(list)) {
             adapter.notifyDataSetChanged();
         } else {
-            mRecyclerView.setAdapter(new RecordListAdapter(list, mRecordListPresenter));
+            mRecyclerView.setAdapter(new RecordListAdapter(list, getPresenter()));
         }
     }
 

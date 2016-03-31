@@ -7,14 +7,11 @@ import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
-import java.io.Serializable;
 import java.util.List;
 
 import rx.Subscription;
 
-public class UserListPresenter
-        extends BasePresenter<List<VKApiUserFull>, UserListView>
-        implements Serializable {
+public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserListView> {
 
     private Subscription mSubscription;
     private int mSelectedUserId;

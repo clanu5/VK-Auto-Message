@@ -22,9 +22,7 @@ public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordVie
         mSubscription = DataManager.getInstance()
                 .getRecordById(recordId)
                 .subscribe(
-                        record -> {
-                            DeleteRecordPresenter.this.setModel(record);
-                        },
+                        record -> DeleteRecordPresenter.this.setModel(record),
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();

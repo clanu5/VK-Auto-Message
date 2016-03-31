@@ -4,9 +4,15 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 
-public abstract class BaseFragment extends Fragment implements BaseView {
+public abstract class BaseFragment<P extends BasePresenter> extends Fragment implements BaseView {
 
-    protected abstract BasePresenter getPresenter();
+    private P mPresenter;
+
+    protected abstract P createPresenter();
+
+    protected P getPresenter() {
+        return mPresenter;
+    }
 
     @SuppressWarnings("unchecked")
     @CallSuper
@@ -14,13 +20,14 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        getPresenter().bindView(this);
+        mPresenter = createPresenter();
+        mPresenter.bindView(this);
     }
 
     @CallSuper
     @Override
     public void onDestroy() {
-        getPresenter().unbindView();
+        mPresenter.unbindView();
         super.onDestroy();
     }
 
@@ -28,13 +35,14 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     @Override
     public void onResume() {
         super.onResume();
-        getPresenter().onViewReady();
+        mPresenter.onViewReady();
     }
 
     @CallSuper
     @Override
     public void onPause() {
-        getPresenter().onViewNotReady();
+        mPresenter.onViewNotReady();
         super.onPause();
     }
+
 }

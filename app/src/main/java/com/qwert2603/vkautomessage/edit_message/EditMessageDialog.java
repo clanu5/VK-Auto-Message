@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -14,9 +15,8 @@ import android.widget.EditText;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseDialog;
-import com.qwert2603.vkautomessage.base.BasePresenter;
 
-public class EditMessageDialog extends BaseDialog implements EditMessageView {
+public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implements EditMessageView {
 
     private static final String messageKey = "message";
     public static final String EXTRA_MESSAGE = "com.qwert2603.vkautomessage.EXTRA_MESSAGE";
@@ -29,16 +29,12 @@ public class EditMessageDialog extends BaseDialog implements EditMessageView {
         return editMessageDialog;
     }
 
-    private EditMessagePresenter mEditMessagePresenter;
-
     private EditText mMessageEditText;
 
+    @NonNull
     @Override
-    protected BasePresenter getPresenter() {
-        if (mMessageEditText == null) {
-            mEditMessagePresenter = new EditMessagePresenter(getArguments().getString(messageKey));
-        }
-        return mEditMessagePresenter;
+    protected EditMessagePresenter createPresenter() {
+        return new EditMessagePresenter(getArguments().getString(messageKey));
     }
 
     @SuppressLint("InflateParams")
@@ -53,7 +49,7 @@ public class EditMessageDialog extends BaseDialog implements EditMessageView {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mEditMessagePresenter.onMessageEdited(s.toString());
+                getPresenter().onMessageEdited(s.toString());
             }
 
             @Override
@@ -64,7 +60,7 @@ public class EditMessageDialog extends BaseDialog implements EditMessageView {
                 .setView(view)
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setPositiveButton(R.string.submit, (dialog, which) -> {
-                    mEditMessagePresenter.onSubmitClicked();
+                    getPresenter().onSubmitClicked();
                 })
                 .create();
     }

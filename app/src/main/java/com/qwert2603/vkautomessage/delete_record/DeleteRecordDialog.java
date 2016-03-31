@@ -6,15 +6,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseDialog;
-import com.qwert2603.vkautomessage.base.BasePresenter;
 
-public class DeleteRecordDialog extends BaseDialog implements DeleteRecordView {
+public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implements DeleteRecordView {
 
     private static final String recordIdKey = "recordId";
     public static final String EXTRA_RECORD_TO_DELETE_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_TO_DELETE_ID";
@@ -27,17 +27,13 @@ public class DeleteRecordDialog extends BaseDialog implements DeleteRecordView {
         return deleteRecordDialog;
     }
 
-    private DeleteRecordPresenter mDeleteRecordPresenter;
-
     private TextView mUserNameTextView;
     private TextView mMessageTextView;
 
+    @NonNull
     @Override
-    protected BasePresenter getPresenter() {
-        if (mDeleteRecordPresenter == null) {
-            mDeleteRecordPresenter = new DeleteRecordPresenter(getArguments().getInt(recordIdKey));
-        }
-        return mDeleteRecordPresenter;
+    protected DeleteRecordPresenter createPresenter() {
+        return new DeleteRecordPresenter(getArguments().getInt(recordIdKey));
     }
 
     @SuppressLint("InflateParams")
@@ -49,7 +45,7 @@ public class DeleteRecordDialog extends BaseDialog implements DeleteRecordView {
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.submit, (dialog, which) -> mDeleteRecordPresenter.onSubmitClicked())
+                .setPositiveButton(R.string.submit, (dialog, which) -> getPresenter().onSubmitClicked())
                 .create();
     }
 

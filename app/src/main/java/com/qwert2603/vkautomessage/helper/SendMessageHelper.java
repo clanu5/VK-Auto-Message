@@ -7,7 +7,6 @@ import android.content.Intent;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.service.SendMessageService;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +38,6 @@ public final class SendMessageHelper {
             alarmCalendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
             alarmCalendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
             alarmCalendar.set(Calendar.SECOND, 0);
-            LogUtils.d(alarmCalendar.getTimeInMillis() + " " + System.currentTimeMillis());
             if (alarmCalendar.getTimeInMillis() < System.currentTimeMillis()) {
                 alarmCalendar.setTime(new Date(alarmCalendar.getTimeInMillis() + MILLIS_PER_DAY));
             }
