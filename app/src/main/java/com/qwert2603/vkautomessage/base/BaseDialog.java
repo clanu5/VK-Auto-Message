@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import java.util.HashMap;
+import java.util.Random;
+
 public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment implements BaseView {
 
-    private static final String presenterKey = "presenterKey";
+    private static final String presenterCodeKey = "presenterCodeKey";
 
     private P mPresenter;
 
@@ -25,7 +28,7 @@ public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            mPresenter = (P) savedInstanceState.getSerializable(presenterKey);
+            mPresenter = (P) loadPresenter(savedInstanceState.getInt(presenterCodeKey));
         }
         if (mPresenter == null) {
             mPresenter = createPresenter();
@@ -56,8 +59,41 @@ public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(presenterKey, mPresenter);
+        outState.putInt(presenterCodeKey, savePresenter(mPresenter));
         super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Сохраненные презентеры.
+     * @see #savePresenter(BasePresenter)
+     * @see #loadPresenter(int)
+     */
+    private static final HashMap<Integer, BasePresenter> sPresenters = new HashMap<>();
+
+    private static final Random sRandom = new Random();
+
+    /**
+     * Сохранить presenter.
+     * @return код сохраненного presenter'a.
+     */
+    private static int savePresenter(BasePresenter presenter) {
+        int code;
+        do {
+            code = sRandom.nextInt();
+        } while (sPresenters.containsKey(code));
+        sPresenters.put(code, presenter);
+        return code;
+    }
+
+    /**
+     * Загрузить сохраненный presenter.
+     * После загрузки presenter удаляется ихз созраненных.
+     * @param code код сохраненного presenter'a.
+     */
+    private static BasePresenter loadPresenter(int code) {
+        BasePresenter presenter = sPresenters.get(code);
+        sPresenters.remove(code);
+        return presenter;
     }
 
 }

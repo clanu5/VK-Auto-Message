@@ -57,6 +57,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mIsNavigationButtonVisible = isNavigationButtonVisible();
 
         if (mIsNavigationButtonVisible) {
+            // TODO: 31.03.2016 убрать аниманию actionbar при появлении navigationView
             mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
             mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
             toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));

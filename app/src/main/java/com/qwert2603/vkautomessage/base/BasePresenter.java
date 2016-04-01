@@ -2,10 +2,9 @@ package com.qwert2603.vkautomessage.base;
 
 import android.support.annotation.NonNull;
 
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 
-public abstract class BasePresenter<M, V extends BaseView> implements Serializable {
+public abstract class BasePresenter<M, V extends BaseView> {
     private M mModel;
     private WeakReference<V> mView;
     private boolean mIsViewReady = false;
