@@ -57,10 +57,11 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mIsNavigationButtonVisible = isNavigationButtonVisible();
 
         if (mIsNavigationButtonVisible) {
-            // TODO: 31.03.2016 убрать аниманию actionbar при появлении navigationView
-            mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
-            mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+            mActionBarDrawerToggle = new ActionBarDrawerToggle(NavigationActivity.this, mDrawerLayout, R.string.open, R.string.close);
+            mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
             toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+            mActionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+            mActionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         }
 
         // TODO: 26.03.2016 показывать в них фото и имя пользователя
