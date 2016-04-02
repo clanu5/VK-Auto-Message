@@ -33,8 +33,9 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, User
     }
 
     public class UserViewHolder
-            extends BaseRecyclerViewAdapter<VKApiUserFull, UserListAdapter.UserViewHolder, UserPresenter>.RecyclerViewHolder
+            extends BaseRecyclerViewAdapter<?, ?, UserPresenter>.RecyclerViewHolder
             implements UserView {
+
         private ImageView mPhotoImageView;
         private TextView mUsernameTextView;
 
