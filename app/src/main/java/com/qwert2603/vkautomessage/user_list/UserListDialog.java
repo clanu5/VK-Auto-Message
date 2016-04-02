@@ -121,7 +121,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
             adapter.notifyDataSetChanged();
         } else {
             adapter = new UserListAdapter(list);
-            adapter.setCallbacks(position -> getPresenter().onUserAtPositionClicked(position));
+            adapter.setClickCallbacks(position -> getPresenter().onUserAtPositionClicked(position));
             mRecyclerView.setAdapter(adapter);
 
         }

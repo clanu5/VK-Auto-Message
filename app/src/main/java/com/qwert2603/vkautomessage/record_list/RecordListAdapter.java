@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.graphics.Bitmap;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
@@ -19,21 +19,10 @@ import java.util.List;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
-public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordViewHolder> {
+public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter> {
 
-    // TODO: 29.03.2016 передевать нажатие на элемент с помошью Callback, не использовать в этом классе UserListPresenter
-
-    /*public interface Callbacks {
-        void onItemClicked(int position);
-        void onItemLongClicked(int position);
-    }*/
-
-    private List<Record> mRecordList;
-    private RecordListPresenter mRecordListPresenter;
-
-    public RecordListAdapter(List<Record> recordList, RecordListPresenter recordListPresenter) {
-        mRecordList = recordList;
-        mRecordListPresenter = recordListPresenter;
+    public RecordListAdapter(List<Record> modelList) {
+        super(modelList);
     }
 
     @Override
@@ -43,36 +32,13 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
     }
 
     @Override
-    public void onBindViewHolder(RecordViewHolder holder, int position) {
-        holder.bindPresenter(new RecordPresenter(mRecordList.get(position)));
+    protected RecordPresenter createPresenter(Record model) {
+        return new RecordPresenter(model);
     }
 
-    @Override
-    public int getItemCount() {
-        return mRecordList.size();
-    }
-
-    @Override
-    public void onViewRecycled(RecordViewHolder holder) {
-        holder.unbindPresenter();
-        super.onViewRecycled(holder);
-    }
-
-    @Override
-    public boolean onFailedToRecycleView(RecordViewHolder holder) {
-        holder.unbindPresenter();
-        return super.onFailedToRecycleView(holder);
-    }
-
-    public boolean isShowingList(List<Record> list) {
-        return mRecordList == list;
-    }
-
-    public class RecordViewHolder extends RecyclerView.ViewHolder implements RecordView {
+    public class RecordViewHolder extends BaseRecyclerViewAdapter.RecyclerViewHolder implements RecordView {
 
         private static final int MESSAGE_LENGTH_LIMIT = 52;
-
-        private RecordPresenter mRecordPresenter;
 
         private ImageView mPhotoImageView;
         private TextView mUsernameTextView;
@@ -87,27 +53,8 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
             mEnableCheckBox = (CheckBox) itemView.findViewById(R.id.enable_check_box);
             mMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view);
             mTimeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
-            itemView.setOnClickListener(v -> mRecordListPresenter.onRecordClicked(mRecordPresenter.getModelId()));
-            itemView.setOnLongClickListener(v -> {
-                mRecordListPresenter.onRecordLongClicked(mRecordPresenter.getModelId());
-                return true;
-            });
-            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
-        }
-
-        public void bindPresenter(RecordPresenter recordPresenter) {
-            if (mRecordPresenter != null) {
-                unbindPresenter();
-            }
-            mRecordPresenter = recordPresenter;
-            mRecordPresenter.bindView(RecordViewHolder.this);
-            mRecordPresenter.onViewReady();
-        }
-
-        public void unbindPresenter() {
-            mRecordPresenter.onViewNotReady();
-            mRecordPresenter.unbindView();
-            mRecordPresenter = null;
+            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                    ((RecordPresenter) getPresenter()).onEnableClicked(isChecked));
         }
 
         @Override

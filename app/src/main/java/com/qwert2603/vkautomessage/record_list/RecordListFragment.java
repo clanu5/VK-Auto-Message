@@ -108,7 +108,10 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         if (adapter != null && adapter.isShowingList(list)) {
             adapter.notifyDataSetChanged();
         } else {
-            mRecyclerView.setAdapter(new RecordListAdapter(list, getPresenter()));
+            adapter = new RecordListAdapter(list);
+            adapter.setClickCallbacks(position -> getPresenter().onRecordAtPositionClicked(position));
+            adapter.setLongClickCallbacks(position -> getPresenter().onRecordAtPositionLongClicked(position));
+            mRecyclerView.setAdapter(adapter);
         }
     }
 

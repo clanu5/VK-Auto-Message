@@ -4,11 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.qwert2603.vkautomessage.R;
-import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
 public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdapter.RecyclerViewHolder, P extends BasePresenter>
         extends RecyclerView.Adapter<VH> {
 
@@ -67,7 +65,7 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
         return super.onFailedToRecycleView(holder);
     }
 
-    public boolean isShowingList(List<VKApiUserFull> list) {
+    public boolean isShowingList(List<M> list) {
         return mModelList.equals(list);
     }
 
@@ -106,6 +104,10 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
                 }
                 return false;
             });
+        }
+
+        protected final P getPresenter() {
+            return mPresenter;
         }
 
         @SuppressWarnings("unchecked")

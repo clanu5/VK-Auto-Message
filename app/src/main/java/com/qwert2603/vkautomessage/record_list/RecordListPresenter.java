@@ -86,12 +86,12 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
                         LogUtils::e);
     }
 
-    public void onRecordClicked(int recordId) {
-        getView().moveToRecordDetails(recordId);
+    public void onRecordAtPositionClicked(int position) {
+        getView().moveToRecordDetails(getModel().get(position).getId());
     }
 
-    public void onRecordLongClicked(int recordId) {
-        getView().showDeleteRecord(recordId);
+    public void onRecordAtPositionLongClicked(int position) {
+        getView().showDeleteRecord(getModel().get(position).getId());
     }
 
     public void onRecordDeleteClicked(int recordId) {
