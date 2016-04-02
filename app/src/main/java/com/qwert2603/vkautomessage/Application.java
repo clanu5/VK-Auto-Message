@@ -16,6 +16,7 @@ public class Application extends android.app.Application {
         for (String s : VKUtil.getCertificateFingerprint(this, this.getPackageName())) {
             LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
         }
+        // TODO: 02.04.2016 добавить испанский язык.
     }
 
 }

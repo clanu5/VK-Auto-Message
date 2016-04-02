@@ -41,6 +41,11 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
             if (recordList.isEmpty()) {
                 view.showEmpty();
             } else {
+                // TODO: 02.04.2016 сделать группировку по пользователям.
+                /*
+                 * при запуске приложения появляется список пользователей, для которых есть записи.
+                 * при нажатии на пользователя открывается список записей для этого пользователя.
+                 */
                 view.showList(recordList);
             }
         }
