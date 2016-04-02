@@ -17,18 +17,24 @@ import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserViewHolder> {
 
-    // TODO: 29.03.2016 передевать нажатие на элемент с помошью Callback, не использовать в этом классе UserListPresenter
-
-    /*public interface Callbacks {
+    public interface Callbacks {
         void onItemClicked(int position);
-    }*/
+    }
 
     private List<VKApiUserFull> mUserList;
-    private UserListPresenter mUserListPresenter;
+    private Callbacks mCallbacks;
+    private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
 
-    public UserListAdapter(List<VKApiUserFull> userList, UserListPresenter userListPresenter) {
+    public UserListAdapter(List<VKApiUserFull> userList) {
         mUserList = userList;
-        mUserListPresenter = userListPresenter;
+    }
+
+    public void setCallbacks(Callbacks callbacks) {
+        mCallbacks = callbacks;
+    }
+
+    public void setSelectedItemPosition(int position) {
+        mRecyclerViewSelector.setSelectedPosition(position);
     }
 
     @Override
@@ -39,7 +45,8 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
 
     @Override
     public void onBindViewHolder(UserViewHolder holder, int position) {
-        holder.bindPresenter(new UserPresenter(mUserList.get(position), mUserListPresenter));
+        holder.bindPresenter(new UserPresenter(mUserList.get(position)));
+        mRecyclerViewSelector.setItemViewBackground(holder.mItemView, position);
     }
 
     @Override
@@ -63,6 +70,23 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         return mUserList.equals(list);
     }
 
+    public class RecyclerViewSelector {
+        private int mSelectedPosition = -1;
+
+        public void setSelectedPosition(int selectedPosition) {
+            int oldSelectedPosition = mSelectedPosition;
+            mSelectedPosition = selectedPosition;
+            notifyItemChanged(oldSelectedPosition);
+            notifyItemChanged(mSelectedPosition);
+        }
+
+        @SuppressWarnings("deprecation")
+        public void setItemViewBackground(View itemView, int position) {
+            itemView.setBackgroundColor(itemView.getContext().getResources()
+                    .getColor(position == mSelectedPosition ? R.color.selected_user : android.R.color.transparent));
+        }
+    }
+
     public class UserViewHolder extends RecyclerView.ViewHolder implements UserView {
 
         private UserPresenter mUserPresenter;
@@ -74,12 +98,19 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         public UserViewHolder(View itemView) {
             super(itemView);
             mItemView = itemView;
-            mItemView.setOnClickListener(v -> mUserListPresenter.onUserClicked(mUserPresenter.getUser()));
+            mItemView.setOnClickListener(v -> {
+                if (mCallbacks != null) {
+                    mCallbacks.onItemClicked(getLayoutPosition());
+                }
+            });
             mPhotoImageView = (ImageView) itemView.findViewById(R.id.photo_image_view);
             mUsernameTextView = (TextView) itemView.findViewById(R.id.user_name_text_view);
         }
 
         public void bindPresenter(UserPresenter userPresenter) {
+            if (mUserPresenter != null) {
+                unbindPresenter();
+            }
             mUserPresenter = userPresenter;
             mUserPresenter.bindView(UserViewHolder.this);
             mUserPresenter.onViewReady();
@@ -89,12 +120,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
             mUserPresenter.onViewNotReady();
             mUserPresenter.unbindView();
             mUserPresenter = null;
-        }
-
-        @Override
-        public void showSelected(boolean selected) {
-            mItemView.setBackgroundColor(mItemView.getContext().getResources()
-                    .getColor(selected ? R.color.colorAccent : android.R.color.transparent));
         }
 
         @Override

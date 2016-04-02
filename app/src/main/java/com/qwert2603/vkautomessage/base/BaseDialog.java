@@ -18,7 +18,7 @@ public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment
     protected abstract P createPresenter();
 
     @NonNull
-    protected P getPresenter() {
+    protected final P getPresenter() {
         return mPresenter;
     }
 

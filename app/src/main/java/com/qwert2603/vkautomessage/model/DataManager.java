@@ -140,10 +140,6 @@ public final class DataManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public void justRemoveRecord(int recordId) {
-        removeRecord(recordId).subscribe(aLong -> {}, LogUtils::e);
-    }
-
     public Observable<Integer> updateRecord(Record record) {
         putRecordToSendMessageService(record);
         return mDatabaseHelper

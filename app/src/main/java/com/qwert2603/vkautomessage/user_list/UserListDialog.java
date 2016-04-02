@@ -91,6 +91,14 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     }
 
     @Override
+    public void setSelectedItemPosition(int position) {
+        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.setSelectedItemPosition(position);
+        }
+    }
+
+    @Override
     public void showLoading() {
         setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
@@ -112,7 +120,10 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
         if (adapter != null && adapter.isShowingList(list)) {
             adapter.notifyDataSetChanged();
         } else {
-            mRecyclerView.setAdapter(new UserListAdapter(list, getPresenter()));
+            adapter = new UserListAdapter(list);
+            adapter.setCallbacks(position -> getPresenter().onUserAtPositionClicked(position));
+            mRecyclerView.setAdapter(adapter);
+
         }
     }
 

@@ -15,7 +15,8 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
 
     private Subscription mSubscription;
     private boolean mIsLoading;
-    private int mSelectedUserId;
+    private int mSelectedUserId = 0;
+    private int mSelectedUserPosition = -1;
 
     public UserListPresenter(int selectedUserId) {
         loadFriendsList();
@@ -46,6 +47,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                 view.showEmpty();
             } else {
                 view.showList(userList);
+                view.setSelectedItemPosition(mSelectedUserPosition);
             }
         }
     }
@@ -55,10 +57,12 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         updateView();
     }
 
-    public void onUserClicked(VKApiUserFull user) {
+    public void onUserAtPositionClicked(int position) {
+        VKApiUserFull user = getModel().get(position);
         if (user.can_write_private_message) {
             mSelectedUserId = user.id;
-            updateView();
+            mSelectedUserPosition = position;
+            getView().setSelectedItemPosition(mSelectedUserPosition);
         } else {
             getView().showCantWrite();
         }
@@ -66,10 +70,6 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
 
     public void onSubmitClicked() {
         getView().submitDode(mSelectedUserId);
-    }
-
-    public int getSelectedUserId() {
-        return mSelectedUserId;
     }
 
     public void loadFriendsList() {
@@ -80,9 +80,10 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         mSubscription = DataManager.getInstance()
                 .getAllVkFriends()
                 .subscribe(
-                        model -> {
+                        userList -> {
                             mIsLoading = false;
-                            UserListPresenter.this.setModel(model);
+                            mSelectedUserPosition = findPositionOfUser(userList, mSelectedUserId);
+                            UserListPresenter.this.setModel(userList);
                         },
                         throwable -> {
                             mIsLoading = false;
@@ -95,6 +96,15 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                             LogUtils.e(throwable);
                         }
                 );
+    }
+
+    private int findPositionOfUser(List<VKApiUserFull> userList, int userId) {
+        for (int i = 0, size = userList.size(); i < size; i++) {
+            if (userList.get(i).id == userId) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

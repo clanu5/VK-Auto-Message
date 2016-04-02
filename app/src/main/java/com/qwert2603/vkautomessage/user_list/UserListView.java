@@ -7,4 +7,5 @@ public interface UserListView extends ListView<VKApiUserFull> {
     void setRefreshingConfig(boolean enable, boolean refreshing);
     void submitDode(int userId);
     void showCantWrite();
+    void setSelectedItemPosition(int position);
 }

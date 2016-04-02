@@ -10,7 +10,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     protected abstract P createPresenter();
 
-    protected P getPresenter() {
+    protected final P getPresenter() {
         return mPresenter;
     }
 
