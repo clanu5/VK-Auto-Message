@@ -36,7 +36,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         return new RecordPresenter(model);
     }
 
-    public class RecordViewHolder extends BaseRecyclerViewAdapter.RecyclerViewHolder implements RecordView {
+    public class RecordViewHolder extends RecordListAdapter.RecyclerViewHolder implements RecordView {
 
         private static final int MESSAGE_LENGTH_LIMIT = 52;
 
@@ -53,8 +53,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
             mEnableCheckBox = (CheckBox) itemView.findViewById(R.id.enable_check_box);
             mMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view);
             mTimeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
-            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                    ((RecordPresenter) getPresenter()).onEnableClicked(isChecked));
+            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> getPresenter().onEnableClicked(isChecked));
         }
 
         @Override
