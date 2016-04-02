@@ -3,8 +3,6 @@ package com.qwert2603.vkautomessage.base;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.qwert2603.vkautomessage.R;
-
 import java.util.List;
 
 public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdapter.RecyclerViewHolder, P extends BasePresenter>
@@ -79,10 +77,8 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
             notifyItemChanged(mSelectedPosition);
         }
 
-        @SuppressWarnings("deprecation")
         public void setItemViewBackground(View itemView, int position) {
-            itemView.setBackgroundColor(itemView.getContext().getResources()
-                    .getColor(position == mSelectedPosition ? R.color.selected_user : android.R.color.transparent));
+            itemView.setSelected(position == mSelectedPosition);
         }
     }
 
