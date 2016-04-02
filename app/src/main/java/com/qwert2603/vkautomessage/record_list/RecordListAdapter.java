@@ -36,7 +36,9 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         return new RecordPresenter(model);
     }
 
-    public class RecordViewHolder extends RecordListAdapter.RecyclerViewHolder implements RecordView {
+    public class RecordViewHolder
+            extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter>.RecyclerViewHolder
+            implements RecordView {
 
         private static final int MESSAGE_LENGTH_LIMIT = 52;
 
