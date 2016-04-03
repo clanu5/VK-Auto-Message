@@ -9,4 +9,5 @@ public interface NavigationView extends BaseView {
     void showLogOut();
     void showUserName(String userName);
     void showUserPhoto(Bitmap photo);
+    void showLoading();
 }
