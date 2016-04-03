@@ -37,8 +37,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
                             LogUtils::e
                     );
         } else {
-            String loading = "Loading..";
-            view.showUserName(loading);
+            view.showLoading();
         }
     }
 
@@ -66,9 +65,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
         mSubscription = DataManager.getInstance()
                 .getVkUserMyself()
                 .subscribe(
-                        user -> {
-                            NavigationPresenter.this.setModel(user);
-                        },
+                        user -> NavigationPresenter.this.setModel(user),
                         throwable -> {
                             if (mSubscription != null) {
                                 mSubscription.unsubscribe();

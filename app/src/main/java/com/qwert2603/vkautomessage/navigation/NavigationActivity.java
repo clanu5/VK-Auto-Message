@@ -40,26 +40,30 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         android.support.design.widget.NavigationView navigationView = (android.support.design.widget.NavigationView) findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            mDrawerLayout.closeDrawers();
-            switch (item.getItemId()) {
-                /*case R.id.settings:
-                // todo добавить этот пункт меню
-                    mNavigationPresenter.onSettingsClicked();
-                    return true;*/
-                case R.id.log_out:
-                    mNavigationPresenter.onLogOutClicked();
-                    return true;
-            }
-            return false;
-        });
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(item -> {
+                mDrawerLayout.closeDrawers();
+                switch (item.getItemId()) {
+                    /*case R.id.settings:
+                    // todo добавить этот пункт меню
+                        mNavigationPresenter.onSettingsClicked();
+                        return true;*/
+                    case R.id.log_out:
+                        mNavigationPresenter.onLogOutClicked();
+                        return true;
+                }
+                return false;
+            });
+        }
 
         mIsNavigationButtonVisible = isNavigationButtonVisible();
 
         if (mIsNavigationButtonVisible) {
             mActionBarDrawerToggle = new ActionBarDrawerToggle(NavigationActivity.this, mDrawerLayout, R.string.open, R.string.close);
             mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
-            toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+            if (toolbar != null) {
+                toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+            }
             mActionBarDrawerToggle.setDrawerIndicatorEnabled(false);
             mActionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         }
@@ -111,11 +115,17 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     @Override
     public void showUserName(String userName) {
-        //mUserNameTextView.setText(userName);
+        mUserNameTextView.setText(userName);
     }
 
     @Override
     public void showUserPhoto(Bitmap photo) {
-        //mUserPhotoImageView.setImageBitmap(photo);
+        mUserPhotoImageView.setImageBitmap(photo);
+    }
+
+    @Override
+    public void showLoading() {
+        mUserNameTextView.setText(R.string.loading);
+        mUserPhotoImageView.setImageBitmap(null);
     }
 }
