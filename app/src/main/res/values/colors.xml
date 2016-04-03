@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
@@ -10,6 +11,6 @@
     <color name="time">#AF6091</color>
     <color name="error">#E00</color>
     <color name="selected_user">#f57</color>
-    <color name="nav_header_background">#ccd</color>
+    <color name="nav_header_background">#e8e8e8</color>
 
 </resources>

@@ -193,14 +193,14 @@ public final class DataManager {
         VKApiUserFull user = new VKApiUserFull();
         user.first_name = mPreferenceHelper.getUserFirstName();
         user.last_name = mPreferenceHelper.getUserLastName();
-        user.photo_100 = mPreferenceHelper.getUserPhoto();
+        user.photo_200 = mPreferenceHelper.getUserPhoto();
         return Observable.just(user)
-                .flatMap(user1 -> "".equals(user1.photo_100) ? mVkApiHelper.getMyself() : Observable.just(user1))
+                .flatMap(user1 -> "".equals(user1.photo_200) ? mVkApiHelper.getMyself() : Observable.just(user1))
                 .doOnNext(user2 -> {
-                    if ("".equals(user.photo_100)) {
+                    if ("".equals(user.photo_200)) {
                         mPreferenceHelper.setUserFirstName(user2.first_name);
                         mPreferenceHelper.setUserLastName(user2.last_name);
-                        mPreferenceHelper.setUserPhoto(user2.photo_100);
+                        mPreferenceHelper.setUserPhoto(user2.photo_200);
                     }
                 })
                 .subscribeOn(Schedulers.io())

@@ -105,7 +105,7 @@ public final class VkApiHelper {
     }
 
     public Observable<VKApiUserFull> getMyself() {
-        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_100");
+        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_200");
         return getUsers(vkParameters);
     }
 

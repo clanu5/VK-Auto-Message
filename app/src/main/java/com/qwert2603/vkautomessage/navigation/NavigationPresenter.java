@@ -26,7 +26,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
             view.showUserName(getUserName(user));
             view.showUserPhoto(null);
             DataManager.getInstance()
-                    .getPhotoByUrl(user.photo_100)
+                    .getPhotoByUrl(user.photo_200)
                     .subscribe(
                             photo -> {
                                 NavigationView navigationView = getView();
