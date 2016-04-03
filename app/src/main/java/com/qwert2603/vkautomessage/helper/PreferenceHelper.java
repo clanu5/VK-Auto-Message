@@ -6,14 +6,16 @@ import android.preference.PreferenceManager;
 
 public final class PreferenceHelper {
 
-    private static final String userNameKey = "userName";
+    private static final String userFirstNameKey = "userFirstName";
+    private static final String userLastNameKey = "userLastName";
     private static final String userPhotoKey = "userPhoto";
     private static final String sendMissedMessagesKey = "sendMissedMessages";
     private static final String lastNotificationIdKey = "lastNotificationId";
 
     private SharedPreferences mSharedPreferences;
 
-    private String mUserName;
+    private String mUserFirstName;
+    private String mUserLastName;
     private String mUserPhoto;
 
     /**
@@ -28,16 +30,28 @@ public final class PreferenceHelper {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public String getUserName() {
-        if (mUserName == null) {
-            mUserName = mSharedPreferences.getString(userNameKey, "");
+    public String getUserFirstName() {
+        if (mUserFirstName == null) {
+            mUserFirstName = mSharedPreferences.getString(userFirstNameKey, "");
         }
-        return mUserName;
+        return mUserFirstName;
     }
 
-    public void setUserName(String userName) {
-        mUserName = userName;
-        mSharedPreferences.edit().putString(userNameKey, mUserName).apply();
+    public void setUserFirstName(String userFirstName) {
+        mUserFirstName = userFirstName;
+        mSharedPreferences.edit().putString(userFirstNameKey, mUserFirstName).apply();
+    }
+
+    public String getUserLastName() {
+        if (mUserLastName == null) {
+            mUserLastName = mSharedPreferences.getString(userLastNameKey, "");
+        }
+        return mUserLastName;
+    }
+
+    public void setUserLastName(String userLastName) {
+        mUserLastName = userLastName;
+        mSharedPreferences.edit().putString(userLastNameKey, mUserLastName).apply();
     }
 
     public String getUserPhoto() {

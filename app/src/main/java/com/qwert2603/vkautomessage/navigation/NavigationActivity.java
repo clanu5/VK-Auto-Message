@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.navigation;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +31,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     protected abstract boolean isNavigationButtonVisible();
 
+    @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +45,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         android.support.design.widget.NavigationView navigationView = (android.support.design.widget.NavigationView) findViewById(R.id.navigation_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
-                mDrawerLayout.closeDrawers();
+                mDrawerLayout.closeDrawer(GravityCompat.START);
                 switch (item.getItemId()) {
                     /*case R.id.settings:
                     // todo добавить этот пункт меню
@@ -68,9 +71,13 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
             mActionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         }
 
-        // TODO: 26.03.2016 показывать в них фото и имя пользователя
-        mUserPhotoImageView = (ImageView) findViewById(R.id.user_photo_image_view);
-        mUserNameTextView = (TextView) findViewById(R.id.user_name_text_view);
+        View headerNavigationView = getLayoutInflater().inflate(R.layout.header_navigation, null);
+        if (navigationView != null) {
+            navigationView.addHeaderView(headerNavigationView);
+        }
+
+        mUserPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
+        mUserNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
 
         mNavigationPresenter = new NavigationPresenter();
         mNavigationPresenter.bindView(this);
@@ -98,6 +105,15 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mNavigationPresenter.onViewNotReady();
         mNavigationPresenter.unbindView();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

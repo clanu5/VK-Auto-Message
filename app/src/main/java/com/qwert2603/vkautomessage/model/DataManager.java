@@ -10,7 +10,6 @@ import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.HashMap;
@@ -192,13 +191,15 @@ public final class DataManager {
 
     public Observable<VKApiUserFull> getVkUserMyself() {
         VKApiUserFull user = new VKApiUserFull();
-        user.first_name = mPreferenceHelper.getUserName();
+        user.first_name = mPreferenceHelper.getUserFirstName();
+        user.last_name = mPreferenceHelper.getUserLastName();
         user.photo_100 = mPreferenceHelper.getUserPhoto();
         return Observable.just(user)
                 .flatMap(user1 -> "".equals(user1.photo_100) ? mVkApiHelper.getMyself() : Observable.just(user1))
                 .doOnNext(user2 -> {
                     if ("".equals(user.photo_100)) {
-                        mPreferenceHelper.setUserName(StringUtils.getUserName(user2));
+                        mPreferenceHelper.setUserFirstName(user2.first_name);
+                        mPreferenceHelper.setUserLastName(user2.last_name);
                         mPreferenceHelper.setUserPhoto(user2.photo_100);
                     }
                 })

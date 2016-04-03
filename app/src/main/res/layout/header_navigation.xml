@@ -3,22 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/nav_header_background">
 
     <ImageView
         android:id="@+id/user_photo_image_view"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_margin="12dp"
         android:src="@android:drawable/ic_delete"/>
 
     <TextView
         android:id="@+id/user_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="12dp"
         android:layout_below="@id/user_photo_image_view"
         android:singleLine="true"
-        android:text="Alex Zhdanov"
+        android:text="User User"
         android:textColor="@color/user_name"
         android:textSize="20sp"/>
 
