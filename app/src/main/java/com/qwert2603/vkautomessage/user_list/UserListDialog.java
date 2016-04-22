@@ -10,8 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
@@ -38,6 +41,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
+    private static final int POSITION_NOTHING_FOUND_TEXT_VIEW = 4;
 
     private SwipeRefreshLayout mRefreshLayout;
     private ViewAnimator mViewAnimator;
@@ -52,11 +56,10 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // TODO: 31.03.2016 добавить поиск по списку друзей.
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
         mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
 
-        mRefreshLayout = (SwipeRefreshLayout) mViewAnimator.getChildAt(POSITION_REFRESH_LAYOUT);
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(getPresenter()::onReload);
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
@@ -64,6 +67,23 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
+
+        EditText searchEditText = (EditText) view.findViewById(R.id.search_edit_text);
+        searchEditText.setText(getPresenter().getCurrentQuery());
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                getPresenter().onSearchQueryChanged(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
@@ -99,6 +119,25 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     }
 
     @Override
+    public void showNothingFound() {
+        setViewAnimatorDisplayedChild(POSITION_NOTHING_FOUND_TEXT_VIEW);
+    }
+
+    @Override
+    public void showListWithSelectedItem(List<VKApiUserFull> list, int selectedPosition) {
+        setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
+        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null && adapter.isShowingList(list)) {
+            adapter.notifyDataSetChanged();
+            adapter.setSelectedItemPosition(selectedPosition);
+        } else {
+            adapter = new UserListAdapter(list, selectedPosition);
+            adapter.setClickCallbacks(getPresenter()::onUserAtPositionClicked);
+            mRecyclerView.setAdapter(adapter);
+        }
+    }
+
+    @Override
     public void showLoading() {
         setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
@@ -115,16 +154,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
 
     @Override
     public void showList(List<VKApiUserFull> list) {
-        setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
-        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null && adapter.isShowingList(list)) {
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter = new UserListAdapter(list);
-            adapter.setClickCallbacks(position -> getPresenter().onUserAtPositionClicked(position));
-            mRecyclerView.setAdapter(adapter);
-
-        }
+        showListWithSelectedItem(list, -1);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

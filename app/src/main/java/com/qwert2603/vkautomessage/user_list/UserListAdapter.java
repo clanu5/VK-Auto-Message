@@ -17,8 +17,9 @@ import java.util.List;
 
 public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, UserListAdapter.UserViewHolder, UserPresenter> {
 
-    public UserListAdapter(List<VKApiUserFull> modelList) {
+    public UserListAdapter(List<VKApiUserFull> modelList, int selectedPosition) {
         super(modelList);
+        setSelectedItemPosition(selectedPosition);
     }
 
     @Override

@@ -1,49 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewAnimator
-    android:id="@+id/view_animator"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out">
+    android:orientation="vertical">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refresh_layout"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <EditText
+        android:id="@+id/search_edit_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="@string/search_hint"
+        android:singleLine="true"
+        android:textSize="18sp"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+    <ViewAnimator
+        android:id="@+id/view_animator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"/>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            android:gravity="center"
+            android:text="@string/loading"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/loading_error_empty_text_size"/>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/text_error"
+            android:textColor="@color/error"
+            android:textSize="@dimen/loading_error_empty_text_size"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/loading"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/loading_error_empty_text_size"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/no_friends"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/loading_error_empty_text_size"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/text_error"
-        android:textColor="@color/error"
-        android:textSize="@dimen/loading_error_empty_text_size"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/nothing_found"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/loading_error_empty_text_size"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/no_friends"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="@dimen/loading_error_empty_text_size"/>
+    </ViewAnimator>
 
-</ViewAnimator>
-
+</LinearLayout>

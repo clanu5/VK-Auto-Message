@@ -64,7 +64,7 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
     }
 
     public boolean isShowingList(List<M> list) {
-        return mModelList.equals(list);
+        return mModelList == list;
     }
 
     public class RecyclerViewSelector {
@@ -73,8 +73,16 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
         public void setSelectedPosition(int selectedPosition) {
             int oldSelectedPosition = mSelectedPosition;
             mSelectedPosition = selectedPosition;
-            notifyItemChanged(oldSelectedPosition);
-            notifyItemChanged(mSelectedPosition);
+            if (isValidPosition(oldSelectedPosition)) {
+                notifyItemChanged(oldSelectedPosition);
+            }
+            if (isValidPosition(mSelectedPosition)) {
+                notifyItemChanged(mSelectedPosition);
+            }
+        }
+
+        private boolean isValidPosition(int position) {
+            return position >= 0 && position < mModelList.size();
         }
 
         public void setItemViewBackground(View itemView, int position) {

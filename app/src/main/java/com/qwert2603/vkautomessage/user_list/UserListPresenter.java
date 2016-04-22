@@ -7,6 +7,7 @@ import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscription;
@@ -18,9 +19,37 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     private int mSelectedUserId = 0;
     private int mSelectedUserPosition = -1;
 
+    private String mQuery;
+    private List<VKApiUserFull> mShowingUserList;
+
     public UserListPresenter(int selectedUserId) {
         loadFriendsList();
         mSelectedUserId = selectedUserId;
+    }
+
+    @Override
+    protected void onUpdateView(@NonNull UserListView view) {
+        if (mShowingUserList == null) {
+            view.setRefreshingConfig(false, false);
+            if (mSubscription == null) {
+                view.showError();
+            } else {
+                view.showLoading();
+            }
+        } else {
+            view.setRefreshingConfig(true, mIsLoading);
+            if (mShowingUserList.isEmpty()) {
+                if (mQuery == null || mQuery.isEmpty()) {
+                    view.showEmpty();
+                } else {
+                    view.showNothingFound();
+                }
+            } else {
+                //view.showList(mShowingUserList);
+                //view.setSelectedItemPosition(mSelectedUserPosition);
+                view.showListWithSelectedItem(mShowingUserList, mSelectedUserPosition);
+            }
+        }
     }
 
     @Override
@@ -32,24 +61,14 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     }
 
     @Override
-    protected void onUpdateView(@NonNull UserListView view) {
-        List<VKApiUserFull> userList = getModel();
-        if (userList == null) {
-            view.setRefreshingConfig(false, false);
-            if (mSubscription == null) {
-                view.showError();
-            } else {
-                view.showLoading();
-            }
-        } else {
-            view.setRefreshingConfig(true, mIsLoading);
-            if (userList.isEmpty()) {
-                view.showEmpty();
-            } else {
-                view.showList(userList);
-                view.setSelectedItemPosition(mSelectedUserPosition);
-            }
-        }
+    protected void setModel(List<VKApiUserFull> userList) {
+        super.setModel(userList);
+        doSearch();
+        updateView();
+    }
+
+    public String getCurrentQuery() {
+        return mQuery;
     }
 
     public void onReload() {
@@ -58,7 +77,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     }
 
     public void onUserAtPositionClicked(int position) {
-        VKApiUserFull user = getModel().get(position);
+        VKApiUserFull user = mShowingUserList.get(position);
         if (user.can_write_private_message) {
             mSelectedUserId = user.id;
             mSelectedUserPosition = position;
@@ -72,7 +91,31 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
         getView().submitDode(mSelectedUserId);
     }
 
-    public void loadFriendsList() {
+    public void onSearchQueryChanged(String query) {
+        mQuery = query.toLowerCase();
+        doSearch();
+        updateView();
+    }
+
+    private void doSearch() {
+        List<VKApiUserFull> userList = getModel();
+        mShowingUserList = null;
+        if (userList != null) {
+            if (mQuery == null || mQuery.isEmpty()) {
+                mShowingUserList = userList;
+            } else {
+                mShowingUserList = new ArrayList<>();
+                for (VKApiUserFull user : userList) {
+                    if (user.first_name.toLowerCase().startsWith(mQuery) || user.last_name.toLowerCase().startsWith(mQuery)) {
+                        mShowingUserList.add(user);
+                    }
+                }
+            }
+            mSelectedUserPosition = findPositionOfUser(mShowingUserList, mSelectedUserId);
+        }
+    }
+
+    private void loadFriendsList() {
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
@@ -82,7 +125,6 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                 .subscribe(
                         userList -> {
                             mIsLoading = false;
-                            mSelectedUserPosition = findPositionOfUser(userList, mSelectedUserId);
                             UserListPresenter.this.setModel(userList);
                         },
                         throwable -> {
@@ -98,7 +140,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                 );
     }
 
-    private int findPositionOfUser(List<VKApiUserFull> userList, int userId) {
+    private static int findPositionOfUser(List<VKApiUserFull> userList, int userId) {
         for (int i = 0, size = userList.size(); i < size; i++) {
             if (userList.get(i).id == userId) {
                 return i;

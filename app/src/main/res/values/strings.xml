@@ -19,4 +19,6 @@
     <string name="notification_ticker_success">Message sent successfully</string>
     <string name="notification_ticker_fail">Message was NOT sent!</string>
     <string name="delete_record_dialog_title">Delete record?</string>
+    <string name="search_hint">search friend</string>
+    <string name="nothing_found">Nothing found</string>
 </resources>
