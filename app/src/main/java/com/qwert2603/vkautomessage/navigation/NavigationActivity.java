@@ -3,7 +3,6 @@ package com.qwert2603.vkautomessage.navigation;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -140,8 +139,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     }
 
     @Override
-    public void showUserPhoto(Bitmap photo) {
-        mUserPhotoImageView.setImageBitmap(photo);
+    public ImageView getUserPhotoImageView() {
+        return mUserPhotoImageView;
     }
 
     @Override

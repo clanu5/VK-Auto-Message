@@ -1,11 +1,8 @@
 package com.qwert2603.vkautomessage.model;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.LruCache;
 
 import com.qwert2603.vkautomessage.helper.DatabaseHelper;
-import com.qwert2603.vkautomessage.helper.PhotoHelper;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
@@ -26,7 +23,6 @@ public final class DataManager {
     private DataManager(Context context) {
         mDatabaseHelper = new DatabaseHelper(context);
         mVkApiHelper = new VkApiHelper();
-        mPhotoHelper = new PhotoHelper();
         mPreferenceHelper = new PreferenceHelper(context);
         mSendMessageHelper = new SendMessageHelper(context);
         // TODO: 25.03.2016 обновлять таблицу User (mDatabaseHelper). Так как аватарки и имена пользователей могли измениться.
@@ -44,7 +40,6 @@ public final class DataManager {
 
     private DatabaseHelper mDatabaseHelper;
     private VkApiHelper mVkApiHelper;
-    private PhotoHelper mPhotoHelper;
     private PreferenceHelper mPreferenceHelper;
     private SendMessageHelper mSendMessageHelper;
 
@@ -233,26 +228,11 @@ public final class DataManager {
                         mRecordList = null;
                     }
                     mVkUserMap.clear();
-                    mPhotoCache.evictAll();
                     mVkApiHelper.logOut();
                     mPreferenceHelper.clear();
                     return mDatabaseHelper.deleteAllRecordsAndUsers();
                 })
                 .subscribe(aVoid -> {}, LogUtils::e);
-    }
-
-    private LruCache<String, Bitmap> mPhotoCache = new LruCache<>(256);
-
-    public Observable<Bitmap> getPhotoByUrl(String url) {
-        return Observable.just(mPhotoCache.get(url))
-                .flatMap(bitmap -> bitmap != null ? Observable.just(bitmap) : mPhotoHelper.downloadBitmap(url))
-                .doOnNext(bitmap1 -> {
-                    if (mPhotoCache.get(url) == null) {
-                        mPhotoCache.put(url, bitmap1);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 
     /**

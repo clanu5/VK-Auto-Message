@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -106,8 +105,8 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
-    public void showPhoto(Bitmap photo) {
-        mPhotoImageView.setImageBitmap(photo);
+    public ImageView getPhotoImageView() {
+        return mPhotoImageView;
     }
 
     @Override

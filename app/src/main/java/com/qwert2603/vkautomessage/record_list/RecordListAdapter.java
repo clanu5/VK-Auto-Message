@@ -1,6 +1,5 @@
 package com.qwert2603.vkautomessage.record_list;
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,8 +66,8 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void showPhoto(Bitmap photo) {
-            mPhotoImageView.setImageBitmap(photo);
+        public ImageView getPhotoImageView() {
+            return mPhotoImageView;
         }
 
         @Override

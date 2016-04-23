@@ -1,6 +1,5 @@
 package com.qwert2603.vkautomessage.user_list;
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,8 +56,8 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, User
         }
 
         @Override
-        public void showPhoto(Bitmap bitmap) {
-            mPhotoImageView.setImageBitmap(bitmap);
+        public ImageView getPhotoImageView() {
+            return mPhotoImageView;
         }
     }
 }

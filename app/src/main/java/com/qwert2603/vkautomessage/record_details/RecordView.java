@@ -1,11 +1,11 @@
 package com.qwert2603.vkautomessage.record_details;
 
-import android.graphics.Bitmap;
+import android.widget.ImageView;
 
 import com.qwert2603.vkautomessage.base.BaseView;
 
 public interface RecordView extends BaseView {
-    void showPhoto(Bitmap photo);
+    ImageView getPhotoImageView();
     void showUserName(String userName);
     void showMessage(String message);
     void showEnabled(boolean enabled);

@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.record_details;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -53,26 +54,11 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
             view.showLoading();
             return;
         }
-        DataManager.getInstance()
-                .getPhotoByUrl(record.getUser().photo_100)
-                .subscribe(
-                        photo -> {
-                            RecordView recordView = getView();
-                            if (recordView != null) {
-                                recordView.showPhoto(photo);
-                            }
-                        },
-                        LogUtils::e
-                );
-        view.showPhoto(null);
+        ImageLoader.getInstance().displayImage(record.getUser().photo_100, view.getPhotoImageView());
         view.showUserName(getUserName(record.getUser()));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
         view.showTime(getTimeString());
-    }
-
-    public int getModelId() {
-        return getModel() == null ? -1 : getModel().getId();
     }
 
     public void onUserChosen(int userId) {

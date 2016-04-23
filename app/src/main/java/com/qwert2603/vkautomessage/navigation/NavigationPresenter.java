@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.navigation;
 
 import android.support.annotation.NonNull;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -24,18 +25,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
         VKApiUser user = getModel();
         if (user != null) {
             view.showUserName(getUserName(user));
-            view.showUserPhoto(null);
-            DataManager.getInstance()
-                    .getPhotoByUrl(user.photo_200)
-                    .subscribe(
-                            photo -> {
-                                NavigationView navigationView = getView();
-                                if (navigationView != null) {
-                                    navigationView.showUserPhoto(photo);
-                                }
-                            },
-                            LogUtils::e
-                    );
+            ImageLoader.getInstance().displayImage(user.photo_200, view.getUserPhotoImageView());
         } else {
             view.showLoading();
         }
