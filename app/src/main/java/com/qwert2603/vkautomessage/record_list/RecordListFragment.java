@@ -39,10 +39,10 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     private static final int REQUEST_DELETE_RECORD = 2;
 
     @Bind(R.id.view_animator)
-    private ViewAnimator mViewAnimator;
+    ViewAnimator mViewAnimator;
 
     @Bind(R.id.recycler_view)
-    private RecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
 
     @Bind(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;

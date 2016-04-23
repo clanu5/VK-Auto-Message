@@ -29,7 +29,6 @@ public class VkAutoMessageApplication extends Application {
         }
 
         File cacheDir = new File(VkAutoMessageApplication.this.getFilesDir(), "images");
-
         DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
