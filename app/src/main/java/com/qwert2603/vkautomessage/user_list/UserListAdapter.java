@@ -7,12 +7,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,13 +33,8 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, User
         return new UserViewHolder(view);
     }
 
-    @Override
-    protected UserPresenter createPresenter(VKApiUserFull user) {
-        return new UserPresenter(user);
-    }
-
     public class UserViewHolder
-            extends BaseRecyclerViewAdapter<?, ?, UserPresenter>.RecyclerViewHolder
+            extends BaseRecyclerViewAdapter<VKApiUserFull, ?, UserPresenter>.RecyclerViewHolder
             implements UserView {
 
         @Bind(R.id.photo_image_view)
@@ -45,9 +43,29 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, User
         @Bind(R.id.user_name_text_view)
         TextView mUsernameTextView;
 
+        @Inject
+        UserPresenter mUserPresenter;
+
         public UserViewHolder(View itemView) {
             super(itemView);
+            VkAutoMessageApplication.getAppComponent().inject(UserViewHolder.this);
             ButterKnife.bind(UserViewHolder.this, itemView);
+        }
+
+        @Override
+        protected UserPresenter getPresenter() {
+            return mUserPresenter;
+        }
+
+        @Override
+        protected void setModel(VKApiUserFull user) {
+            mUserPresenter.setUser(user);
+        }
+
+        @Override
+        public void unbindPresenter() {
+            mPhotoImageView.setImageBitmap(null);
+            super.unbindPresenter();
         }
 
         @Override

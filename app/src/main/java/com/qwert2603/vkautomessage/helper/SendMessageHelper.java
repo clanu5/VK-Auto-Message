@@ -11,17 +11,20 @@ import com.qwert2603.vkautomessage.service.SendMessageService;
 import java.util.Calendar;
 import java.util.Date;
 
-public final class SendMessageHelper {
+import javax.inject.Inject;
+
+public class SendMessageHelper {
 
     /**
      * Кол-во миллисекунд в сутках.
      */
     private static final int MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
-    private Context mContext;
+    @Inject
+    Context mContext;
 
-    public SendMessageHelper(Context context) {
-        mContext = context.getApplicationContext();
+    public SendMessageHelper() {
+        // TODO: 23.04.2016 inject
     }
 
     public void onRecordChanged(Record record) {

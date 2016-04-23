@@ -21,7 +21,7 @@ import java.util.List;
 
 import rx.Observable;
 
-public final class VkApiHelper {
+public class VkApiHelper {
 
     /**
      * Задержка перед следующим запросом.

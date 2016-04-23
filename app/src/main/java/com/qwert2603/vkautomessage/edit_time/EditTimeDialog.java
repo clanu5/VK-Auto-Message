@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
+
+import javax.inject.Inject;
 
 public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements EditTimeView {
 
@@ -22,17 +25,27 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
         return editTimeDialog;
     }
 
+    @Inject
+    EditTimePresenter mEditTimePresenter;
+
     @NonNull
     @Override
-    protected EditTimePresenter createPresenter() {
-        return new EditTimePresenter(getArguments().getLong(timeInMillisKey));
+    protected EditTimePresenter getPresenter() {
+        return mEditTimePresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        VkAutoMessageApplication.getAppComponent().inject(EditTimeDialog.this);
+        mEditTimePresenter.setTimeInMillis(getArguments().getLong(timeInMillisKey));
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new TimePickerDialog(getActivity(),
-                (view, hourOfDay, minute) -> getPresenter().onSubmitClicked(hourOfDay, minute),
-                getPresenter().getHours(), getPresenter().getMinutes(), true);
+                (view, hourOfDay, minute) -> mEditTimePresenter.onSubmitClicked(hourOfDay, minute),
+                mEditTimePresenter.getHours(), mEditTimePresenter.getMinutes(), true);
     }
 
     @Override

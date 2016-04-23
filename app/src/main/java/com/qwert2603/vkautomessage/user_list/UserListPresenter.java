@@ -22,8 +22,11 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     private String mQuery;
     private List<VKApiUserFull> mShowingUserList;
 
-    public UserListPresenter(int selectedUserId) {
+    public UserListPresenter() {
         loadFriendsList();
+    }
+
+    public void setSelectedUserId(int selectedUserId) {
         mSelectedUserId = selectedUserId;
     }
 
@@ -45,8 +48,6 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
                     view.showNothingFound();
                 }
             } else {
-                //view.showList(mShowingUserList);
-                //view.setSelectedItemPosition(mSelectedUserPosition);
                 view.showListWithSelectedItem(mShowingUserList, mSelectedUserPosition);
             }
         }

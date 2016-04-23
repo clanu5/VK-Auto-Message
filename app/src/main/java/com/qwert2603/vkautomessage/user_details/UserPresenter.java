@@ -10,7 +10,10 @@ import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
 public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {
 
-    public UserPresenter(VKApiUserFull user) {
+    public UserPresenter() {
+    }
+
+    public void setUser(VKApiUserFull user) {
         setModel(user);
     }
 

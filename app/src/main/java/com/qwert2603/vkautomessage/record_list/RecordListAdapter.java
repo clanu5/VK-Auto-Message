@@ -9,12 +9,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,13 +36,8 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         return new RecordViewHolder(view);
     }
 
-    @Override
-    protected RecordPresenter createPresenter(Record model) {
-        return new RecordPresenter(model);
-    }
-
     public class RecordViewHolder
-            extends BaseRecyclerViewAdapter<?, ?, RecordPresenter>.RecyclerViewHolder
+            extends BaseRecyclerViewAdapter<Record, ?, RecordPresenter>.RecyclerViewHolder
             implements RecordView {
 
         private static final int MESSAGE_LENGTH_LIMIT = 52;
@@ -59,10 +57,30 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         @Bind(R.id.time_text_view)
         TextView mTimeTextView;
 
+        @Inject
+        RecordPresenter mRecordPresenter;
+
         public RecordViewHolder(View itemView) {
             super(itemView);
+            VkAutoMessageApplication.getAppComponent().inject(RecordViewHolder.this);
             ButterKnife.bind(RecordViewHolder.this, itemView);
             mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> getPresenter().onEnableClicked(isChecked));
+        }
+
+        @Override
+        protected RecordPresenter getPresenter() {
+            return mRecordPresenter;
+        }
+
+        @Override
+        protected void setModel(Record record) {
+            mRecordPresenter.setRecord(record);
+        }
+
+        @Override
+        public void unbindPresenter() {
+            mPhotoImageView.setImageBitmap(null);
+            super.unbindPresenter();
         }
 
         @Override

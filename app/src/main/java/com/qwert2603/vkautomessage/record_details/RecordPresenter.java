@@ -20,7 +20,11 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     private Subscription mSubscription;
 
-    public RecordPresenter(int recordId) {
+    public RecordPresenter() {
+    }
+
+    public void setRecordId(int recordId) {
+        setModel(null);
         mSubscription = DataManager.getInstance()
                 .getRecordById(recordId)
                 .subscribe(
@@ -35,7 +39,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
                 );
     }
 
-    public RecordPresenter(Record record) {
+    public void setRecord(Record record) {
         setModel(record);
     }
 

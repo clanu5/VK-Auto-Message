@@ -12,7 +12,6 @@ import rx.Observable;
 public class BootCompletedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        DataManager.initWithContext(context);
         DataManager.getInstance()
                 .getAllRecords()
                 .flatMap(Observable::from)

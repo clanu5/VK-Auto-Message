@@ -19,10 +19,13 @@ import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -58,10 +61,20 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     @Bind(R.id.search_edit_text)
     EditText mSearchEditText;
 
+    @Inject
+    UserListPresenter mUserListPresenter;
+
     @NonNull
     @Override
-    protected UserListPresenter createPresenter() {
-        return new UserListPresenter(getArguments().getInt(selectedUserIdKey));
+    protected UserListPresenter getPresenter() {
+        return mUserListPresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        VkAutoMessageApplication.getAppComponent().inject(UserListDialog.this);
+        mUserListPresenter.setSelectedUserId(getArguments().getInt(selectedUserIdKey));
+        super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("InflateParams")
@@ -71,14 +84,14 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
 
         ButterKnife.bind(UserListDialog.this, view);
 
-        mRefreshLayout.setOnRefreshListener(getPresenter()::onReload);
+        mRefreshLayout.setOnRefreshListener(mUserListPresenter::onReload);
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
 
-        mSearchEditText.setText(getPresenter().getCurrentQuery());
+        mSearchEditText.setText(mUserListPresenter.getCurrentQuery());
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -86,7 +99,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                getPresenter().onSearchQueryChanged(s.toString());
+                mUserListPresenter.onSearchQueryChanged(s.toString());
             }
 
             @Override
@@ -97,7 +110,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.submit), (dialog, which) -> getPresenter().onSubmitClicked())
+                .setPositiveButton(getString(R.string.submit), (dialog, which) -> mUserListPresenter.onSubmitClicked())
                 .create();
     }
 
@@ -141,7 +154,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
             adapter.setSelectedItemPosition(selectedPosition);
         } else {
             adapter = new UserListAdapter(list, selectedPosition);
-            adapter.setClickCallbacks(getPresenter()::onUserAtPositionClicked);
+            adapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
             mRecyclerView.setAdapter(adapter);
         }
     }

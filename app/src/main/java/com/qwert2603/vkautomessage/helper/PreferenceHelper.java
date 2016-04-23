@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-public final class PreferenceHelper {
+import javax.inject.Inject;
+
+public class PreferenceHelper {
 
     private static final String userFirstNameKey = "userFirstName";
     private static final String userLastNameKey = "userLastName";
@@ -13,6 +15,9 @@ public final class PreferenceHelper {
     private static final String lastNotificationIdKey = "lastNotificationId";
 
     private SharedPreferences mSharedPreferences;
+
+    @Inject
+    Context mAppContext;
 
     private String mUserFirstName;
     private String mUserLastName;
@@ -26,8 +31,8 @@ public final class PreferenceHelper {
 
     private Integer mLastNotificationId;
 
-    public PreferenceHelper(Context context) {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    public PreferenceHelper() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mAppContext);
     }
 
     public String getUserFirstName() {

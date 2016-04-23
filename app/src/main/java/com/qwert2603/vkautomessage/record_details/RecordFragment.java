@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.record_details;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -14,10 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -62,9 +66,20 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     @Bind(R.id.time_card)
     CardView timeCardView;
 
+    @Inject
+    RecordPresenter mRecordPresenter;
+
+    @NonNull
     @Override
-    protected RecordPresenter createPresenter() {
-        return new RecordPresenter(getArguments().getInt(recordIdKey));
+    protected RecordPresenter getPresenter() {
+        return mRecordPresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        VkAutoMessageApplication.getAppComponent().inject(RecordFragment.this);
+        mRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -74,10 +89,10 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
 
         ButterKnife.bind(RecordFragment.this, view);
 
-        userCardView.setOnClickListener(v -> getPresenter().onChooseUserClicked());
-        mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> getPresenter().onEnableClicked(isChecked));
-        messageCardView.setOnClickListener(v -> getPresenter().onEditMessageClicked());
-        timeCardView.setOnClickListener(v -> getPresenter().onChooseTimeClicked());
+        userCardView.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
+        mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
+        messageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
+        timeCardView.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
 
         return view;
     }
@@ -91,15 +106,15 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         switch (requestCode) {
             case REQUEST_CHOOSE_USER:
                 int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
-                getPresenter().onUserChosen(userId);
+                mRecordPresenter.onUserChosen(userId);
                 break;
             case REQUEST_EDIT_MESSAGE:
                 String message = data.getStringExtra(EditMessageDialog.EXTRA_MESSAGE);
-                getPresenter().onMessageEdited(message);
+                mRecordPresenter.onMessageEdited(message);
                 break;
             case REQUEST_EDIT_TIME:
                 long currentTimeInMillis = data.getLongExtra(EditTimeDialog.EXTRA_TIME_IN_MILLIS, 0);
-                getPresenter().onTimeEdited(currentTimeInMillis);
+                mRecordPresenter.onTimeEdited(currentTimeInMillis);
                 break;
         }
     }

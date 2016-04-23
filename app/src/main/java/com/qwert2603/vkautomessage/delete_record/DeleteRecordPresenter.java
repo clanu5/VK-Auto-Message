@@ -18,7 +18,7 @@ public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordVie
 
     private Subscription mSubscription;
 
-    public DeleteRecordPresenter(int recordId) {
+    public void setRecordId(int recordId) {
         mSubscription = DataManager.getInstance()
                 .getRecordById(recordId)
                 .subscribe(

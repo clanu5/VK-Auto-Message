@@ -5,41 +5,30 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
-import java.util.HashMap;
-import java.util.Random;
-
 public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment implements BaseView {
 
-    private static final String presenterCodeKey = "presenterCodeKey";
+    //private static final String presenterCodeKey = "presenterCodeKey";
 
-    private P mPresenter;
-
+    /**
+     * Получить презентер, организующий работу этого диалога.
+     *
+     * @return презентер для этого диалога.
+     */
     @NonNull
-    protected abstract P createPresenter();
-
-    @NonNull
-    protected final P getPresenter() {
-        return mPresenter;
-    }
+    protected abstract P getPresenter();
 
     @SuppressWarnings("unchecked")
     @CallSuper
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            mPresenter = (P) loadPresenter(savedInstanceState.getInt(presenterCodeKey));
-        }
-        if (mPresenter == null) {
-            mPresenter = createPresenter();
-        }
-        mPresenter.bindView(this);
+        getPresenter().bindView(this);
     }
 
     @CallSuper
     @Override
     public void onDestroy() {
-        mPresenter.unbindView();
+        getPresenter().unbindView();
         super.onDestroy();
     }
 
@@ -47,53 +36,53 @@ public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.onViewReady();
+        getPresenter().onViewReady();
     }
 
     @CallSuper
     @Override
     public void onPause() {
-        mPresenter.onViewNotReady();
+        getPresenter().onViewNotReady();
         super.onPause();
     }
 
-    @Override
+    /*@Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(presenterCodeKey, savePresenter(mPresenter));
+        outState.putInt(presenterCodeKey, savePresenter(getPresenter()));
         super.onSaveInstanceState(outState);
-    }
+    }*/
 
     /**
      * Сохраненные презентеры.
      * @see #savePresenter(BasePresenter)
      * @see #loadPresenter(int)
      */
-    private static final HashMap<Integer, BasePresenter> sPresenters = new HashMap<>();
+    //private static final HashMap<Integer, BasePresenter> sPresenters = new HashMap<>();
 
-    private static final Random sRandom = new Random();
+    //private static final Random sRandom = new Random();
 
     /**
      * Сохранить presenter.
      * @return код сохраненного presenter'a.
      */
-    private static int savePresenter(BasePresenter presenter) {
+    /*private static int savePresenter(BasePresenter presenter) {
         int code;
         do {
             code = sRandom.nextInt();
         } while (sPresenters.containsKey(code));
         sPresenters.put(code, presenter);
         return code;
-    }
+    }*/
 
     /**
      * Загрузить сохраненный presenter.
      * После загрузки presenter удаляется ихз созраненных.
      * @param code код сохраненного presenter'a.
      */
-    private static BasePresenter loadPresenter(int code) {
+    /*private static BasePresenter loadPresenter(int code) {
         BasePresenter presenter = sPresenters.get(code);
         sPresenters.remove(code);
         return presenter;
-    }
+    }*/
 
 }

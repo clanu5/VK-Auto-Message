@@ -9,7 +9,10 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.qwert2603.vkautomessage.model.DataManager;
+import com.qwert2603.vkautomessage.di.AppComponent;
+import com.qwert2603.vkautomessage.di.AppModule;
+import com.qwert2603.vkautomessage.di.DaggerAppComponent;
+import com.qwert2603.vkautomessage.di.ModelModule;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.util.VKUtil;
@@ -18,12 +21,20 @@ import java.io.File;
 
 public class VkAutoMessageApplication extends Application {
 
+    private static AppComponent sAppComponent;
+
+    public static AppComponent getAppComponent() {
+        return sAppComponent;
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreate() {
         super.onCreate();
+
+        sAppComponent = buildAppComponent();
+
         VKSdk.initialize(this);
-        DataManager.initWithContext(VkAutoMessageApplication.this);
         for (String s : VKUtil.getCertificateFingerprint(this, this.getPackageName())) {
             LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
         }
@@ -47,6 +58,13 @@ public class VkAutoMessageApplication extends Application {
 
         // TODO: 02.04.2016 добавить испанский язык. (или французский)
         // TODO: 22.04.2016 use dagger && переделать базовые фрагмент и диалог
+    }
+
+    protected AppComponent buildAppComponent() {
+        return DaggerAppComponent.builder()
+                .appModule(new AppModule(VkAutoMessageApplication.this))
+                .modelModule(new ModelModule(VkAutoMessageApplication.this))
+                .build();
     }
 
 }

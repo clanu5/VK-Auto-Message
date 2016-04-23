@@ -14,7 +14,10 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,10 +38,20 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
     @Bind(R.id.message_edit_text)
     EditText mMessageEditText;
 
+    @Inject
+    EditMessagePresenter mEditMessagePresenter;
+
     @NonNull
     @Override
-    protected EditMessagePresenter createPresenter() {
-        return new EditMessagePresenter(getArguments().getString(messageKey));
+    protected EditMessagePresenter getPresenter() {
+        return mEditMessagePresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        VkAutoMessageApplication.getAppComponent().inject(EditMessageDialog.this);
+        mEditMessagePresenter.setMessage(getArguments().getString(messageKey));
+        super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("InflateParams")
@@ -55,7 +68,7 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                getPresenter().onMessageEdited(s.toString());
+                mEditMessagePresenter.onMessageEdited(s.toString());
             }
 
             @Override
@@ -66,7 +79,7 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
                 .setView(view)
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setPositiveButton(R.string.submit, (dialog, which) -> {
-                    getPresenter().onSubmitClicked();
+                    mEditMessagePresenter.onSubmitClicked();
                 })
                 .create();
     }

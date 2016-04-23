@@ -15,24 +15,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.login.MainActivity;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView {
 
-    private DrawerLayout mDrawerLayout;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    @Bind(R.id.navigation_view)
+    android.support.design.widget.NavigationView mNavigationView;
+
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mIsNavigationButtonVisible;
 
-    @Bind(R.id.user_photo_image_view)
-    ImageView mUserPhotoImageView;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
 
-    @Bind(R.id.user_name_text_view)
-    TextView mUserNameTextView;
+    private ImageView mUserPhotoImageView;
+    private TextView mUserNameTextView;
 
-    private NavigationPresenter mNavigationPresenter;
+    @Inject
+    NavigationPresenter mNavigationPresenter;
 
     protected abstract boolean isNavigationButtonVisible();
 
@@ -42,14 +51,13 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        VkAutoMessageApplication.getAppComponent().inject(NavigationActivity.this);
+        ButterKnife.bind(NavigationActivity.this, NavigationActivity.this);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setSupportActionBar(mToolbar);
 
-        android.support.design.widget.NavigationView navigationView = (android.support.design.widget.NavigationView) findViewById(R.id.navigation_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(item -> {
+        if (mNavigationView != null) {
+            mNavigationView.setNavigationItemSelectedListener(item -> {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 switch (item.getItemId()) {
                     /*case R.id.settings:
@@ -69,19 +77,20 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         if (mIsNavigationButtonVisible) {
             mActionBarDrawerToggle = new ActionBarDrawerToggle(NavigationActivity.this, mDrawerLayout, R.string.open, R.string.close);
             mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
-            if (toolbar != null) {
-                toolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+            if (mToolbar != null) {
+                mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
             }
             mActionBarDrawerToggle.setDrawerIndicatorEnabled(false);
             mActionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         }
 
         View headerNavigationView = getLayoutInflater().inflate(R.layout.header_navigation, null);
-        if (navigationView != null) {
-            navigationView.addHeaderView(headerNavigationView);
+        if (mNavigationView != null) {
+            mNavigationView.addHeaderView(headerNavigationView);
         }
 
-        ButterKnife.bind(NavigationActivity.this, headerNavigationView);
+        mUserPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
+        mUserNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
 
         mNavigationPresenter = new NavigationPresenter();
         mNavigationPresenter.bindView(this);

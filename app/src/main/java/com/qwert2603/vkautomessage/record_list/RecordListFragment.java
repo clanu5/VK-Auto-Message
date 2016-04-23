@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.record_list;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
@@ -20,6 +22,8 @@ import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,9 +51,19 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Bind(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;
 
+    @Inject
+    RecordListPresenter mRecordListPresenter;
+
+    @NonNull
     @Override
-    protected RecordListPresenter createPresenter() {
-        return new RecordListPresenter();
+    protected RecordListPresenter getPresenter() {
+        return mRecordListPresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -61,10 +75,10 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 
         // TODO: 28.03.2016 скрывать fab при скроллинге вниз (behavior).
-        mNewRecordFAB.setOnClickListener(v -> getPresenter().onNewRecordClicked());
+        mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         return view;
     }
@@ -72,7 +86,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void onResume() {
         super.onResume();
-        getPresenter().onResume();
+        mRecordListPresenter.onResume();
     }
 
     @Override
@@ -84,11 +98,11 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         switch (requestCode) {
             case REQUEST_CHOOSE_USER:
                 int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
-                getPresenter().onUserForNewRecordChosen(userId);
+                mRecordListPresenter.onUserForNewRecordChosen(userId);
                 break;
             case REQUEST_DELETE_RECORD:
                 int recordId = data.getIntExtra(DeleteRecordDialog.EXTRA_RECORD_TO_DELETE_ID, 0);
-                getPresenter().onRecordDeleteClicked(recordId);
+                mRecordListPresenter.onRecordDeleteClicked(recordId);
                 break;
         }
     }
@@ -116,8 +130,8 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
             adapter.notifyDataSetChanged();
         } else {
             adapter = new RecordListAdapter(list);
-            adapter.setClickCallbacks(position -> getPresenter().onRecordAtPositionClicked(position));
-            adapter.setLongClickCallbacks(position -> getPresenter().onRecordAtPositionLongClicked(position));
+            adapter.setClickCallbacks(position -> mRecordListPresenter.onRecordAtPositionClicked(position));
+            adapter.setLongClickCallbacks(position -> mRecordListPresenter.onRecordAtPositionLongClicked(position));
             mRecyclerView.setAdapter(adapter);
         }
     }

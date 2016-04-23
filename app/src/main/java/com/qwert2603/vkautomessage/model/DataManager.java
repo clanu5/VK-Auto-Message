@@ -13,35 +13,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public final class DataManager {
+public class DataManager {
     private static DataManager sDataManager;
 
-    private DataManager(Context context) {
-        mDatabaseHelper = new DatabaseHelper(context);
-        mVkApiHelper = new VkApiHelper();
-        mPreferenceHelper = new PreferenceHelper(context);
-        mSendMessageHelper = new SendMessageHelper(context);
+    public DataManager() {
+        // TODO: 23.04.2016 inject
         // TODO: 25.03.2016 обновлять таблицу User (mDatabaseHelper). Так как аватарки и имена пользователей могли измениться.
-    }
-
-    public static void initWithContext(Context context) {
-        if (sDataManager == null) {
-            sDataManager = new DataManager(context.getApplicationContext());
-        }
     }
 
     public static DataManager getInstance() {
         return sDataManager;
     }
 
-    private DatabaseHelper mDatabaseHelper;
-    private VkApiHelper mVkApiHelper;
-    private PreferenceHelper mPreferenceHelper;
-    private SendMessageHelper mSendMessageHelper;
+    @Inject
+    Context mAppContext;
+
+    @Inject
+    DatabaseHelper mDatabaseHelper;
+
+    @Inject
+    VkApiHelper mVkApiHelper;
+
+    @Inject
+    PreferenceHelper mPreferenceHelper;
+
+    @Inject
+    SendMessageHelper mSendMessageHelper;
 
     private volatile List<Record> mRecordList;
     private final Map<Integer, Record> mRecordMap = new HashMap<>();
@@ -143,7 +146,8 @@ public final class DataManager {
     }
 
     public void justUpdateRecord(Record record) {
-        updateRecord(record).subscribe(i -> {}, LogUtils::e);
+        updateRecord(record).subscribe(i -> {
+        }, LogUtils::e);
     }
 
     private final Map<Integer, VKApiUserFull> mVkUserMap = new HashMap<>();
@@ -232,7 +236,8 @@ public final class DataManager {
                     mPreferenceHelper.clear();
                     return mDatabaseHelper.deleteAllRecordsAndUsers();
                 })
-                .subscribe(aVoid -> {}, LogUtils::e);
+                .subscribe(aVoid -> {
+                }, LogUtils::e);
     }
 
     /**

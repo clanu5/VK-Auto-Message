@@ -17,7 +17,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 
-public final class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "records.sqlite";
     private static final int VERSION = 1;

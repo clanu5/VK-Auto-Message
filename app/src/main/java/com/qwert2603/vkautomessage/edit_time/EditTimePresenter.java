@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class EditTimePresenter extends BasePresenter<Calendar, EditTimeView> {
 
-    public EditTimePresenter(Long timeInMillis) {
+    public void setTimeInMillis(Long timeInMillis) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date(timeInMillis));
         setModel(calendar);

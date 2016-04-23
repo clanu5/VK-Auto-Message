@@ -12,7 +12,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,10 +39,20 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
     @Bind(R.id.message_text_view)
     TextView mMessageTextView;
 
+    @Inject
+    DeleteRecordPresenter mDeleteRecordPresenter;
+
     @NonNull
     @Override
-    protected DeleteRecordPresenter createPresenter() {
-        return new DeleteRecordPresenter(getArguments().getInt(recordIdKey));
+    protected DeleteRecordPresenter getPresenter() {
+        return mDeleteRecordPresenter;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        VkAutoMessageApplication.getAppComponent().inject(DeleteRecordDialog.this);
+        mDeleteRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
+        super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("InflateParams")
@@ -52,7 +65,7 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.submit, (dialog, which) -> getPresenter().onSubmitClicked())
+                .setPositiveButton(R.string.submit, (dialog, which) -> mDeleteRecordPresenter.onSubmitClicked())
                 .create();
     }
 
