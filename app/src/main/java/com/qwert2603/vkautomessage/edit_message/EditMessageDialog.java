@@ -16,6 +16,9 @@ import android.widget.EditText;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implements EditMessageView {
 
     private static final String messageKey = "message";
@@ -29,7 +32,8 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
         return editMessageDialog;
     }
 
-    private EditText mMessageEditText;
+    @Bind(R.id.message_edit_text)
+    EditText mMessageEditText;
 
     @NonNull
     @Override
@@ -41,7 +45,9 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_edit_message, null);
-        mMessageEditText = (EditText) view.findViewById(R.id.message_edit_text);
+
+        ButterKnife.bind(EditMessageDialog.this, view);
+
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

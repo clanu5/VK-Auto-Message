@@ -18,14 +18,20 @@ import android.widget.TextView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.login.MainActivity;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mIsNavigationButtonVisible;
 
-    private ImageView mUserPhotoImageView;
-    private TextView mUserNameTextView;
+    @Bind(R.id.user_photo_image_view)
+    ImageView mUserPhotoImageView;
+
+    @Bind(R.id.user_name_text_view)
+    TextView mUserNameTextView;
 
     private NavigationPresenter mNavigationPresenter;
 
@@ -76,8 +82,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
             navigationView.addHeaderView(headerNavigationView);
         }
 
-        mUserPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
-        mUserNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
+        ButterKnife.bind(NavigationActivity.this, headerNavigationView);
 
         mNavigationPresenter = new NavigationPresenter();
         mNavigationPresenter.bindView(this);

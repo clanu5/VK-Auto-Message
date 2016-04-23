@@ -15,6 +15,9 @@ import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, UserListAdapter.UserViewHolder, UserPresenter> {
 
     public UserListAdapter(List<VKApiUserFull> modelList, int selectedPosition) {
@@ -37,13 +40,15 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, User
             extends BaseRecyclerViewAdapter<?, ?, UserPresenter>.RecyclerViewHolder
             implements UserView {
 
-        private ImageView mPhotoImageView;
-        private TextView mUsernameTextView;
+        @Bind(R.id.photo_image_view)
+        ImageView mPhotoImageView;
+
+        @Bind(R.id.user_name_text_view)
+        TextView mUsernameTextView;
 
         public UserViewHolder(View itemView) {
             super(itemView);
-            mPhotoImageView = (ImageView) itemView.findViewById(R.id.photo_image_view);
-            mUsernameTextView = (TextView) itemView.findViewById(R.id.user_name_text_view);
+            ButterKnife.bind(UserViewHolder.this, itemView);
         }
 
         @Override

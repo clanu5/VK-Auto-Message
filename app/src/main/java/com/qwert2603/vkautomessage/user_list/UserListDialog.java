@@ -24,6 +24,9 @@ import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class UserListDialog extends BaseDialog<UserListPresenter> implements UserListView {
 
     private static final String selectedUserIdKey = "selectedUserId";
@@ -43,9 +46,17 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
     private static final int POSITION_NOTHING_FOUND_TEXT_VIEW = 4;
 
-    private SwipeRefreshLayout mRefreshLayout;
-    private ViewAnimator mViewAnimator;
-    private RecyclerView mRecyclerView;
+    @Bind(R.id.refresh_layout)
+    SwipeRefreshLayout mRefreshLayout;
+
+    @Bind(R.id.view_animator)
+    ViewAnimator mViewAnimator;
+
+    @Bind(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+
+    @Bind(R.id.search_edit_text)
+    EditText mSearchEditText;
 
     @NonNull
     @Override
@@ -57,20 +68,18 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
-        mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
 
-        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
+        ButterKnife.bind(UserListDialog.this, view);
+
         mRefreshLayout.setOnRefreshListener(getPresenter()::onReload);
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
 
-        EditText searchEditText = (EditText) view.findViewById(R.id.search_edit_text);
-        searchEditText.setText(getPresenter().getCurrentQuery());
-        searchEditText.addTextChangedListener(new TextWatcher() {
+        mSearchEditText.setText(getPresenter().getCurrentQuery());
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }

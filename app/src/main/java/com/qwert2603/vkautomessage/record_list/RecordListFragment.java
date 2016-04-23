@@ -21,6 +21,9 @@ import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class RecordListFragment extends BaseFragment<RecordListPresenter> implements RecordListView {
 
     public static RecordListFragment newInstance() {
@@ -35,8 +38,14 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     private static final int REQUEST_CHOOSE_USER = 1;
     private static final int REQUEST_DELETE_RECORD = 2;
 
+    @Bind(R.id.view_animator)
     private ViewAnimator mViewAnimator;
+
+    @Bind(R.id.recycler_view)
     private RecyclerView mRecyclerView;
+
+    @Bind(R.id.new_record_fab)
+    FloatingActionButton mNewRecordFAB;
 
     @Override
     protected RecordListPresenter createPresenter() {
@@ -48,16 +57,14 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_record_list, container, false);
 
-        mViewAnimator = (ViewAnimator) view.findViewById(R.id.view_animator);
+        ButterKnife.bind(RecordListFragment.this, view);
+
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReload());
 
         // TODO: 28.03.2016 скрывать fab при скроллинге вниз (behavior).
-        FloatingActionButton newRecordFAB = (FloatingActionButton) view.findViewById(R.id.new_record_fab);
-        newRecordFAB.setOnClickListener(v -> getPresenter().onNewRecordClicked());
-
-        getPresenter().onViewReady();
+        mNewRecordFAB.setOnClickListener(v -> getPresenter().onNewRecordClicked());
 
         return view;
     }

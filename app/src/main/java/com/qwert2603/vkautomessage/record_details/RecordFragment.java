@@ -20,6 +20,9 @@ import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class RecordFragment extends BaseFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
@@ -36,11 +39,29 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         return recordFragment;
     }
 
-    private ImageView mPhotoImageView;
-    private TextView mUsernameTextView;
-    private Switch mEnableSwitch;
-    private TextView mMessageTextView;
-    private TextView mTimeTextView;
+    @Bind(R.id.photo_image_view)
+    ImageView mPhotoImageView;
+
+    @Bind(R.id.user_name_text_view)
+    TextView mUsernameTextView;
+
+    @Bind(R.id.enable_switch)
+    Switch mEnableSwitch;
+
+    @Bind(R.id.message_text_view)
+    TextView mMessageTextView;
+
+    @Bind(R.id.time_text_view)
+    TextView mTimeTextView;
+
+    @Bind(R.id.user_card)
+    CardView userCardView;
+
+    @Bind(R.id.message_card)
+    CardView messageCardView;
+
+    @Bind(R.id.time_card)
+    CardView timeCardView;
 
     @Override
     protected RecordPresenter createPresenter() {
@@ -52,22 +73,12 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
-        mPhotoImageView = (ImageView) view.findViewById(R.id.photo_image_view);
-        mUsernameTextView = (TextView) view.findViewById(R.id.user_name_text_view);
-        mEnableSwitch = (Switch) view.findViewById(R.id.enable_switch);
-        mMessageTextView = (TextView) view.findViewById(R.id.message_text_view);
-        mTimeTextView = (TextView) view.findViewById(R.id.time_text_view);
-
-        CardView userCardView = (CardView) view.findViewById(R.id.user_card);
-        CardView messageCardView = (CardView) view.findViewById(R.id.message_card);
-        CardView timeCardView = (CardView) view.findViewById(R.id.time_card);
+        ButterKnife.bind(RecordFragment.this, view);
 
         userCardView.setOnClickListener(v -> getPresenter().onChooseUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> getPresenter().onEnableClicked(isChecked));
         messageCardView.setOnClickListener(v -> getPresenter().onEditMessageClicked());
         timeCardView.setOnClickListener(v -> getPresenter().onChooseTimeClicked());
-
-        getPresenter().onViewReady();
 
         return view;
     }

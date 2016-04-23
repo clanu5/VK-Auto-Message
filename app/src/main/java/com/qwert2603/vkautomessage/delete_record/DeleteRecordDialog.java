@@ -14,6 +14,9 @@ import android.widget.TextView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implements DeleteRecordView {
 
     private static final String recordIdKey = "recordId";
@@ -27,8 +30,11 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
         return deleteRecordDialog;
     }
 
-    private TextView mUserNameTextView;
-    private TextView mMessageTextView;
+    @Bind(R.id.user_name_text_view)
+    TextView mUserNameTextView;
+
+    @Bind(R.id.message_text_view)
+    TextView mMessageTextView;
 
     @NonNull
     @Override
@@ -40,8 +46,9 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_delete_record, null);
-        mUserNameTextView = (TextView) view.findViewById(R.id.user_name_text_view);
-        mMessageTextView = (TextView) view.findViewById(R.id.message_text_view);
+
+        ButterKnife.bind(DeleteRecordDialog.this, view);
+
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
