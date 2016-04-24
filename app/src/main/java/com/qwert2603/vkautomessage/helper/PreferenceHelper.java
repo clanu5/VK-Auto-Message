@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+
 import javax.inject.Inject;
 
 public class PreferenceHelper {
@@ -32,6 +34,7 @@ public class PreferenceHelper {
     private Integer mLastNotificationId;
 
     public PreferenceHelper() {
+        VkAutoMessageApplication.getAppComponent().inject(PreferenceHelper.this);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mAppContext);
     }
 

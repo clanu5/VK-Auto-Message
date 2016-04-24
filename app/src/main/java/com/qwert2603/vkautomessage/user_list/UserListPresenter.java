@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.user_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -9,6 +10,8 @@ import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import rx.Subscription;
 
@@ -22,7 +25,11 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
     private String mQuery;
     private List<VKApiUserFull> mShowingUserList;
 
+    @Inject
+    DataManager mDataManager;
+
     public UserListPresenter() {
+        VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
         loadFriendsList();
     }
 
@@ -121,7 +128,7 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
             mSubscription.unsubscribe();
         }
         mIsLoading = true;
-        mSubscription = DataManager.getInstance()
+        mSubscription = mDataManager
                 .getAllVkFriends()
                 .subscribe(
                         userList -> {

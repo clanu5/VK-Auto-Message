@@ -27,6 +27,16 @@ public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {
         ImageLoader.getInstance().displayImage(user.photo_100, view.getPhotoImageView());
     }
 
+    @Override
+    public void onViewNotReady() {
+        UserView view = getView();
+        if (view != null) {
+            view.getPhotoImageView().setImageBitmap(null);
+            ImageLoader.getInstance().cancelDisplayTask(view.getPhotoImageView());
+        }
+        super.onViewNotReady();
+    }
+
     public VKApiUserFull getUser() {
         return getModel();
     }

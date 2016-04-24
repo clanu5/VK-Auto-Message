@@ -57,7 +57,6 @@ public class VkAutoMessageApplication extends Application {
         ImageLoader.getInstance().init(config);
 
         // TODO: 02.04.2016 добавить испанский язык. (или французский)
-        // TODO: 22.04.2016 use dagger && переделать базовые фрагмент и диалог
     }
 
     protected AppComponent buildAppComponent() {

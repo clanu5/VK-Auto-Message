@@ -56,7 +56,9 @@ public abstract class BasePresenter<M, V extends BaseView> {
      * Отвязать представление.
      */
     public void unbindView() {
-        mIsViewReady = false;
+        if (mIsViewReady) {
+            onViewNotReady();
+        }
         mView = null;
     }
 

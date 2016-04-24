@@ -1,16 +1,20 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.Date;
+
+import javax.inject.Inject;
 
 import rx.Subscription;
 
@@ -20,12 +24,16 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     private Subscription mSubscription;
 
+    @Inject
+    DataManager mDataManager;
+
     public RecordPresenter() {
+        VkAutoMessageApplication.getAppComponent().inject(RecordPresenter.this);
     }
 
     public void setRecordId(int recordId) {
         setModel(null);
-        mSubscription = DataManager.getInstance()
+        mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
                         record -> RecordPresenter.this.setModel(record),
@@ -52,6 +60,16 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     @Override
+    public void onViewNotReady() {
+        RecordView view = getView();
+        if (view != null) {
+            view.getPhotoImageView().setImageBitmap(null);
+            ImageLoader.getInstance().cancelDisplayTask(view.getPhotoImageView());
+        }
+        super.onViewNotReady();
+    }
+
+    @Override
     protected void onUpdateView(@NonNull RecordView view) {
         Record record = getModel();
         if (record == null) {
@@ -67,13 +85,13 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     public void onUserChosen(int userId) {
         if (getModel().getUser().id != userId) {
-            DataManager.getInstance()
+            mDataManager
                     .getVkUserById(userId)
                     .subscribe(
                             user -> {
                                 getModel().setUser(user);
                                 updateView();
-                                DataManager.getInstance().justUpdateRecord(getModel());
+                                mDataManager.justUpdateRecord(getModel());
                             },
                             LogUtils::e
                     );
@@ -84,14 +102,14 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         if (getModel().getTime().getTime() != time) {
             getModel().setTime(new Date(time));
             getView().showTime(getTimeString());
-            DataManager.getInstance().justUpdateRecord(getModel());
+            mDataManager.justUpdateRecord(getModel());
         }
     }
 
     public void onEnableClicked(boolean enable) {
         if (getModel().isEnabled() != enable) {
             getModel().setIsEnabled(enable);
-            DataManager.getInstance().justUpdateRecord(getModel());
+            mDataManager.justUpdateRecord(getModel());
         }
     }
 
@@ -103,7 +121,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         if (!getModel().getMessage().equals(message)) {
             getModel().setMessage(message);
             getView().showMessage(message);
-            DataManager.getInstance().justUpdateRecord(getModel());
+            mDataManager.justUpdateRecord(getModel());
         }
     }
 

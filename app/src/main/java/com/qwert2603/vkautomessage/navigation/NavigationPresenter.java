@@ -3,10 +3,13 @@ package com.qwert2603.vkautomessage.navigation;
 import android.support.annotation.NonNull;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUser;
+
+import javax.inject.Inject;
 
 import rx.Subscription;
 
@@ -16,7 +19,11 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
 
     private Subscription mSubscription;
 
+    @Inject
+    DataManager mDataManager;
+
     public NavigationPresenter() {
+        VkAutoMessageApplication.getAppComponent().inject(NavigationPresenter.this);
         loadMyselfUser();
     }
 
@@ -44,7 +51,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
     }
 
     public void onLogOutClicked() {
-        DataManager.getInstance().logOutVk();
+        mDataManager.logOutVk();
         getView().showLogOut();
     }
 
@@ -52,7 +59,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
-        mSubscription = DataManager.getInstance()
+        mSubscription = mDataManager
                 .getVkUserMyself()
                 .subscribe(
                         user -> NavigationPresenter.this.setModel(user),

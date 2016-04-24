@@ -9,12 +9,15 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.util.InternetUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -27,13 +30,17 @@ public class SendMessageService extends IntentService {
 
     private static final int MESSAGE_LENGTH_LIMIT = 52;
 
+    @Inject
+    DataManager mDataManager;
+
     public SendMessageService() {
         super("SendMessageService");
+        VkAutoMessageApplication.getAppComponent().inject(SendMessageService.this);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        DataManager.getInstance()
+        mDataManager
                 .getRecordById(intent.getIntExtra(EXTRA_RECORD_ID, 0))
                 .flatMap(record -> {
                     if (!InternetUtils.isInternetConnected(SendMessageService.this)) {
@@ -41,7 +48,7 @@ public class SendMessageService extends IntentService {
                                 ("SendMessageService ## Internet not connected!", record);
                         return Observable.error(throwable);
                     }
-                    return DataManager.getInstance().sendVkMessage(record.getUser().id, record.getMessage(), record);
+                    return mDataManager.sendVkMessage(record.getUser().id, record.getMessage(), record);
                 })
                 .subscribe(
                         record -> {
@@ -75,9 +82,9 @@ public class SendMessageService extends IntentService {
                 .setAutoCancel(true)
                 .build();
 
-        int lastNotificationId = DataManager.getInstance().getLastNotificationId();
+        int lastNotificationId = mDataManager.getLastNotificationId();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(++lastNotificationId, notification);
-        DataManager.getInstance().setLastNotificationId(lastNotificationId);
+        mDataManager.setLastNotificationId(lastNotificationId);
     }
 }

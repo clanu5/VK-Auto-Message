@@ -2,10 +2,13 @@ package com.qwert2603.vkautomessage.delete_record;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
+
+import javax.inject.Inject;
 
 import rx.Subscription;
 
@@ -18,8 +21,15 @@ public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordVie
 
     private Subscription mSubscription;
 
+    @Inject
+    DataManager mDataManager;
+
+    public DeleteRecordPresenter() {
+        VkAutoMessageApplication.getAppComponent().inject(DeleteRecordPresenter.this);
+    }
+
     public void setRecordId(int recordId) {
-        mSubscription = DataManager.getInstance()
+        mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
                         record -> DeleteRecordPresenter.this.setModel(record),

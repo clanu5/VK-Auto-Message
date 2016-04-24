@@ -4,21 +4,32 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
+
+    @Inject
+    DataManager mDataManager;
+
+    public BootCompletedReceiver() {
+        VkAutoMessageApplication.getAppComponent().inject(BootCompletedReceiver.this);
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        DataManager.getInstance()
+        mDataManager
                 .getAllRecords()
                 .flatMap(Observable::from)
                 .subscribe(
                         record -> {
                             if (record.isEnabled()) {
-                                DataManager.getInstance().putRecordToSendMessageService(record);
+                                mDataManager.putRecordToSendMessageService(record);
                             }
                         },
                         LogUtils::e

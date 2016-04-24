@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
@@ -10,13 +11,19 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Subscription;
 
 public class RecordListPresenter extends BasePresenter<List<Record>, RecordListView> {
 
     private Subscription mSubscription;
 
+    @Inject
+    DataManager mDataManager;
+
     public RecordListPresenter() {
+        VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
         loadRecordList();
     }
 
@@ -65,7 +72,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onUserForNewRecordChosen(int userId) {
-        DataManager.getInstance()
+        mDataManager
                 .getVkUserById(userId)
                 .flatMap(
                         user -> {
@@ -73,7 +80,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
                             record.setMessage("VK Auto Message");
                             record.setUser(user);
                             record.setTime(new Date());
-                            return DataManager.getInstance().addRecord(record);
+                            return mDataManager.addRecord(record);
                         }
                 )
                 .subscribe(
@@ -96,7 +103,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
 
     public void onRecordDeleteClicked(int recordId) {
         int position = getRecordPosition(recordId);
-        DataManager.getInstance()
+        mDataManager
                 .removeRecord(recordId)
                 .subscribe(aLong -> {
                     if (getModel().size() > 1) {
@@ -114,7 +121,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
-        mSubscription = DataManager.getInstance()
+        mSubscription = mDataManager
                 .getAllRecords()
                 .subscribe(
                         records -> RecordListPresenter.this.setModel(records),

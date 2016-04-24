@@ -9,18 +9,24 @@ import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
+import com.qwert2603.vkautomessage.receiver.BootCompletedReceiver;
 import com.qwert2603.vkautomessage.record_details.RecordFragment;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 import com.qwert2603.vkautomessage.record_list.RecordListFragment;
 import com.qwert2603.vkautomessage.record_list.RecordListPresenter;
+import com.qwert2603.vkautomessage.service.SendMessageService;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_list.UserListAdapter;
 import com.qwert2603.vkautomessage.user_list.UserListDialog;
 import com.qwert2603.vkautomessage.user_list.UserListPresenter;
 
+import javax.inject.Singleton;
+
 import dagger.Component;
 
+@Singleton
 @Component(modules = {
         AppModule.class,
         ModelModule.class,
@@ -48,6 +54,7 @@ public interface AppComponent {
 
     void inject(EditTimeDialog editTimeDialog);
 
+    void inject(NavigationPresenter navigationPresenter);
     void inject(NavigationActivity navigationActivity);
 
     void inject(RecordListAdapter.RecordViewHolder recordViewHolder);
@@ -55,4 +62,8 @@ public interface AppComponent {
     void inject(UserListDialog userListDialog);
 
     void inject(UserListAdapter.UserViewHolder userViewHolder);
+
+    void inject(SendMessageService sendMessageService);
+
+    void inject(BootCompletedReceiver bootCompletedReceiver);
 }

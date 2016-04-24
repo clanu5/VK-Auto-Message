@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.service.SendMessageService;
 
@@ -24,7 +25,7 @@ public class SendMessageHelper {
     Context mContext;
 
     public SendMessageHelper() {
-        // TODO: 23.04.2016 inject
+        VkAutoMessageApplication.getAppComponent().inject(SendMessageHelper.this);
     }
 
     public void onRecordChanged(Record record) {

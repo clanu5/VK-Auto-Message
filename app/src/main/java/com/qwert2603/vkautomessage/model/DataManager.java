@@ -2,6 +2,8 @@ package com.qwert2603.vkautomessage.model;
 
 import android.content.Context;
 
+import com.qwert2603.vkautomessage.Const;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.helper.DatabaseHelper;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
@@ -14,21 +16,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import rx.Scheduler;
 
 public class DataManager {
-    private static DataManager sDataManager;
 
     public DataManager() {
-        // TODO: 23.04.2016 inject
+        VkAutoMessageApplication.getAppComponent().inject(DataManager.this);
         // TODO: 25.03.2016 обновлять таблицу User (mDatabaseHelper). Так как аватарки и имена пользователей могли измениться.
-    }
-
-    public static DataManager getInstance() {
-        return sDataManager;
     }
 
     @Inject
@@ -45,6 +42,14 @@ public class DataManager {
 
     @Inject
     SendMessageHelper mSendMessageHelper;
+
+    @Inject
+    @Named(Const.IO_THREAD)
+    Scheduler mIoScheduler;
+
+    @Inject
+    @Named(Const.UI_THREAD)
+    Scheduler mUiScheduler;
 
     private volatile List<Record> mRecordList;
     private final Map<Integer, Record> mRecordMap = new HashMap<>();
@@ -74,8 +79,8 @@ public class DataManager {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public Observable<Record> getRecordById(int recordId) {
@@ -91,8 +96,8 @@ public class DataManager {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
@@ -110,8 +115,8 @@ public class DataManager {
                     }
                     return aLong;
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
@@ -133,16 +138,16 @@ public class DataManager {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public Observable<Integer> updateRecord(Record record) {
         putRecordToSendMessageService(record);
         return mDatabaseHelper
                 .updateRecord(record)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public void justUpdateRecord(Record record) {
@@ -167,8 +172,8 @@ public class DataManager {
                     }
                 })
                 .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public Observable<VKApiUserFull> getVkUserById(int userId) {
@@ -184,8 +189,8 @@ public class DataManager {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public Observable<VKApiUserFull> getVkUserMyself() {
@@ -202,14 +207,14 @@ public class DataManager {
                         mPreferenceHelper.setUserPhoto(user2.photo_200);
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public Observable<Object> sendVkMessage(int userId, String message, Object token) {
         return mVkApiHelper.sendMessage(userId, message, token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public int getLastNotificationId() {
