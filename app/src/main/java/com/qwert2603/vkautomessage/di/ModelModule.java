@@ -20,13 +20,6 @@ import rx.schedulers.Schedulers;
 @Module
 public class ModelModule {
 
-    // TODO: 23.04.2016 использовать зависимость, если можно.
-    private Context mAppContext;
-
-    public ModelModule(Context appContext) {
-        mAppContext = appContext;
-    }
-
     @Provides
     @Singleton
     PreferenceHelper providePreferenceHelper() {
@@ -47,8 +40,8 @@ public class ModelModule {
 
     @Provides
     @Singleton
-    DatabaseHelper provideDatabaseHelper() {
-        return new DatabaseHelper(mAppContext);
+    DatabaseHelper provideDatabaseHelper(Context appContext) {
+        return new DatabaseHelper(appContext);
     }
 
     @Provides

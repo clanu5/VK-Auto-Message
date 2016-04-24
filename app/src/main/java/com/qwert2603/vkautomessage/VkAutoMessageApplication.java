@@ -12,7 +12,6 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.qwert2603.vkautomessage.di.AppComponent;
 import com.qwert2603.vkautomessage.di.AppModule;
 import com.qwert2603.vkautomessage.di.DaggerAppComponent;
-import com.qwert2603.vkautomessage.di.ModelModule;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.util.VKUtil;
@@ -62,7 +61,6 @@ public class VkAutoMessageApplication extends Application {
     protected AppComponent buildAppComponent() {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(VkAutoMessageApplication.this))
-                .modelModule(new ModelModule(VkAutoMessageApplication.this))
                 .build();
     }
 

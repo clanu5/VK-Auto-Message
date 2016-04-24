@@ -46,6 +46,7 @@ public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment
         super.onPause();
     }
 
+    // FIXME: 24.04.2016 сделать сохранение
     /*@Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(presenterCodeKey, savePresenter(getPresenter()));
