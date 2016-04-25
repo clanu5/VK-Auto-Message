@@ -48,6 +48,11 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
     }
 
     @Override
+    protected void setPresenter(@NonNull EditMessagePresenter presenter) {
+        mEditMessagePresenter = presenter;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(EditMessageDialog.this);
         mEditMessagePresenter.setMessage(getArguments().getString(messageKey));

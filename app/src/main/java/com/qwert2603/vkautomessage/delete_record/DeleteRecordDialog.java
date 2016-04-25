@@ -49,6 +49,11 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
     }
 
     @Override
+    protected void setPresenter(@NonNull DeleteRecordPresenter presenter) {
+        mDeleteRecordPresenter = presenter;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(DeleteRecordDialog.this);
         mDeleteRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));

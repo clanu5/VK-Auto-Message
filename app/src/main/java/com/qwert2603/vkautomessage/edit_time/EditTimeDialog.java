@@ -35,6 +35,11 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
     }
 
     @Override
+    protected void setPresenter(@NonNull EditTimePresenter presenter) {
+        mEditTimePresenter = presenter;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(EditTimeDialog.this);
         mEditTimePresenter.setTimeInMillis(getArguments().getLong(timeInMillisKey));

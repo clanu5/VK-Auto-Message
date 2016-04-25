@@ -71,6 +71,11 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     }
 
     @Override
+    protected void setPresenter(@NonNull UserListPresenter presenter) {
+        mUserListPresenter = presenter;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(UserListDialog.this);
         mUserListPresenter.setSelectedUserId(getArguments().getInt(selectedUserIdKey));
