@@ -24,7 +24,14 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
 
     public NavigationPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(NavigationPresenter.this);
-        loadMyselfUser();
+    }
+
+    @Override
+    public void bindView(NavigationView view) {
+        super.bindView(view);
+        if (getModel() == null && mSubscription == null) {
+            loadMyselfUser();
+        }
     }
 
     @Override

@@ -30,7 +30,14 @@ public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserLi
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
-        loadFriendsList();
+    }
+
+    @Override
+    public void bindView(UserListView view) {
+        super.bindView(view);
+        if (getModel() == null && mSubscription == null) {
+            loadFriendsList();
+        }
     }
 
     public void setSelectedUserId(int selectedUserId) {

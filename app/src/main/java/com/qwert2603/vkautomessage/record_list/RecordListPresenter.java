@@ -24,7 +24,14 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
-        loadRecordList();
+    }
+
+    @Override
+    public void bindView(RecordListView view) {
+        super.bindView(view);
+        if (getModel() == null && mSubscription == null) {
+            loadRecordList();
+        }
     }
 
     @Override
