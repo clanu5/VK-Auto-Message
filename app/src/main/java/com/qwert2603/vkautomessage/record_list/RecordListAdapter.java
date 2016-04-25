@@ -78,6 +78,12 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
+        public void unbindPresenter() {
+            mPhotoImageView.setImageBitmap(null);
+            super.unbindPresenter();
+        }
+
+        @Override
         public ImageView getPhotoImageView() {
             return mPhotoImageView;
         }

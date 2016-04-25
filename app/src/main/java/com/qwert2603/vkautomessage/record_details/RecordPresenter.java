@@ -63,7 +63,6 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     public void onViewNotReady() {
         RecordView view = getView();
         if (view != null) {
-            view.getPhotoImageView().setImageBitmap(null);
             ImageLoader.getInstance().cancelDisplayTask(view.getPhotoImageView());
         }
         super.onViewNotReady();

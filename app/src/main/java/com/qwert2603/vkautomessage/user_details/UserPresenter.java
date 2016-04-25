@@ -31,7 +31,6 @@ public class UserPresenter extends BasePresenter<VKApiUserFull, UserView> {
     public void onViewNotReady() {
         UserView view = getView();
         if (view != null) {
-            view.getPhotoImageView().setImageBitmap(null);
             ImageLoader.getInstance().cancelDisplayTask(view.getPhotoImageView());
         }
         super.onViewNotReady();
