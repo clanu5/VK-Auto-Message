@@ -2,6 +2,8 @@ package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.Const;
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -12,7 +14,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import rx.Scheduler;
 import rx.Subscription;
 
 public class RecordListPresenter extends BasePresenter<List<Record>, RecordListView> {
@@ -22,8 +26,25 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     @Inject
     DataManager mDataManager;
 
+    @Inject
+    RxBus mRxBus;
+
+    @Inject
+    @Named(Const.UI_THREAD)
+    Scheduler mUiScheduler;
+
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
+        mRxBus.toObservable()
+                .observeOn(mUiScheduler)
+                .subscribe(o -> {
+                    if ((o instanceof Integer)) {
+                        int integer = (Integer) o;
+                        if (integer == RxBus.EVENT_USERS_PHOTO_UPDATED) {
+                            updateView();
+                        }
+                    }
+                });
     }
 
     @Override

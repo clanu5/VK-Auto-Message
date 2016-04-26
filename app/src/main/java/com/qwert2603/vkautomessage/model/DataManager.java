@@ -3,13 +3,13 @@ package com.qwert2603.vkautomessage.model;
 import android.content.Context;
 
 import com.qwert2603.vkautomessage.Const;
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.helper.DatabaseHelper;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.HashMap;
@@ -51,6 +51,9 @@ public class DataManager {
     @Inject
     @Named(Const.UI_THREAD)
     Scheduler mUiScheduler;
+
+    @Inject
+    RxBus mRxBus;
 
     private volatile List<Record> mRecordList;
     private final Map<Integer, Record> mRecordMap = new HashMap<>();
@@ -296,12 +299,10 @@ public class DataManager {
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler)
                 .subscribe(
-                        ok -> {
-                            if (!ok) {
-                                LogUtils.e("smth wrong with users' photo updating!!!");
-                            }
+                        b -> {
                         },
-                        LogUtils::e
+                        LogUtils::e,
+                        () -> mRxBus.send(RxBus.EVENT_USERS_PHOTO_UPDATED)
                 );
     }
 }
