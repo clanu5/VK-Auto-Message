@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RecordListFragment extends BaseFragment<RecordListPresenter> implements RecordListView {
@@ -42,13 +42,13 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     private static final int REQUEST_CHOOSE_USER = 1;
     private static final int REQUEST_DELETE_RECORD = 2;
 
-    @Bind(R.id.view_animator)
+    @BindView(R.id.view_animator)
     ViewAnimator mViewAnimator;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.new_record_fab)
+    @BindView(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;
 
     @Inject

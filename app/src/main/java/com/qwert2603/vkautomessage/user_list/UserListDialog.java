@@ -27,7 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserListDialog extends BaseDialog<UserListPresenter> implements UserListView {
@@ -49,16 +49,16 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
     private static final int POSITION_NOTHING_FOUND_TEXT_VIEW = 4;
 
-    @Bind(R.id.refresh_layout)
+    @BindView(R.id.refresh_layout)
     SwipeRefreshLayout mRefreshLayout;
 
-    @Bind(R.id.view_animator)
+    @BindView(R.id.view_animator)
     ViewAnimator mViewAnimator;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.search_edit_text)
+    @BindView(R.id.search_edit_text)
     EditText mSearchEditText;
 
     @Inject

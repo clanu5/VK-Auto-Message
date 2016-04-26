@@ -23,7 +23,7 @@ import com.qwert2603.vkautomessage.user_list.UserListDialog;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RecordFragment extends BaseFragment<RecordPresenter> implements RecordView {
@@ -42,28 +42,28 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         return recordFragment;
     }
 
-    @Bind(R.id.photo_image_view)
+    @BindView(R.id.photo_image_view)
     ImageView mPhotoImageView;
 
-    @Bind(R.id.user_name_text_view)
+    @BindView(R.id.user_name_text_view)
     TextView mUsernameTextView;
 
-    @Bind(R.id.enable_switch)
+    @BindView(R.id.enable_switch)
     Switch mEnableSwitch;
 
-    @Bind(R.id.message_text_view)
+    @BindView(R.id.message_text_view)
     TextView mMessageTextView;
 
-    @Bind(R.id.time_text_view)
+    @BindView(R.id.time_text_view)
     TextView mTimeTextView;
 
-    @Bind(R.id.user_card)
+    @BindView(R.id.user_card)
     CardView userCardView;
 
-    @Bind(R.id.message_card)
+    @BindView(R.id.message_card)
     CardView messageCardView;
 
-    @Bind(R.id.time_card)
+    @BindView(R.id.time_card)
     CardView timeCardView;
 
     @Inject

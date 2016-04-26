@@ -17,7 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, UserListAdapter.UserViewHolder, UserPresenter> {
@@ -37,10 +37,10 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, User
             extends BaseRecyclerViewAdapter<VKApiUserFull, ?, UserPresenter>.RecyclerViewHolder
             implements UserView {
 
-        @Bind(R.id.photo_image_view)
+        @BindView(R.id.photo_image_view)
         ImageView mPhotoImageView;
 
-        @Bind(R.id.user_name_text_view)
+        @BindView(R.id.user_name_text_view)
         TextView mUsernameTextView;
 
         @Inject

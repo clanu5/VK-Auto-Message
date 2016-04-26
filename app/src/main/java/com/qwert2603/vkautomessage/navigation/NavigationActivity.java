@@ -20,21 +20,21 @@ import com.qwert2603.vkautomessage.login.MainActivity;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView {
 
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    @Bind(R.id.navigation_view)
+    @BindView(R.id.navigation_view)
     android.support.design.widget.NavigationView mNavigationView;
 
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mIsNavigationButtonVisible;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     private ImageView mUserPhotoImageView;

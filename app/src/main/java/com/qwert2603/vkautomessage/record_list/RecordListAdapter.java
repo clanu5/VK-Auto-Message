@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
@@ -42,19 +42,19 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         private static final int MESSAGE_LENGTH_LIMIT = 52;
 
-        @Bind(R.id.photo_image_view)
+        @BindView(R.id.photo_image_view)
         ImageView mPhotoImageView;
 
-        @Bind(R.id.user_name_text_view)
+        @BindView(R.id.user_name_text_view)
         TextView mUsernameTextView;
 
-        @Bind(R.id.enable_check_box)
+        @BindView(R.id.enable_check_box)
         CheckBox mEnableCheckBox;
 
-        @Bind(R.id.message_text_view)
+        @BindView(R.id.message_text_view)
         TextView mMessageTextView;
 
-        @Bind(R.id.time_text_view)
+        @BindView(R.id.time_text_view)
         TextView mTimeTextView;
 
         @Inject

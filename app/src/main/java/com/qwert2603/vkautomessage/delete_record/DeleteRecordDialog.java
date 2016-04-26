@@ -17,7 +17,7 @@ import com.qwert2603.vkautomessage.base.BaseDialog;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implements DeleteRecordView {
@@ -33,10 +33,10 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
         return deleteRecordDialog;
     }
 
-    @Bind(R.id.user_name_text_view)
+    @BindView(R.id.user_name_text_view)
     TextView mUserNameTextView;
 
-    @Bind(R.id.message_text_view)
+    @BindView(R.id.message_text_view)
     TextView mMessageTextView;
 
     @Inject

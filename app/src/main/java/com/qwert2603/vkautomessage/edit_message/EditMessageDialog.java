@@ -19,7 +19,7 @@ import com.qwert2603.vkautomessage.base.BaseDialog;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implements EditMessageView {
@@ -35,7 +35,7 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
         return editMessageDialog;
     }
 
-    @Bind(R.id.message_edit_text)
+    @BindView(R.id.message_edit_text)
     EditText mMessageEditText;
 
     @Inject

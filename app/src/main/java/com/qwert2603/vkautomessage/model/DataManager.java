@@ -165,7 +165,9 @@ public class DataManager {
     private final Map<Integer, VKApiUserFull> mVkUserMap = new HashMap<>();
 
     public Observable<List<VKApiUserFull>> getAllVkFriends() {
-        Observable<VKApiUserFull> friends = mVkApiHelper.getFriends().flatMap(Observable::from);
+        Observable<VKApiUserFull> friends = mVkApiHelper.getFriends()
+                .flatMap(Observable::from)
+                .cache();
         updateUsersPhoto(friends);
         return friends
                 .doOnNext(user -> {
