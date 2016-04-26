@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -13,10 +12,10 @@ import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUserFull;
+import com.vk.sdk.api.model.VKList;
 import com.vk.sdk.api.model.VKUsersArray;
 
-import org.json.JSONException;
-
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -99,11 +98,26 @@ public class VkApiHelper {
     }
 
     public Observable<VKApiUserFull> getUserById(int userId) {
-        VKParameters vkParameters = VKParameters.from(VKApiConst.USER_IDS, String.valueOf(userId),
+        return getUsersById(Collections.singletonList(userId));
+    }
+
+    /**
+     * @param userIdList список id пользователей. (не больше 1000)
+     * @return объекты пользователей.
+     */
+    public Observable<VKApiUserFull> getUsersById(List<Integer> userIdList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Integer integer : userIdList) {
+            stringBuilder.append(integer).append(",");
+        }
+        VKParameters vkParameters = VKParameters.from(VKApiConst.USER_IDS, stringBuilder.toString(),
                 VKApiConst.FIELDS, "photo_100");
         return getUsers(vkParameters);
     }
 
+    /**
+     * @return пользователь, который использует приложение.
+     */
     public Observable<VKApiUserFull> getMyself() {
         VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_200");
         return getUsers(vkParameters);
@@ -116,15 +130,10 @@ public class VkApiHelper {
                     request.setUseLooperForCallListener(false);
                     sendRequest(request, new VKRequest.VKRequestListener() {
                         @Override
+                        @SuppressWarnings("unchecked")
                         public void onComplete(VKResponse response) {
-                            try {
-                                VKApiUserFull user = new VKApiUserFull()
-                                        .parse(response.json.getJSONArray("response").getJSONObject(0));
-                                subscriber.onNext(user);
-                            } catch (JSONException e) {
-                                LogUtils.e(e);
-                            }
-                            subscriber.onCompleted();
+                            Observable.from((VKList<VKApiUserFull>) response.parsedModel)
+                                    .subscribe(subscriber);
                         }
 
                         @Override
@@ -152,6 +161,7 @@ public class VkApiHelper {
 
     /**
      * Отправить сообщение.
+     *
      * @param token объект, который будет передаст Observable, который вернет метод.
      *              (для идентификации сообщения и адресата).
      *              При ошибке будет передано исключение SendMessageException.

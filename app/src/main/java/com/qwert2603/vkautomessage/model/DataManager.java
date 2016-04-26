@@ -9,6 +9,7 @@ import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class DataManager {
 
     public DataManager() {
         VkAutoMessageApplication.getAppComponent().inject(DataManager.this);
-        // TODO: 25.03.2016 обновлять таблицу User (mDatabaseHelper). Так как аватарки и имена пользователей могли измениться.
+        updateUsersPhoto();
     }
 
     @Inject
@@ -155,12 +156,15 @@ public class DataManager {
         }, LogUtils::e);
     }
 
+    /**
+     * Кешированные объекты пользователей.
+     */
     private final Map<Integer, VKApiUserFull> mVkUserMap = new HashMap<>();
 
     public Observable<List<VKApiUserFull>> getAllVkFriends() {
-        return mVkApiHelper
-                .getFriends()
-                .flatMap(Observable::from)
+        Observable<VKApiUserFull> friends = mVkApiHelper.getFriends().flatMap(Observable::from);
+        updateUsersPhoto(friends);
+        return friends
                 .doOnNext(user -> {
                     // Чтобы существовало только по 1 объекту юзера с каждым id.
                     if (!mVkUserMap.containsKey(user.id)) {
@@ -251,5 +255,53 @@ public class DataManager {
      */
     public void putRecordToSendMessageService(Record record) {
         mSendMessageHelper.onRecordChanged(record);
+    }
+
+    private void updateUsersPhoto() {
+        Observable<VKApiUserFull> observable = mDatabaseHelper.getAllUsers()
+                .flatMap(Observable::from)
+                .map(user -> user.id)
+                .toList()
+                .flatMap(ids -> mVkApiHelper.getUsersById(ids));
+        updateUsersPhoto(observable);
+    }
+
+    /**
+     * Обновить фотографии пользователей, сохраненных в {@link #mDatabaseHelper}.
+     *
+     * @param userObservable пользователи, для которых будут обновлены фотографии.
+     */
+    @SuppressWarnings("SynchronizeOnNonFinalField")
+    private void updateUsersPhoto(Observable<VKApiUserFull> userObservable) {
+        userObservable
+                .doOnNext(user -> {
+                    synchronized (mVkUserMap) {
+                        if (mVkUserMap.containsKey(user.id)) {
+                            mVkUserMap.get(user.id).photo_100 = user.photo_100;
+                        } else {
+                            mVkUserMap.put(user.id, user);
+                        }
+                    }
+                })
+                .doOnNext(user -> {
+                    synchronized (mRecordMap) {
+                        for (Record record : mRecordMap.values()) {
+                            if (record.getUser().id == user.id) {
+                                record.getUser().photo_100 = user.photo_100;
+                            }
+                        }
+                    }
+                })
+                .flatMap(user -> mDatabaseHelper.updateUserPhoto(user.id, user.photo_100))
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler)
+                .subscribe(
+                        ok -> {
+                            if (!ok) {
+                                LogUtils.e("smth wrong with users' photo updating!!!");
+                            }
+                        },
+                        LogUtils::e
+                );
     }
 }

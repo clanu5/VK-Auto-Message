@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUser;
+import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -81,6 +83,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * @return список всех имеющихся в БД пользователей.
+     */
+    public Observable<List<VKApiUserFull>> getAllUsers() {
+        return Observable.defer(() -> Observable.just(doGetAllUsers()));
+    }
+
+    /**
+     * Обновить фотографию пользователя.
+     *  @param userId   id пользователя.
+     * @param newPhoto url новой фотографии.
+     */
+    public Observable<Boolean> updateUserPhoto(int userId, String newPhoto) {
+        return Observable.defer(() -> Observable.just(doUpdateUserPhoto(userId, newPhoto)));
+    }
+
+    /**
      * Добавить запись record в БД, переданному объекту record будет назначен id.
      *
      * @param record запись для добавления.
@@ -101,6 +119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Удалить запись по id.
+     *
      * @return Observable для кол-ва удаленных записей. (не должно быть больше 1).
      */
     public Observable<Integer> deleteRecord(int recordId) {
@@ -117,6 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Обновить запись.
+     *
      * @return Observable для кол-ва обновленных записей. (не должно быть больше 1).
      */
     public Observable<Integer> updateRecord(Record record) {
@@ -146,6 +166,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             boolean enabled = getInt(getColumnIndex(COLUMN_RECORD_ENABLED)) > 0;
             Date time = new Date(getLong(getColumnIndex(COLUMN_RECORD_TIME)));
             return new Record(recordId, user, message, time, enabled);
+        }
+    }
+
+    private static class UserCursor extends CursorWrapper {
+        public UserCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public VKApiUserFull getUser() {
+            if (isClosed() || isBeforeFirst() || isAfterLast()) {
+                return null;
+            }
+            VKApiUserFull user = new VKApiUserFull();
+            user.id = getInt(getColumnIndex(COLUMN_USER_ID));
+            user.first_name = getString(getColumnIndex(COLUMN_USER_FIRST_NAME));
+            user.last_name = getString(getColumnIndex(COLUMN_USER_LAST_NAME));
+            user.photo_100 = getString(getColumnIndex(COLUMN_USER_PHOTO_100));
+            return user;
         }
     }
 
@@ -219,6 +257,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         recordCursor.close();
         return record;
+    }
+
+    private List<VKApiUserFull> doGetAllUsers() {
+        UserCursor userCursor = new UserCursor(getReadableDatabase()
+                .query(TABLE_USER, null, null, null, null, null, null));
+        userCursor.moveToFirst();
+        List<VKApiUserFull> userList = new ArrayList<>();
+        while (!userCursor.isAfterLast()) {
+            userList.add(userCursor.getUser());
+            userCursor.moveToNext();
+        }
+        userCursor.close();
+        return userList;
+    }
+
+    private boolean doUpdateUserPhoto(int userId, String newPhoto) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_PHOTO_100, newPhoto);
+        int update = getWritableDatabase()
+                .update(TABLE_USER, contentValues, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        return update == 1;
     }
 
     private Void doDeleteAllRecordsAndUsers() {

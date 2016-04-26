@@ -77,7 +77,6 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 
-        // TODO: 28.03.2016 скрывать fab при скроллинге вниз (behavior).
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         return view;
