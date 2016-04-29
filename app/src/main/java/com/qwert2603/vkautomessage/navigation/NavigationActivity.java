@@ -92,7 +92,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mUserPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
         mUserNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
 
-        mNavigationPresenter = new NavigationPresenter();
         mNavigationPresenter.bindView(this);
         mNavigationPresenter.onViewReady();
     }

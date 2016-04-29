@@ -84,7 +84,6 @@ public class VkApiHelper {
                 .flatMap(i -> Observable.range(0, (i - 1) / FRIENDS_PER_REQUEST + 1))
                 .flatMap(i -> i == 0 ? firstFriends : getFriends(FRIENDS_PER_REQUEST, i * FRIENDS_PER_REQUEST))
                 .reduce((friends1, friends2) -> {
-                    LogUtils.d(friends1 + " " + friends2);
                     friends1.addAll(friends2);
                     return friends1;
                 });

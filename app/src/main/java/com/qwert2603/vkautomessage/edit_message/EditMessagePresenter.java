@@ -6,6 +6,9 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 
 public class EditMessagePresenter extends BasePresenter<String, EditMessageView> {
 
+    public EditMessagePresenter() {
+    }
+
     public void setMessage(String message) {
         setModel(message);
     }
