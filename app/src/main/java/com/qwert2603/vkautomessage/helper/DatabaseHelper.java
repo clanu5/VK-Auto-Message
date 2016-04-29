@@ -36,12 +36,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_USER_LAST_NAME = "last_name";
     private static final String COLUMN_USER_PHOTO_100 = "photo_100";
 
-    private static final String QUERY_COLUMN_RECORD_ID = "R_ID";
-    private static final String QUERY_COLUMN_USER_ID = "U_ID";
     private static final String SELECT_RECORDS_QUERY =
-            "SELECT R." + COLUMN_RECORD_ID + " AS " + QUERY_COLUMN_RECORD_ID + ", R." + COLUMN_RECORD_USER_ID
+            "SELECT R." + COLUMN_RECORD_ID + ", R." + COLUMN_RECORD_USER_ID
                     + ", R." + COLUMN_RECORD_MESSAGE + ", R." + COLUMN_RECORD_ENABLED + ", R." + COLUMN_RECORD_TIME
-                    + ", U." + COLUMN_USER_ID + " AS " + QUERY_COLUMN_USER_ID + ", U." + COLUMN_USER_FIRST_NAME
+                    + ", U." + COLUMN_USER_ID + ", U." + COLUMN_USER_FIRST_NAME
                     + ", U." + COLUMN_USER_LAST_NAME + ", U." + COLUMN_USER_PHOTO_100
                     + " FROM " + TABLE_RECORD + " AS R , " + TABLE_USER + " AS U "
                     + " WHERE (R." + COLUMN_RECORD_USER_ID + " = U." + COLUMN_USER_ID + ") ";
@@ -158,11 +156,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return null;
             }
             VKApiUser user = new VKApiUser();
-            user.id = getInt(getColumnIndex(QUERY_COLUMN_USER_ID));
+            user.id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
             user.first_name = getString(getColumnIndex(COLUMN_USER_FIRST_NAME));
             user.last_name = getString(getColumnIndex(COLUMN_USER_LAST_NAME));
             user.photo_100 = getString(getColumnIndex(COLUMN_USER_PHOTO_100));
-            int recordId = getInt(getColumnIndex(QUERY_COLUMN_RECORD_ID));
+            int recordId = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_ID));
             String message = getString(getColumnIndex(COLUMN_RECORD_MESSAGE));
             boolean enabled = getInt(getColumnIndex(COLUMN_RECORD_ENABLED)) > 0;
             Date time = new Date(getLong(getColumnIndex(COLUMN_RECORD_TIME)));
@@ -180,7 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return null;
             }
             VKApiUserFull user = new VKApiUserFull();
-            user.id = getInt(getColumnIndex(COLUMN_USER_ID));
+            user.id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
             user.first_name = getString(getColumnIndex(COLUMN_USER_FIRST_NAME));
             user.last_name = getString(getColumnIndex(COLUMN_USER_LAST_NAME));
             user.photo_100 = getString(getColumnIndex(COLUMN_USER_PHOTO_100));
@@ -248,7 +246,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private Record doGetRecordById(int recordId) {
         RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
                 .rawQuery(SELECT_RECORDS_QUERY
-                        + " AND (" + QUERY_COLUMN_RECORD_ID + " = " + recordId + ")"
+                        + " AND (" + TABLE_RECORD + "." + COLUMN_RECORD_ID + " = " + recordId + ")"
                         + " LIMIT 1", null));
         recordCursor.moveToFirst();
         Record record = null;
