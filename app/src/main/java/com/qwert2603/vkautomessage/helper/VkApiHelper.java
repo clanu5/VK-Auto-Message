@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -26,7 +27,7 @@ public class VkApiHelper {
      * Задержка перед следующим запросом.
      * Чтобы запросы не посылались слишком часто. (Не больше 3 в секунду).
      */
-    public final long nextRequestDelay = 350;
+    public final long nextRequestDelay = 400;
 
     /**
      * Время, когда можно посылать следующий запрос.
@@ -74,45 +75,73 @@ public class VkApiHelper {
         }
     }
 
-    public Observable<List<VKApiUserFull>> getFriends() {
-        return Observable
-                .create(subscriber -> {
-                    VKParameters vkParameters = VKParameters.from(
-                            VKApiConst.FIELDS, "photo_100, can_write_private_message",
-                            "order", "hints");
-                    VKRequest request = VKApi.friends().get(vkParameters);
-                    request.setUseLooperForCallListener(false);
-                    sendRequest(request, new VKRequest.VKRequestListener() {
-                        @Override
-                        public void onComplete(VKResponse response) {
-                            subscriber.onNext((VKUsersArray) response.parsedModel);
-                            subscriber.onCompleted();
-                        }
+    private static final int USERS_PER_REQUEST = 1000;
+    private static final int FRIENDS_PER_REQUEST = 5000;
 
-                        @Override
-                        public void onError(VKError error) {
-                            subscriber.onError(new RuntimeException(error.toString()));
-                        }
-                    });
+    public Observable<List<VKApiUserFull>> getFriends() {
+        Observable<List<VKApiUserFull>> firstFriends = getFriends(FRIENDS_PER_REQUEST, 0).cache();
+        return firstFriends.map(friends -> ((VKUsersArray) friends).getCount())
+                .flatMap(i -> Observable.range(0, (i - 1) / FRIENDS_PER_REQUEST + 1))
+                .flatMap(i -> i == 0 ? firstFriends : getFriends(FRIENDS_PER_REQUEST, i * FRIENDS_PER_REQUEST))
+                .reduce((friends1, friends2) -> {
+                    LogUtils.d(friends1 + " " + friends2);
+                    friends1.addAll(friends2);
+                    return friends1;
                 });
     }
 
+    public Observable<List<VKApiUserFull>> getFriends(int count, int offset) {
+        return Observable.create(subscriber -> {
+            VKParameters vkParameters = VKParameters.from(
+                    VKApiConst.FIELDS, "photo_100, can_write_private_message",
+                    "order", "hints",
+                    VKApiConst.COUNT, String.valueOf(count),
+                    VKApiConst.OFFSET, String.valueOf(offset)
+            );
+            VKRequest request = VKApi.friends().get(vkParameters);
+            request.setUseLooperForCallListener(false);
+            sendRequest(request, new VKRequest.VKRequestListener() {
+                @Override
+                public void onComplete(VKResponse response) {
+                    subscriber.onNext((VKUsersArray) response.parsedModel);
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onError(VKError error) {
+                    subscriber.onError(new RuntimeException(error.toString()));
+                }
+            });
+        });
+    }
+
     public Observable<VKApiUserFull> getUserById(int userId) {
-        return getUsersById(Collections.singletonList(userId));
+        return getUsersById(Collections.singletonList(userId))
+                .flatMap(Observable::from)
+                .first();
     }
 
     /**
-     * @param userIdList список id пользователей. (не больше 1000)
+     * @param userIdList список id пользователей.
      * @return объекты пользователей.
      */
-    public Observable<VKApiUserFull> getUsersById(List<Integer> userIdList) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Integer integer : userIdList) {
-            stringBuilder.append(integer).append(",");
-        }
-        VKParameters vkParameters = VKParameters.from(VKApiConst.USER_IDS, stringBuilder.toString(),
-                VKApiConst.FIELDS, "photo_100");
-        return getUsers(vkParameters);
+    public Observable<List<VKApiUserFull>> getUsersById(List<Integer> userIdList) {
+        return Observable.range(0, (userIdList.size() - 1) / USERS_PER_REQUEST + 1)
+                .map(i -> {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    int b = i * USERS_PER_REQUEST;
+                    int e = Math.min((i + 1) * USERS_PER_REQUEST, userIdList.size());
+                    for (int j = b; j < e; ++j) {
+                        stringBuilder.append(userIdList.get(j)).append(",");
+                    }
+                    return stringBuilder.toString();
+                })
+                .map(idsString -> VKParameters.from(VKApiConst.USER_IDS, idsString, VKApiConst.FIELDS, "photo_100"))
+                .flatMap(this::getUsers)
+                .reduce((users1, users2) -> {
+                    users1.addAll(users2);
+                    return users1;
+                });
     }
 
     /**
@@ -120,28 +149,29 @@ public class VkApiHelper {
      */
     public Observable<VKApiUserFull> getMyself() {
         VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_200");
-        return getUsers(vkParameters);
+        return getUsers(vkParameters)
+                .flatMap(Observable::from)
+                .first();
     }
 
-    private Observable<VKApiUserFull> getUsers(VKParameters vkParameters) {
-        return Observable
-                .create(subscriber -> {
-                    VKRequest request = VKApi.users().get(vkParameters);
-                    request.setUseLooperForCallListener(false);
-                    sendRequest(request, new VKRequest.VKRequestListener() {
-                        @Override
-                        @SuppressWarnings("unchecked")
-                        public void onComplete(VKResponse response) {
-                            Observable.from((VKList<VKApiUserFull>) response.parsedModel)
-                                    .subscribe(subscriber);
-                        }
+    private Observable<List<VKApiUserFull>> getUsers(VKParameters vkParameters) {
+        return Observable.create(subscriber -> {
+            VKRequest request = VKApi.users().get(vkParameters);
+            request.setUseLooperForCallListener(false);
+            sendRequest(request, new VKRequest.VKRequestListener() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public void onComplete(VKResponse response) {
+                    subscriber.onNext((VKList<VKApiUserFull>) response.parsedModel);
+                    subscriber.onCompleted();
+                }
 
-                        @Override
-                        public void onError(VKError error) {
-                            subscriber.onError(new RuntimeException(error.toString()));
-                        }
-                    });
-                });
+                @Override
+                public void onError(VKError error) {
+                    subscriber.onError(new RuntimeException(error.toString()));
+                }
+            });
+        });
     }
 
     /**
