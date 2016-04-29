@@ -165,22 +165,21 @@ public class DataManager {
     private final Map<Integer, VKApiUserFull> mVkUserMap = new HashMap<>();
 
     public Observable<List<VKApiUserFull>> getAllVkFriends() {
-        Observable<VKApiUserFull> friends = mVkApiHelper.getFriends()
-                .flatMap(Observable::from)
-                .cache();
+        Observable<List<VKApiUserFull>> friends = mVkApiHelper.getFriends().cache();
         updateUsersPhoto(friends);
         return friends
-                .doOnNext(user -> {
-                    // Чтобы существовало только по 1 объекту юзера с каждым id.
-                    if (!mVkUserMap.containsKey(user.id)) {
-                        synchronized (mVkUserMap) {
-                            if (!mVkUserMap.containsKey(user.id)) {
-                                mVkUserMap.put(user.id, user);
+                .doOnNext(users -> {
+                    for (VKApiUserFull user : users) {
+                        // Чтобы существовало только по 1 объекту юзера с каждым id.
+                        if (!mVkUserMap.containsKey(user.id)) {
+                            synchronized (mVkUserMap) {
+                                if (!mVkUserMap.containsKey(user.id)) {
+                                    mVkUserMap.put(user.id, user);
+                                }
                             }
                         }
                     }
                 })
-                .toList()
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
@@ -263,7 +262,7 @@ public class DataManager {
     }
 
     private void updateUsersPhoto() {
-        Observable<VKApiUserFull> observable = mDatabaseHelper.getAllUsers()
+        Observable<List<VKApiUserFull>> observable = mDatabaseHelper.getAllUsers()
                 .flatMap(Observable::from)
                 .map(user -> user.id)
                 .toList()
@@ -277,8 +276,9 @@ public class DataManager {
      * @param userObservable пользователи, для которых будут обновлены фотографии.
      */
     @SuppressWarnings("SynchronizeOnNonFinalField")
-    private void updateUsersPhoto(Observable<VKApiUserFull> userObservable) {
+    private void updateUsersPhoto(Observable<List<VKApiUserFull>> userObservable) {
         userObservable
+                .flatMap(Observable::from)
                 .doOnNext(user -> {
                     synchronized (mVkUserMap) {
                         if (mVkUserMap.containsKey(user.id)) {

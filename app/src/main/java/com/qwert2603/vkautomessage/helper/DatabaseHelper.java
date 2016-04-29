@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKApiUserFull;
 
@@ -91,8 +90,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Обновить фотографию пользователя.
-     *  @param userId   id пользователя.
+     *
+     * @param userId   id пользователя.
      * @param newPhoto url новой фотографии.
+     * @return успешно ли обновление.
      */
     public Observable<Boolean> updateUserPhoto(int userId, String newPhoto) {
         return Observable.defer(() -> Observable.just(doUpdateUserPhoto(userId, newPhoto)));
