@@ -13,6 +13,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.util.InternetUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -48,7 +49,7 @@ public class SendMessageService extends IntentService {
                                 ("SendMessageService ## Internet not connected!", record);
                         return Observable.error(throwable);
                     }
-                    return mDataManager.sendVkMessage(record.getUser().id, record.getMessage(), record);
+                    return mDataManager.sendVkMessage(record.getUserId(), record.getMessage(), record);
                 })
                 .subscribe(
                         record -> {
@@ -63,6 +64,11 @@ public class SendMessageService extends IntentService {
     }
 
     private void showResultNotification(Record record, boolean success) {
+        mDataManager.getUserById(record.getUserId())
+                .subscribe(user -> showResultNotification(record, user, success));
+    }
+
+    private void showResultNotification(Record record, User user, boolean success) {
         String ticker = success ? getString(R.string.notification_ticker_success) : getString(R.string.notification_ticker_fail);
 
         Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
@@ -77,7 +83,7 @@ public class SendMessageService extends IntentService {
                 .setSmallIcon(success ? android.R.drawable.stat_sys_upload_done : android.R.drawable.stat_notify_error)
                 .setTicker(ticker)
                 .setContentTitle(ticker)
-                .setContentText(getUserName(record.getUser()) + "\n" + noMore(record.getMessage(), MESSAGE_LENGTH_LIMIT))
+                .setContentText(getUserName(user) + "\n" + noMore(record.getMessage(), MESSAGE_LENGTH_LIMIT))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();

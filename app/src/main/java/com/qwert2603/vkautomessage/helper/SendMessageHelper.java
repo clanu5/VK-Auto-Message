@@ -35,12 +35,11 @@ public class SendMessageHelper {
         intent.putExtra(SendMessageService.EXTRA_RECORD_ID, record.getId());
         PendingIntent pendingIntent = PendingIntent.getService(mContext, record.getId(), intent, 0);
         if (record.isEnabled()) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(record.getTime());
-
+            // TODO: 01.05.2016 учитывать разные типы отправки
+            // (через 1,2,3,4,6,12,24 часа), в разные дни недели и разные дни года
             Calendar alarmCalendar = Calendar.getInstance();
-            alarmCalendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
-            alarmCalendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+            alarmCalendar.set(Calendar.HOUR_OF_DAY, record.getHour());
+            alarmCalendar.set(Calendar.MINUTE, record.getMinute());
             alarmCalendar.set(Calendar.SECOND, 0);
             if (alarmCalendar.getTimeInMillis() < System.currentTimeMillis()) {
                 alarmCalendar.setTime(new Date(alarmCalendar.getTimeInMillis() + MILLIS_PER_DAY));

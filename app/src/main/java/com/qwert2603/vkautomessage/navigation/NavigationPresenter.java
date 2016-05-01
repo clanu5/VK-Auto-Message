@@ -67,7 +67,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
             mSubscription.unsubscribe();
         }
         mSubscription = mDataManager
-                .getVkUserMyself()
+                .getUserMyself()
                 .subscribe(
                         user -> NavigationPresenter.this.setModel(user),
                         throwable -> {

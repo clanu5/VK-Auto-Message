@@ -101,7 +101,7 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
 
     public void onUserForNewRecordChosen(int userId) {
         mDataManager
-                .getVkUserById(userId)
+                .getUserById(userId)
                 .flatMap(
                         user -> {
                             Record record = new Record();

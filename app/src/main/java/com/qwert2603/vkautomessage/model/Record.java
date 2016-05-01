@@ -1,36 +1,57 @@
 package com.qwert2603.vkautomessage.model;
 
-import com.vk.sdk.api.model.VKApiUser;
-
-import java.util.Date;
-
 public class Record {
 
+    /**
+     * Повтор каждый день через каждые {@link #mRepeatInfo} часов.
+     */
+    public static final int REPEAT_TYPE_HOURS_IN_DAY = 1;
+
+    /**
+     * Повтор в те дни недели, для которых установлен в 1 соответствующий бит {@link #mRepeatInfo}.
+     */
+    public static final int REPEAT_TYPE_DAYS_IN_WEEK = 2;
+
+    /**
+     * Повтор в каждый год в день номер {@link #mRepeatInfo}.
+     */
+    public static final int REPEAT_TYPE_DAY_IN_YEAR = 3;
+
     private int mId;
-    private VKApiUser mUser;
+    private int mUserId;
     private String mMessage;
-    private boolean mIsEnabled;
-    private Date mTime;
-    // TODO: 31.03.2016 добавить разные интервалы отправки - выбираемое кол-во [1, 168] часов.
+    private boolean mEnabled;
 
-    public Record() {
-        this(-1, new VKApiUser(), "", new Date(), false);
-    }
+    private int mRepeatType;
+    private int mRepeatInfo;
+    private int mHour;
+    private int mMinute;
 
-    public Record(int id, VKApiUser user, String message, Date time, boolean isEnabled) {
+    public Record(int id, int userId, String message, boolean enabled, int repeatType, int repeatInfo, int hour, int minute) {
         mId = id;
-        mUser = user;
+        mUserId = userId;
         mMessage = message;
-        mTime = time;
-        mIsEnabled = isEnabled;
+        mEnabled = enabled;
+        mRepeatType = repeatType;
+        mRepeatInfo = repeatInfo;
+        mHour = hour;
+        mMinute = minute;
     }
 
-    public VKApiUser getUser() {
-        return mUser;
+    public int getId() {
+        return mId;
     }
 
-    public void setUser(VKApiUser userName) {
-        mUser = userName;
+    public void setId(int id) {
+        mId = id;
+    }
+
+    public int getUserId() {
+        return mUserId;
+    }
+
+    public void setUserId(int userId) {
+        mUserId = userId;
     }
 
     public String getMessage() {
@@ -41,27 +62,44 @@ public class Record {
         mMessage = message;
     }
 
-    public Date getTime() {
-        return mTime;
-    }
-
-    public void setTime(Date time) {
-        mTime = time;
-    }
-
     public boolean isEnabled() {
-        return mIsEnabled;
+        return mEnabled;
     }
 
-    public void setIsEnabled(boolean isEnabled) {
-        mIsEnabled = isEnabled;
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
     }
 
-    public int getId() {
-        return mId;
+    public int getRepeatType() {
+        return mRepeatType;
     }
 
-    public void setId(int id) {
-        mId = id;
+    public void setRepeatType(int repeatType) {
+        mRepeatType = repeatType;
     }
+
+    public int getRepeatInfo() {
+        return mRepeatInfo;
+    }
+
+    public void setRepeatInfo(int repeatInfo) {
+        mRepeatInfo = repeatInfo;
+    }
+
+    public int getHour() {
+        return mHour;
+    }
+
+    public void setHour(int hour) {
+        mHour = hour;
+    }
+
+    public int getMinute() {
+        return mMinute;
+    }
+
+    public void setMinute(int minute) {
+        mMinute = minute;
+    }
+
 }

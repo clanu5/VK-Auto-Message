@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -83,10 +82,8 @@ public class VkApiHelper {
         return firstFriends.map(friends -> ((VKUsersArray) friends).getCount())
                 .flatMap(i -> Observable.range(0, (i - 1) / FRIENDS_PER_REQUEST + 1))
                 .flatMap(i -> i == 0 ? firstFriends : getFriends(FRIENDS_PER_REQUEST, i * FRIENDS_PER_REQUEST))
-                .reduce((friends1, friends2) -> {
-                    friends1.addAll(friends2);
-                    return friends1;
-                });
+                .flatMap(Observable::from)
+                .toList();
     }
 
     public Observable<List<VKApiUserFull>> getFriends(int count, int offset) {
@@ -137,10 +134,8 @@ public class VkApiHelper {
                 })
                 .map(idsString -> VKParameters.from(VKApiConst.USER_IDS, idsString, VKApiConst.FIELDS, "photo_100"))
                 .flatMap(this::getUsers)
-                .reduce((users1, users2) -> {
-                    users1.addAll(users2);
-                    return users1;
-                });
+                .flatMap(Observable::from)
+                .toList();
     }
 
     /**

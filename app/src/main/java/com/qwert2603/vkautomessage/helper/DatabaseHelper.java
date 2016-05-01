@@ -8,41 +8,33 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
-import com.vk.sdk.api.model.VKApiUser;
-import com.vk.sdk.api.model.VKApiUserFull;
+import com.qwert2603.vkautomessage.model.User;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "records.sqlite";
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     private static final String TABLE_RECORD = "record";
     private static final String COLUMN_RECORD_ID = "_id";
     private static final String COLUMN_RECORD_USER_ID = "user_id";
     private static final String COLUMN_RECORD_MESSAGE = "message";
     private static final String COLUMN_RECORD_ENABLED = "enabled";
-    private static final String COLUMN_RECORD_TIME = "time";
+    private static final String COLUMN_RECORD_REPEAT_TYPE = "repeat_type";
+    private static final String COLUMN_RECORD_REPEAT_INFO = "repeat_info";
+    private static final String COLUMN_RECORD_HOUR = "hour";
+    private static final String COLUMN_RECORD_MINUTE = "minute";
 
     private static final String TABLE_USER = "user";
     private static final String COLUMN_USER_ID = "_id";
     private static final String COLUMN_USER_FIRST_NAME = "first_name";
     private static final String COLUMN_USER_LAST_NAME = "last_name";
     private static final String COLUMN_USER_PHOTO_100 = "photo_100";
-
-    private static final String SELECT_RECORDS_QUERY =
-            "SELECT R." + COLUMN_RECORD_ID + ", R." + COLUMN_RECORD_USER_ID
-                    + ", R." + COLUMN_RECORD_MESSAGE + ", R." + COLUMN_RECORD_ENABLED + ", R." + COLUMN_RECORD_TIME
-                    + ", U." + COLUMN_USER_ID + ", U." + COLUMN_USER_FIRST_NAME
-                    + ", U." + COLUMN_USER_LAST_NAME + ", U." + COLUMN_USER_PHOTO_100
-                    + " FROM " + TABLE_RECORD + " AS R , " + TABLE_USER + " AS U "
-                    + " WHERE (R." + COLUMN_RECORD_USER_ID + " = U." + COLUMN_USER_ID + ") ";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -56,89 +48,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + COLUMN_RECORD_USER_ID + " INTEGER, "
                         + COLUMN_RECORD_MESSAGE + " TEXT, "
                         + COLUMN_RECORD_ENABLED + " INTEGER, "
-                        + COLUMN_RECORD_TIME + " INTEGER" + ")"
+                        + COLUMN_RECORD_REPEAT_TYPE + " INTEGER"
+                        + COLUMN_RECORD_REPEAT_INFO + " INTEGER"
+                        + COLUMN_RECORD_HOUR + " INTEGER"
+                        + COLUMN_RECORD_MINUTE + " INTEGER"
+                        + ")"
         );
         db.execSQL(
                 "CREATE TABLE " + TABLE_USER + " ("
                         + COLUMN_USER_ID + " INTEGER PRIMARY KEY, "
                         + COLUMN_USER_FIRST_NAME + " TEXT, "
                         + COLUMN_USER_LAST_NAME + " TEXT, "
-                        + COLUMN_USER_PHOTO_100 + " TEXT" + ")"
+                        + COLUMN_USER_PHOTO_100 + " TEXT"
+                        + ")"
         );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE " + TABLE_RECORD);
+        db.execSQL("DROP TABLE " + TABLE_USER);
+        onCreate(db);
     }
 
-    public Observable<List<Record>> getAllRecords() {
-        return Observable.defer(() -> Observable.just(doGetAllRecords()));
+    public Observable<List<User>> getAllUsers() {
+        return Observable.defer(() -> Observable.just(doGetAllUsers()));
+    }
+
+    public Observable<List<Record>> getRecordsForUser(int userId) {
+        return Observable.defer(() -> Observable.just(doGetRecordsForUser(userId)));
+    }
+
+    public Observable<User> getUserById(int userId) {
+        return Observable.defer(() -> Observable.just(doGetUserById(userId)));
     }
 
     public Observable<Record> getRecordById(int recordId) {
         return Observable.defer(() -> Observable.just(doGetRecordById(recordId)));
     }
 
-    /**
-     * @return список всех имеющихся в БД пользователей.
-     */
-    public Observable<List<VKApiUserFull>> getAllUsers() {
-        return Observable.defer(() -> Observable.just(doGetAllUsers()));
+    public Observable<Void> insertUser(User user) {
+        return Observable.defer(() -> Observable.just(doInsertUser(user)));
     }
 
-    /**
-     * Обновить фотографию пользователя.
-     *
-     * @param userId   id пользователя.
-     * @param newPhoto url новой фотографии.
-     * @return успешно ли обновление.
-     */
-    public Observable<Boolean> updateUserPhoto(int userId, String newPhoto) {
-        return Observable.defer(() -> Observable.just(doUpdateUserPhoto(userId, newPhoto)));
+    public Observable<Void> deleteUser(int userId) {
+        return Observable.defer(() -> Observable.just(doDeleteUser(userId)));
     }
 
-    /**
-     * Добавить запись record в БД, переданному объекту record будет назначен id.
-     *
-     * @param record запись для добавления.
-     * @return id добавленной записи
-     */
-    public Observable<Long> insertRecord(Record record) {
-        return Observable.create(new Observable.OnSubscribe<Long>() {
-            @Override
-            public void call(Subscriber<? super Long> subscriber) {
-                insertUserIfAbsent(record.getUser());
-                long id = doInsertRecord(record);
-                record.setId((int) id);
-                subscriber.onNext(id);
-                subscriber.onCompleted();
-            }
-        });
+    public Observable<Void> updateUser(User user) {
+        return Observable.defer(() -> Observable.just(doUpdateUser(user)));
     }
 
-    /**
-     * Удалить запись по id.
-     *
-     * @return Observable для кол-ва удаленных записей. (не должно быть больше 1).
-     */
-    public Observable<Integer> deleteRecord(int recordId) {
-        return Observable.create(new Observable.OnSubscribe<Integer>() {
-            @Override
-            public void call(Subscriber<? super Integer> subscriber) {
-                Record record = doGetRecordById(recordId);
-                subscriber.onNext(doDeleteRecord(recordId));
-                deleteUserIfNoRecordsForHim(record.getUser().id);
-                subscriber.onCompleted();
-            }
-        });
+    public Observable<Void> insertRecord(Record record) {
+        return Observable.defer(() -> Observable.just(doInsertRecord(record)));
     }
 
-    /**
-     * Обновить запись.
-     *
-     * @return Observable для кол-ва обновленных записей. (не должно быть больше 1).
-     */
-    public Observable<Integer> updateRecord(Record record) {
+    public Observable<Void> deleteRecord(int recordId) {
+        return Observable.defer(() -> Observable.just(doDeleteRecord(recordId)));
+    }
+
+    public Observable<Void> updateRecord(Record record) {
         return Observable.defer(() -> Observable.just(doUpdateRecord(record)));
     }
 
@@ -155,16 +124,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (isClosed() || isBeforeFirst() || isAfterLast()) {
                 return null;
             }
-            VKApiUser user = new VKApiUser();
-            user.id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
-            user.first_name = getString(getColumnIndex(COLUMN_USER_FIRST_NAME));
-            user.last_name = getString(getColumnIndex(COLUMN_USER_LAST_NAME));
-            user.photo_100 = getString(getColumnIndex(COLUMN_USER_PHOTO_100));
-            int recordId = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_ID));
-            String message = getString(getColumnIndex(COLUMN_RECORD_MESSAGE));
-            boolean enabled = getInt(getColumnIndex(COLUMN_RECORD_ENABLED)) > 0;
-            Date time = new Date(getLong(getColumnIndex(COLUMN_RECORD_TIME)));
-            return new Record(recordId, user, message, time, enabled);
+            int id = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_ID));
+            int userId = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_USER_ID));
+            String message = getString(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_MESSAGE));
+            boolean enabled = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_ENABLED)) > 0;
+            int repeatType = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_REPEAT_TYPE));
+            int repeatInfo = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_REPEAT_INFO));
+            int hour = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_HOUR));
+            int minute = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_MINUTE));
+            return new Record(id, userId, message, enabled, repeatType, repeatInfo, hour, minute);
         }
     }
 
@@ -173,66 +141,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             super(cursor);
         }
 
-        public VKApiUserFull getUser() {
+        public User getUser() {
             if (isClosed() || isBeforeFirst() || isAfterLast()) {
                 return null;
             }
-            VKApiUserFull user = new VKApiUserFull();
-            user.id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
-            user.first_name = getString(getColumnIndex(COLUMN_USER_FIRST_NAME));
-            user.last_name = getString(getColumnIndex(COLUMN_USER_LAST_NAME));
-            user.photo_100 = getString(getColumnIndex(COLUMN_USER_PHOTO_100));
-            return user;
+            int id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
+            String firstName = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_FIRST_NAME));
+            String lastName = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_LAST_NAME));
+            String photo = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_PHOTO_100));
+            return new User(id, firstName, lastName, photo);
         }
     }
 
-    private long doInsertRecord(Record record) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_RECORD_USER_ID, record.getUser().id);
-        contentValues.put(COLUMN_RECORD_MESSAGE, record.getMessage());
-        contentValues.put(COLUMN_RECORD_ENABLED, record.isEnabled() ? 1 : 0);
-        contentValues.put(COLUMN_RECORD_TIME, record.getTime().getTime());
-        return getWritableDatabase().insert(TABLE_RECORD, null, contentValues);
-    }
-
-    private long doInsertUser(VKApiUser user) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_USER_ID, user.id);
-        contentValues.put(COLUMN_USER_FIRST_NAME, user.first_name);
-        contentValues.put(COLUMN_USER_LAST_NAME, user.last_name);
-        contentValues.put(COLUMN_USER_PHOTO_100, user.photo_100);
-        return getWritableDatabase().insert(TABLE_USER, null, contentValues);
-    }
-
-    private int doDeleteRecord(int recordId) {
-        return getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(recordId)});
-    }
-
-    private int doDeleteUser(int userId) {
-        return getWritableDatabase().delete(TABLE_USER, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-    }
-
-    private int doUpdateRecord(Record record) {
-        Record oldRecord = doGetRecordById(record.getId());
-        insertUserIfAbsent(record.getUser());
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_RECORD_ID, record.getId());
-        contentValues.put(COLUMN_RECORD_USER_ID, record.getUser().id);
-        contentValues.put(COLUMN_RECORD_MESSAGE, record.getMessage());
-        contentValues.put(COLUMN_RECORD_ENABLED, record.isEnabled() ? 1 : 0);
-        contentValues.put(COLUMN_RECORD_TIME, record.getTime().getTime());
-        int result = getWritableDatabase()
-                .update(TABLE_RECORD, contentValues, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(record.getId())});
-        if (oldRecord != null && oldRecord.getUser().id != record.getUser().id) {
-            deleteUserIfNoRecordsForHim(oldRecord.getUser().id);
+    private List<User> doGetAllUsers() {
+        UserCursor userCursor = new UserCursor(getReadableDatabase()
+                .query(TABLE_USER, null, null, null, null, null, null));
+        userCursor.moveToFirst();
+        List<User> userList = new ArrayList<>();
+        while (!userCursor.isAfterLast()) {
+            userList.add(userCursor.getUser());
+            userCursor.moveToNext();
         }
-        return result;
+        userCursor.close();
+        return userList;
     }
 
-    private List<Record> doGetAllRecords() {
-        RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
-                .rawQuery(SELECT_RECORDS_QUERY, null));
+    private List<Record> doGetRecordsForUser(int userId) {
+        RecordCursor recordCursor = new RecordCursor(getReadableDatabase().query(
+                TABLE_RECORD,
+                null,
+                COLUMN_RECORD_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)},
+                null,
+                null,
+                null
+        ));
         recordCursor.moveToFirst();
         List<Record> recordList = new ArrayList<>();
         while (!recordCursor.isAfterLast()) {
@@ -243,11 +186,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return recordList;
     }
 
+    private User doGetUserById(int userId) {
+        UserCursor userCursor = new UserCursor(getReadableDatabase().query(
+                TABLE_USER,
+                null,
+                COLUMN_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)},
+                null,
+                null,
+                null,
+                "1"
+        ));
+        userCursor.moveToFirst();
+        User user = null;
+        if (!userCursor.isAfterLast()) {
+            user = userCursor.getUser();
+            userCursor.moveToNext();
+        }
+        userCursor.close();
+        return user;
+    }
+
     private Record doGetRecordById(int recordId) {
-        RecordCursor recordCursor = new RecordCursor(getReadableDatabase()
-                .rawQuery(SELECT_RECORDS_QUERY
-                        + " AND (" + TABLE_RECORD + "." + COLUMN_RECORD_ID + " = " + recordId + ")"
-                        + " LIMIT 1", null));
+        RecordCursor recordCursor = new RecordCursor(getReadableDatabase().query(
+                TABLE_RECORD,
+                null,
+                COLUMN_RECORD_ID + " = ?",
+                new String[]{String.valueOf(recordId)},
+                null,
+                null,
+                null,
+                "1"
+        ));
         recordCursor.moveToFirst();
         Record record = null;
         if (!recordCursor.isAfterLast()) {
@@ -258,25 +228,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return record;
     }
 
-    private List<VKApiUserFull> doGetAllUsers() {
-        UserCursor userCursor = new UserCursor(getReadableDatabase()
-                .query(TABLE_USER, null, null, null, null, null, null));
-        userCursor.moveToFirst();
-        List<VKApiUserFull> userList = new ArrayList<>();
-        while (!userCursor.isAfterLast()) {
-            userList.add(userCursor.getUser());
-            userCursor.moveToNext();
-        }
-        userCursor.close();
-        return userList;
+    private Void doInsertUser(User user) {
+        getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
+        return null;
     }
 
-    private boolean doUpdateUserPhoto(int userId, String newPhoto) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_USER_PHOTO_100, newPhoto);
-        int update = getWritableDatabase()
-                .update(TABLE_USER, contentValues, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-        return update == 1;
+    private Void doDeleteUser(int userId) {
+        getWritableDatabase().delete(TABLE_USER, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        return null;
+    }
+
+    private Void doUpdateUser(User user) {
+        getWritableDatabase().update(
+                TABLE_USER,
+                getContentValuesForUser(user),
+                COLUMN_USER_ID + " = ?",
+                new String[]{String.valueOf(user.getId())}
+        );
+        return null;
+    }
+
+    private Void doInsertRecord(Record record) {
+        ContentValues contentValues = getContentValuesForRecord(record);
+        contentValues.remove(COLUMN_RECORD_ID); // БД сама назначит id.
+        int id = (int) getWritableDatabase().insert(TABLE_RECORD, null, contentValues);
+        record.setId(id);
+        return null;
+    }
+
+    private Void doDeleteRecord(int recordId) {
+        getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(recordId)});
+        return null;
+    }
+
+    private Void doUpdateRecord(Record record) {
+        getWritableDatabase().update(
+                TABLE_RECORD,
+                getContentValuesForRecord(record),
+                COLUMN_RECORD_ID + " = ?",
+                new String[]{String.valueOf(record.getId())}
+        );
+        return null;
     }
 
     private Void doDeleteAllRecordsAndUsers() {
@@ -285,55 +277,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    /**
-     * Объект на котором происходит синхронизация при добавлении и удалении зписей из {@link #TABLE_USER}.
-     */
-    private final Object mObject = new Object();
-
-    /**
-     * Удалить пользователя из {@link #TABLE_USER}, если в {@link #TABLE_RECORD} нет записей для этого пользователя.
-     */
-    private void deleteUserIfNoRecordsForHim(int userId) {
-        if (getRecordCountForUser(userId) == 0 && isUserExist(userId)) {
-            synchronized (mObject) {
-                if (getRecordCountForUser(userId) == 0 && isUserExist(userId)) {
-                    doDeleteUser(userId);
-                }
-            }
-        }
+    private static ContentValues getContentValuesForRecord(Record record) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_RECORD_ID, record.getId());
+        contentValues.put(COLUMN_RECORD_USER_ID, record.getUserId());
+        contentValues.put(COLUMN_RECORD_MESSAGE, record.getMessage());
+        contentValues.put(COLUMN_RECORD_ENABLED, record.isEnabled() ? 1 : 0);
+        contentValues.put(COLUMN_RECORD_REPEAT_TYPE, record.getRepeatType());
+        contentValues.put(COLUMN_RECORD_REPEAT_INFO, record.getRepeatInfo());
+        contentValues.put(COLUMN_RECORD_HOUR, record.getHour());
+        contentValues.put(COLUMN_RECORD_MINUTE, record.getMinute());
+        return contentValues;
     }
 
-    /**
-     * Добавить пользователя, если его еще нет в {@link #TABLE_USER}.
-     */
-    private void insertUserIfAbsent(VKApiUser user) {
-        if (!isUserExist(user.id)) {
-            synchronized (mObject) {
-                if (!isUserExist(user.id)) {
-                    doInsertUser(user);
-                }
-            }
-        }
-    }
-
-    private int getRecordCountForUser(int userId) {
-        Cursor cursor = getReadableDatabase()
-                .rawQuery("SElECT COUNT(*) FROM " + TABLE_RECORD + " WHERE " + COLUMN_RECORD_USER_ID + " = " + userId, null);
-        int result;
-        cursor.moveToFirst();
-        result = cursor.getInt(0);
-        cursor.close();
-        return result;
-    }
-
-    private boolean isUserExist(int userId) {
-        Cursor cursor = getReadableDatabase()
-                .rawQuery("SElECT COUNT(*) FROM " + TABLE_USER + " WHERE " + COLUMN_USER_ID + " = " + userId, null);
-        boolean result;
-        cursor.moveToFirst();
-        result = cursor.getInt(0) > 0;
-        cursor.close();
-        return result;
+    private static ContentValues getContentValuesForUser(User user) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_ID, user.getId());
+        contentValues.put(COLUMN_USER_FIRST_NAME, user.getFirstName());
+        contentValues.put(COLUMN_USER_LAST_NAME, user.getLastName());
+        contentValues.put(COLUMN_USER_PHOTO_100, user.getPhoto());
+        return contentValues;
     }
 
 }

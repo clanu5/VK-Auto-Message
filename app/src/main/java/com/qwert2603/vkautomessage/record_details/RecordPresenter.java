@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -11,6 +10,7 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.Date;
 
@@ -83,17 +83,10 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     public void onUserChosen(int userId) {
-        if (getModel().getUser().id != userId) {
-            mDataManager
-                    .getVkUserById(userId)
-                    .subscribe(
-                            user -> {
-                                getModel().setUser(user);
-                                updateView();
-                                mDataManager.justUpdateRecord(getModel());
-                            },
-                            LogUtils::e
-                    );
+        if (getModel().getUserId() != userId) {
+            getModel().setUserId(userId);
+            updateView();
+            mDataManager.onRecordUpdated(getModel());
         }
     }
 
@@ -101,14 +94,14 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         if (getModel().getTime().getTime() != time) {
             getModel().setTime(new Date(time));
             getView().showTime(getTimeString());
-            mDataManager.justUpdateRecord(getModel());
+            mDataManager.onRecordUpdated(getModel());
         }
     }
 
     public void onEnableClicked(boolean enable) {
         if (getModel().isEnabled() != enable) {
-            getModel().setIsEnabled(enable);
-            mDataManager.justUpdateRecord(getModel());
+            getModel().setEnabled(enable);
+            mDataManager.onRecordUpdated(getModel());
         }
     }
 
@@ -120,12 +113,12 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
         if (!getModel().getMessage().equals(message)) {
             getModel().setMessage(message);
             getView().showMessage(message);
-            mDataManager.justUpdateRecord(getModel());
+            mDataManager.onRecordUpdated(getModel());
         }
     }
 
     public void onChooseUserClicked() {
-        getView().showChooseUser(getModel().getUser().id);
+        getView().showChooseUser(getModel().getUserId());
     }
 
     public void onEditMessageClicked() {
@@ -137,6 +130,7 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
     }
 
     private String getTimeString() {
-        return DateFormat.format("kk:mm", getModel().getTime()).toString();
+        Record record = getModel();
+        return StringUtils.getRecordTime(record);
     }
 }

@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.util;
 
-import com.vk.sdk.api.model.VKApiUser;
+import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.User;
 
 public final class StringUtils {
 
@@ -14,8 +15,12 @@ public final class StringUtils {
     /**
      * Полное имя пользователя.
      */
-    public static String getUserName(VKApiUser user) {
-        return user.first_name + " " + user.last_name;
+    public static String getUserName(User user) {
+        return user.getFirstName() + " " + user.getLastName();
+    }
+
+    public static String getRecordTime(Record record) {
+        return record.getHour() + ":" + record.getMinute();
     }
 
 }
