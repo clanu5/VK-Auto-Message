@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.record_list;
+package com.qwert2603.vkautomessage.user_list;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,9 +16,10 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
-import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
-import com.qwert2603.vkautomessage.model.Record;
-import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
+import com.qwert2603.vkautomessage.model.User;
+import com.qwert2603.vkautomessage.record_list.RecordListActivity;
+import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 
 import java.util.List;
 
@@ -27,16 +28,10 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecordListFragment extends BaseFragment<RecordListPresenter> implements RecordListView {
+public class UserListFragment extends BaseFragment<UserListPresenter> implements UserListView {
 
-    private static final String userIdKey = "userId";
-
-    public static RecordListFragment newInstance(int userId) {
-        RecordListFragment recordListFragment = new RecordListFragment();
-        Bundle args = new Bundle();
-        args.putInt(userIdKey, userId);
-        recordListFragment.setArguments(args);
-        return recordListFragment;
+    public static UserListFragment newInstance() {
+        return new UserListFragment();
     }
 
     private static final int POSITION_RECYCLER_VIEW = 0;
@@ -44,7 +39,8 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
 
-    private static final int REQUEST_DELETE_RECORD = 1;
+    private static final int REQUEST_CHOOSE_USER = 1;
+    private static final int REQUEST_DELETE_USER = 2;
 
     @BindView(R.id.view_animator)
     ViewAnimator mViewAnimator;
@@ -56,18 +52,17 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     FloatingActionButton mNewRecordFAB;
 
     @Inject
-    RecordListPresenter mRecordListPresenter;
+    UserListPresenter mUserListPresenter;
 
     @NonNull
     @Override
-    protected RecordListPresenter getPresenter() {
-        return mRecordListPresenter;
+    protected UserListPresenter getPresenter() {
+        return mUserListPresenter;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
-        mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
+        VkAutoMessageApplication.getAppComponent().inject(UserListFragment.this);
         super.onCreate(savedInstanceState);
     }
 
@@ -76,22 +71,15 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_record_list, container, false);
 
-        ButterKnife.bind(RecordListFragment.this, view);
+        ButterKnife.bind(UserListFragment.this, view);
 
         mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
 
-        mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
+        mNewRecordFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // TODO: 03.05.2016 надо ли это?
-        mRecordListPresenter.onResume();
     }
 
     @Override
@@ -101,9 +89,14 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
             return;
         }
         switch (requestCode) {
-            case REQUEST_DELETE_RECORD:
-                int recordId = data.getIntExtra(DeleteRecordDialog.EXTRA_RECORD_TO_DELETE_ID, 0);
-                mRecordListPresenter.onRecordDeleteClicked(recordId);
+            case REQUEST_CHOOSE_USER:
+                int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
+                mUserListPresenter.onUserChosen(userId);
+                break;
+            case REQUEST_DELETE_USER:
+                // TODO: 03.05.2016
+                int deletingUserId = 14;
+                mUserListPresenter.onUserDeleteClicked(deletingUserId);
                 break;
         }
     }
@@ -124,36 +117,36 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     }
 
     @Override
-    public void showList(List<Record> list) {
+    public void showList(List<User> list) {
         setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
-        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
+        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
         if (adapter != null && adapter.isShowingList(list)) {
             adapter.notifyDataSetChanged();
         } else {
-            adapter = new RecordListAdapter(list);
-            adapter.setClickCallbacks(position -> mRecordListPresenter.onRecordAtPositionClicked(position));
-            adapter.setLongClickCallbacks(position -> mRecordListPresenter.onRecordAtPositionLongClicked(position));
+            adapter = new UserListAdapter(list);
+            adapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
+            adapter.setLongClickCallbacks(mUserListPresenter::onUserAtPositionLongClicked);
             mRecyclerView.setAdapter(adapter);
         }
     }
 
     @Override
-    public void showUserName(String userName) {
-        getActivity().setTitle(userName);
+    public void moveToRecordsForUser(int userId) {
+        Intent intent = new Intent(getActivity(), RecordListActivity.class);
+        intent.putExtra(RecordListActivity.EXTRA_USER_ID, userId);
+        startActivity(intent);
     }
 
     @Override
-    public void moveToRecordDetails(int recordId) {
-        Intent intent = new Intent(getActivity(), RecordActivity.class);
-        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
-        getActivity().startActivity(intent);
+    public void showChooseUser() {
+        ChooseUserDialog userListDialog = ChooseUserDialog.newInstance();
+        userListDialog.setTargetFragment(UserListFragment.this, REQUEST_CHOOSE_USER);
+        userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
     }
 
     @Override
-    public void showDeleteRecord(int recordId) {
-        DeleteRecordDialog deleteRecordDialog = DeleteRecordDialog.newInstance(recordId);
-        deleteRecordDialog.setTargetFragment(RecordListFragment.this, REQUEST_DELETE_RECORD);
-        deleteRecordDialog.show(getFragmentManager(), deleteRecordDialog.getClass().getName());
+    public void showDeleteUser(int userId) {
+        // TODO: 03.05.2016
     }
 
     @Override

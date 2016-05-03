@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.user_list;
+package com.qwert2603.vkautomessage.choose_user;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,7 @@ import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
+import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
@@ -20,9 +21,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapter.UserViewHolder, UserPresenter> {
+public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, ChooseUserAdapter.UserViewHolder, UserPresenter> {
 
-    public UserListAdapter(List<User> modelList) {
+    public ChooseUserAdapter(List<VKApiUserFull> modelList) {
         super(modelList);
     }
 
@@ -33,7 +34,7 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
     }
 
     public class UserViewHolder
-            extends BaseRecyclerViewAdapter<User, ?, UserPresenter>.RecyclerViewHolder
+            extends BaseRecyclerViewAdapter<VKApiUserFull, ?, UserPresenter>.RecyclerViewHolder
             implements UserView {
 
         @BindView(R.id.photo_image_view)
@@ -41,7 +42,7 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
 
         @BindView(R.id.user_name_text_view)
         TextView mUsernameTextView;
-
+        
         @BindView(R.id.records_count_text_view)
         TextView mRecordsCountTextView;
 
@@ -52,6 +53,7 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
             super(itemView);
             VkAutoMessageApplication.getAppComponent().inject(UserViewHolder.this);
             ButterKnife.bind(UserViewHolder.this, itemView);
+            mRecordsCountTextView.setText("");
         }
 
         @Override
@@ -60,8 +62,8 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         }
 
         @Override
-        protected void setModel(User user) {
-            mUserPresenter.setUser(user);
+        protected void setModel(VKApiUserFull vkApiUserFull) {
+            mUserPresenter.setUser(new User(vkApiUserFull));
         }
 
         @Override
@@ -81,8 +83,7 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         }
 
         @Override
-        public void showRecordsCount(String string) {
-            mRecordsCountTextView.setText(string);
+        public void showRecordsCount(String s) {
         }
     }
 }

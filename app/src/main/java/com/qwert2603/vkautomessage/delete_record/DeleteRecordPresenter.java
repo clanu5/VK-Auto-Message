@@ -6,20 +6,23 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.RecordWithUser;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
-public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordView> {
+public class DeleteRecordPresenter extends BasePresenter<RecordWithUser, DeleteRecordView> {
 
     private static final int MESSAGE_LENGTH_LIMIT = 52;
 
-    private Subscription mSubscription;
+    private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -29,15 +32,13 @@ public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordVie
     }
 
     public void setRecordId(int recordId) {
+        mSubscription.unsubscribe();
         mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
                         record -> DeleteRecordPresenter.this.setModel(record),
                         throwable -> {
-                            if (mSubscription != null) {
-                                mSubscription.unsubscribe();
-                                mSubscription = null;
-                            }
+                            mSubscription.unsubscribe();
                             LogUtils.e(throwable);
                         }
                 );
@@ -45,27 +46,31 @@ public class DeleteRecordPresenter extends BasePresenter<Record, DeleteRecordVie
 
     @Override
     protected void onUpdateView(@NonNull DeleteRecordView view) {
-        Record record = getModel();
-        if (record == null) {
-            view.showEmpty();
+        RecordWithUser recordWithUser = getModel();
+        if (recordWithUser == null) {
+            view.showLoading();
             return;
         }
-        view.showUserName(getUserName(record.getUser()));
-        view.showMessage(noMore(record.getMessage(), MESSAGE_LENGTH_LIMIT));
+        Record record = recordWithUser.mRecord;
+        User user = recordWithUser.mUser;
+        if (user != null) {
+            view.showUserName(getUserName(user));
+        }
+        if (record != null) {
+            view.showMessage(noMore(record.getMessage(), MESSAGE_LENGTH_LIMIT));
+        }
     }
 
     @Override
     public void unbindView() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        mSubscription.unsubscribe();
         super.unbindView();
     }
 
     public void onSubmitClicked() {
-        Record record = getModel();
+        Record record = getModel().mRecord;
         if (record != null) {
-            getView().submitDone(getModel().getId());
+            getView().submitDone(record.getId());
         }
     }
 }

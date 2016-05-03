@@ -2,8 +2,6 @@ package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.qwert2603.vkautomessage.R;
@@ -19,22 +17,9 @@ public class RecordActivity extends NavigationActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
-        if (fragment == null) {
-            int recordId = getIntent().getIntExtra(EXTRA_RECORD_ID, -1);
-            fragment = RecordFragment.newInstance(recordId);
-            getFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, fragment)
-                    .commitAllowingStateLoss();
-        }
+    protected Fragment createFragment() {
+        int recordId = getIntent().getIntExtra(EXTRA_RECORD_ID, -1);
+        return RecordFragment.newInstance(recordId);
     }
 
     @Override

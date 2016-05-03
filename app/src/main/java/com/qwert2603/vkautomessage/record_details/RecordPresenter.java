@@ -1,28 +1,29 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.support.annotation.NonNull;
-import android.text.format.DateFormat;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.RecordWithUser;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
-
-import java.util.Date;
 
 import javax.inject.Inject;
 
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
-public class RecordPresenter extends BasePresenter<Record, RecordView> {
+public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
-    private Subscription mSubscription;
+    private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -33,29 +34,25 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     public void setRecordId(int recordId) {
         setModel(null);
+        mSubscription.unsubscribe();
         mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
                         record -> RecordPresenter.this.setModel(record),
                         throwable -> {
-                            if (mSubscription != null) {
-                                mSubscription.unsubscribe();
-                                mSubscription = null;
-                            }
+                            mSubscription.unsubscribe();
                             LogUtils.e(throwable);
                         }
                 );
     }
 
     public void setRecord(Record record) {
-        setModel(record);
+        setModel(new RecordWithUser(record, null));
     }
 
     @Override
     public void unbindView() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        mSubscription.unsubscribe();
         super.unbindView();
     }
 
@@ -70,38 +67,50 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
 
     @Override
     protected void onUpdateView(@NonNull RecordView view) {
-        Record record = getModel();
-        if (record == null) {
+        RecordWithUser recordWithUser = getModel();
+        if (recordWithUser == null) {
             view.showLoading();
             return;
         }
-        ImageLoader.getInstance().displayImage(record.getUser().photo_100, view.getPhotoImageView());
-        view.showUserName(getUserName(record.getUser()));
-        view.showMessage(record.getMessage());
-        view.showEnabled(record.isEnabled());
-        view.showTime(getTimeString());
-    }
-
-    public void onUserChosen(int userId) {
-        if (getModel().getUserId() != userId) {
-            getModel().setUserId(userId);
-            updateView();
-            mDataManager.onRecordUpdated(getModel());
+        User user = recordWithUser.mUser;
+        Record record = recordWithUser.mRecord;
+        if (user != null) {
+            if (view.getPhotoImageView() != null) {
+                ImageLoader.getInstance().displayImage(user.getPhoto(), view.getPhotoImageView());
+            }
+            view.showUserName(getUserName(user));
+        }
+        if (record != null) {
+            view.showMessage(record.getMessage());
+            view.showEnabled(record.isEnabled());
+            view.showTime(getTimeString());
         }
     }
 
-    public void onTimeEdited(long time) {
-        if (getModel().getTime().getTime() != time) {
-            getModel().setTime(new Date(time));
+    public void onUserChosen(int userId) {
+        if (getModel().mRecord.getUserId() != userId) {
+            getModel().mRecord.setUserId(userId);
+            updateView();
+            mDataManager.onRecordUpdated(getModel().mRecord);
+        }
+    }
+
+    public void onTimeEdited(int minuteAtDay) {
+        Record record = getModel().mRecord;
+        int newHour = minuteAtDay / Const.MINUTES_PER_HOUR;
+        int newMinute = minuteAtDay % Const.MINUTES_PER_HOUR;
+        if (newHour != record.getHour() || newMinute != record.getMinute()) {
+            record.setHour(newHour);
+            record.setMinute(newMinute);
             getView().showTime(getTimeString());
-            mDataManager.onRecordUpdated(getModel());
+            mDataManager.onRecordUpdated(getModel().mRecord);
         }
     }
 
     public void onEnableClicked(boolean enable) {
-        if (getModel().isEnabled() != enable) {
-            getModel().setEnabled(enable);
-            mDataManager.onRecordUpdated(getModel());
+        if (getModel().mRecord.isEnabled() != enable) {
+            getModel().mRecord.setEnabled(enable);
+            mDataManager.onRecordUpdated(getModel().mRecord);
         }
     }
 
@@ -110,27 +119,28 @@ public class RecordPresenter extends BasePresenter<Record, RecordView> {
             getView().showToast(R.string.empty_message_toast);
             return;
         }
-        if (!getModel().getMessage().equals(message)) {
-            getModel().setMessage(message);
+        if (!getModel().mRecord.getMessage().equals(message)) {
+            getModel().mRecord.setMessage(message);
             getView().showMessage(message);
-            mDataManager.onRecordUpdated(getModel());
+            mDataManager.onRecordUpdated(getModel().mRecord);
         }
     }
 
-    public void onChooseUserClicked() {
-        getView().showChooseUser(getModel().getUserId());
-    }
-
     public void onEditMessageClicked() {
-        getView().showEditMessage(getModel().getMessage());
+        getView().showEditMessage(getModel().mRecord.getMessage());
     }
 
     public void onChooseTimeClicked() {
-        getView().showEditTime(getModel().getTime().getTime());
+        Record record = getModel().mRecord;
+        getView().showEditTime(record.getHour() * Const.MINUTES_PER_HOUR + record.getMinute());
+    }
+
+    public void onChooseDayClocked() {
+        // TODO: 03.05.2016
     }
 
     private String getTimeString() {
-        Record record = getModel();
+        Record record = getModel().mRecord;
         return StringUtils.getRecordTime(record);
     }
 }

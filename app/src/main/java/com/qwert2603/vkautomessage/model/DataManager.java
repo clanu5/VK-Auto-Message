@@ -10,6 +10,7 @@ import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
@@ -61,10 +62,11 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
-    public Observable<List<Record>> getRecordsForUser(int userId) {
-        return mDatabaseHelper.getRecordsForUser(userId)
+    public Observable<RecordListWithUser> getRecordsForUser(int userId) {
+        Observable<List<Record>> records = mDatabaseHelper.getRecordsForUser(userId)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
+        return Observable.zip(records, getUserById(userId), RecordListWithUser::new);
     }
 
     /**
@@ -77,16 +79,20 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
-    public Observable<Record> getRecordById(int recordId) {
-        return mDatabaseHelper.getRecordById(recordId)
+    public Observable<RecordWithUser> getRecordById(int recordId) {
+        Observable<Record> record = mDatabaseHelper.getRecordById(recordId)
                 .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .observeOn(mUiScheduler).cache();
+        Observable<User> user = record
+                .map(Record::getUserId)
+                .flatMap(this::getUserById);
+        return Observable.zip(record, user, RecordWithUser::new);
     }
-
     public Observable<List<Record>> getAllRecords() {
         return getAllUsers()
                 .flatMap(Observable::from)
                 .flatMap(user -> getRecordsForUser(user.getId()))
+                .map(recordListWithUser -> recordListWithUser.mRecordList)
                 .flatMap(Observable::from)
                 .toList();
     }
@@ -97,8 +103,13 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
+    /**
+     * Удалить пользователя и все записи для него.
+     * Запланированные отправки будут отменены.
+     */
     public Observable<Void> removeUser(int userId) {
         Observable<Void> deleteRecordsObservable = getRecordsForUser(userId)
+                .map(recordListWithUser -> recordListWithUser.mRecordList)
                 .flatMap(Observable::from)
                 .doOnNext(record -> mSendMessageHelper.onRecordRemoved(record.getId()))
                 .doOnNext(record -> mDatabaseHelper.deleteRecord(record.getId()))
@@ -145,13 +156,13 @@ public class DataManager {
         );
     }
 
-    public Observable<List<User>> getAllVkFriends() {
-        Observable<List<User>> friends = mVkApiHelper.getFriends()
-                .flatMap(Observable::from)
-                .map(User::new)
-                .toList()
-                .cache();
-        updateUsersInDatabase(friends);
+    public Observable<List<VKApiUserFull>> getAllVkFriends() {
+        Observable<List<VKApiUserFull>> friends = mVkApiHelper.getFriends().cache();
+        updateUsersInDatabase(
+                friends.flatMap(Observable::from)
+                        .map(User::new)
+                        .toList()
+        );
         return friends
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);

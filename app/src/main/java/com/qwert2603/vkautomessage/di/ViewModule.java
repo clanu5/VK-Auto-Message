@@ -6,6 +6,7 @@ import com.qwert2603.vkautomessage.edit_time.EditTimePresenter;
 import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_list.RecordListPresenter;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_list.UserListPresenter;
 
@@ -23,6 +24,11 @@ public class ViewModule {
     @Provides
     RecordPresenter provideRecordPresenter() {
         return new RecordPresenter();
+    }
+
+    @Provides
+    ChooseUserPresenter provideChooseUserPresenter() {
+        return new ChooseUserPresenter();
     }
 
     @Provides

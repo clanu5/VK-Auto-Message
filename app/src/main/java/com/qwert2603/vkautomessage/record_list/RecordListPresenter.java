@@ -2,85 +2,60 @@ package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.Const;
-import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.RecordListWithUser;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
-public class RecordListPresenter extends BasePresenter<List<Record>, RecordListView> {
+public class RecordListPresenter extends BasePresenter<RecordListWithUser, RecordListView> {
 
-    private Subscription mSubscription;
+    private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
 
-    @Inject
-    RxBus mRxBus;
-
-    @Inject
-    @Named(Const.UI_THREAD)
-    Scheduler mUiScheduler;
+    private int mUserId;
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
-        mRxBus.toObservable()
-                .observeOn(mUiScheduler)
-                .subscribe(o -> {
-                    if ((o instanceof Integer)) {
-                        int integer = (Integer) o;
-                        if (integer == RxBus.EVENT_USERS_PHOTO_UPDATED) {
-                            updateView();
-                        }
-                    }
-                });
     }
 
-    @Override
-    public void bindView(RecordListView view) {
-        super.bindView(view);
-        if (getModel() == null && mSubscription == null) {
-            loadRecordList();
-        }
+    public void setUserId(int userId) {
+        setModel(null);
+        mSubscription.unsubscribe();
+        mUserId = userId;
+        loadRecordList();
     }
 
     @Override
     public void unbindView() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        mSubscription.unsubscribe();
         super.unbindView();
     }
 
     @Override
     protected void onUpdateView(@NonNull RecordListView view) {
-        List<Record> recordList = getModel();
-        if (recordList == null) {
-            if (mSubscription == null) {
+        RecordListWithUser recordListWithUser = getModel();
+        if (recordListWithUser == null) {
+            if (mSubscription.isUnsubscribed()) {
                 view.showError();
             } else {
                 view.showLoading();
             }
         } else {
+            List<Record> recordList = recordListWithUser.mRecordList;
             if (recordList.isEmpty()) {
                 view.showEmpty();
             } else {
-                // TODO: 02.04.2016 сделать группировку по пользователям.
-                /*
-                 * при запуске приложения появляется список пользователей, для которых есть записи.
-                 * при нажатии на пользователя открывается список записей для этого пользователя.
-                 */
                 view.showList(recordList);
             }
         }
@@ -96,45 +71,29 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     public void onNewRecordClicked() {
-        getView().showChooseUser(0);
-    }
-
-    public void onUserForNewRecordChosen(int userId) {
-        mDataManager
-                .getUserById(userId)
-                .flatMap(
-                        user -> {
-                            Record record = new Record();
-                            record.setMessage("VK Auto Message");
-                            record.setUser(user);
-                            record.setTime(new Date());
-                            return mDataManager.addRecord(record);
-                        }
-                )
-                .subscribe(
-                        recordId -> {
-                            RecordListView view = getView();
-                            if (view != null) {
-                                view.moveToRecordDetails(recordId.intValue());
-                            }
-                        },
-                        LogUtils::e);
+        Record record = new Record(mUserId);
+        mDataManager.addRecord(record)
+                .subscribe(aVoid -> {
+                    RecordListView view = getView();
+                    if (view != null) {
+                        view.moveToRecordDetails(record.getId());
+                    }
+                }, LogUtils::e);
     }
 
     public void onRecordAtPositionClicked(int position) {
-        getView().moveToRecordDetails(getModel().get(position).getId());
+        getView().moveToRecordDetails(getModel().mRecordList.get(position).getId());
     }
 
     public void onRecordAtPositionLongClicked(int position) {
-        getView().showDeleteRecord(getModel().get(position).getId());
+        getView().showDeleteRecord(getModel().mRecordList.get(position).getId());
     }
 
     public void onRecordDeleteClicked(int recordId) {
         int position = getRecordPosition(recordId);
-        mDataManager
-                .removeRecord(recordId)
+        mDataManager.removeRecord(recordId)
                 .subscribe(aLong -> {
-                    if (getModel().size() > 1) {
+                    if (getModel().mRecordList.size() > 1) {
                         RecordListView view = getView();
                         if (view != null) {
                             view.notifyItemRemoved(position);
@@ -146,18 +105,12 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     private void loadRecordList() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-        mSubscription = mDataManager
-                .getAllRecords()
+        mSubscription.unsubscribe();
+        mSubscription = mDataManager.getRecordsForUser(mUserId)
                 .subscribe(
-                        records -> RecordListPresenter.this.setModel(records),
+                        recordListWithUser -> RecordListPresenter.this.setModel(recordListWithUser),
                         throwable -> {
-                            if (mSubscription != null) {
-                                mSubscription.unsubscribe();
-                                mSubscription = null;
-                            }
+                            mSubscription.unsubscribe();
                             updateView();
                             LogUtils.e(throwable);
                         }
@@ -165,8 +118,8 @@ public class RecordListPresenter extends BasePresenter<List<Record>, RecordListV
     }
 
     private int getRecordPosition(int recordId) {
-        List<Record> recordList = getModel();
-        for (int i = 0, size = (recordList == null ? 0 : recordList.size()); i < size; i++) {
+        List<Record> recordList = getModel().mRecordList;
+        for (int i = 0, size = recordList.size(); i < size; ++i) {
             if (recordList.get(i).getId() == recordId) {
                 return i;
             }

@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.user_list;
+package com.qwert2603.vkautomessage.choose_user;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -21,6 +21,7 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
+import com.qwert2603.vkautomessage.user_list.UserListAdapter;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
@@ -30,17 +31,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UserListDialog extends BaseDialog<UserListPresenter> implements UserListView {
-
-    private static final String selectedUserIdKey = "selectedUserId";
+public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements ChooseUserView {
+    
     public static final String EXTRA_SELECTED_USER_ID = "com.qwert2603.vkautomessage.EXTRA_SELECTED_USER_ID";
 
-    public static UserListDialog newInstance(int selectedUserId) {
-        UserListDialog userListDialog = new UserListDialog();
-        Bundle args = new Bundle();
-        args.putInt(selectedUserIdKey, selectedUserId);
-        userListDialog.setArguments(args);
-        return userListDialog;
+    public static ChooseUserDialog newInstance() {
+        return new ChooseUserDialog();
     }
 
     private static final int POSITION_REFRESH_LAYOUT = 0;
@@ -62,41 +58,40 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     EditText mSearchEditText;
 
     @Inject
-    UserListPresenter mUserListPresenter;
+    ChooseUserPresenter mChooseUserPresenter;
 
     @NonNull
     @Override
-    protected UserListPresenter getPresenter() {
-        return mUserListPresenter;
+    protected ChooseUserPresenter getPresenter() {
+        return mChooseUserPresenter;
     }
 
     @Override
-    protected void setPresenter(@NonNull UserListPresenter presenter) {
-        mUserListPresenter = presenter;
+    protected void setPresenter(@NonNull ChooseUserPresenter presenter) {
+        mChooseUserPresenter = presenter;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        VkAutoMessageApplication.getAppComponent().inject(UserListDialog.this);
-        mUserListPresenter.setSelectedUserId(getArguments().getInt(selectedUserIdKey));
+        VkAutoMessageApplication.getAppComponent().inject(ChooseUserDialog.this);
         super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_list, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_choose_user, null);
 
-        ButterKnife.bind(UserListDialog.this, view);
+        ButterKnife.bind(ChooseUserDialog.this, view);
 
-        mRefreshLayout.setOnRefreshListener(mUserListPresenter::onReload);
+        mRefreshLayout.setOnRefreshListener(mChooseUserPresenter::onReload);
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReload());
 
-        mSearchEditText.setText(mUserListPresenter.getCurrentQuery());
+        mSearchEditText.setText(mChooseUserPresenter.getCurrentQuery());
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -104,7 +99,7 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mUserListPresenter.onSearchQueryChanged(s.toString());
+                mChooseUserPresenter.onSearchQueryChanged(s.toString());
             }
 
             @Override
@@ -115,7 +110,6 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.submit), (dialog, which) -> mUserListPresenter.onSubmitClicked())
                 .create();
     }
 
@@ -138,8 +132,8 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     }
 
     @Override
-    public void setSelectedItemPosition(int position) {
-        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
+    public void showItemSelected(int position) {
+        ChooseUserAdapter adapter = (ChooseUserAdapter) mRecyclerView.getAdapter();
         if (adapter != null) {
             adapter.setSelectedItemPosition(position);
         }
@@ -148,20 +142,6 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
     @Override
     public void showNothingFound() {
         setViewAnimatorDisplayedChild(POSITION_NOTHING_FOUND_TEXT_VIEW);
-    }
-
-    @Override
-    public void showListWithSelectedItem(List<VKApiUserFull> list, int selectedPosition) {
-        setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
-        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null && adapter.isShowingList(list)) {
-            adapter.notifyDataSetChanged();
-            adapter.setSelectedItemPosition(selectedPosition);
-        } else {
-            adapter = new UserListAdapter(list, selectedPosition);
-            adapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
-            mRecyclerView.setAdapter(adapter);
-        }
     }
 
     @Override
@@ -181,7 +161,15 @@ public class UserListDialog extends BaseDialog<UserListPresenter> implements Use
 
     @Override
     public void showList(List<VKApiUserFull> list) {
-        showListWithSelectedItem(list, -1);
+        setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
+        ChooseUserAdapter adapter = (ChooseUserAdapter) mRecyclerView.getAdapter();
+        if (adapter != null && adapter.isShowingList(list)) {
+            adapter.notifyDataSetChanged();
+        } else {
+            adapter = new ChooseUserAdapter(list);
+            adapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
+            mRecyclerView.setAdapter(adapter);
+        }
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

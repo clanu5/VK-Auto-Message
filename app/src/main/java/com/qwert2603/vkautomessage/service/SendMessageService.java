@@ -43,13 +43,14 @@ public class SendMessageService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         mDataManager
                 .getRecordById(intent.getIntExtra(EXTRA_RECORD_ID, 0))
-                .flatMap(record -> {
+                .flatMap(recordWithUser -> {
                     if (!InternetUtils.isInternetConnected(SendMessageService.this)) {
                         Throwable throwable = new VkApiHelper.SendMessageException
-                                ("SendMessageService ## Internet not connected!", record);
+                                ("SendMessageService ## Internet not connected!", recordWithUser);
                         return Observable.error(throwable);
                     }
-                    return mDataManager.sendVkMessage(record.getUserId(), record.getMessage(), record);
+                    User user = recordWithUser.mUser;
+                    return mDataManager.sendVkMessage(user.getId(), recordWithUser.mRecord.getMessage(), recordWithUser);
                 })
                 .subscribe(
                         record -> {

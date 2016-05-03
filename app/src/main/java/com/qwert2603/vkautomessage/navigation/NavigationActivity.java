@@ -1,12 +1,14 @@
 package com.qwert2603.vkautomessage.navigation;
 
 import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +46,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     NavigationPresenter mNavigationPresenter;
 
     protected abstract boolean isNavigationButtonVisible();
+
+    protected abstract Fragment createFragment();
 
     @SuppressLint("InflateParams")
     @Override
@@ -94,6 +98,23 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
         mNavigationPresenter.bindView(this);
         mNavigationPresenter.onViewReady();
+
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+        if (fragment == null) {
+            fragment = createFragment();
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fragment_container, fragment)
+                    .commitAllowingStateLoss();
+        }
+
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            if (mIsNavigationButtonVisible) {
+                supportActionBar.setHomeButtonEnabled(true);
+            }
+        }
     }
 
     @Override

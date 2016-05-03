@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.model;
 
+import java.util.Calendar;
+
 public class Record {
 
     /**
@@ -26,6 +28,18 @@ public class Record {
     private int mRepeatInfo;
     private int mHour;
     private int mMinute;
+
+    public Record(int userId) {
+        mUserId = userId;
+        mMessage = "Vk Auto Message";
+        mRepeatType = REPEAT_TYPE_HOURS_IN_DAY;
+        mRepeatInfo = 24;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        mHour = calendar.get(Calendar.HOUR_OF_DAY);
+        mMinute = calendar.get(Calendar.MINUTE);
+    }
 
     public Record(int id, int userId, String message, boolean enabled, int repeatType, int repeatInfo, int hour, int minute) {
         mId = id;

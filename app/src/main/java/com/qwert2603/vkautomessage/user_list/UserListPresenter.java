@@ -2,166 +2,134 @@ package com.qwert2603.vkautomessage.user_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.Const;
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.vk.sdk.api.model.VKApiUserFull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import rx.Scheduler;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
-public class UserListPresenter extends BasePresenter<List<VKApiUserFull>, UserListView> {
+public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
 
-    private Subscription mSubscription;
-    private boolean mIsLoading;
-    private int mSelectedUserId = 0;
-    private int mSelectedUserPosition = -1;
-
-    private String mQuery;
-    private List<VKApiUserFull> mShowingUserList;
+    private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
 
+    @Inject
+    RxBus mRxBus;
+
+    @Inject
+    @Named(Const.UI_THREAD)
+    Scheduler mUiScheduler;
+
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
+        mRxBus.toObservable()
+                .observeOn(mUiScheduler)
+                .subscribe(o -> {
+                    if ((o instanceof Integer)) {
+                        int integer = (Integer) o;
+                        if (integer == RxBus.EVENT_USERS_PHOTO_UPDATED) {
+                            updateView();
+                        }
+                    }
+                });
     }
 
     @Override
     public void bindView(UserListView view) {
         super.bindView(view);
-        if (getModel() == null && mSubscription == null) {
-            loadFriendsList();
+        if (getModel() == null && mSubscription.isUnsubscribed()) {
+            loadUserList();
         }
-    }
-
-    public void setSelectedUserId(int selectedUserId) {
-        mSelectedUserId = selectedUserId;
     }
 
     @Override
     protected void onUpdateView(@NonNull UserListView view) {
-        if (mShowingUserList == null) {
-            view.setRefreshingConfig(false, false);
-            if (mSubscription == null) {
+        List<User> userList = getModel();
+        if (userList == null) {
+            if (mSubscription.isUnsubscribed()) {
                 view.showError();
             } else {
                 view.showLoading();
             }
         } else {
-            view.setRefreshingConfig(true, mIsLoading);
-            if (mShowingUserList.isEmpty()) {
-                if (mQuery == null || mQuery.isEmpty()) {
-                    view.showEmpty();
-                } else {
-                    view.showNothingFound();
-                }
+            if (userList.isEmpty()) {
+                view.showEmpty();
             } else {
-                view.showListWithSelectedItem(mShowingUserList, mSelectedUserPosition);
+                view.showList(userList);
             }
         }
-    }
-
-    @Override
-    public void unbindView() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-        super.unbindView();
-    }
-
-    @Override
-    protected void setModel(List<VKApiUserFull> userList) {
-        super.setModel(userList);
-        doSearch();
-        updateView();
-    }
-
-    public String getCurrentQuery() {
-        return mQuery;
-    }
-
-    public void onReload() {
-        loadFriendsList();
-        updateView();
     }
 
     public void onUserAtPositionClicked(int position) {
-        VKApiUserFull user = mShowingUserList.get(position);
-        if (user.can_write_private_message) {
-            mSelectedUserId = user.id;
-            mSelectedUserPosition = position;
-            getView().setSelectedItemPosition(mSelectedUserPosition);
-        } else {
-            getView().showCantWrite();
-        }
+        getView().moveToRecordsForUser(getModel().get(position).getId());
     }
 
-    public void onSubmitClicked() {
-        getView().submitDode(mSelectedUserId);
+    public void onUserAtPositionLongClicked(int position) {
+        getView().showDeleteUser(getModel().get(position).getId());
     }
 
-    public void onSearchQueryChanged(String query) {
-        mQuery = query.toLowerCase();
-        doSearch();
+    public void onUserDeleteClicked(int userId) {
+        int position = getUserPosition(userId);
+        mDataManager.removeUser(userId)
+                .subscribe(aVoid -> {
+                    if (getModel().size() > 1) {
+                        UserListView view = getView();
+                        if (view != null) {
+                            view.notifyItemRemoved(position);
+                        }
+                    } else {
+                        updateView();
+                    }
+                }, LogUtils::e);
+    }
+
+    public void onChooseUserClicked() {
+        getView().showChooseUser();
+    }
+
+    public void onReload() {
+        loadUserList();
         updateView();
     }
 
-    private void doSearch() {
-        List<VKApiUserFull> userList = getModel();
-        mShowingUserList = null;
-        if (userList != null) {
-            if (mQuery == null || mQuery.isEmpty()) {
-                mShowingUserList = userList;
-            } else {
-                mShowingUserList = new ArrayList<>();
-                for (VKApiUserFull user : userList) {
-                    if (user.first_name.toLowerCase().startsWith(mQuery) || user.last_name.toLowerCase().startsWith(mQuery)) {
-                        mShowingUserList.add(user);
-                    }
-                }
-            }
-            mSelectedUserPosition = findPositionOfUser(mShowingUserList, mSelectedUserId);
-        }
+    public void onUserChosen(int userId) {
+        // TODO: 03.05.2016
     }
 
-    private void loadFriendsList() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-        mIsLoading = true;
-        mSubscription = mDataManager
-                .getAllVkFriends()
+    private void loadUserList() {
+        mSubscription.unsubscribe();
+        mSubscription = mDataManager.getAllUsers()
                 .subscribe(
-                        userList -> {
-                            mIsLoading = false;
-                            UserListPresenter.this.setModel(userList);
-                        },
+                        model -> UserListPresenter.this.setModel(model),
                         throwable -> {
-                            mIsLoading = false;
-                            if (mSubscription != null) {
-                                mSubscription.unsubscribe();
-                                mSubscription = null;
-                            }
-                            setModel(null);
+                            mSubscription.unsubscribe();
                             updateView();
                             LogUtils.e(throwable);
                         }
                 );
+
     }
 
-    private static int findPositionOfUser(List<VKApiUserFull> userList, int userId) {
-        for (int i = 0, size = userList.size(); i < size; i++) {
-            if (userList.get(i).id == userId) {
+    private int getUserPosition(int userId) {
+        List<User> userList = getModel();
+        for (int i = 0, size = (userList == null ? 0 : userList.size()); i < size; ++i) {
+            if (userList.get(i).getId() == userId) {
                 return i;
             }
         }
         return -1;
     }
-
 }

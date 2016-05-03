@@ -6,18 +6,19 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.vk.sdk.api.model.VKApiUser;
 
 import javax.inject.Inject;
 
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
-public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView> {
+public class NavigationPresenter extends BasePresenter<User, NavigationView> {
 
-    private Subscription mSubscription;
+    private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -29,17 +30,17 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
     @Override
     public void bindView(NavigationView view) {
         super.bindView(view);
-        if (getModel() == null && mSubscription == null) {
+        if (getModel() == null && mSubscription.isUnsubscribed()) {
             loadMyselfUser();
         }
     }
 
     @Override
     protected void onUpdateView(@NonNull NavigationView view) {
-        VKApiUser user = getModel();
+        User user = getModel();
         if (user != null) {
             view.showUserName(getUserName(user));
-            ImageLoader.getInstance().displayImage(user.photo_200, view.getUserPhotoImageView());
+            ImageLoader.getInstance().displayImage(user.getPhoto(), view.getUserPhotoImageView());
         } else {
             view.showLoading();
         }
@@ -47,9 +48,7 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
 
     @Override
     public void unbindView() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        mSubscription.unsubscribe();
         super.unbindView();
     }
 
@@ -63,18 +62,13 @@ public class NavigationPresenter extends BasePresenter<VKApiUser, NavigationView
     }
 
     private void loadMyselfUser() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        mSubscription.unsubscribe();
         mSubscription = mDataManager
                 .getUserMyself()
                 .subscribe(
                         user -> NavigationPresenter.this.setModel(user),
                         throwable -> {
-                            if (mSubscription != null) {
-                                mSubscription.unsubscribe();
-                                mSubscription = null;
-                            }
+                            mSubscription.unsubscribe();
                             updateView();
                             LogUtils.e(throwable);
                         }

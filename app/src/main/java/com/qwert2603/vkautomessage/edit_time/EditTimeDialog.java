@@ -14,13 +14,13 @@ import javax.inject.Inject;
 
 public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements EditTimeView {
 
-    private static final String timeInMillisKey = "timeInMillis";
-    public static final String EXTRA_TIME_IN_MILLIS = "com.qwert2603.vkautomessage.EXTRA_TIME_IN_MILLIS";
+    private static final String minuteAtDayKey = "minuteAtDay";
+    public static final String EXTRA_MINUTE_AT_DAY = "com.qwert2603.vkautomessage.EXTRA_MINUTE_AT_DAY";
 
-    public static EditTimeDialog newInstance(long timeInMillis) {
+    public static EditTimeDialog newInstance(int minuteAtDay) {
         EditTimeDialog editTimeDialog = new EditTimeDialog();
         Bundle args = new Bundle();
-        args.putLong(timeInMillisKey, timeInMillis);
+        args.putInt(minuteAtDayKey, minuteAtDay);
         editTimeDialog.setArguments(args);
         return editTimeDialog;
     }
@@ -42,7 +42,7 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(EditTimeDialog.this);
-        mEditTimePresenter.setTimeInMillis(getArguments().getLong(timeInMillisKey));
+        mEditTimePresenter.setMinuteAtDay(getArguments().getInt(minuteAtDayKey));
         super.onCreate(savedInstanceState);
     }
 
@@ -54,9 +54,9 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
     }
 
     @Override
-    public void submitDone(long timeInMillis) {
+    public void submitDone(long minuteAtDay) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_TIME_IN_MILLIS, timeInMillis);
+        intent.putExtra(EXTRA_MINUTE_AT_DAY, minuteAtDay);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
     }
 }

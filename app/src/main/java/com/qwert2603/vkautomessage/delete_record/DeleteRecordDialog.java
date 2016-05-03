@@ -85,7 +85,7 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
     }
 
     @Override
-    public void showEmpty() {
+    public void showLoading() {
         mUserNameTextView.setText(R.string.loading);
         mMessageTextView.setText(R.string.loading);
     }

@@ -19,7 +19,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.user_list.UserListDialog;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 
 import javax.inject.Inject;
 
@@ -85,11 +85,10 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_record, container, false);
+        View view = inflater.inflate(R.layout.fragment_record_details, container, false);
 
         ButterKnife.bind(RecordFragment.this, view);
 
-        userCardView.setOnClickListener(v -> mRecordPresenter.onChooseUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         messageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
         timeCardView.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
@@ -105,7 +104,7 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         }
         switch (requestCode) {
             case REQUEST_CHOOSE_USER:
-                int userId = data.getIntExtra(UserListDialog.EXTRA_SELECTED_USER_ID, 0);
+                int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
                 mRecordPresenter.onUserChosen(userId);
                 break;
             case REQUEST_EDIT_MESSAGE:
@@ -113,8 +112,8 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
                 mRecordPresenter.onMessageEdited(message);
                 break;
             case REQUEST_EDIT_TIME:
-                long currentTimeInMillis = data.getLongExtra(EditTimeDialog.EXTRA_TIME_IN_MILLIS, 0);
-                mRecordPresenter.onTimeEdited(currentTimeInMillis);
+                int minuteAtDay = data.getIntExtra(EditTimeDialog.EXTRA_MINUTE_AT_DAY, 0);
+                mRecordPresenter.onTimeEdited(minuteAtDay);
                 break;
         }
     }
@@ -153,13 +152,6 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
-    public void showChooseUser(int currentUserId) {
-        UserListDialog userListDialog = UserListDialog.newInstance(currentUserId);
-        userListDialog.setTargetFragment(RecordFragment.this, REQUEST_CHOOSE_USER);
-        userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
-    }
-
-    @Override
     public void showEditMessage(String message) {
         EditMessageDialog editMessageDialog = EditMessageDialog.newInstance(message);
         editMessageDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_MESSAGE);
@@ -167,10 +159,15 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
-    public void showEditTime(long currentTimeInMillis) {
-        EditTimeDialog editTimeDialog = EditTimeDialog.newInstance(currentTimeInMillis);
+    public void showEditTime(int minuteAtDay) {
+        EditTimeDialog editTimeDialog = EditTimeDialog.newInstance(minuteAtDay);
         editTimeDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_TIME);
         editTimeDialog.show(getFragmentManager(), editTimeDialog.getClass().getName());
+    }
+
+    @Override
+    public void showEditDay() {
+        // TODO: 03.05.2016
     }
 
     @Override

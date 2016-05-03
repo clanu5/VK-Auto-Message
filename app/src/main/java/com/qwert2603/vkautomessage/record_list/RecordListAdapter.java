@@ -116,16 +116,17 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
             mTimeTextView.setText(R.string.loading);
         }
 
-        @Override
-        public void showChooseUser(int currentUserId) {
-        }
 
         @Override
         public void showEditMessage(String message) {
         }
 
         @Override
-        public void showEditTime(long currentTimeInMillis) {
+        public void showEditTime(int minuteAtDay) {
+        }
+
+        @Override
+        public void showEditDay() {
         }
 
         @Override

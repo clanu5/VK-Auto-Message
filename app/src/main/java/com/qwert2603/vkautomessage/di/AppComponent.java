@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.di;
 
+import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
@@ -16,10 +17,12 @@ import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 import com.qwert2603.vkautomessage.record_list.RecordListFragment;
 import com.qwert2603.vkautomessage.record_list.RecordListPresenter;
+import com.qwert2603.vkautomessage.user_list.UserListAdapter;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.service.SendMessageService;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
-import com.qwert2603.vkautomessage.user_list.UserListAdapter;
-import com.qwert2603.vkautomessage.user_list.UserListDialog;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserPresenter;
+import com.qwert2603.vkautomessage.user_list.UserListFragment;
 import com.qwert2603.vkautomessage.user_list.UserListPresenter;
 
 import javax.inject.Singleton;
@@ -41,7 +44,7 @@ public interface AppComponent {
     void inject(RecordPresenter recordPresenter);
     void inject(RecordListPresenter recordListPresenter);
     void inject(UserPresenter userPresenter);
-    void inject(UserListPresenter userListPresenter);
+    void inject(ChooseUserPresenter chooseUserPresenter);
 
     void inject(RecordListFragment recordListFragment);
     void inject(RecordFragment recordFragment);
@@ -59,11 +62,17 @@ public interface AppComponent {
 
     void inject(RecordListAdapter.RecordViewHolder recordViewHolder);
 
-    void inject(UserListDialog userListDialog);
+    void inject(ChooseUserDialog userListDialog);
 
     void inject(UserListAdapter.UserViewHolder userViewHolder);
 
     void inject(SendMessageService sendMessageService);
 
     void inject(BootCompletedReceiver bootCompletedReceiver);
+
+    void inject(UserListFragment userListFragment);
+
+    void inject(UserListPresenter userListPresenter);
+
+    void inject(ChooseUserAdapter.UserViewHolder userViewHolder);
 }
