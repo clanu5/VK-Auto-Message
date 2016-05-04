@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +80,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<User> getUserById(int userId) {
-        LogUtils.d("getUserById " + userId);
         return Observable.defer(() -> Observable.just(doGetUserById(userId)));
     }
 
@@ -90,7 +88,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<Void> insertUser(User user) {
-        LogUtils.d("insertUser " + user);
         return Observable.defer(() -> Observable.just(doInsertUser(user)));
     }
 
@@ -201,13 +198,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "1"
         ));
         userCursor.moveToFirst();
-        LogUtils.d("doGetUserById#userCursor " + userCursor);
         User user = null;
         if (!userCursor.isAfterLast()) {
             user = userCursor.getUser();
-            LogUtils.d("doGetUserById " + user);
         }
-        LogUtils.d("user == " + user);
         userCursor.close();
         return user;
     }
@@ -233,9 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Void doInsertUser(User user) {
-        LogUtils.d("doInsertUser " + user + " && ");
-        long insert = getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
-        LogUtils.d("doInsertUser " + user + " ^^ " + insert);
+        getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
         return null;
     }
 

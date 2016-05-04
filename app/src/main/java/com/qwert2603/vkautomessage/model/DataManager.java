@@ -120,7 +120,7 @@ public class DataManager {
         Observable<Void> deleteUserObservable = mDatabaseHelper.deleteUser(userId)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
-        return Observable.concat(deleteRecordsObservable, deleteUserObservable);
+        return Observable.zip(deleteRecordsObservable, deleteUserObservable, (v1, v2) -> null);
     }
 
     public Observable<Void> updateUser(User user) {
@@ -172,7 +172,6 @@ public class DataManager {
 
     public Observable<User> getUserMyself() {
         int myselfId = mPreferenceHelper.getMyselfId();
-        LogUtils.d("myselfId == " + myselfId);
         Observable<User> observable;
         if (myselfId == PreferenceHelper.NO_MYSELF_ID) {
             // для myself загружается photo_200.
@@ -235,7 +234,6 @@ public class DataManager {
     private void updateUsersInDatabase() {
         Observable<List<User>> observable = mDatabaseHelper.getAllUsers()
                 .flatMap(Observable::from)
-                .doOnNext(user -> LogUtils.d("updateUsersInDatabase" + user.toString()))
                 .map(User::getId)
                 .toList()
                 .flatMap(mVkApiHelper::getUsersById)

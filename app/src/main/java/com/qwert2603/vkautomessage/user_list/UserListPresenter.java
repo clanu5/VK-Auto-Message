@@ -85,9 +85,15 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         int position = getUserPosition(userId);
         mDataManager.removeUser(userId)
                 .subscribe(aVoid -> {
-                    if (getModel().size() > 1) {
+                    List<User> userList = getModel();
+                    if (userList == null) {
+                        return;
+                    }
+                    userList.remove(position);
+                    if (userList.size() > 1) {
                         UserListView view = getView();
                         if (view != null) {
+                            LogUtils.d("position == " + position);
                             view.notifyItemRemoved(position);
                         }
                     } else {
