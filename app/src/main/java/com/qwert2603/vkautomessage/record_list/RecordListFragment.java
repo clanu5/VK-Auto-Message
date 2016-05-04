@@ -19,6 +19,7 @@ import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -139,6 +140,8 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
     @Override
     public void showUserName(String userName) {
+        // FIXME: 04.05.2016 не показывает имя
+        LogUtils.d("showUserName " + userName);
         getActivity().setTitle(userName);
     }
 

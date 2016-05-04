@@ -93,7 +93,6 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                     if (userList.size() > 1) {
                         UserListView view = getView();
                         if (view != null) {
-                            LogUtils.d("position == " + position);
                             view.notifyItemRemoved(position);
                         }
                     } else {
@@ -128,6 +127,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                             aVoid -> {
                                 UserListView view = getView();
                                 if (view != null) {
+                                    // TODO: 04.05.2016 use notifyItemInserted
                                     updateView();
                                     view.moveToRecordsForUser(userId);
                                 }

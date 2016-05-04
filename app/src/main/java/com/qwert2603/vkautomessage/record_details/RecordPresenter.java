@@ -38,7 +38,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
-                        record -> RecordPresenter.this.setModel(record),
+                        record -> {
+                            RecordPresenter.this.setModel(record);
+                        },
                         throwable -> {
                             mSubscription.unsubscribe();
                             LogUtils.e(throwable);

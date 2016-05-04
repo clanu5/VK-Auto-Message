@@ -74,6 +74,13 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         Record record = new Record(mUserId);
         mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
+                    RecordListWithUser model = getModel();
+                    if (model == null || model.mRecordList == null) {
+                        return;
+                    }
+                    model.mRecordList.add(record);
+                    // TODO: 04.05.2016 use notifyItemInserted
+                    updateView();
                     RecordListView view = getView();
                     if (view != null) {
                         view.moveToRecordDetails(record.getId());
@@ -93,7 +100,12 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         int position = getRecordPosition(recordId);
         mDataManager.removeRecord(recordId)
                 .subscribe(aLong -> {
-                    if (getModel().mRecordList.size() > 1) {
+                    RecordListWithUser model = getModel();
+                    if (model == null || model.mRecordList == null) {
+                        return;
+                    }
+                    model.mRecordList.remove(position);
+                    if (model.mRecordList.size() > 1) {
                         RecordListView view = getView();
                         if (view != null) {
                             view.notifyItemRemoved(position);

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,19 +49,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + COLUMN_RECORD_USER_ID + " INTEGER, "
                         + COLUMN_RECORD_MESSAGE + " TEXT, "
                         + COLUMN_RECORD_ENABLED + " INTEGER, "
-                        + COLUMN_RECORD_REPEAT_TYPE + " INTEGER"
-                        + COLUMN_RECORD_REPEAT_INFO + " INTEGER"
-                        + COLUMN_RECORD_HOUR + " INTEGER"
-                        + COLUMN_RECORD_MINUTE + " INTEGER"
-                        + ")"
+                        + COLUMN_RECORD_REPEAT_TYPE + " INTEGER, "
+                        + COLUMN_RECORD_REPEAT_INFO + " INTEGER, "
+                        + COLUMN_RECORD_HOUR + " INTEGER, "
+                        + COLUMN_RECORD_MINUTE + " INTEGER)"
         );
         db.execSQL(
                 "CREATE TABLE " + TABLE_USER + " ("
                         + COLUMN_USER_ID + " INTEGER PRIMARY KEY, "
                         + COLUMN_USER_FIRST_NAME + " TEXT, "
                         + COLUMN_USER_LAST_NAME + " TEXT, "
-                        + COLUMN_USER_PHOTO + " TEXT"
-                        + ")"
+                        + COLUMN_USER_PHOTO + " TEXT)"
         );
     }
 
@@ -247,9 +246,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Void doInsertRecord(Record record) {
+        LogUtils.d("doInsertRecord " + record.getUserId());
         ContentValues contentValues = getContentValuesForRecord(record);
-        contentValues.remove(COLUMN_RECORD_ID); // БД сама назначит id.
+        //contentValues.remove(COLUMN_RECORD_ID); // БД сама назначит id.
         int id = (int) getWritableDatabase().insert(TABLE_RECORD, null, contentValues);
+        LogUtils.d("doInsertRecord id == " + id);
         record.setId(id);
         return null;
     }
