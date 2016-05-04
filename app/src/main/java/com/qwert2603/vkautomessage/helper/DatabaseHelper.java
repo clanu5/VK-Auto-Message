@@ -262,7 +262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    private Void doDeleteRecord(int recordId) {
+    public Void doDeleteRecord(int recordId) {
         getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(recordId)});
         return null;
     }

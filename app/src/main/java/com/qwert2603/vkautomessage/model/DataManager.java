@@ -57,6 +57,7 @@ public class DataManager {
      * @return список пользователей, которые есть в БД.
      */
     public Observable<List<User>> getAllUsers() {
+        // todo убирать из списка пользователя myself
         return mDatabaseHelper.getAllUsers()
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
@@ -113,7 +114,7 @@ public class DataManager {
                 .map(recordListWithUser -> recordListWithUser.mRecordList)
                 .flatMap(Observable::from)
                 .doOnNext(record -> mSendMessageHelper.onRecordRemoved(record.getId()))
-                .doOnNext(record -> mDatabaseHelper.deleteRecord(record.getId()))
+                .doOnNext(record -> mDatabaseHelper.doDeleteRecord(record.getId()))
                 .toList()
                 .map(l -> null);
         Observable<Void> deleteUserObservable = mDatabaseHelper.deleteUser(userId)
@@ -205,7 +206,11 @@ public class DataManager {
     public void logOutVk() {
         getAllRecords()
                 .flatMap(Observable::from)
-                .doOnNext(record -> mSendMessageHelper.onRecordRemoved(record.getId()))
+                .doOnNext(record -> {
+                    if (record.isEnabled()) {
+                        mSendMessageHelper.onRecordRemoved(record.getId());
+                    }
+                })
                 .doOnCompleted(() -> {
                     mVkApiHelper.logOut();
                     mPreferenceHelper.clear();
