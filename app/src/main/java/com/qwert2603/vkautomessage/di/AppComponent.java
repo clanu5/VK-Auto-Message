@@ -3,6 +3,8 @@ package com.qwert2603.vkautomessage.di;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
+import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
+import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
@@ -75,4 +77,8 @@ public interface AppComponent {
     void inject(UserListPresenter userListPresenter);
 
     void inject(ChooseUserAdapter.UserViewHolder userViewHolder);
+
+    void inject(DeleteUserPresenter deleteUserPresenter);
+
+    void inject(DeleteUserDialog deleteUserDialog);
 }

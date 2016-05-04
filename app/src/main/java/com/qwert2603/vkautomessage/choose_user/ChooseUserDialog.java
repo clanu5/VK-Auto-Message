@@ -21,7 +21,6 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
-import com.qwert2603.vkautomessage.user_list.UserListAdapter;
 import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
@@ -124,6 +123,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         Intent intent = new Intent();
         intent.putExtra(EXTRA_SELECTED_USER_ID, userId);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+        dismissAllowingStateLoss();
     }
 
     @Override

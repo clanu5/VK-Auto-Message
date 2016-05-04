@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_USER_ID = "_id";
     private static final String COLUMN_USER_FIRST_NAME = "first_name";
     private static final String COLUMN_USER_LAST_NAME = "last_name";
-    private static final String COLUMN_USER_PHOTO_100 = "photo_100";
+    private static final String COLUMN_USER_PHOTO = "photo";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -59,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + COLUMN_USER_ID + " INTEGER PRIMARY KEY, "
                         + COLUMN_USER_FIRST_NAME + " TEXT, "
                         + COLUMN_USER_LAST_NAME + " TEXT, "
-                        + COLUMN_USER_PHOTO_100 + " TEXT"
+                        + COLUMN_USER_PHOTO + " TEXT"
                         + ")"
         );
     }
@@ -80,6 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<User> getUserById(int userId) {
+        LogUtils.d("getUserById " + userId);
         return Observable.defer(() -> Observable.just(doGetUserById(userId)));
     }
 
@@ -88,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<Void> insertUser(User user) {
+        LogUtils.d("insertUser " + user);
         return Observable.defer(() -> Observable.just(doInsertUser(user)));
     }
 
@@ -148,7 +151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
             String firstName = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_FIRST_NAME));
             String lastName = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_LAST_NAME));
-            String photo = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_PHOTO_100));
+            String photo = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_PHOTO));
             return new User(id, firstName, lastName, photo);
         }
     }
@@ -198,11 +201,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "1"
         ));
         userCursor.moveToFirst();
+        LogUtils.d("doGetUserById#userCursor " + userCursor);
         User user = null;
         if (!userCursor.isAfterLast()) {
             user = userCursor.getUser();
-            userCursor.moveToNext();
+            LogUtils.d("doGetUserById " + user);
         }
+        LogUtils.d("user == " + user);
         userCursor.close();
         return user;
     }
@@ -222,14 +227,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Record record = null;
         if (!recordCursor.isAfterLast()) {
             record = recordCursor.getRecord();
-            recordCursor.moveToNext();
         }
         recordCursor.close();
         return record;
     }
 
-    private Void doInsertUser(User user) {
-        getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
+    public Void doInsertUser(User user) {
+        LogUtils.d("doInsertUser " + user + " && ");
+        long insert = getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
+        LogUtils.d("doInsertUser " + user + " ^^ " + insert);
         return null;
     }
 
@@ -271,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    private Void doDeleteAllRecordsAndUsers() {
+    public Void doDeleteAllRecordsAndUsers() {
         getWritableDatabase().delete(TABLE_RECORD, null, null);
         getWritableDatabase().delete(TABLE_USER, null, null);
         return null;
@@ -295,7 +301,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_USER_ID, user.getId());
         contentValues.put(COLUMN_USER_FIRST_NAME, user.getFirstName());
         contentValues.put(COLUMN_USER_LAST_NAME, user.getLastName());
-        contentValues.put(COLUMN_USER_PHOTO_100, user.getPhoto());
+        contentValues.put(COLUMN_USER_PHOTO, user.getPhoto());
         return contentValues;
     }
 

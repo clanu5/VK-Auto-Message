@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.model;
 
+import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
 public class User {
@@ -8,19 +9,22 @@ public class User {
     private String mFirstName;
     private String mLastName;
     private String mPhoto;
+    private int mRecordsCount;
 
     public User(VKApiUser vkApiUser) {
         mId = vkApiUser.id;
         mFirstName = vkApiUser.first_name;
         mLastName = vkApiUser.last_name;
         mPhoto = vkApiUser.photo_100;
+        mRecordsCount = -1;
     }
 
-    public User(int id, String firstName, String lastName, String photo) {
+    public User(int id, String firstName, String lastName, String photo, int recordsCount) {
         mId = id;
         mFirstName = firstName;
         mLastName = lastName;
         mPhoto = photo;
+        mRecordsCount = recordsCount;
     }
 
     public int getId() {
@@ -53,5 +57,19 @@ public class User {
 
     public void setFirstName(String firstName) {
         mFirstName = firstName;
+    }
+
+
+    public int getRecordsCount() {
+        return mRecordsCount;
+    }
+
+    public void setRecordsCount(int recordsCount) {
+        mRecordsCount = recordsCount;
+    }
+
+    @Override
+    public String toString() {
+        return mId + " " + StringUtils.getUserName(User.this) + " " + mPhoto;
     }
 }

@@ -83,7 +83,7 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, Ch
         }
 
         @Override
-        public void showRecordsCount(String s) {
+        public void showRecordsCount(String recordsCount) {
         }
     }
 }

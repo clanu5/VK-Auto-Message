@@ -88,6 +88,7 @@ public class DataManager {
                 .flatMap(this::getUserById);
         return Observable.zip(record, user, RecordWithUser::new);
     }
+
     public Observable<List<Record>> getAllRecords() {
         return getAllUsers()
                 .flatMap(Observable::from)
@@ -170,12 +171,15 @@ public class DataManager {
 
     public Observable<User> getUserMyself() {
         int myselfId = mPreferenceHelper.getMyselfId();
+        LogUtils.d("myselfId == " + myselfId);
         Observable<User> observable;
         if (myselfId == PreferenceHelper.NO_MYSELF_ID) {
+            // для myself загружается photo_200.
             observable = mVkApiHelper.getMyself()
+                    .doOnNext(vkApiUserFull -> vkApiUserFull.photo_100 = vkApiUserFull.photo_200)
                     .map(User::new)
                     .doOnNext(user -> mPreferenceHelper.setMyselfId(user.getId()))
-                    .doOnNext(user -> mDatabaseHelper.insertUser(user));
+                    .doOnNext(mDatabaseHelper::doInsertUser);
         } else {
             observable = mDatabaseHelper.getUserById(myselfId);
         }
@@ -205,7 +209,7 @@ public class DataManager {
                 .doOnCompleted(() -> {
                     mVkApiHelper.logOut();
                     mPreferenceHelper.clear();
-                    mDatabaseHelper.deleteAllRecordsAndUsers();
+                    mDatabaseHelper.doDeleteAllRecordsAndUsers();
                 })
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler)
@@ -226,6 +230,7 @@ public class DataManager {
     private void updateUsersInDatabase() {
         Observable<List<User>> observable = mDatabaseHelper.getAllUsers()
                 .flatMap(Observable::from)
+                .doOnNext(user -> LogUtils.d("updateUsersInDatabase" + user.toString()))
                 .map(User::getId)
                 .toList()
                 .flatMap(mVkApiHelper::getUsersById)

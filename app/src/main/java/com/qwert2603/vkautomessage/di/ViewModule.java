@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.di;
 
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
+import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_time.EditTimePresenter;
 import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
@@ -49,6 +50,11 @@ public class ViewModule {
     @Provides
     DeleteRecordPresenter provideDeleteRecordPresenter() {
         return new DeleteRecordPresenter();
+    }
+
+    @Provides
+    DeleteUserPresenter provideDeleteUserPresenter() {
+        return new DeleteUserPresenter();
     }
 
     @Provides

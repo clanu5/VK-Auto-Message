@@ -106,7 +106,28 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     }
 
     public void onUserChosen(int userId) {
-        // TODO: 03.05.2016
+        int userPosition = getUserPosition(userId);
+        if (userPosition > 0) {
+            getView().moveToRecordsForUser(userId);
+        } else {
+            mDataManager.getUserById(userId)
+                    .doOnNext(user -> {
+                        List<User> userList = getModel();
+                        if (userList != null) {
+                            userList.add(user);
+                        }
+                    })
+                    .flatMap(mDataManager::addUser)
+                    .subscribe(
+                            aVoid -> {
+                                UserListView view = getView();
+                                if (view != null) {
+                                    updateView();
+                                    view.moveToRecordsForUser(userId);
+                                }
+                            }, LogUtils::e
+                    );
+        }
     }
 
     private void loadUserList() {

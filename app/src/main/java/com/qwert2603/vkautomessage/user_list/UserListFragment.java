@@ -17,6 +17,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
+import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
@@ -69,7 +70,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_record_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         ButterKnife.bind(UserListFragment.this, view);
 
@@ -94,8 +95,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
                 mUserListPresenter.onUserChosen(userId);
                 break;
             case REQUEST_DELETE_USER:
-                // TODO: 03.05.2016
-                int deletingUserId = 14;
+                int deletingUserId = data.getIntExtra(DeleteUserDialog.EXTRA_USER_TO_DELETE_ID, 0);
                 mUserListPresenter.onUserDeleteClicked(deletingUserId);
                 break;
         }
@@ -146,12 +146,14 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
     @Override
     public void showDeleteUser(int userId) {
-        // TODO: 03.05.2016
+        DeleteUserDialog deleteUserDialog = DeleteUserDialog.newInstance(userId);
+        deleteUserDialog.setTargetFragment(UserListFragment.this, REQUEST_DELETE_USER);
+        deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
     }
 
     @Override
     public void notifyItemRemoved(int position) {
-        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
+        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
         if (adapter != null) {
             adapter.notifyItemRemoved(position);
         }

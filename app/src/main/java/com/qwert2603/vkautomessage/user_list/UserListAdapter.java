@@ -81,8 +81,8 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         }
 
         @Override
-        public void showRecordsCount(String string) {
-            mRecordsCountTextView.setText(string);
+        public void showRecordsCount(String recordsCount) {
+            mRecordsCountTextView.setText(recordsCount);
         }
     }
 }

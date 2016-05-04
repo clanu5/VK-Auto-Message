@@ -10,7 +10,7 @@ public class RecordListActivity extends NavigationActivity {
 
     @Override
     protected boolean isNavigationButtonVisible() {
-        return true;
+        return false;
     }
 
     @Override

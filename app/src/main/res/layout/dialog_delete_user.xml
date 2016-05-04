@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/delete_user"
+        android:textColor="@color/dialog_delete_record_title"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/user_name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/user_name"
+        android:text="Alex Zhdanov"
+        android:layout_margin="4dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/records_count_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/message"
+        android:text="2987 records"
+        android:layout_margin="4dp"
+        android:layout_marginBottom="8dp"
+        android:textSize="16sp"/>
+
+</LinearLayout>
