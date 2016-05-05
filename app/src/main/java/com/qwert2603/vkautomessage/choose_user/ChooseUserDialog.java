@@ -21,7 +21,7 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
-import com.vk.sdk.api.model.VKApiUserFull;
+import com.qwert2603.vkautomessage.model.VkUser;
 
 import java.util.List;
 
@@ -160,7 +160,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void showList(List<VKApiUserFull> list) {
+    public void showList(List<VkUser> list) {
         setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
         ChooseUserAdapter adapter = (ChooseUserAdapter) mRecyclerView.getAdapter();
         if (adapter != null && adapter.isShowingList(list)) {

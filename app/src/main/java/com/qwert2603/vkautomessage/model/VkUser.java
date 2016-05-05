@@ -10,4 +10,12 @@ public class VkUser extends User {
         super(vkApiUser);
         canWrite = vkApiUser.can_write_private_message;
     }
+
+    public boolean isCanWrite() {
+        return canWrite;
+    }
+
+    public void setCanWrite(boolean canWrite) {
+        this.canWrite = canWrite;
+    }
 }

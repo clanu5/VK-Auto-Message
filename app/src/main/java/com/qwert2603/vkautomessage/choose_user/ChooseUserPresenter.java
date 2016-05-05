@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
+import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +16,13 @@ import javax.inject.Inject;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class ChooseUserPresenter extends BasePresenter<List<VKApiUserFull>, ChooseUserView> {
+public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private boolean mIsLoading;
 
     private String mQuery;
-    private List<VKApiUserFull> mShowingUserList;
+    private List<VkUser> mShowingUserList;
 
     @Inject
     DataManager mDataManager;
@@ -69,7 +69,7 @@ public class ChooseUserPresenter extends BasePresenter<List<VKApiUserFull>, Choo
     }
 
     @Override
-    protected void setModel(List<VKApiUserFull> userList) {
+    protected void setModel(List<VkUser> userList) {
         super.setModel(userList);
         doSearch();
         updateView();
@@ -85,10 +85,10 @@ public class ChooseUserPresenter extends BasePresenter<List<VKApiUserFull>, Choo
     }
 
     public void onUserAtPositionClicked(int position) {
-        VKApiUserFull user = mShowingUserList.get(position);
-        if (user.can_write_private_message) {
+        VkUser user = mShowingUserList.get(position);
+        if (user.isCanWrite()) {
             getView().showItemSelected(position);
-            getView().submitDode(user.id);
+            getView().submitDode(user.getId());
         } else {
             getView().showCantWrite();
         }
@@ -101,15 +101,15 @@ public class ChooseUserPresenter extends BasePresenter<List<VKApiUserFull>, Choo
     }
 
     private void doSearch() {
-        List<VKApiUserFull> userList = getModel();
+        List<VkUser> userList = getModel();
         mShowingUserList = null;
         if (userList != null) {
             if (mQuery == null || mQuery.isEmpty()) {
                 mShowingUserList = userList;
             } else {
                 mShowingUserList = new ArrayList<>();
-                for (VKApiUserFull user : userList) {
-                    if (user.first_name.toLowerCase().startsWith(mQuery) || user.last_name.toLowerCase().startsWith(mQuery)) {
+                for (VkUser user : userList) {
+                    if (user.getFirstName().toLowerCase().startsWith(mQuery) || user.getLastName().toLowerCase().startsWith(mQuery)) {
                         mShowingUserList.add(user);
                     }
                 }

@@ -1,9 +1,9 @@
 package com.qwert2603.vkautomessage.choose_user;
 
 import com.qwert2603.vkautomessage.base.ListView;
-import com.vk.sdk.api.model.VKApiUserFull;
+import com.qwert2603.vkautomessage.model.VkUser;
 
-public interface ChooseUserView extends ListView<VKApiUserFull> {
+public interface ChooseUserView extends ListView<VkUser> {
 
     void setRefreshingConfig(boolean enable, boolean refreshing);
 

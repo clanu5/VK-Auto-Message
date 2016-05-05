@@ -9,10 +9,9 @@ import android.widget.TextView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
-import com.qwert2603.vkautomessage.model.User;
+import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
-import com.vk.sdk.api.model.VKApiUserFull;
 
 import java.util.List;
 
@@ -21,9 +20,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, ChooseUserAdapter.UserViewHolder, UserPresenter> {
+public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUserAdapter.UserViewHolder, UserPresenter> {
 
-    public ChooseUserAdapter(List<VKApiUserFull> modelList) {
+    public ChooseUserAdapter(List<VkUser> modelList) {
         super(modelList);
     }
 
@@ -34,7 +33,7 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, Ch
     }
 
     public class UserViewHolder
-            extends BaseRecyclerViewAdapter<VKApiUserFull, ?, UserPresenter>.RecyclerViewHolder
+            extends BaseRecyclerViewAdapter<VkUser, ?, UserPresenter>.RecyclerViewHolder
             implements UserView {
 
         @BindView(R.id.photo_image_view)
@@ -62,8 +61,8 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VKApiUserFull, Ch
         }
 
         @Override
-        protected void setModel(VKApiUserFull vkApiUserFull) {
-            mUserPresenter.setUser(new User(vkApiUserFull));
+        protected void setModel(VkUser vkUser) {
+            mUserPresenter.setUser(vkUser);
         }
 
         @Override
