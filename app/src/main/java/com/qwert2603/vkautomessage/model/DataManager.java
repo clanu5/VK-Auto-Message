@@ -10,21 +10,15 @@ import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.vk.sdk.api.model.VKApiOwner;
-import com.vk.sdk.api.model.VKApiUserFull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.functions.Func2;
 
 public class DataManager {
 
@@ -191,7 +185,7 @@ public class DataManager {
                 .map(VkUser::new)
                 .toList()
                 .cache();
-        updateUsersInDatabase(friends.flatMap(Observable::from).map(vkUser -> new User(vkUser)).toList());
+        updateUsersInDatabase(friends);
         Observable<Map<Integer, Integer>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
         return Observable.zip(friends, recordsCountForUsers,
                 (users, recordsCountMap) -> {
@@ -286,7 +280,7 @@ public class DataManager {
      *
      * @param userObservable пользователи, которые будут обновлены.
      */
-    private void updateUsersInDatabase(Observable<List<User>> userObservable) {
+    private <U extends User> void updateUsersInDatabase(Observable<List<U>> userObservable) {
         userObservable
                 .flatMap(Observable::from)
                 .flatMap(user -> mDatabaseHelper.updateUser(user))
