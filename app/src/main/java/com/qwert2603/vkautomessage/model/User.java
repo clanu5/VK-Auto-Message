@@ -5,10 +5,13 @@ import com.vk.sdk.api.model.VKApiUser;
 
 public class User {
 
+    public static final int NO_RECORDS = -1;
+
     private int mId;
     private String mFirstName;
     private String mLastName;
     private String mPhoto;
+    private int mRecordsCount;
 
     public User(VKApiUser vkApiUser) {
         mId = vkApiUser.id;
@@ -54,6 +57,14 @@ public class User {
 
     public void setFirstName(String firstName) {
         mFirstName = firstName;
+    }
+
+    public int getRecordsCount() {
+        return mRecordsCount;
+    }
+
+    public void setRecordsCount(int recordsCount) {
+        mRecordsCount = recordsCount;
     }
 
     @Override

@@ -158,6 +158,14 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
         }
     }
 
+    @Override
+    public void notifyItemInserted(int position) {
+        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.notifyItemInserted(position);
+        }
+    }
+
     private void setViewAnimatorDisplayedChild(int position) {
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);

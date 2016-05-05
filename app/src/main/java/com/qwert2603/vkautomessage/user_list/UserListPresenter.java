@@ -86,15 +86,13 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         mDataManager.removeUser(userId)
                 .subscribe(aVoid -> {
                     List<User> userList = getModel();
-                    if (userList == null) {
+                    UserListView view = getView();
+                    if (userList == null || view == null) {
                         return;
                     }
                     userList.remove(position);
                     if (userList.size() > 1) {
-                        UserListView view = getView();
-                        if (view != null) {
-                            view.notifyItemRemoved(position);
-                        }
+                        view.notifyItemRemoved(position);
                     } else {
                         updateView();
                     }
@@ -115,22 +113,18 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         if (userPosition > 0) {
             getView().moveToRecordsForUser(userId);
         } else {
-            mDataManager.getUserById(userId)
-                    .doOnNext(user -> {
-                        List<User> userList = getModel();
-                        if (userList != null) {
-                            userList.add(user);
-                        }
-                    })
+            mDataManager.getVkUserById(userId)
                     .flatMap(mDataManager::addUser)
                     .subscribe(
-                            aVoid -> {
+                            user -> {
+                                List<User> userList = getModel();
                                 UserListView view = getView();
-                                if (view != null) {
-                                    // TODO: 04.05.2016 use notifyItemInserted
-                                    updateView();
-                                    view.moveToRecordsForUser(userId);
+                                if (userList == null || view == null) {
+                                    return;
                                 }
+                                userList.add(user);
+                                view.notifyItemInserted(userList.size() - 1);
+                                view.moveToRecordsForUser(userId);
                             }, LogUtils::e
                     );
         }

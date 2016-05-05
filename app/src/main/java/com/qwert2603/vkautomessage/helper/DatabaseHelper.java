@@ -9,10 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 
@@ -74,6 +75,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return Observable.defer(() -> Observable.just(doGetAllUsers()));
     }
 
+    public Observable<Map<Integer, Integer>> getRecordsCountForUsers() {
+        return Observable.defer(() -> Observable.just(doGetRecordsCountForUsers()));
+    }
+
     public Observable<List<Record>> getRecordsForUser(int userId) {
         return Observable.defer(() -> Observable.just(doGetRecordsForUser(userId)));
     }
@@ -86,7 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return Observable.defer(() -> Observable.just(doGetRecordById(recordId)));
     }
 
-    public Observable<Void> insertUser(User user) {
+    public Observable<User> insertUser(User user) {
         return Observable.defer(() -> Observable.just(doInsertUser(user)));
     }
 
@@ -165,6 +170,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userList;
     }
 
+    private Map<Integer, Integer> doGetRecordsCountForUsers() {
+        Map<Integer, Integer> map = new HashMap<>();
+        getReadableDatabase().rawQuery(
+                "SELECT " + TABLE_USER + "." + COLUMN_USER_ID + ", COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")" +
+                        " FROM " + TABLE_USER + ", " + TABLE_RECORD +
+                        " WHERE (" + TABLE_USER + "." + COLUMN_USER_ID + " = " + TABLE_RECORD + "." + COLUMN_RECORD_USER_ID + ")" +
+                        " GROUP BY " + TABLE_USER + "." + COLUMN_USER_ID,
+                null
+        );
+        return map;
+    }
+
     private List<Record> doGetRecordsForUser(int userId) {
         RecordCursor recordCursor = new RecordCursor(getReadableDatabase().query(
                 TABLE_RECORD,
@@ -225,9 +242,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return record;
     }
 
-    public Void doInsertUser(User user) {
+    public User doInsertUser(User user) {
         getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
-        return null;
+        return user;
     }
 
     private Void doDeleteUser(int userId) {
@@ -246,11 +263,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Void doInsertRecord(Record record) {
-        LogUtils.d("doInsertRecord " + record.getUserId());
         ContentValues contentValues = getContentValuesForRecord(record);
-        //contentValues.remove(COLUMN_RECORD_ID); // БД сама назначит id.
+        contentValues.remove(COLUMN_RECORD_ID); // БД сама назначит id.
         int id = (int) getWritableDatabase().insert(TABLE_RECORD, null, contentValues);
-        LogUtils.d("doInsertRecord id == " + id);
         record.setId(id);
         return null;
     }

@@ -10,15 +10,21 @@ import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.vk.sdk.api.model.VKApiOwner;
 import com.vk.sdk.api.model.VKApiUserFull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.functions.Func2;
 
 public class DataManager {
 
@@ -57,8 +63,26 @@ public class DataManager {
      * @return список пользователей, которые есть в БД.
      */
     public Observable<List<User>> getAllUsers() {
-        // todo убирать из списка пользователя myself
-        return mDatabaseHelper.getAllUsers()
+        // убираем из списка пользователей пользователя приложения.
+        Observable<List<User>> allUsers = getUserMyself()
+                .flatMap(
+                        userMyself -> mDatabaseHelper.getAllUsers()
+                                .flatMap(Observable::from)
+                                .filter(user -> user.getId() != userMyself.getId())
+                                .toList()
+                );
+        Observable<Map<Integer, Integer>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
+        return Observable.zip(allUsers, recordsCountForUsers,
+                (users, recordsCountMap) -> {
+                    for (User user : users) {
+                        if (recordsCountMap.containsKey(user.getId())) {
+                            user.setRecordsCount(recordsCountMap.get(user.getId()));
+                        } else {
+                            user.setRecordsCount(User.NO_RECORDS);
+                        }
+                    }
+                    return users;
+                })
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
@@ -70,12 +94,15 @@ public class DataManager {
         return Observable.zip(records, getUserById(userId), RecordListWithUser::new);
     }
 
-    /**
-     * @return пользователь с нужным id, если его нет в БД, он будет загружен с vk.com.
-     */
     public Observable<User> getUserById(int userId) {
         return mDatabaseHelper.getUserById(userId)
-                .flatMap(user -> user != null ? Observable.just(user) : mVkApiHelper.getUserById(userId).map(User::new))
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
+    }
+
+    public Observable<User> getVkUserById(int userId) {
+        return mVkApiHelper.getUserById(userId)
+                .map(User::new)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
@@ -99,7 +126,7 @@ public class DataManager {
                 .toList();
     }
 
-    public Observable<Void> addUser(User user) {
+    public Observable<User> addUser(User user) {
         return mDatabaseHelper.insertUser(user)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
@@ -158,14 +185,25 @@ public class DataManager {
         );
     }
 
-    public Observable<List<VKApiUserFull>> getAllVkFriends() {
-        Observable<List<VKApiUserFull>> friends = mVkApiHelper.getFriends().cache();
-        updateUsersInDatabase(
-                friends.flatMap(Observable::from)
-                        .map(User::new)
-                        .toList()
-        );
-        return friends
+    public Observable<List<VkUser>> getAllVkFriends() {
+        Observable<List<VkUser>> friends = mVkApiHelper.getFriends()
+                .flatMap(Observable::from)
+                .map(VkUser::new)
+                .toList()
+                .cache();
+        updateUsersInDatabase(friends.flatMap(Observable::from).map(vkUser -> new User(vkUser)).toList());
+        Observable<Map<Integer, Integer>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
+        return Observable.zip(friends, recordsCountForUsers,
+                (users, recordsCountMap) -> {
+                    for (VkUser user : users) {
+                        if (recordsCountMap.containsKey(user.getId())) {
+                            user.setRecordsCount(recordsCountMap.get(user.getId()));
+                        } else {
+                            user.setRecordsCount(User.NO_RECORDS);
+                        }
+                    }
+                    return users;
+                })
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
