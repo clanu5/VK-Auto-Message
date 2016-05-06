@@ -67,7 +67,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     }
 
     public void onResume() {
-        updateView();
+        loadRecordList();
     }
 
     public void onNewRecordClicked() {

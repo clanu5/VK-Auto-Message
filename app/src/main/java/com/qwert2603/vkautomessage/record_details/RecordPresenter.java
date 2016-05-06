@@ -61,7 +61,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     @Override
     public void onViewNotReady() {
         RecordView view = getView();
-        if (view != null) {
+        if (view != null && view.getPhotoImageView() != null) {
             ImageLoader.getInstance().cancelDisplayTask(view.getPhotoImageView());
         }
         super.onViewNotReady();
@@ -89,15 +89,10 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         }
     }
 
-    public void onUserChosen(int userId) {
-        if (getModel().mRecord.getUserId() != userId) {
-            getModel().mRecord.setUserId(userId);
-            updateView();
-            mDataManager.onRecordUpdated(getModel().mRecord);
-        }
-    }
-
     public void onTimeEdited(int minuteAtDay) {
+        if (getModel() == null || getModel().mRecord == null) {
+            return;
+        }
         Record record = getModel().mRecord;
         int newHour = minuteAtDay / Const.MINUTES_PER_HOUR;
         int newMinute = minuteAtDay % Const.MINUTES_PER_HOUR;
@@ -110,6 +105,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     }
 
     public void onEnableClicked(boolean enable) {
+        if (getModel() == null || getModel().mRecord == null) {
+            return;
+        }
         if (getModel().mRecord.isEnabled() != enable) {
             getModel().mRecord.setEnabled(enable);
             mDataManager.onRecordUpdated(getModel().mRecord);
@@ -117,6 +115,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     }
 
     public void onMessageEdited(String message) {
+        if (getModel() == null || getModel().mRecord == null) {
+            return;
+        }
         if (message.isEmpty()) {
             getView().showToast(R.string.empty_message_toast);
             return;

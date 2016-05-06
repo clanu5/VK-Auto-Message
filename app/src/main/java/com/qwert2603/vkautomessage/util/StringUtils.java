@@ -20,7 +20,11 @@ public final class StringUtils {
     }
 
     public static String getRecordTime(Record record) {
-        return record.getHour() + ":" + record.getMinute();
+        int h = record.getHour();
+        int m = record.getMinute();
+        String ph = h <= 9 ? "0" : "";
+        String pm = m <= 9 ? "0" : "";
+        return ph + h + ":" + pm + m;
     }
 
 }

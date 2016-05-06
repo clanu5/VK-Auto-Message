@@ -54,7 +54,7 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
     }
 
     @Override
-    public void submitDone(long minuteAtDay) {
+    public void submitDone(int minuteAtDay) {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_MINUTE_AT_DAY, minuteAtDay);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);

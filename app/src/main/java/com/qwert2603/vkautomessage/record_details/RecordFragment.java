@@ -19,7 +19,6 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 
 import javax.inject.Inject;
 
@@ -30,9 +29,8 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
 
     private static final String recordIdKey = "recordId";
 
-    private static final int REQUEST_CHOOSE_USER = 1;
-    private static final int REQUEST_EDIT_MESSAGE = 2;
-    private static final int REQUEST_EDIT_TIME = 3;
+    private static final int REQUEST_EDIT_MESSAGE = 1;
+    private static final int REQUEST_EDIT_TIME = 2;
 
     public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
@@ -103,10 +101,6 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
             return;
         }
         switch (requestCode) {
-            case REQUEST_CHOOSE_USER:
-                int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
-                mRecordPresenter.onUserChosen(userId);
-                break;
             case REQUEST_EDIT_MESSAGE:
                 String message = data.getStringExtra(EditMessageDialog.EXTRA_MESSAGE);
                 mRecordPresenter.onMessageEdited(message);

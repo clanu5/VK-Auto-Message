@@ -29,6 +29,10 @@ public class SendMessageHelper {
     }
 
     public void onRecordChanged(Record record) {
+        if (true) {
+            // FIXME: 06.05.2016
+            return;
+        }
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(mContext, SendMessageService.class);

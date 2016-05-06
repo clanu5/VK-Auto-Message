@@ -42,12 +42,6 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         private static final int MESSAGE_LENGTH_LIMIT = 52;
 
-        @BindView(R.id.photo_image_view)
-        ImageView mPhotoImageView;
-
-        @BindView(R.id.user_name_text_view)
-        TextView mUsernameTextView;
-
         @BindView(R.id.enable_check_box)
         CheckBox mEnableCheckBox;
 
@@ -79,18 +73,16 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         public void unbindPresenter() {
-            mPhotoImageView.setImageBitmap(null);
             super.unbindPresenter();
         }
 
         @Override
         public ImageView getPhotoImageView() {
-            return mPhotoImageView;
+            return null;
         }
 
         @Override
         public void showUserName(String userName) {
-            mUsernameTextView.setText(userName);
         }
 
         @Override
@@ -110,12 +102,9 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         public void showLoading() {
-            mPhotoImageView.setImageBitmap(null);
-            mUsernameTextView.setText(R.string.loading);
             mMessageTextView.setText(R.string.loading);
             mTimeTextView.setText(R.string.loading);
         }
-
 
         @Override
         public void showEditMessage(String message) {
@@ -131,7 +120,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         public void showToast(int stringRes) {
-            Toast.makeText(mPhotoImageView.getContext(), stringRes, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mMessageTextView.getContext(), stringRes, Toast.LENGTH_SHORT).show();
         }
     }
 }
