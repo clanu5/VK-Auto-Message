@@ -20,7 +20,7 @@ import rx.Observable;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "records.sqlite";
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
 
     private static final String TABLE_RECORD = "record";
     private static final String COLUMN_RECORD_ID = "_id";
@@ -37,6 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_USER_FIRST_NAME = "first_name";
     private static final String COLUMN_USER_LAST_NAME = "last_name";
     private static final String COLUMN_USER_PHOTO = "photo";
+    private static final String COLUMN_USER_ADDING_TIME = "adding_time";    // время добавление в БД
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -60,7 +61,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + COLUMN_USER_ID + " INTEGER PRIMARY KEY, "
                         + COLUMN_USER_FIRST_NAME + " TEXT, "
                         + COLUMN_USER_LAST_NAME + " TEXT, "
-                        + COLUMN_USER_PHOTO + " TEXT)"
+                        + COLUMN_USER_PHOTO + " TEXT, "
+                        + COLUMN_USER_ADDING_TIME + " INTEGER)"
         );
     }
 
@@ -159,7 +161,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private List<User> doGetAllUsers() {
         UserCursor userCursor = new UserCursor(getReadableDatabase()
-                .query(TABLE_USER, null, null, null, null, null, null));
+                .query(TABLE_USER, null, null, null, null, null, COLUMN_USER_ADDING_TIME));
         userCursor.moveToFirst();
         List<User> userList = new ArrayList<>();
         while (!userCursor.isAfterLast()) {
@@ -248,7 +250,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public User doInsertUser(User user) {
-        getWritableDatabase().insert(TABLE_USER, null, getContentValuesForUser(user));
+        ContentValues contentValues = getContentValuesForUser(user);
+        contentValues.put(COLUMN_USER_ADDING_TIME, System.currentTimeMillis());
+        getWritableDatabase().insert(TABLE_USER, null, contentValues);
         return user;
     }
 
