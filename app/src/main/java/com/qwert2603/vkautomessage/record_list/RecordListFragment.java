@@ -91,7 +91,6 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void onResume() {
         super.onResume();
-        // TODO: 03.05.2016 надо ли это?
         mRecordListPresenter.onResume();
     }
 

@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.record_list;
+package com.qwert2603.vkautomessage.behavior;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

@@ -51,6 +51,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_action_new"
-        app:layout_behavior="com.qwert2603.vkautomessage.record_list.FabHideBehavior"/>
+        app:layout_behavior="com.qwert2603.vkautomessage.behavior.FabHideBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

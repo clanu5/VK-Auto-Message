@@ -83,6 +83,12 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mUserListPresenter.onResume();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {

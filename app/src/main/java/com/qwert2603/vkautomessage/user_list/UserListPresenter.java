@@ -73,6 +73,10 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         }
     }
 
+    public void onResume() {
+        loadUserList();
+    }
+
     public void onUserAtPositionClicked(int position) {
         getView().moveToRecordsForUser(getModel().get(position).getId());
     }
