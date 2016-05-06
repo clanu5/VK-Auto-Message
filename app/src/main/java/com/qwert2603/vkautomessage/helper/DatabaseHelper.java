@@ -225,6 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         User user = null;
         if (!userCursor.isAfterLast()) {
             user = userCursor.getUser();
+            user.setRecordsCount(getRecordsCountForUser(userId));
         }
         userCursor.close();
         return user;
@@ -299,6 +300,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         getWritableDatabase().delete(TABLE_RECORD, null, null);
         getWritableDatabase().delete(TABLE_USER, null, null);
         return null;
+    }
+
+    private int getRecordsCountForUser(int userId) {
+        Cursor cursor = getReadableDatabase().query(
+                TABLE_RECORD,
+                new String[]{"COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")"},
+                COLUMN_RECORD_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)},
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count;
     }
 
     private static ContentValues getContentValuesForRecord(Record record) {

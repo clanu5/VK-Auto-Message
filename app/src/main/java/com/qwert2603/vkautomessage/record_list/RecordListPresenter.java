@@ -7,6 +7,7 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.RecordListWithUser;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
@@ -15,6 +16,8 @@ import javax.inject.Inject;
 
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+
+import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
 public class RecordListPresenter extends BasePresenter<RecordListWithUser, RecordListView> {
 
@@ -45,7 +48,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     @Override
     protected void onUpdateView(@NonNull RecordListView view) {
         RecordListWithUser recordListWithUser = getModel();
-        if (recordListWithUser == null) {
+        if (recordListWithUser == null || recordListWithUser.mRecordList == null || recordListWithUser.mUser == null) {
             if (mSubscription.isUnsubscribed()) {
                 view.showError();
             } else {
@@ -58,6 +61,8 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
             } else {
                 view.showList(recordList);
             }
+            User user = recordListWithUser.mUser;
+            view.showUserName(getUserName(user) + " (" + user.getRecordsCount() + ")");
         }
     }
 
