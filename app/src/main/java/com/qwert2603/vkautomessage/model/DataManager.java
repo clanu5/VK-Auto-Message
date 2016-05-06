@@ -71,8 +71,6 @@ public class DataManager {
                     for (User user : users) {
                         if (recordsCountMap.containsKey(user.getId())) {
                             user.setRecordsCount(recordsCountMap.get(user.getId()));
-                        } else {
-                            user.setRecordsCount(User.NO_RECORDS);
                         }
                     }
                     return users;
@@ -192,8 +190,6 @@ public class DataManager {
                     for (VkUser user : users) {
                         if (recordsCountMap.containsKey(user.getId())) {
                             user.setRecordsCount(recordsCountMap.get(user.getId()));
-                        } else {
-                            user.setRecordsCount(User.NO_RECORDS);
                         }
                     }
                     return users;

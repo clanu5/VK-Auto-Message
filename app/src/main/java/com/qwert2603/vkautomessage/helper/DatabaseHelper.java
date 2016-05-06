@@ -78,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Observable<Map<Integer, Integer>> getRecordsCountForUsers() {
+        // TODO: 06.05.2016 передавать инфо о кол-ве активных записей и общем кол-ве записей.
         return Observable.defer(() -> Observable.just(doGetRecordsCountForUsers()));
     }
 

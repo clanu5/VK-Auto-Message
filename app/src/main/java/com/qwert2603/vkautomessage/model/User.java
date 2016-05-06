@@ -5,7 +5,7 @@ import com.vk.sdk.api.model.VKApiUser;
 
 public class User {
 
-    public static final int NO_RECORDS = -1;
+    public static final int NO_INFO = -1;
 
     private int mId;
     private String mFirstName;
@@ -18,6 +18,7 @@ public class User {
         mFirstName = vkApiUser.first_name;
         mLastName = vkApiUser.last_name;
         mPhoto = vkApiUser.photo_100;
+        mRecordsCount = NO_INFO;
     }
 
     public User(int id, String firstName, String lastName, String photo) {
@@ -25,6 +26,7 @@ public class User {
         mFirstName = firstName;
         mLastName = lastName;
         mPhoto = photo;
+        mRecordsCount = NO_INFO;
     }
 
     public int getId() {
