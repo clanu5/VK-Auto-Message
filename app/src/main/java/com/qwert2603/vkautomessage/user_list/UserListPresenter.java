@@ -41,7 +41,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                     if ((o instanceof Integer)) {
                         int integer = (Integer) o;
                         if (integer == RxBus.EVENT_USERS_PHOTO_UPDATED) {
-                            updateView();
+                            loadUserList();
                         }
                     }
                 });

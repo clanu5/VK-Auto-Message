@@ -75,6 +75,7 @@ public class SendMessageService extends IntentService {
         Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, record.getId());
 
+        // TODO: 06.05.2016 сделать правильный стек активити при переходе из уведомления.
         PendingIntent pendingIntent = TaskStackBuilder.create(SendMessageService.this)
                 .addParentStack(RecordActivity.class)
                 .addNextIntent(intent)

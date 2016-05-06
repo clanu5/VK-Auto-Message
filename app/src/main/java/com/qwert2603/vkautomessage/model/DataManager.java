@@ -231,6 +231,7 @@ public class DataManager {
     }
 
     public void logOutVk() {
+        mVkApiHelper.logOut();
         getAllRecords()
                 .flatMap(Observable::from)
                 .doOnNext(record -> {
@@ -239,7 +240,6 @@ public class DataManager {
                     }
                 })
                 .doOnCompleted(() -> {
-                    mVkApiHelper.logOut();
                     mPreferenceHelper.clear();
                     mDatabaseHelper.doDeleteAllRecordsAndUsers();
                 })
