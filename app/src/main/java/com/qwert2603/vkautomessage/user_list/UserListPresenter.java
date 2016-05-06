@@ -114,7 +114,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
 
     public void onUserChosen(int userId) {
         int userPosition = getUserPosition(userId);
-        if (userPosition > 0) {
+        if (userPosition >= 0) {
             getView().moveToRecordsForUser(userId);
         } else {
             mDataManager.getVkUserById(userId)
