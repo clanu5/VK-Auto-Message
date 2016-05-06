@@ -128,14 +128,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (isClosed() || isBeforeFirst() || isAfterLast()) {
                 return null;
             }
-            int id = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_ID));
-            int userId = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_USER_ID));
-            String message = getString(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_MESSAGE));
-            boolean enabled = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_ENABLED)) > 0;
-            int repeatType = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_REPEAT_TYPE));
-            int repeatInfo = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_REPEAT_INFO));
-            int hour = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_HOUR));
-            int minute = getInt(getColumnIndex(TABLE_RECORD + "." + COLUMN_RECORD_MINUTE));
+            int id = getInt(getColumnIndex(COLUMN_RECORD_ID));
+            int userId = getInt(getColumnIndex(COLUMN_RECORD_USER_ID));
+            String message = getString(getColumnIndex(COLUMN_RECORD_MESSAGE));
+            boolean enabled = getInt(getColumnIndex(COLUMN_RECORD_ENABLED)) > 0;
+            int repeatType = getInt(getColumnIndex(COLUMN_RECORD_REPEAT_TYPE));
+            int repeatInfo = getInt(getColumnIndex(COLUMN_RECORD_REPEAT_INFO));
+            int hour = getInt(getColumnIndex(COLUMN_RECORD_HOUR));
+            int minute = getInt(getColumnIndex(COLUMN_RECORD_MINUTE));
             return new Record(id, userId, message, enabled, repeatType, repeatInfo, hour, minute);
         }
     }
@@ -149,10 +149,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (isClosed() || isBeforeFirst() || isAfterLast()) {
                 return null;
             }
-            int id = getInt(getColumnIndex(TABLE_USER + "." + COLUMN_USER_ID));
-            String firstName = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_FIRST_NAME));
-            String lastName = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_LAST_NAME));
-            String photo = getString(getColumnIndex(TABLE_USER + "." + COLUMN_USER_PHOTO));
+            int id = getInt(getColumnIndex(COLUMN_USER_ID));
+            String firstName = getString(getColumnIndex(COLUMN_USER_FIRST_NAME));
+            String lastName = getString(getColumnIndex(COLUMN_USER_LAST_NAME));
+            String photo = getString(getColumnIndex(COLUMN_USER_PHOTO));
             return new User(id, firstName, lastName, photo);
         }
     }
@@ -172,13 +172,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private Map<Integer, Integer> doGetRecordsCountForUsers() {
         Map<Integer, Integer> map = new HashMap<>();
-        getReadableDatabase().rawQuery(
-                "SELECT " + TABLE_USER + "." + COLUMN_USER_ID + ", COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")" +
-                        " FROM " + TABLE_USER + ", " + TABLE_RECORD +
-                        " WHERE (" + TABLE_USER + "." + COLUMN_USER_ID + " = " + TABLE_RECORD + "." + COLUMN_RECORD_USER_ID + ")" +
-                        " GROUP BY " + TABLE_USER + "." + COLUMN_USER_ID,
-                null
-        );
+        String query = "SELECT " + TABLE_USER + "." + COLUMN_USER_ID + ", COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")" +
+                " FROM " + TABLE_USER +
+                " LEFT JOIN " + TABLE_RECORD +
+                " ON " + TABLE_USER + "." + COLUMN_USER_ID + " = " + TABLE_RECORD + "." + COLUMN_RECORD_USER_ID +
+                " GROUP BY " + TABLE_USER + "." + COLUMN_USER_ID;
+        Cursor cursor = getReadableDatabase().rawQuery(query, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            map.put(cursor.getInt(0), cursor.getInt(1));
+            cursor.moveToNext();
+        }
+        cursor.close();
         return map;
     }
 

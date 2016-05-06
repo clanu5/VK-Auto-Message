@@ -123,7 +123,11 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                                     return;
                                 }
                                 userList.add(user);
-                                view.notifyItemInserted(userList.size() - 1);
+                                if (userList.size() > 1) {
+                                    view.notifyItemInserted(userList.size() - 1);
+                                } else {
+                                    updateView();
+                                }
                                 view.moveToRecordsForUser(userId);
                             }, LogUtils::e
                     );

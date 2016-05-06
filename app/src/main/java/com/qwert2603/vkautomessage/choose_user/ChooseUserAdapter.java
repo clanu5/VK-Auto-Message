@@ -52,7 +52,6 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
             super(itemView);
             VkAutoMessageApplication.getAppComponent().inject(UserViewHolder.this);
             ButterKnife.bind(UserViewHolder.this, itemView);
-            mRecordsCountTextView.setText("");
         }
 
         @Override
@@ -83,6 +82,7 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
 
         @Override
         public void showRecordsCount(String recordsCount) {
+            mRecordsCountTextView.setText(recordsCount);
         }
     }
 }
