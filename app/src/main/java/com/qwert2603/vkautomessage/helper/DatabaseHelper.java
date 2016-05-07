@@ -170,6 +170,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             userCursor.moveToNext();
         }
         userCursor.close();
+        Map<Integer, Integer> recordsCountForUsers = doGetRecordsCountForUsers();
+        for (User user : userList) {
+            if (recordsCountForUsers.containsKey(user.getId())) {
+                user.setRecordsCount(recordsCountForUsers.get(user.getId()));
+            }
+        }
         return userList;
     }
 

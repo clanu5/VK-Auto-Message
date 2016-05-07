@@ -87,8 +87,8 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
     }
 
     @Override
-    public void showRecordsCount(String recordsCount) {
-        mRecordsTextView.setText(recordsCount);
+    public void showRecordsCount(int recordsCount) {
+        mRecordsTextView.setText(getResources().getQuantityString(R.plurals.records, recordsCount, recordsCount));
     }
 
     @Override

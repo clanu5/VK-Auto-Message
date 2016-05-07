@@ -58,23 +58,13 @@ public class DataManager {
      */
     public Observable<List<User>> getAllUsers() {
         // убираем из списка пользователей пользователя приложения.
-        Observable<List<User>> allUsers = getUserMyself()
+        return getUserMyself()
                 .flatMap(
                         userMyself -> mDatabaseHelper.getAllUsers()
                                 .flatMap(Observable::from)
                                 .filter(user -> user.getId() != userMyself.getId())
                                 .toList()
-                );
-        Observable<Map<Integer, Integer>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
-        return Observable.zip(allUsers, recordsCountForUsers,
-                (users, recordsCountMap) -> {
-                    for (User user : users) {
-                        if (recordsCountMap.containsKey(user.getId())) {
-                            user.setRecordsCount(recordsCountMap.get(user.getId()));
-                        }
-                    }
-                    return users;
-                })
+                )
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
@@ -92,9 +82,9 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
-    public Observable<User> getVkUserById(int userId) {
+    public Observable<VkUser> getVkUserById(int userId) {
         return mVkApiHelper.getUserById(userId)
-                .map(User::new)
+                .map(VkUser::new)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
