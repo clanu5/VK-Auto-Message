@@ -66,7 +66,6 @@ public class SendMessageService extends IntentService {
     }
 
     private void showResultNotification(RecordWithUser recordWithUser, boolean success) {
-        LogUtils.d("showResultNotification ## " + recordWithUser.mRecord.getMessage() + " " + success);
         String ticker = success ? getString(R.string.notification_ticker_success) : getString(R.string.notification_ticker_fail);
 
         Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
