@@ -29,10 +29,6 @@ public class SendMessageHelper {
     }
 
     public void onRecordChanged(Record record) {
-        if (true) {
-            // FIXME: 06.05.2016
-            return;
-        }
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(mContext, SendMessageService.class);
@@ -48,9 +44,7 @@ public class SendMessageHelper {
             if (alarmCalendar.getTimeInMillis() < System.currentTimeMillis()) {
                 alarmCalendar.setTime(new Date(alarmCalendar.getTimeInMillis() + MILLIS_PER_DAY));
             }
-            // TODO: 26.03.2016 использовать alarmManager.setExact(); (или нет)
-            alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP, alarmCalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmCalendar.getTimeInMillis(), pendingIntent);
         } else {
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel();

@@ -37,8 +37,4 @@ public class UserPresenter extends BasePresenter<User, UserView> {
         super.onViewNotReady();
     }
 
-    public User getUser() {
-        // TODO: 03.05.2016 нужен ли этот метод?
-        return getModel();
-    }
 }

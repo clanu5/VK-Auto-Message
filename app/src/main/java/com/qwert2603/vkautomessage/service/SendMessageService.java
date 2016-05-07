@@ -12,7 +12,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.model.DataManager;
-import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.RecordWithUser;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.util.InternetUtils;
@@ -27,7 +27,7 @@ import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class SendMessageService extends IntentService {
 
-    public static final String EXTRA_RECORD_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_TO_DELETE_ID";
+    public static final String EXTRA_RECORD_ID = "com.qwert2603.vkautomessage.service.EXTRA_RECORD_ID";
 
     private static final int MESSAGE_LENGTH_LIMIT = 52;
 
@@ -54,38 +54,37 @@ public class SendMessageService extends IntentService {
                 })
                 .subscribe(
                         record -> {
-                            showResultNotification((Record) record, true);
+                            showResultNotification((RecordWithUser) record, true);
                         },
                         throwable -> {
                             LogUtils.e(throwable);
-                            Record record = (Record) ((VkApiHelper.SendMessageException) throwable).mToken;
+                            RecordWithUser record = (RecordWithUser) ((VkApiHelper.SendMessageException) throwable).mToken;
                             showResultNotification(record, false);
                         }
                 );
     }
 
-    private void showResultNotification(Record record, boolean success) {
-        mDataManager.getUserById(record.getUserId())
-                .subscribe(user -> showResultNotification(record, user, success));
-    }
-
-    private void showResultNotification(Record record, User user, boolean success) {
+    private void showResultNotification(RecordWithUser recordWithUser, boolean success) {
+        LogUtils.d("showResultNotification ## " + recordWithUser.mRecord.getMessage() + " " + success);
         String ticker = success ? getString(R.string.notification_ticker_success) : getString(R.string.notification_ticker_fail);
 
         Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
-        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, record.getId());
+        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordWithUser.mRecord.getId());
 
         // TODO: 06.05.2016 сделать правильный стек активити при переходе из уведомления.
         PendingIntent pendingIntent = TaskStackBuilder.create(SendMessageService.this)
                 .addParentStack(RecordActivity.class)
                 .addNextIntent(intent)
-                .getPendingIntent(record.getId(), PendingIntent.FLAG_ONE_SHOT);
+                .getPendingIntent(recordWithUser.mRecord.getId(), PendingIntent.FLAG_ONE_SHOT);
+
+        String contentText = getUserName(recordWithUser.mUser)
+                + "\n" + noMore(recordWithUser.mRecord.getMessage(), MESSAGE_LENGTH_LIMIT);
 
         Notification notification = new NotificationCompat.Builder(SendMessageService.this)
                 .setSmallIcon(success ? android.R.drawable.stat_sys_upload_done : android.R.drawable.stat_notify_error)
                 .setTicker(ticker)
                 .setContentTitle(ticker)
-                .setContentText(getUserName(user) + "\n" + noMore(record.getMessage(), MESSAGE_LENGTH_LIMIT))
+                .setContentText(contentText)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();

@@ -244,8 +244,6 @@ public class DataManager {
      * Этот метод стоит вызывать, когда запись меняется и после включения устройства.
      */
     public void putRecordToSendMessageService(Record record) {
-        // TODO: 01.05.2016 добавить вызов этого метода везде куда надо.
-        // и SendMessageHelper#onRecordRemoved
         mSendMessageHelper.onRecordChanged(record);
     }
 
