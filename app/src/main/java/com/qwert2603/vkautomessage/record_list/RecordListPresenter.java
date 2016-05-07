@@ -80,16 +80,17 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
                     RecordListWithUser model = getModel();
-                    if (model == null || model.mRecordList == null) {
+                    RecordListView view = getView();
+                    if (model == null || model.mRecordList == null || view == null) {
                         return;
                     }
                     model.mRecordList.add(record);
-                    // TODO: 04.05.2016 use notifyItemInserted
-                    updateView();
-                    RecordListView view = getView();
-                    if (view != null) {
-                        view.moveToRecordDetails(record.getId());
+                    if (model.mRecordList.size() > 1) {
+                        view.notifyItemInserted(model.mRecordList.size() - 1);
+                    } else {
+                        updateView();
                     }
+                    view.moveToRecordDetails(record.getId());
                 }, LogUtils::e);
     }
 

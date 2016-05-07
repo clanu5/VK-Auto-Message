@@ -15,6 +15,7 @@ import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.RecordWithUser;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.util.InternetUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -71,10 +72,12 @@ public class SendMessageService extends IntentService {
         Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordWithUser.mRecord.getId());
 
-        // TODO: 06.05.2016 сделать правильный стек активити при переходе из уведомления.
-        PendingIntent pendingIntent = TaskStackBuilder.create(SendMessageService.this)
+        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(SendMessageService.this)
                 .addParentStack(RecordActivity.class)
-                .addNextIntent(intent)
+                .addNextIntent(intent);
+        taskStackBuilder.editIntentAt(1)
+                .putExtra(RecordListActivity.EXTRA_USER_ID, recordWithUser.mUser.getId());
+        PendingIntent pendingIntent = taskStackBuilder
                 .getPendingIntent(recordWithUser.mRecord.getId(), PendingIntent.FLAG_ONE_SHOT);
 
         String contentText = getUserName(recordWithUser.mUser)

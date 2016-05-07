@@ -163,6 +163,14 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         }
     }
 
+    @Override
+    public void notifyItemInserted(int position) {
+        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.notifyItemInserted(position);
+        }
+    }
+
     private void setViewAnimatorDisplayedChild(int position) {
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);

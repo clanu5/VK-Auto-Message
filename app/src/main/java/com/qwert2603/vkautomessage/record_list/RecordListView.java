@@ -8,4 +8,5 @@ public interface RecordListView extends ListView<Record> {
     void moveToRecordDetails(int recordId);
     void showDeleteRecord(int recordId);
     void notifyItemRemoved(int position);
+    void notifyItemInserted(int position);
 }
