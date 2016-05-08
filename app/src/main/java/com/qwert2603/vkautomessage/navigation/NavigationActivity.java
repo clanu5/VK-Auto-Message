@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -64,10 +63,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
             mNavigationView.setNavigationItemSelectedListener(item -> {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 switch (item.getItemId()) {
-                    /*case R.id.settings:
-                    // todo добавить этот пункт меню
-                        mNavigationPresenter.onSettingsClicked();
-                        return true;*/
                     case R.id.log_out:
                         mNavigationPresenter.onLogOutClicked();
                         return true;
@@ -147,12 +142,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public void showSettings() {
-        Snackbar.make(mDrawerLayout, "SNACK", Snackbar.LENGTH_SHORT).show();
-        // TODO: 18.03.2016 запускать Активити с настройками
     }
 
     @Override

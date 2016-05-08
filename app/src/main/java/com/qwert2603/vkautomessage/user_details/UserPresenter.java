@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.user_details;
 
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.base.BasePresenter;
@@ -24,7 +25,10 @@ public class UserPresenter extends BasePresenter<User, UserView> {
             return;
         }
         view.showName(getUserName(user));
-        ImageLoader.getInstance().displayImage(user.getPhoto(), view.getPhotoImageView());
+        ImageView photoImageView = view.getPhotoImageView();
+        if (photoImageView != null) {
+            ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
+        }
         view.showRecordsCount(user.getRecordsCount() != User.NO_INFO ? String.valueOf(user.getRecordsCount()) : "");
         view.showEnabledRecordsCount(user.getEnabledRecordsCount() != User.NO_INFO ? String.valueOf(user.getEnabledRecordsCount()) : "");
     }

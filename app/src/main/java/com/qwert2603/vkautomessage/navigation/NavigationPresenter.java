@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.navigation;
 
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -40,7 +41,10 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
         User user = getModel();
         if (user != null) {
             view.showUserName(getUserName(user));
-            ImageLoader.getInstance().displayImage(user.getPhoto(), view.getUserPhotoImageView());
+            ImageView userPhotoImageView = view.getUserPhotoImageView();
+            if (userPhotoImageView != null) {
+                ImageLoader.getInstance().displayImage(user.getPhoto(), userPhotoImageView);
+            }
         } else {
             view.showLoading();
         }
@@ -50,10 +54,6 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
     public void unbindView() {
         mSubscription.unsubscribe();
         super.unbindView();
-    }
-
-    public void onSettingsClicked() {
-        getView().showSettings();
     }
 
     public void onLogOutClicked() {

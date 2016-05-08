@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.Const;
@@ -77,8 +78,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         User user = recordWithUser.mUser;
         Record record = recordWithUser.mRecord;
         if (user != null) {
-            if (view.getPhotoImageView() != null) {
-                ImageLoader.getInstance().displayImage(user.getPhoto(), view.getPhotoImageView());
+            ImageView photoImageView = view.getPhotoImageView();
+            if (photoImageView != null) {
+                ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
             }
             view.showUserName(getUserName(user));
         }
