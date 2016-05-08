@@ -62,6 +62,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                 view.showList(recordList);
             }
             User user = recordListWithUser.mUser;
+            // TODO: 08.05.2016 обновлять при изменении кол-ва записей.
             view.showUserName(getUserName(user) + " (" + user.getRecordsCount() + ")");
         }
     }
@@ -111,7 +112,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                         return;
                     }
                     model.mRecordList.remove(position);
-                    if (model.mRecordList.size() > 1) {
+                    if (model.mRecordList.size() > 0) {
                         RecordListView view = getView();
                         if (view != null) {
                             view.notifyItemRemoved(position);

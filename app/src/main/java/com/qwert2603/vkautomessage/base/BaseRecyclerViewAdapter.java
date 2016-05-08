@@ -43,7 +43,7 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
         void onItemLongClicked(int position);
     }
 
-    private List<M> mModelList = new ArrayList<>();
+    private volatile List<M> mModelList = new ArrayList<>();
     private ClickCallbacks mClickCallbacks;
     private LongClickCallbacks mLongClickCallbacks;
     private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
@@ -114,11 +114,9 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
      */
     public void setModelList(List<M> modelList) {
         if (modelList != mModelList) {
-            mModelList.clear();
-            mModelList.addAll(modelList);
+            mModelList = modelList;
         }
         notifyDataSetChanged();
-
     }
 
     /**

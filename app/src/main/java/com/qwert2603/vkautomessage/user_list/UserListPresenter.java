@@ -95,7 +95,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                         return;
                     }
                     userList.remove(position);
-                    if (userList.size() > 1) {
+                    if (userList.size() > 0) {
                         view.notifyItemRemoved(position);
                     } else {
                         updateView();

@@ -155,18 +155,12 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
     @Override
     public void notifyItemRemoved(int position) {
-        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null) {
-            adapter.notifyItemRemoved(position);
-        }
+        mRecordListAdapter.notifyItemRemoved(position);
     }
 
     @Override
     public void notifyItemInserted(int position) {
-        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null) {
-            adapter.notifyItemInserted(position);
-        }
+        mRecordListAdapter.notifyItemInserted(position);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

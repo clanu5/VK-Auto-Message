@@ -138,10 +138,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void showItemSelected(int position) {
-        ChooseUserAdapter adapter = (ChooseUserAdapter) mRecyclerView.getAdapter();
-        if (adapter != null) {
-            adapter.setSelectedItemPosition(position);
-        }
+        mChooseUserAdapter.setSelectedItemPosition(position);
     }
 
     @Override
