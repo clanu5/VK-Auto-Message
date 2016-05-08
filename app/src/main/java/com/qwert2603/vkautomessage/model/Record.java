@@ -11,11 +11,15 @@ public class Record {
 
     /**
      * Повтор в те дни недели, для которых установлен в 1 соответствующий бит {@link #mRepeatInfo}.
+     * 0010011 = ПН, ВТ, ПТ.
      */
     public static final int REPEAT_TYPE_DAYS_IN_WEEK = 2;
 
     /**
-     * Повтор в каждый год в день номер {@link #mRepeatInfo}.
+     * Повтор в каждый год в день {@link #mRepeatInfo}. (mmdd)
+     * 0326 = 26 марта.
+     * 1231 = 31 декабря.
+     * 0229 = 29 февраля.
      */
     public static final int REPEAT_TYPE_DAY_IN_YEAR = 3;
 
