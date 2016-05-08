@@ -73,12 +73,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public static class RecordsCountInfo {
+        public int mRecordsCount = User.NO_INFO;
+        public int mEnabledRecordsCount = User.NO_INFO;
+    }
+
     public Observable<List<User>> getAllUsers() {
         return Observable.defer(() -> Observable.just(doGetAllUsers()));
     }
 
-    public Observable<Map<Integer, Integer>> getRecordsCountForUsers() {
-        // TODO: 06.05.2016 передавать инфо о кол-ве активных записей и общем кол-ве записей.
+    public Observable<Map<Integer, RecordsCountInfo>> getRecordsCountForUsers() {
         return Observable.defer(() -> Observable.just(doGetRecordsCountForUsers()));
     }
 
@@ -170,17 +174,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             userCursor.moveToNext();
         }
         userCursor.close();
-        Map<Integer, Integer> recordsCountForUsers = doGetRecordsCountForUsers();
+        Map<Integer, RecordsCountInfo> recordsCountForUsers = doGetRecordsCountForUsers();
         for (User user : userList) {
             if (recordsCountForUsers.containsKey(user.getId())) {
-                user.setRecordsCount(recordsCountForUsers.get(user.getId()));
+                RecordsCountInfo recordsCountInfo = recordsCountForUsers.get(user.getId());
+                user.setEnabledRecordsCount(recordsCountInfo.mEnabledRecordsCount);
+                user.setRecordsCount(recordsCountInfo.mRecordsCount);
             }
         }
         return userList;
     }
 
-    private Map<Integer, Integer> doGetRecordsCountForUsers() {
-        Map<Integer, Integer> map = new HashMap<>();
+    private Map<Integer, RecordsCountInfo> doGetRecordsCountForUsers() {
+        Map<Integer, RecordsCountInfo> map = new HashMap<>();
+
         String query = "SELECT " + TABLE_USER + "." + COLUMN_USER_ID + ", COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")" +
                 " FROM " + TABLE_USER +
                 " LEFT JOIN " + TABLE_RECORD +
@@ -189,10 +196,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = getReadableDatabase().rawQuery(query, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            map.put(cursor.getInt(0), cursor.getInt(1));
+            RecordsCountInfo recordsCountInfo = new RecordsCountInfo();
+            recordsCountInfo.mRecordsCount = cursor.getInt(1);
+            map.put(cursor.getInt(0), recordsCountInfo);
             cursor.moveToNext();
         }
         cursor.close();
+
+        String queryEnabled = "SELECT " + TABLE_USER + "." + COLUMN_USER_ID + "," +
+                " COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")" +
+                " FROM " + TABLE_USER +
+                " LEFT JOIN " + TABLE_RECORD +
+                " ON " + TABLE_USER + "." + COLUMN_USER_ID + " = " + TABLE_RECORD + "." + COLUMN_RECORD_USER_ID +
+                " AND " + TABLE_RECORD + "." + COLUMN_RECORD_ENABLED + " = " + 1 +
+                " GROUP BY " + TABLE_USER + "." + COLUMN_USER_ID;
+        Cursor cursorEnabled = getReadableDatabase().rawQuery(queryEnabled, null);
+        cursorEnabled.moveToFirst();
+        while (!cursorEnabled.isAfterLast()) {
+            int userId = cursorEnabled.getInt(0);
+            if (!map.containsKey(userId)) {
+                map.put(userId, new RecordsCountInfo());
+            }
+            map.get(userId).mEnabledRecordsCount = cursorEnabled.getInt(1);
+            cursorEnabled.moveToNext();
+        }
+        cursorEnabled.close();
+
         return map;
     }
 

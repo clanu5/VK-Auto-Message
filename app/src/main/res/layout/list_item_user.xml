@@ -25,12 +25,30 @@
         android:textSize="20sp"/>
 
     <TextView
+        android:id="@+id/enabled_records_count_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textSize="16sp"
+        android:textColor="@color/enabled_records_count"
+        android:text="14"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:text="/"
+        android:textSize="16sp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"/>
+
+    <TextView
         android:id="@+id/records_count_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textSize="16sp"
         android:textColor="@color/records_count"
-        android:text="4325"/>
+        android:text="26"/>
 
 </LinearLayout>

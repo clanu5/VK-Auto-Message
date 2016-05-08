@@ -42,6 +42,9 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
         @BindView(R.id.records_count_text_view)
         TextView mRecordsCountTextView;
 
+        @BindView(R.id.enabled_records_count_text_view)
+        TextView mEnabledRecordsCountTextView;
+
         @Inject
         UserPresenter mUserPresenter;
 
@@ -80,6 +83,11 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
         @Override
         public void showRecordsCount(String recordsCount) {
             mRecordsCountTextView.setText(recordsCount);
+        }
+
+        @Override
+        public void showEnabledRecordsCount(String enabledRecordsCount) {
+            mEnabledRecordsCountTextView.setText(enabledRecordsCount);
         }
     }
 }

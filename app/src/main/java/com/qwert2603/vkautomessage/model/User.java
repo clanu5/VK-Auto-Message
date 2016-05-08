@@ -11,6 +11,7 @@ public class User {
     private String mFirstName;
     private String mLastName;
     private String mPhoto;
+    private int mEnabledRecordsCount;
     private int mRecordsCount;
 
     public User(VKApiUser vkApiUser) {
@@ -18,6 +19,7 @@ public class User {
         mFirstName = vkApiUser.first_name;
         mLastName = vkApiUser.last_name;
         mPhoto = vkApiUser.photo_100;
+        mEnabledRecordsCount = NO_INFO;
         mRecordsCount = NO_INFO;
     }
 
@@ -26,6 +28,7 @@ public class User {
         mFirstName = firstName;
         mLastName = lastName;
         mPhoto = photo;
+        mEnabledRecordsCount = NO_INFO;
         mRecordsCount = NO_INFO;
     }
 
@@ -59,6 +62,14 @@ public class User {
 
     public void setFirstName(String firstName) {
         mFirstName = firstName;
+    }
+
+    public int getEnabledRecordsCount() {
+        return mEnabledRecordsCount;
+    }
+
+    public void setEnabledRecordsCount(int enabledRecordsCount) {
+        mEnabledRecordsCount = enabledRecordsCount;
     }
 
     public int getRecordsCount() {

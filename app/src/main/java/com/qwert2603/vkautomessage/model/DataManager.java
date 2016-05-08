@@ -174,12 +174,14 @@ public class DataManager {
                 .toList()
                 .cache();
         updateUsersInDatabase(friends);
-        Observable<Map<Integer, Integer>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
+        Observable<Map<Integer, DatabaseHelper.RecordsCountInfo>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
         return Observable.zip(friends, recordsCountForUsers,
                 (users, recordsCountMap) -> {
                     for (VkUser user : users) {
                         if (recordsCountMap.containsKey(user.getId())) {
-                            user.setRecordsCount(recordsCountMap.get(user.getId()));
+                            DatabaseHelper.RecordsCountInfo recordsCountInfo = recordsCountMap.get(user.getId());
+                            user.setEnabledRecordsCount(recordsCountInfo.mEnabledRecordsCount);
+                            user.setRecordsCount(recordsCountInfo.mRecordsCount);
                         }
                     }
                     return users;

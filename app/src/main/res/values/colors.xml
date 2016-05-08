@@ -7,6 +7,7 @@
 
     <color name="dialog_delete_record_title">#111111</color>
     <color name="user_name">#6F4081</color>
+    <color name="enabled_records_count">#FF9021</color>
     <color name="records_count">#8F9021</color>
     <color name="message">#5F6566</color>
     <color name="time">#AF6091</color>

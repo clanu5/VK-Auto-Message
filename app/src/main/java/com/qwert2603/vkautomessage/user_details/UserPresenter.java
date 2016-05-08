@@ -26,6 +26,7 @@ public class UserPresenter extends BasePresenter<User, UserView> {
         view.showName(getUserName(user));
         ImageLoader.getInstance().displayImage(user.getPhoto(), view.getPhotoImageView());
         view.showRecordsCount(user.getRecordsCount() != User.NO_INFO ? String.valueOf(user.getRecordsCount()) : "");
+        view.showEnabledRecordsCount(user.getEnabledRecordsCount() != User.NO_INFO ? String.valueOf(user.getEnabledRecordsCount()) : "");
     }
 
     @Override
