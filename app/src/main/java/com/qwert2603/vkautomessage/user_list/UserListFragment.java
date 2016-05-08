@@ -54,6 +54,9 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Inject
     UserListPresenter mUserListPresenter;
 
+    @Inject
+    UserListAdapter mUserListAdapter;
+
     @NonNull
     @Override
     protected UserListPresenter getPresenter() {
@@ -63,6 +66,8 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(UserListFragment.this);
+        mUserListAdapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
+        mUserListAdapter.setLongClickCallbacks(mUserListPresenter::onUserAtPositionLongClicked);
         super.onCreate(savedInstanceState);
     }
 
@@ -73,8 +78,9 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
         ButterKnife.bind(UserListFragment.this, view);
 
-        mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mUserListAdapter);
+
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
 
         mNewRecordFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
@@ -124,15 +130,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void showList(List<User> list) {
         setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
-        UserListAdapter adapter = (UserListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null && adapter.isShowingList(list)) {
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter = new UserListAdapter(list);
-            adapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
-            adapter.setLongClickCallbacks(mUserListPresenter::onUserAtPositionLongClicked);
-            mRecyclerView.setAdapter(adapter);
-        }
+        mUserListAdapter.setModelList(list);
     }
 
     @Override

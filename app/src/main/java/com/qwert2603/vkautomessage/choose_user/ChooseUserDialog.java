@@ -59,6 +59,9 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Inject
     ChooseUserPresenter mChooseUserPresenter;
 
+    @Inject
+    ChooseUserAdapter mChooseUserAdapter;
+
     @NonNull
     @Override
     protected ChooseUserPresenter getPresenter() {
@@ -73,6 +76,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(ChooseUserDialog.this);
+        mChooseUserAdapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
         super.onCreate(savedInstanceState);
     }
 
@@ -87,6 +91,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mChooseUserAdapter);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReload());
 
@@ -162,14 +167,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void showList(List<VkUser> list) {
         setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
-        ChooseUserAdapter adapter = (ChooseUserAdapter) mRecyclerView.getAdapter();
-        if (adapter != null && adapter.isShowingList(list)) {
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter = new ChooseUserAdapter(list);
-            adapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
-            mRecyclerView.setAdapter(adapter);
-        }
+        mChooseUserAdapter.setModelList(list);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

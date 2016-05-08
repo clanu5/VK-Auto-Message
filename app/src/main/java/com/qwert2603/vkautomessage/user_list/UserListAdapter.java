@@ -13,8 +13,6 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -22,8 +20,7 @@ import butterknife.ButterKnife;
 
 public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapter.UserViewHolder, UserPresenter> {
 
-    public UserListAdapter(List<User> modelList) {
-        super(modelList);
+    public UserListAdapter() {
     }
 
     @Override

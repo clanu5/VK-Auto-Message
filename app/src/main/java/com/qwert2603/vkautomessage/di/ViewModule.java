@@ -1,14 +1,17 @@
 package com.qwert2603.vkautomessage.di;
 
+import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_time.EditTimePresenter;
 import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
+import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 import com.qwert2603.vkautomessage.record_list.RecordListPresenter;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
+import com.qwert2603.vkautomessage.user_list.UserListAdapter;
 import com.qwert2603.vkautomessage.user_list.UserListPresenter;
 
 import dagger.Module;
@@ -65,6 +68,21 @@ public class ViewModule {
     @Provides
     EditTimePresenter provideEditTimePresenter() {
         return new EditTimePresenter();
+    }
+
+    @Provides
+    UserListAdapter provideUserListAdapter() {
+        return new UserListAdapter();
+    }
+
+    @Provides
+    RecordListAdapter provideRecordListAdapter() {
+        return new RecordListAdapter();
+    }
+
+    @Provides
+    ChooseUserAdapter provideChooseUserAdapter() {
+        return new ChooseUserAdapter();
     }
 
 }

@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.base;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,16 +43,12 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
         void onItemLongClicked(int position);
     }
 
-    private List<M> mModelList;
+    private List<M> mModelList = new ArrayList<>();
     private ClickCallbacks mClickCallbacks;
     private LongClickCallbacks mLongClickCallbacks;
     private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
 
-    /**
-     * @param modelList список объектов модели.
-     */
-    public BaseRecyclerViewAdapter(List<M> modelList) {
-        mModelList = modelList;
+    public BaseRecyclerViewAdapter() {
     }
 
     /**
@@ -112,13 +109,16 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
     }
 
     /**
-     * Сравнить произвольный список с отображаемым.
-     *
-     * @param list список для сравнения.
-     * @return отображается переданный список или нет?
+     * Назначить список объектов модели для отображения.
+     * @param modelList список объектов модели для отображения.
      */
-    public boolean isShowingList(List<M> list) {
-        return mModelList == list;
+    public void setModelList(List<M> modelList) {
+        if (modelList != mModelList) {
+            mModelList.clear();
+            mModelList.addAll(modelList);
+        }
+        notifyDataSetChanged();
+
     }
 
     /**

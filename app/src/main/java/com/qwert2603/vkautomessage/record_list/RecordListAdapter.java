@@ -15,8 +15,6 @@ import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -26,8 +24,7 @@ import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter> {
 
-    public RecordListAdapter(List<Record> modelList) {
-        super(modelList);
+    public RecordListAdapter() {
     }
 
     @Override

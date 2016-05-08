@@ -19,12 +19,14 @@ public final class StringUtils {
         return user.getFirstName() + " " + user.getLastName();
     }
 
+    /**
+     * Время отправки сообщения.
+     */
     public static String getRecordTime(Record record) {
         int h = record.getHour();
         int m = record.getMinute();
-        String ph = h <= 9 ? "0" : "";
         String pm = m <= 9 ? "0" : "";
-        return ph + h + ":" + pm + m;
+        return h + ":" + pm + m;
     }
 
 }

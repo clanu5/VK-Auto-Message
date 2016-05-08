@@ -27,7 +27,7 @@
         android:id="@+id/records_count_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/message"
+        android:textColor="@color/records_count"
         android:text="2987 records"
         android:layout_margin="4dp"
         android:layout_marginBottom="8dp"

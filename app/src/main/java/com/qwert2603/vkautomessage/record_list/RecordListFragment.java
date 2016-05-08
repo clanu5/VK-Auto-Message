@@ -58,6 +58,9 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Inject
     RecordListPresenter mRecordListPresenter;
 
+    @Inject
+    RecordListAdapter mRecordListAdapter;
+
     @NonNull
     @Override
     protected RecordListPresenter getPresenter() {
@@ -68,6 +71,8 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
         mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
+        mRecordListAdapter.setClickCallbacks(mRecordListPresenter::onRecordAtPositionClicked);
+        mRecordListAdapter.setLongClickCallbacks(mRecordListPresenter::onRecordAtPositionLongClicked);
         super.onCreate(savedInstanceState);
     }
 
@@ -78,8 +83,9 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
         ButterKnife.bind(RecordListFragment.this, view);
 
-        mRecyclerView = (RecyclerView) mViewAnimator.getChildAt(POSITION_RECYCLER_VIEW);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mRecordListAdapter);
+
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
@@ -125,15 +131,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void showList(List<Record> list) {
         setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
-        RecordListAdapter adapter = (RecordListAdapter) mRecyclerView.getAdapter();
-        if (adapter != null && adapter.isShowingList(list)) {
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter = new RecordListAdapter(list);
-            adapter.setClickCallbacks(position -> mRecordListPresenter.onRecordAtPositionClicked(position));
-            adapter.setLongClickCallbacks(position -> mRecordListPresenter.onRecordAtPositionLongClicked(position));
-            mRecyclerView.setAdapter(adapter);
-        }
+        mRecordListAdapter.setModelList(list);
     }
 
     @Override
