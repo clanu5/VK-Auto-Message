@@ -10,16 +10,13 @@ import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.service.SendMessageService;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import javax.inject.Inject;
 
 public class SendMessageHelper {
 
-    /**
-     * Кол-во миллисекунд в сутках.
-     */
-    private static final int MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
+    private static final int MILLIS_PER_MINUTE = 60 * 1000;
+    private static final int MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
 
     @Inject
     Context mContext;
@@ -41,10 +38,19 @@ public class SendMessageHelper {
             alarmCalendar.set(Calendar.HOUR_OF_DAY, record.getHour());
             alarmCalendar.set(Calendar.MINUTE, record.getMinute());
             alarmCalendar.set(Calendar.SECOND, 0);
-            if (alarmCalendar.getTimeInMillis() < System.currentTimeMillis()) {
-                alarmCalendar.setTime(new Date(alarmCalendar.getTimeInMillis() + MILLIS_PER_DAY));
+            alarmCalendar.set(Calendar.MILLISECOND, 0);
+            long timeInMillis = alarmCalendar.getTimeInMillis();
+            int interval = record.getRepeatInfo() * MILLIS_PER_HOUR;    // интервал отправки сообщений.
+            int delta = MILLIS_PER_MINUTE;  // используется, чтобы избежать повторной отправки в одно время.
+            timeInMillis -= delta;
+            while (timeInMillis < System.currentTimeMillis()) {
+                timeInMillis += interval;
             }
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmCalendar.getTimeInMillis(), pendingIntent);
+            while (timeInMillis - interval > System.currentTimeMillis()) {
+                timeInMillis -= interval;
+            }
+            timeInMillis += delta;
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else {
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel();

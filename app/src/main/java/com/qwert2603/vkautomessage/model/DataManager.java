@@ -160,11 +160,12 @@ public class DataManager {
     }
 
     public void onRecordUpdated(Record record) {
-        updateRecord(record).subscribe(
-                i -> {
-                },
-                LogUtils::e
-        );
+        updateRecord(record)
+                .subscribe(
+                        i -> {
+                        },
+                        LogUtils::e
+                );
     }
 
     public Observable<List<VkUser>> getAllVkFriends() {

@@ -29,8 +29,10 @@ public class UserPresenter extends BasePresenter<User, UserView> {
         if (photoImageView != null) {
             ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
         }
+        // todo передавать recordsCount одним методом.
         view.showRecordsCount(user.getRecordsCount() != User.NO_INFO ? String.valueOf(user.getRecordsCount()) : "");
         view.showEnabledRecordsCount(user.getEnabledRecordsCount() != User.NO_INFO ? String.valueOf(user.getEnabledRecordsCount()) : "");
+        // TODO: 08.05.2016 переделать layout, чтобы recordsCount не уходило за границу.
     }
 
     @Override
