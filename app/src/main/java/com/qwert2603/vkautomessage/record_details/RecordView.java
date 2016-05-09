@@ -10,9 +10,10 @@ public interface RecordView extends BaseView {
     void showMessage(String message);
     void showEnabled(boolean enabled);
     void showTime(String time);
+    void showPeriod(int period);
     void showLoading();
     void showEditMessage(String message);
     void showEditTime(int minuteAtDay);
-    void showEditDay(/*todo*/);
+    void showEditPeriod(int period);
     void showToast(int stringRes);
 }

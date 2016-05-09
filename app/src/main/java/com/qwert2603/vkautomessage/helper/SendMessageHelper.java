@@ -8,8 +8,10 @@ import android.content.Intent;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.service.SendMessageService;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -51,6 +53,7 @@ public class SendMessageHelper {
                 timeInMillis -= interval;
             }
             timeInMillis += delta;
+            LogUtils.d(new Date(timeInMillis).toString());
             mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else {
             mAlarmManager.cancel(pendingIntent);

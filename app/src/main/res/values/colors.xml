@@ -10,7 +10,8 @@
     <color name="enabled_records_count">#FF9021</color>
     <color name="records_count">#8F9021</color>
     <color name="message">#5F6566</color>
-    <color name="time">#AF6091</color>
+    <color name="time">#0F6091</color>
+    <color name="period">#6F9081</color>
     <color name="error">#E00</color>
     <color name="selected_user">#f57</color>
     <color name="nav_header_background">#e8e8e8</color>

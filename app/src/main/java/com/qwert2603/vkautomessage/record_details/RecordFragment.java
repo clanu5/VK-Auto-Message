@@ -18,6 +18,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
+import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
 
     private static final int REQUEST_EDIT_MESSAGE = 1;
     private static final int REQUEST_EDIT_TIME = 2;
+    private static final int REQUEST_EDIT_PERIOD = 3;
 
     public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
@@ -55,14 +57,20 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     @BindView(R.id.time_text_view)
     TextView mTimeTextView;
 
+    @BindView(R.id.period_text_view)
+    TextView mPeriodTextView;
+
     @BindView(R.id.user_card)
-    CardView userCardView;
+    CardView mUserCardView;
 
     @BindView(R.id.message_card)
-    CardView messageCardView;
+    CardView mMessageCardView;
 
     @BindView(R.id.time_card)
-    CardView timeCardView;
+    CardView mTimeCardView;
+
+    @BindView(R.id.period_card)
+    CardView mPeriodCardView;
 
     @Inject
     RecordPresenter mRecordPresenter;
@@ -88,8 +96,9 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         ButterKnife.bind(RecordFragment.this, view);
 
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
-        messageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
-        timeCardView.setOnClickListener(v -> mRecordPresenter.onChooseTimeClicked());
+        mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
+        mTimeCardView.setOnClickListener(v -> mRecordPresenter.onEditTimeClicked());
+        mPeriodCardView.setOnClickListener(v -> mRecordPresenter.onEditPeriodClicked());
 
         return view;
     }
@@ -108,6 +117,10 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
             case REQUEST_EDIT_TIME:
                 int minuteAtDay = data.getIntExtra(EditTimeDialog.EXTRA_MINUTE_AT_DAY, 0);
                 mRecordPresenter.onTimeEdited(minuteAtDay);
+                break;
+            case REQUEST_EDIT_PERIOD:
+                int period = data.getIntExtra(EditPeriodDialog.EXTRA_PERIOD, 0);
+                mRecordPresenter.onPeriodEdited(period);
                 break;
         }
     }
@@ -138,6 +151,11 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
+    public void showPeriod(int period) {
+        mPeriodTextView.setText(getResources().getQuantityString(R.plurals.hours, period, period));
+    }
+
+    @Override
     public void showLoading() {
         mPhotoImageView.setImageBitmap(null);
         mUsernameTextView.setText(R.string.loading);
@@ -160,8 +178,10 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
-    public void showEditDay() {
-        // TODO: 03.05.2016
+    public void showEditPeriod(int period) {
+        EditPeriodDialog editPeriodDialog = EditPeriodDialog.newInstance(period);
+        editPeriodDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_PERIOD);
+        editPeriodDialog.show(getFragmentManager(), editPeriodDialog.getClass().getName());
     }
 
     @Override

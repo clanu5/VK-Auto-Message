@@ -40,6 +40,9 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
     @BindView(R.id.user_name_text_view)
     TextView mUserNameTextView;
 
+    @BindView(R.id.enabled_records_count_text_view)
+    TextView mEnabledRecordsTextView;
+
     @BindView(R.id.records_count_text_view)
     TextView mRecordsTextView;
 
@@ -88,7 +91,14 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
 
     @Override
     public void showRecordsCount(int recordsCount) {
-        mRecordsTextView.setText(getResources().getQuantityString(R.plurals.records, recordsCount, recordsCount));
+        mRecordsTextView.setText(getResources()
+                .getQuantityString(R.plurals.records, recordsCount, recordsCount));
+    }
+
+    @Override
+    public void showEnabledRecordsCount(int enabledRecordsCount) {
+        mEnabledRecordsTextView.setText(getResources()
+                .getQuantityString(R.plurals.enabled_records, enabledRecordsCount, enabledRecordsCount));
     }
 
     @Override

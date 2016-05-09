@@ -4,4 +4,14 @@
         <item quantity="one">%d record</item>
         <item quantity="other">%d records</item>
     </plurals>
+
+    <plurals name="enabled_records">
+        <item quantity="one">%d enabled record</item>
+        <item quantity="other">%d enabled records</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
 </resources>

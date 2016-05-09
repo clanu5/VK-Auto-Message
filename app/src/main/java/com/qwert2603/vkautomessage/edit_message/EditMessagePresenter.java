@@ -15,7 +15,11 @@ public class EditMessagePresenter extends BasePresenter<String, EditMessageView>
 
     @Override
     protected void onUpdateView(@NonNull EditMessageView view) {
-        view.setMessage(getModel());
+        String model = getModel();
+        if (model == null) {
+            return;
+        }
+        view.setMessage(model);
     }
 
     public void onMessageEdited(String message) {
@@ -25,6 +29,10 @@ public class EditMessagePresenter extends BasePresenter<String, EditMessageView>
     }
 
     void onSubmitClicked() {
-        getView().submitDone(getModel());
+        String model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().submitDone(model);
     }
 }

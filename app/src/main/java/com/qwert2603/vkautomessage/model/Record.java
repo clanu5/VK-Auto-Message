@@ -23,6 +23,11 @@ public class Record {
      */
     public static final int REPEAT_TYPE_DAY_IN_YEAR = 3;
 
+    /**
+     * Периоды для отправки при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
+     */
+    public static final int[] PERIODS = {1, 2, 3, 4, 6, 8, 12, 24};
+
     private int mId;
     private int mUserId;
     private String mMessage;

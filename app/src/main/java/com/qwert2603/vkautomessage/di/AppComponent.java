@@ -8,6 +8,7 @@ import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
+import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
@@ -84,4 +85,8 @@ public interface AppComponent {
     void inject(DeleteUserDialog deleteUserDialog);
 
     void inject(RxBus rxBus);
+
+    void inject(EditPeriodDialog editPeriodDialog);
+
+    void inject(RecordListAdapter recordListAdapter);
 }

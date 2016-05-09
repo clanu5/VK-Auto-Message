@@ -88,6 +88,11 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
             view.showMessage(record.getMessage());
             view.showEnabled(record.isEnabled());
             view.showTime(getTimeString());
+            switch (record.getRepeatType()) {
+                case Record.REPEAT_TYPE_HOURS_IN_DAY:
+                    view.showPeriod(record.getRepeatInfo());
+                    break;
+            }
         }
     }
 
@@ -129,10 +134,24 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
             getView().showToast(R.string.empty_message_toast);
             return;
         }
-        if (!model.mRecord.getMessage().equals(message)) {
-            model.mRecord.setMessage(message);
+        Record record = model.mRecord;
+        if (!record.getMessage().equals(message)) {
+            record.setMessage(message);
             getView().showMessage(message);
-            mDataManager.onRecordUpdated(model.mRecord);
+            mDataManager.onRecordUpdated(record);
+        }
+    }
+
+    public void onPeriodEdited(int period) {
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
+            return;
+        }
+        Record record = model.mRecord;
+        if (record.getRepeatType() == Record.REPEAT_TYPE_HOURS_IN_DAY && record.getRepeatInfo() != period) {
+            record.setRepeatInfo(period);
+            getView().showPeriod(period);
+            mDataManager.onRecordUpdated(record);
         }
     }
 
@@ -144,7 +163,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         getView().showEditMessage(model.mRecord.getMessage());
     }
 
-    public void onChooseTimeClicked() {
+    public void onEditTimeClicked() {
         RecordWithUser model = getModel();
         if (model == null || model.mRecord == null) {
             return;
@@ -153,8 +172,13 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         getView().showEditTime(record.getHour() * Const.MINUTES_PER_HOUR + record.getMinute());
     }
 
-    public void onChooseDayClocked() {
-        // TODO: 03.05.2016
+    public void onEditPeriodClicked() {
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null || model.mRecord.getRepeatType() != Record.REPEAT_TYPE_HOURS_IN_DAY) {
+            return;
+        }
+        Record record = model.mRecord;
+        getView().showEditPeriod(record.getRepeatInfo());
     }
 
     private String getTimeString() {

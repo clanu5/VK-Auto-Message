@@ -8,8 +8,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="4dp"
         android:text="@string/delete_user"
         android:textColor="@color/dialog_delete_record_title"
         android:textSize="18sp"/>
@@ -18,19 +18,28 @@
         android:id="@+id/user_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/user_name"
-        android:text="Alex Zhdanov"
         android:layout_margin="4dp"
+        android:text="Alex Zhdanov"
+        android:textColor="@color/user_name"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/enabled_records_count_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_marginBottom="8dp"
+        android:text="14 records"
+        android:textColor="@color/enabled_records_count"
         android:textSize="16sp"/>
 
     <TextView
         android:id="@+id/records_count_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/records_count"
-        android:text="2987 records"
         android:layout_margin="4dp"
         android:layout_marginBottom="8dp"
+        android:text="26 records"
+        android:textColor="@color/records_count"
         android:textSize="16sp"/>
-
 </LinearLayout>
