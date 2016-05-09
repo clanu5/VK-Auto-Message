@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -11,6 +12,7 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -28,8 +30,31 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
 
     private int mUserId;
 
+    @Inject
+    RxBus mRxBus;
+
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
+        mRxBus.toObservable()
+                .subscribe(event -> {
+                    RecordListWithUser model = getModel();
+                    RecordListView view = getView();
+                    if (model == null || model.mUser == null || view == null) {
+                        return;
+                    }
+                    User user = model.mUser;
+                    if (event.mEvent == RxBus.Event.EVENT_RECORD_ENABLED_CHANGED) {
+                        if (event.mObject instanceof Record) {
+                            Record record = (Record) event.mObject;
+                            if (record.getUserId() == user.getId()) {
+                                int enabledRecordsCount = user.getEnabledRecordsCount();
+                                enabledRecordsCount += record.isEnabled() ? 1 : -1;
+                                user.setEnabledRecordsCount(enabledRecordsCount);
+                                showUserNameAndRecordsCount(user, view);
+                            }
+                        }
+                    }
+                }, LogUtils::e);
     }
 
     public void setUserId(int userId) {
@@ -61,10 +86,13 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
             } else {
                 view.showList(recordList);
             }
-            User user = recordListWithUser.mUser;
-            // TODO: 08.05.2016 обновлять при изменении кол-ва записей.
-            view.showUserName(getUserName(user) + " (" + user.getRecordsCount() + ")");
+            showUserNameAndRecordsCount(recordListWithUser.mUser, view);
         }
+    }
+
+    private void showUserNameAndRecordsCount(@NonNull User user, @NonNull RecordListView view) {
+        view.showUserName(String.format(Locale.getDefault(),
+                "%s (%d/%d)", getUserName(user), user.getEnabledRecordsCount(), user.getRecordsCount()));
     }
 
     public void onReload() {
@@ -77,17 +105,25 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     }
 
     public void onNewRecordClicked() {
-        Record record = new Record(mUserId);
+        RecordListWithUser recordListWithUser = getModel();
+        if (recordListWithUser == null || recordListWithUser.mUser == null) {
+            return;
+        }
+        Record record = new Record(recordListWithUser.mUser.getId());
         mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
-                    if (model == null || model.mRecordList == null || view == null) {
+                    if (model == null || model.mRecordList == null || model.mUser == null || view == null) {
                         return;
                     }
-                    model.mRecordList.add(record);
-                    if (model.mRecordList.size() > 1) {
-                        view.notifyItemInserted(model.mRecordList.size() - 1);
+                    List<Record> recordList = model.mRecordList;
+                    User user = model.mUser;
+                    recordList.add(record);
+                    user.setRecordsCount(user.getRecordsCount() + 1);
+                    if (recordList.size() > 1) {
+                        showUserNameAndRecordsCount(user, view);
+                        view.notifyItemInserted(recordList.size() - 1);
                     } else {
                         updateView();
                     }
@@ -108,15 +144,20 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         mDataManager.removeRecord(recordId)
                 .subscribe(aLong -> {
                     RecordListWithUser model = getModel();
-                    if (model == null || model.mRecordList == null) {
+                    RecordListView view = getView();
+                    if (model == null || model.mRecordList == null || model.mUser == null || view == null) {
                         return;
                     }
-                    model.mRecordList.remove(position);
-                    if (model.mRecordList.size() > 0) {
-                        RecordListView view = getView();
-                        if (view != null) {
-                            view.notifyItemRemoved(position);
-                        }
+                    List<Record> recordList = model.mRecordList;
+                    User user = model.mUser;
+                    user.setRecordsCount(user.getRecordsCount() - 1);
+                    if (recordList.get(position).isEnabled()) {
+                        user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
+                    }
+                    recordList.remove(position);
+                    if (recordList.size() > 0) {
+                        showUserNameAndRecordsCount(user, view);
+                        view.notifyItemRemoved(position);
                     } else {
                         updateView();
                     }

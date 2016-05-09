@@ -92,51 +92,64 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     }
 
     public void onTimeEdited(int minuteAtDay) {
-        if (getModel() == null || getModel().mRecord == null) {
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
             return;
         }
-        Record record = getModel().mRecord;
+        Record record = model.mRecord;
         int newHour = minuteAtDay / Const.MINUTES_PER_HOUR;
         int newMinute = minuteAtDay % Const.MINUTES_PER_HOUR;
         if (newHour != record.getHour() || newMinute != record.getMinute()) {
             record.setHour(newHour);
             record.setMinute(newMinute);
             getView().showTime(getTimeString());
-            mDataManager.onRecordUpdated(getModel().mRecord);
+            mDataManager.onRecordUpdated(model.mRecord);
         }
     }
 
     public void onEnableClicked(boolean enable) {
-        if (getModel() == null || getModel().mRecord == null) {
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
             return;
         }
-        if (getModel().mRecord.isEnabled() != enable) {
-            getModel().mRecord.setEnabled(enable);
-            mDataManager.onRecordUpdated(getModel().mRecord);
+        Record record = model.mRecord;
+        if (record.isEnabled() != enable) {
+            record.setEnabled(enable);
+            mDataManager.onRecordUpdated(record);
+            mDataManager.onRecordEnabledChanged(record);
         }
     }
 
     public void onMessageEdited(String message) {
-        if (getModel() == null || getModel().mRecord == null) {
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
             return;
         }
         if (message.isEmpty()) {
             getView().showToast(R.string.empty_message_toast);
             return;
         }
-        if (!getModel().mRecord.getMessage().equals(message)) {
-            getModel().mRecord.setMessage(message);
+        if (!model.mRecord.getMessage().equals(message)) {
+            model.mRecord.setMessage(message);
             getView().showMessage(message);
-            mDataManager.onRecordUpdated(getModel().mRecord);
+            mDataManager.onRecordUpdated(model.mRecord);
         }
     }
 
     public void onEditMessageClicked() {
-        getView().showEditMessage(getModel().mRecord.getMessage());
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
+            return;
+        }
+        getView().showEditMessage(model.mRecord.getMessage());
     }
 
     public void onChooseTimeClicked() {
-        Record record = getModel().mRecord;
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
+            return;
+        }
+        Record record = model.mRecord;
         getView().showEditTime(record.getHour() * Const.MINUTES_PER_HOUR + record.getMinute());
     }
 
@@ -145,7 +158,11 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     }
 
     private String getTimeString() {
-        Record record = getModel().mRecord;
+        RecordWithUser model = getModel();
+        if (model == null || model.mRecord == null) {
+            return "";
+        }
+        Record record = model.mRecord;
         return StringUtils.getRecordTime(record);
     }
 }

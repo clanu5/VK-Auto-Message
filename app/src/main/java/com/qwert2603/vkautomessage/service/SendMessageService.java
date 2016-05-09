@@ -97,6 +97,6 @@ public class SendMessageService extends IntentService {
         mDataManager.setLastNotificationId(lastNotificationId);
 
         // назначаем следующую отправку сообщения.
-        mDataManager.onRecordUpdated(recordWithUser.mRecord);
+        mDataManager.putRecordToSendMessageService(recordWithUser.mRecord);
     }
 }

@@ -277,7 +277,14 @@ public class DataManager {
                         b -> {
                         },
                         LogUtils::e,
-                        () -> mRxBus.send(RxBus.EVENT_USERS_PHOTO_UPDATED)
+                        () -> mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_USERS_PHOTO_UPDATED, null))
                 );
+    }
+
+    /**
+     * Уведомить о том, что запись была включена/выключена.
+     */
+    public void onRecordEnabledChanged(Record record) {
+        mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_RECORD_ENABLED_CHANGED, record));
     }
 }

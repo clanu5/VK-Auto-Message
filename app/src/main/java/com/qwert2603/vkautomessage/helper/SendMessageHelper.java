@@ -21,13 +21,14 @@ public class SendMessageHelper {
     @Inject
     Context mContext;
 
+    AlarmManager mAlarmManager;
+
     public SendMessageHelper() {
         VkAutoMessageApplication.getAppComponent().inject(SendMessageHelper.this);
+        mAlarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
     }
 
     public void onRecordChanged(Record record) {
-        AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-
         Intent intent = new Intent(mContext, SendMessageService.class);
         intent.putExtra(SendMessageService.EXTRA_RECORD_ID, record.getId());
         PendingIntent pendingIntent = PendingIntent.getService(mContext, record.getId(), intent, 0);
@@ -50,20 +51,18 @@ public class SendMessageHelper {
                 timeInMillis -= interval;
             }
             timeInMillis += delta;
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+            mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else {
-            alarmManager.cancel(pendingIntent);
+            mAlarmManager.cancel(pendingIntent);
             pendingIntent.cancel();
         }
     }
 
     public void onRecordRemoved(int recordId) {
-        AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-
         Intent intent = new Intent(mContext, SendMessageService.class);
         intent.putExtra(SendMessageService.EXTRA_RECORD_ID, recordId);
         PendingIntent pendingIntent = PendingIntent.getService(mContext, recordId, intent, 0);
-        alarmManager.cancel(pendingIntent);
+        mAlarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
     }
 

@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.user_list;
 
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
@@ -13,9 +12,7 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -29,22 +26,14 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     @Inject
     RxBus mRxBus;
 
-    @Inject
-    @Named(Const.UI_THREAD)
-    Scheduler mUiScheduler;
-
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
         mRxBus.toObservable()
-                .observeOn(mUiScheduler)
-                .subscribe(o -> {
-                    if ((o instanceof Integer)) {
-                        int integer = (Integer) o;
-                        if (integer == RxBus.EVENT_USERS_PHOTO_UPDATED) {
-                            loadUserList();
-                        }
+                .subscribe(event -> {
+                    if (event.mEvent == RxBus.Event.EVENT_USERS_PHOTO_UPDATED) {
+                        loadUserList();
                     }
-                });
+                }, LogUtils::e);
     }
 
     @Override

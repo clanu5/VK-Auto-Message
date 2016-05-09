@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.di;
 
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
@@ -81,4 +82,6 @@ public interface AppComponent {
     void inject(DeleteUserPresenter deleteUserPresenter);
 
     void inject(DeleteUserDialog deleteUserDialog);
+
+    void inject(RxBus rxBus);
 }

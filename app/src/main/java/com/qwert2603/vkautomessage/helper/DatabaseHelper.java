@@ -261,6 +261,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (!userCursor.isAfterLast()) {
             user = userCursor.getUser();
             user.setRecordsCount(getRecordsCountForUser(userId));
+            user.setEnabledRecordsCount(getEnabledRecordsCountForUser(userId));
         }
         userCursor.close();
         return user;
@@ -343,6 +344,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{"COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")"},
                 COLUMN_RECORD_USER_ID + " = ?",
                 new String[]{String.valueOf(userId)},
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count;
+    }
+
+    private int getEnabledRecordsCountForUser(int userId) {
+        Cursor cursor = getReadableDatabase().query(
+                TABLE_RECORD,
+                new String[]{"COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")"},
+                COLUMN_RECORD_USER_ID + " = ? AND " + COLUMN_RECORD_ENABLED + " = ?",
+                new String[]{String.valueOf(userId), String .valueOf(1)},
                 null,
                 null,
                 null
