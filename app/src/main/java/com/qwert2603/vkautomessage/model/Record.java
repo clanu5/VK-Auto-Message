@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.model;
 
+import com.qwert2603.vkautomessage.util.StringUtils;
+
 import java.util.Calendar;
 
 public class Record implements Identifiable {
@@ -40,7 +42,7 @@ public class Record implements Identifiable {
 
     public Record(int userId) {
         mUserId = userId;
-        mMessage = "Vk Auto Message";
+        mMessage = StringUtils.getNewRecordMessage();
         mRepeatType = REPEAT_TYPE_HOURS_IN_DAY;
         mRepeatInfo = 24;
 

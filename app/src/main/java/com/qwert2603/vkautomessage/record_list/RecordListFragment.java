@@ -154,11 +154,13 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mPeriodTextView;
             CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
-            Pair<View, String> pair1 = Pair.create(messageTextView, messageTextView.getTransitionName());
-            Pair<View, String> pair2 = Pair.create(timeTextView, timeTextView.getTransitionName());
-            Pair<View, String> pair3 = Pair.create(periodTextView, periodTextView.getTransitionName());
-            Pair<View, String> pair4 = Pair.create(enableCheckBox, enableCheckBox.getTransitionName());
-            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3, pair4);
+            View toolbar = getActivity().findViewById(R.id.toolbar);
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(messageTextView, messageTextView.getTransitionName()),
+                    Pair.create(timeTextView, timeTextView.getTransitionName()),
+                    Pair.create(periodTextView, periodTextView.getTransitionName()),
+                    Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
+                    Pair.create(toolbar, toolbar.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);

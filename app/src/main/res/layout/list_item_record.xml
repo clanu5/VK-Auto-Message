@@ -7,12 +7,13 @@
     card_view:cardCornerRadius="6dp"
     android:layout_marginStart="6dp"
     android:layout_marginEnd="6dp"
-    android:layout_marginBottom="4dp">
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
+        android:layout_margin="3dp"
         android:orientation="horizontal">
 
         <TextView
@@ -26,7 +27,8 @@
             android:text="This is message This is message This is message This is message"
             android:textColor="@color/message"
             android:textSize="18sp"
-            android:transitionName="@string/transition_message"/>
+            android:layout_marginEnd="4dp"
+            android:transitionName="@string/message_transition"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -43,7 +45,7 @@
                 android:text="19:18"
                 android:textColor="@color/time"
                 android:textSize="14sp"
-                android:transitionName="@string/transition_time"/>
+                android:transitionName="@string/time_transition"/>
 
             <TextView
                 android:id="@+id/period_text_view"
@@ -53,7 +55,7 @@
                 android:text="24 hours"
                 android:textColor="@color/period"
                 android:textSize="14sp"
-                android:transitionName="@string/transition_period"/>
+                android:transitionName="@string/period_transition"/>
 
         </LinearLayout>
 
@@ -63,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:checked="true"
-            android:transitionName="@string/transition_enabled"/>
+            android:transitionName="@string/enabled_transition"/>
 
     </LinearLayout>
 

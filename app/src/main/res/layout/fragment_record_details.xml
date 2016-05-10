@@ -22,7 +22,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                card_view:cardCornerRadius="4dp">
+                card_view:cardCornerRadius="4dp"
+                android:transitionName="@string/username_transition">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -56,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="12dp"
-                android:transitionName="@string/transition_enabled"/>
+                android:transitionName="@string/enabled_transition"/>
 
         </LinearLayout>
 
@@ -67,7 +68,7 @@
             android:layout_below="@id/top_linear_layout"
             android:layout_margin="4dp"
             card_view:cardCornerRadius="4dp"
-            android:transitionName="@string/transition_message">
+            android:transitionName="@string/message_transition">
 
             <TextView
                 android:id="@+id/message_text_view"
@@ -94,7 +95,7 @@
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 card_view:cardCornerRadius="4dp"
-                android:transitionName="@string/transition_time">
+                android:transitionName="@string/time_transition">
 
                 <TextView
                     android:id="@+id/time_text_view"
@@ -115,7 +116,7 @@
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 card_view:cardCornerRadius="4dp"
-                android:transitionName="@string/transition_period">
+                android:transitionName="@string/period_transition">
 
                 <TextView
                     android:id="@+id/period_text_view"

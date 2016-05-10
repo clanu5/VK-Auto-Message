@@ -23,8 +23,9 @@
     <string name="nothing_found">Nothing found</string>
     <string name="delete_user">Delete user and all records for him?</string>
 
-    <string name="transition_message">transition_message</string>
-    <string name="transition_time">transition_time</string>
-    <string name="transition_period">transition_period</string>
-    <string name="transition_enabled">transition_enabled</string>
+    <string name="message_transition">message_transition</string>
+    <string name="time_transition">time_transition</string>
+    <string name="period_transition">period_transition</string>
+    <string name="enabled_transition">enabled_transition</string>
+    <string name="username_transition">username_transition</string>
 </resources>
