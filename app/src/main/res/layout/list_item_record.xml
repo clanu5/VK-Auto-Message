@@ -25,7 +25,8 @@
             android:layout_marginStart="4dp"
             android:text="This is message This is message This is message This is message"
             android:textColor="@color/message"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:transitionName="@string/transition_message"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -41,7 +42,8 @@
                 android:layout_gravity="end"
                 android:text="19:18"
                 android:textColor="@color/time"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:transitionName="@string/transition_time"/>
 
             <TextView
                 android:id="@+id/period_text_view"
@@ -50,7 +52,8 @@
                 android:layout_gravity="end"
                 android:text="24 hours"
                 android:textColor="@color/period"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:transitionName="@string/transition_period"/>
 
         </LinearLayout>
 
@@ -59,7 +62,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:checked="true"/>
+            android:checked="true"
+            android:transitionName="@string/transition_enabled"/>
 
     </LinearLayout>
 

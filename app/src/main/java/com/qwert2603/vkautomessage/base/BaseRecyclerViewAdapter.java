@@ -1,10 +1,15 @@
 package com.qwert2603.vkautomessage.base;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.qwert2603.vkautomessage.model.Identifiable;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Базовый адаптер для {@link RecyclerView} для шаблона MVP.
@@ -16,7 +21,8 @@ import java.util.List;
  * @param <VH> тип объекта (ViewHolder), отвечающего за отображение данных в отдельном элементе.
  * @param <P>  тип презентера, организующего работу отдельного элемента.
  */
-public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdapter.RecyclerViewHolder, P extends BasePresenter>
+public abstract class BaseRecyclerViewAdapter
+        <M extends Identifiable, VH extends BaseRecyclerViewAdapter.RecyclerViewHolder, P extends BasePresenter>
         extends RecyclerView.Adapter<VH> {
 
     /**
@@ -48,6 +54,12 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
     private LongClickCallbacks mLongClickCallbacks;
     private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
 
+    /**
+     * Карта id модели -- ее ViewHolder.
+     * Если нет, то null.
+     */
+    private Map<Integer, VH> mVHMap = new HashMap<>();
+
     public BaseRecyclerViewAdapter() {
     }
 
@@ -78,15 +90,22 @@ public abstract class BaseRecyclerViewAdapter<M, VH extends BaseRecyclerViewAdap
         mRecyclerViewSelector.setSelectedPosition(position);
     }
 
+    @Nullable
+    public VH getViewHolderForModel(int modelId) {
+        return mVHMap.get(modelId);
+    }
+
 
     @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(VH holder, int position) {
+        M model = mModelList.get(position);
         // назначаем модель viewHolder'у элемента.
-        holder.setModel(mModelList.get(position));
+        holder.setModel(model);
         holder.bindPresenter();
         // отображаем выделен элемент или нет.
         mRecyclerViewSelector.showWhetherItemSelected(holder.mItemView, position);
+        mVHMap.put(model.getId(), holder);
     }
 
     @Override

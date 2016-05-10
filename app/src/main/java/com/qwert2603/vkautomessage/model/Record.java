@@ -2,7 +2,7 @@ package com.qwert2603.vkautomessage.model;
 
 import java.util.Calendar;
 
-public class Record {
+public class Record implements Identifiable {
 
     /**
      * Повтор каждый день через каждые {@link #mRepeatInfo} часов.
@@ -61,6 +61,7 @@ public class Record {
         mMinute = minute;
     }
 
+    @Override
     public int getId() {
         return mId;
     }

@@ -3,7 +3,7 @@ package com.qwert2603.vkautomessage.model;
 import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
-public class User {
+public class User implements Identifiable {
 
     public static final int NO_INFO = -1;
 
@@ -39,6 +39,7 @@ public class User {
         mRecordsCount = NO_INFO;
     }
 
+    @Override
     public int getId() {
         return mId;
     }

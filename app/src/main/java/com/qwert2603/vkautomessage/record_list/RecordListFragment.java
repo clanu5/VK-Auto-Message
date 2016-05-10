@@ -1,16 +1,21 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -139,11 +144,25 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         getActivity().setTitle(userName);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void moveToRecordDetails(int recordId) {
+        ActivityOptions activityOptions = null;
+        RecordListAdapter.RecordViewHolder viewHolder = mRecordListAdapter.getViewHolderForModel(recordId);
+        if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            TextView messageTextView = viewHolder.mMessageTextView;
+            TextView timeTextView = viewHolder.mTimeTextView;
+            TextView periodTextView = viewHolder.mPeriodTextView;
+            CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
+            Pair<View, String> pair1 = Pair.create(messageTextView, messageTextView.getTransitionName());
+            Pair<View, String> pair2 = Pair.create(timeTextView, timeTextView.getTransitionName());
+            Pair<View, String> pair3 = Pair.create(periodTextView, periodTextView.getTransitionName());
+            Pair<View, String> pair4 = Pair.create(enableCheckBox, enableCheckBox.getTransitionName());
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3, pair4);
+        }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
-        getActivity().startActivity(intent);
+        getActivity().startActivity(intent, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override
