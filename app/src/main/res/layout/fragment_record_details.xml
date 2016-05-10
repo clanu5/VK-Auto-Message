@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 card_view:cardCornerRadius="4dp"
-                android:transitionName="@string/username_transition">
+                android:transitionName="@string/toolbar_transition">
 
                 <LinearLayout
                     android:layout_width="wrap_content"

@@ -22,7 +22,8 @@
         android:singleLine="true"
         android:text="Alex Zhdanov"
         android:textColor="@color/user_name"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:transitionName="@string/toolbar_transition"/>
 
     <TextView
         android:id="@+id/enabled_records_count_text_view"

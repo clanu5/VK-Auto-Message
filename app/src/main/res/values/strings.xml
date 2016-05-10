@@ -27,5 +27,5 @@
     <string name="time_transition">time_transition</string>
     <string name="period_transition">period_transition</string>
     <string name="enabled_transition">enabled_transition</string>
-    <string name="username_transition">username_transition</string>
+    <string name="toolbar_transition">toolbar_transition</string>
 </resources>

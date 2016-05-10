@@ -1,16 +1,20 @@
 package com.qwert2603.vkautomessage.user_list;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -133,11 +137,19 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
         mUserListAdapter.setModelList(list);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void moveToRecordsForUser(int userId) {
+        ActivityOptions activityOptions = null;
+        UserListAdapter.UserViewHolder viewHolder = mUserListAdapter.getViewHolderForModel(userId);
+        if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            TextView usernameTextView = viewHolder.mUsernameTextView;
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(usernameTextView, usernameTextView.getTransitionName()));
+        }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_USER_ID, userId);
-        startActivity(intent);
+        startActivity(intent, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override

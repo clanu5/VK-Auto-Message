@@ -164,7 +164,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
-        getActivity().startActivity(intent, activityOptions != null ? activityOptions.toBundle() : null);
+        startActivity(intent, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override
