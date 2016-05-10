@@ -7,6 +7,13 @@ public class User {
 
     public static final int NO_INFO = -1;
 
+    /**
+     * @return пользователь с пустыми полями.
+     */
+    public static User createEmptyUser() {
+        return new User(NO_INFO, "", "", "");
+    }
+
     private int mId;
     private String mFirstName;
     private String mLastName;

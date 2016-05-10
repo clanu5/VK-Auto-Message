@@ -46,6 +46,7 @@ public class DeleteUserPresenter extends BasePresenter<User, DeleteUserView> {
         }
         view.showUserName(StringUtils.getUserName(user));
         view.showRecordsCount(user.getRecordsCount());
+        view.showEnabledRecordsCount(user.getEnabledRecordsCount());
     }
 
     @Override
@@ -56,8 +57,9 @@ public class DeleteUserPresenter extends BasePresenter<User, DeleteUserView> {
 
     public void onSubmitClicked() {
         User user = getModel();
-        if (user != null) {
-            getView().submitDone(user.getId());
+        if (user == null) {
+            return;
         }
+        getView().submitDone(user.getId());
     }
 }

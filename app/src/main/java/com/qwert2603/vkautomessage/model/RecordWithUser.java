@@ -1,13 +1,15 @@
 package com.qwert2603.vkautomessage.model;
 
+import android.support.annotation.NonNull;
+
 public class RecordWithUser {
+    @NonNull
     public final Record mRecord;
+
+    @NonNull
     public final User mUser;
 
-    public RecordWithUser(Record record, User user) {
-        if (record != null && user != null && record.getUserId() != user.getId()) {
-            throw new RuntimeException("RecordWithUser#constructor ERROR!!! record.getUserId() != user.getId()");
-        }
+    public RecordWithUser(@NonNull Record record, @NonNull User user) {
         mRecord = record;
         mUser = user;
     }

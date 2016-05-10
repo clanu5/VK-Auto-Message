@@ -50,7 +50,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     }
 
     public void setRecord(Record record) {
-        setModel(new RecordWithUser(record, null));
+        setModel(new RecordWithUser(record, User.createEmptyUser()));
     }
 
     @Override
@@ -77,28 +77,25 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         }
         User user = recordWithUser.mUser;
         Record record = recordWithUser.mRecord;
-        if (user != null) {
-            ImageView photoImageView = view.getPhotoImageView();
-            if (photoImageView != null) {
-                ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
-            }
-            view.showUserName(getUserName(user));
+
+        ImageView photoImageView = view.getPhotoImageView();
+        if (photoImageView != null) {
+            ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
         }
-        if (record != null) {
-            view.showMessage(record.getMessage());
-            view.showEnabled(record.isEnabled());
-            view.showTime(getTimeString());
-            switch (record.getRepeatType()) {
-                case Record.REPEAT_TYPE_HOURS_IN_DAY:
-                    view.showPeriod(record.getRepeatInfo());
-                    break;
-            }
+        view.showUserName(getUserName(user));
+        view.showMessage(record.getMessage());
+        view.showEnabled(record.isEnabled());
+        view.showTime(getTimeString());
+        switch (record.getRepeatType()) {
+            case Record.REPEAT_TYPE_HOURS_IN_DAY:
+                view.showPeriod(record.getRepeatInfo());
+                break;
         }
     }
 
     public void onTimeEdited(int minuteAtDay) {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
+        if (model == null) {
             return;
         }
         Record record = model.mRecord;
@@ -114,7 +111,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     public void onEnableClicked(boolean enable) {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
+        if (model == null) {
             return;
         }
         Record record = model.mRecord;
@@ -127,7 +124,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     public void onMessageEdited(String message) {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
+        if (model == null) {
             return;
         }
         if (message.isEmpty()) {
@@ -144,7 +141,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     public void onPeriodEdited(int period) {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
+        if (model == null) {
             return;
         }
         Record record = model.mRecord;
@@ -157,7 +154,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     public void onEditMessageClicked() {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
+        if (model == null) {
             return;
         }
         getView().showEditMessage(model.mRecord.getMessage());
@@ -165,7 +162,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     public void onEditTimeClicked() {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
+        if (model == null) {
             return;
         }
         Record record = model.mRecord;
@@ -174,7 +171,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     public void onEditPeriodClicked() {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null || model.mRecord.getRepeatType() != Record.REPEAT_TYPE_HOURS_IN_DAY) {
+        if (model == null || model.mRecord.getRepeatType() != Record.REPEAT_TYPE_HOURS_IN_DAY) {
             return;
         }
         Record record = model.mRecord;
@@ -183,10 +180,6 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     private String getTimeString() {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord == null) {
-            return "";
-        }
-        Record record = model.mRecord;
-        return StringUtils.getRecordTime(record);
+        return model == null ? "" : StringUtils.getRecordTime(model.mRecord);
     }
 }

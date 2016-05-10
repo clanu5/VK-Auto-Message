@@ -67,11 +67,19 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     }
 
     public void onUserAtPositionClicked(int position) {
-        getView().moveToRecordsForUser(getModel().get(position).getId());
+        List<User> model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().moveToRecordsForUser(model.get(position).getId());
     }
 
     public void onUserAtPositionLongClicked(int position) {
-        getView().showDeleteUser(getModel().get(position).getId());
+        List<User> model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().showDeleteUser(model.get(position).getId());
     }
 
     public void onUserDeleteClicked(int userId) {

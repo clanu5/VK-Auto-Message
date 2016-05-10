@@ -82,6 +82,7 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
     public void showLoading() {
         mUserNameTextView.setText(R.string.loading);
         mRecordsTextView.setText(R.string.loading);
+        mEnabledRecordsTextView.setText(R.string.loading);
     }
 
     @Override

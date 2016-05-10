@@ -114,6 +114,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         public void showLoading() {
             mMessageTextView.setText(R.string.loading);
             mTimeTextView.setText(R.string.loading);
+            mPeriodTextView.setText(R.string.loading);
         }
 
         @Override

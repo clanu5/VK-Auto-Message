@@ -39,7 +39,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                 .subscribe(event -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
-                    if (model == null || model.mUser == null || view == null) {
+                    if (model == null || view == null) {
                         return;
                     }
                     User user = model.mUser;
@@ -73,7 +73,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     @Override
     protected void onUpdateView(@NonNull RecordListView view) {
         RecordListWithUser recordListWithUser = getModel();
-        if (recordListWithUser == null || recordListWithUser.mRecordList == null || recordListWithUser.mUser == null) {
+        if (recordListWithUser == null) {
             if (mSubscription.isUnsubscribed()) {
                 view.showError();
             } else {
@@ -106,7 +106,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
 
     public void onNewRecordClicked() {
         RecordListWithUser recordListWithUser = getModel();
-        if (recordListWithUser == null || recordListWithUser.mUser == null) {
+        if (recordListWithUser == null) {
             return;
         }
         Record record = new Record(recordListWithUser.mUser.getId());
@@ -114,7 +114,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                 .subscribe(aVoid -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
-                    if (model == null || model.mRecordList == null || model.mUser == null || view == null) {
+                    if (model == null || view == null) {
                         return;
                     }
                     List<Record> recordList = model.mRecordList;
@@ -132,11 +132,19 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     }
 
     public void onRecordAtPositionClicked(int position) {
-        getView().moveToRecordDetails(getModel().mRecordList.get(position).getId());
+        RecordListWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().moveToRecordDetails(model.mRecordList.get(position).getId());
     }
 
     public void onRecordAtPositionLongClicked(int position) {
-        getView().showDeleteRecord(getModel().mRecordList.get(position).getId());
+        RecordListWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().showDeleteRecord(model.mRecordList.get(position).getId());
     }
 
     public void onRecordDeleteClicked(int recordId) {
@@ -145,7 +153,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                 .subscribe(aLong -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
-                    if (model == null || model.mRecordList == null || model.mUser == null || view == null) {
+                    if (model == null || view == null) {
                         return;
                     }
                     List<Record> recordList = model.mRecordList;
