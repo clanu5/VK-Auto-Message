@@ -53,8 +53,8 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         @BindView(R.id.time_text_view)
         TextView mTimeTextView;
 
-        @BindView(R.id.period_text_view)
-        TextView mPeriodTextView;
+        @BindView(R.id.repeat_info_text_view)
+        TextView mRepeatInfoTextView;
 
         @Inject
         RecordPresenter mRecordPresenter;
@@ -106,15 +106,19 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void showPeriod(int period) {
-            mPeriodTextView.setText(mAppContext.getResources().getQuantityString(R.plurals.hours, period, period));
+        public void showRepeatInfo(String repeatInfo) {
+            mRepeatInfoTextView.setText(repeatInfo);
+        }
+
+        @Override
+        public void showRepeatType(String repeatType) {
         }
 
         @Override
         public void showLoading() {
             mMessageTextView.setText(R.string.loading);
             mTimeTextView.setText(R.string.loading);
-            mPeriodTextView.setText(R.string.loading);
+            mRepeatInfoTextView.setText(R.string.loading);
         }
 
         @Override
@@ -122,11 +126,23 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void showEditTime(int minuteAtDay) {
+        public void showEditTime(int hour, int minute) {
+        }
+
+        @Override
+        public void showEditRepeatType(int repeatType) {
         }
 
         @Override
         public void showEditPeriod(int period) {
+        }
+
+        @Override
+        public void showEditDaysInWeek(int daysInWeek) {
+        }
+
+        @Override
+        public void showEditDayInYear(int month, int dayOfMonth) {
         }
 
         @Override

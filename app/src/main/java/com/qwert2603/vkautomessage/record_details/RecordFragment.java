@@ -19,6 +19,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
+import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 
 import javax.inject.Inject;
@@ -32,7 +33,10 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
 
     private static final int REQUEST_EDIT_MESSAGE = 1;
     private static final int REQUEST_EDIT_TIME = 2;
-    private static final int REQUEST_EDIT_PERIOD = 3;
+    private static final int REQUEST_EDIT_REPEAT_TYPE = 3;
+    private static final int REQUEST_EDIT_PERIOD = 4;
+    private static final int REQUEST_EDIT_DAYS_IN_WEEK = 5;
+    private static final int REQUEST_EDIT_DAY_IN_YEAR = 6;
 
     public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
@@ -54,11 +58,14 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     @BindView(R.id.message_text_view)
     TextView mMessageTextView;
 
+    @BindView(R.id.repeat_type_text_view)
+    TextView mRepeatTypeTextView;
+
     @BindView(R.id.time_text_view)
     TextView mTimeTextView;
 
-    @BindView(R.id.period_text_view)
-    TextView mPeriodTextView;
+    @BindView(R.id.repeat_info_text_view)
+    TextView mRepeatInfoTextView;
 
     @BindView(R.id.user_card)
     CardView mUserCardView;
@@ -66,11 +73,14 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     @BindView(R.id.message_card)
     CardView mMessageCardView;
 
+    @BindView(R.id.repeat_type_card)
+    CardView mRepeatTypeCardView;
+
     @BindView(R.id.time_card)
     CardView mTimeCardView;
 
-    @BindView(R.id.period_card)
-    CardView mPeriodCardView;
+    @BindView(R.id.repeat_info_card)
+    CardView mRepeatInfoCardView;
 
     @Inject
     RecordPresenter mRecordPresenter;
@@ -97,8 +107,9 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
 
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
+        mRepeatTypeCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatTypeClicked());
         mTimeCardView.setOnClickListener(v -> mRecordPresenter.onEditTimeClicked());
-        mPeriodCardView.setOnClickListener(v -> mRecordPresenter.onEditPeriodClicked());
+        mRepeatInfoCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatInfoClicked());
 
         return view;
     }
@@ -115,12 +126,23 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
                 mRecordPresenter.onMessageEdited(message);
                 break;
             case REQUEST_EDIT_TIME:
-                int minuteAtDay = data.getIntExtra(EditTimeDialog.EXTRA_MINUTE_AT_DAY, 0);
-                mRecordPresenter.onTimeEdited(minuteAtDay);
+                int hour = data.getIntExtra(EditTimeDialog.EXTRA_HOUR, 19);
+                int minute = data.getIntExtra(EditTimeDialog.EXTRA_MINUTE, 18);
+                mRecordPresenter.onTimeEdited(hour, minute);
+                break;
+            case REQUEST_EDIT_REPEAT_TYPE:
+                int repeatType = data.getIntExtra(EditRepeatTypeDialog.EXTRA_REPEAT_TYPE, 0);
+                mRecordPresenter.onRepeatTypeEdited(repeatType);
                 break;
             case REQUEST_EDIT_PERIOD:
                 int period = data.getIntExtra(EditPeriodDialog.EXTRA_PERIOD, 0);
                 mRecordPresenter.onPeriodEdited(period);
+                break;
+            case REQUEST_EDIT_DAYS_IN_WEEK:
+                // TODO: 11.05.2016
+                break;
+            case REQUEST_EDIT_DAY_IN_YEAR:
+                // TODO: 11.05.2016
                 break;
         }
     }
@@ -151,8 +173,13 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
-    public void showPeriod(int period) {
-        mPeriodTextView.setText(getResources().getQuantityString(R.plurals.hours, period, period));
+    public void showRepeatType(String repeatType) {
+        mRepeatTypeTextView.setText(repeatType);
+    }
+
+    @Override
+    public void showRepeatInfo(String repeatInfo) {
+        mRepeatInfoTextView.setText(repeatInfo);
     }
 
     @Override
@@ -161,6 +188,7 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         mUsernameTextView.setText(R.string.loading);
         mMessageTextView.setText(R.string.loading);
         mTimeTextView.setText(R.string.loading);
+        mRepeatInfoTextView.setText(R.string.loading);
     }
 
     @Override
@@ -171,10 +199,17 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     }
 
     @Override
-    public void showEditTime(int minuteAtDay) {
-        EditTimeDialog editTimeDialog = EditTimeDialog.newInstance(minuteAtDay);
+    public void showEditTime(int hour, int minute) {
+        EditTimeDialog editTimeDialog = EditTimeDialog.newInstance(hour, minute);
         editTimeDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_TIME);
         editTimeDialog.show(getFragmentManager(), editTimeDialog.getClass().getName());
+    }
+
+    @Override
+    public void showEditRepeatType(int repeatType) {
+        EditRepeatTypeDialog editRepeatTypeDialog = EditRepeatTypeDialog.newInstance(repeatType);
+        editRepeatTypeDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_REPEAT_TYPE);
+        editRepeatTypeDialog.show(getFragmentManager(), editRepeatTypeDialog.getClass().getName());
     }
 
     @Override
@@ -182,6 +217,16 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
         EditPeriodDialog editPeriodDialog = EditPeriodDialog.newInstance(period);
         editPeriodDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_PERIOD);
         editPeriodDialog.show(getFragmentManager(), editPeriodDialog.getClass().getName());
+    }
+
+    @Override
+    public void showEditDaysInWeek(int daysInWeek) {
+        // TODO: 11.05.2016
+    }
+
+    @Override
+    public void showEditDayInYear(int month, int dayOfMonth) {
+        // TODO: 11.05.2016
     }
 
     @Override

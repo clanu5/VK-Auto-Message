@@ -48,14 +48,14 @@
                 android:transitionName="@string/time_transition"/>
 
             <TextView
-                android:id="@+id/period_text_view"
+                android:id="@+id/repeat_info_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="24 hours"
-                android:textColor="@color/period"
+                android:textColor="@color/repeat_info"
                 android:textSize="14sp"
-                android:transitionName="@string/period_transition"/>
+                android:transitionName="@string/repeat_info_transition"/>
 
         </LinearLayout>
 

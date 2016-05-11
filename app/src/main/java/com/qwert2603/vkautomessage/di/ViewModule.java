@@ -5,6 +5,7 @@ import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodPresenter;
+import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypePresenter;
 import com.qwert2603.vkautomessage.edit_time.EditTimePresenter;
 import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
@@ -74,6 +75,11 @@ public class ViewModule {
     @Provides
     EditPeriodPresenter provideEditPeriodPresenter() {
         return new EditPeriodPresenter();
+    }
+
+    @Provides
+    EditRepeatTypePresenter provideEditRepeatTypePresenter() {
+        return new EditRepeatTypePresenter();
     }
 
     @Provides

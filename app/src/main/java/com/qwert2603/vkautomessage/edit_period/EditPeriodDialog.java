@@ -99,7 +99,7 @@ public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements
             return;
         }
         int checkedId = mRadioGroup.getChildAt(index).getId();
-        if (mRadioGroup.getCheckedRadioButtonId() != checkedId) {
+        if (checkedId != mRadioGroup.getCheckedRadioButtonId()) {
             mRadioGroup.check(checkedId);
         }
     }

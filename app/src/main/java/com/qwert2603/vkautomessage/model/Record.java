@@ -9,13 +9,14 @@ public class Record implements Identifiable {
     /**
      * Повтор каждый день через каждые {@link #mRepeatInfo} часов.
      */
-    public static final int REPEAT_TYPE_HOURS_IN_DAY = 1;
+    public static final int REPEAT_TYPE_HOURS_IN_DAY = 0;
 
     /**
      * Повтор в те дни недели, для которых установлен в 1 соответствующий бит {@link #mRepeatInfo}.
-     * 0010011 = ПН, ВТ, ПТ.
+     * Начиная с Вс.
+     * 0100101 = Вс, Вт, Пт.
      */
-    public static final int REPEAT_TYPE_DAYS_IN_WEEK = 2;
+    public static final int REPEAT_TYPE_DAYS_IN_WEEK = 1;
 
     /**
      * Повтор в каждый год в день {@link #mRepeatInfo}. (mmdd)
@@ -23,12 +24,24 @@ public class Record implements Identifiable {
      * 1231 = 31 декабря.
      * 0229 = 29 февраля.
      */
-    public static final int REPEAT_TYPE_DAY_IN_YEAR = 3;
+    public static final int REPEAT_TYPE_DAY_IN_YEAR = 2;
 
     /**
      * Периоды для отправки при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
      */
     public static final int[] PERIODS = {1, 2, 3, 4, 6, 8, 12, 24};
+
+    /**
+     * Период по умолчанию при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
+     */
+    public static final int DEFAULT_PERIOD = PERIODS[PERIODS.length - 1];
+
+    /**
+     * Множитель для номера месяца при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAY_IN_YEAR}.
+     */
+    private static final int MONTH_MULTIPLIER = 100;
+
+    private static final String ERROR_WRONG_REPEAT_TYPE = "Wrong repeat type!";
 
     private int mId;
     private int mUserId;
@@ -44,7 +57,7 @@ public class Record implements Identifiable {
         mUserId = userId;
         mMessage = StringUtils.getNewRecordMessage();
         mRepeatType = REPEAT_TYPE_HOURS_IN_DAY;
-        mRepeatInfo = 24;
+        mRepeatInfo = DEFAULT_PERIOD;
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -101,15 +114,29 @@ public class Record implements Identifiable {
     }
 
     public void setRepeatType(int repeatType) {
+        if (mRepeatType == repeatType) {
+            return;
+        }
         mRepeatType = repeatType;
+        Calendar calendar = Calendar.getInstance();
+        switch (repeatType) {
+            case Record.REPEAT_TYPE_HOURS_IN_DAY:
+                mRepeatInfo = DEFAULT_PERIOD;
+                break;
+            case Record.REPEAT_TYPE_DAYS_IN_WEEK:
+                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                mRepeatInfo = 1 << (dayOfWeek - 1);
+                break;
+            case Record.REPEAT_TYPE_DAY_IN_YEAR:
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                mRepeatInfo = month * MONTH_MULTIPLIER + day;
+                break;
+        }
     }
 
     public int getRepeatInfo() {
         return mRepeatInfo;
-    }
-
-    public void setRepeatInfo(int repeatInfo) {
-        mRepeatInfo = repeatInfo;
     }
 
     public int getHour() {
@@ -128,4 +155,110 @@ public class Record implements Identifiable {
         mMinute = minute;
     }
 
+    /**
+     * Установить период отправки при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
+     *
+     * @param period период отправки
+     */
+    public void setPeriod(int period) {
+        checkRepeatType(REPEAT_TYPE_HOURS_IN_DAY);
+        mRepeatInfo = period;
+    }
+
+    /**
+     * @return период отправки при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
+     */
+    public int getPeriod() {
+        checkRepeatType(REPEAT_TYPE_HOURS_IN_DAY);
+        return mRepeatInfo;
+    }
+
+    /**
+     * Установить "включенность отправки" в день недели.
+     * при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAYS_IN_WEEK}.
+     *
+     * @param dayOfWeek день недели.
+     * @param enabled   "включенность отправки"
+     */
+    public void setDayOfWeek(int dayOfWeek, boolean enabled) {
+        checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
+        if (enabled) {
+            mRepeatInfo |= 1 << dayOfWeek;
+        } else {
+            mRepeatInfo &= 1 << dayOfWeek;
+        }
+    }
+
+    /**
+     * Установить "включенность отправки" на все дни недели.
+     * @param daysOfWeek число, определяющее в какие дни неледи включена отправка
+     */
+    public void setDaysOfWeek(int daysOfWeek) {
+        checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
+        mRepeatInfo = daysOfWeek;
+    }
+
+    /**
+     * @param dayOfWeek день недели для которого требуется информация.
+     * @return включена ли отправка в конкретный день недели
+     * при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAYS_IN_WEEK}.
+     */
+    public boolean isDayOfWeek(int dayOfWeek) {
+        checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
+        return (mRepeatInfo & (1 << dayOfWeek)) != 0;
+    }
+
+    /**
+     * @return число, определяющее в какие дни неледи включена отправка
+     * при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAYS_IN_WEEK}.
+     */
+    public int getDaysInWeek() {
+        checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
+        return mRepeatInfo;
+    }
+
+    /**
+     * Установить номер месяц при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAY_IN_YEAR}.
+     *
+     * @param month номер месяца.
+     */
+    public void setMonth(int month) {
+        checkRepeatType(REPEAT_TYPE_DAY_IN_YEAR);
+        mRepeatInfo = month * MONTH_MULTIPLIER + getDayOfMonth();
+    }
+
+    /**
+     * Установить номер дня в месяце при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAY_IN_YEAR}.
+     *
+     * @param dayOfMonth номер дня в месяце.
+     */
+    public void setDayOfMonth(int dayOfMonth) {
+        checkRepeatType(REPEAT_TYPE_DAY_IN_YEAR);
+        mRepeatInfo = getMonth() * MONTH_MULTIPLIER + dayOfMonth;
+    }
+
+    /**
+     * @return номер месяца при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAY_IN_YEAR}.
+     */
+    public int getMonth() {
+        checkRepeatType(REPEAT_TYPE_DAY_IN_YEAR);
+        return mRepeatInfo / MONTH_MULTIPLIER;
+    }
+
+    /**
+     * @return номер дня в месяце при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAY_IN_YEAR}.
+     */
+    public int getDayOfMonth() {
+        checkRepeatType(REPEAT_TYPE_DAY_IN_YEAR);
+        return mRepeatInfo % MONTH_MULTIPLIER;
+    }
+
+    /**
+     * Проверить что {@link #mRepeatType} == repeatType.
+     */
+    private void checkRepeatType(int repeatType) throws RuntimeException {
+        if (mRepeatType != repeatType) {
+            throw new RuntimeException(ERROR_WRONG_REPEAT_TYPE);
+        }
+    }
 }

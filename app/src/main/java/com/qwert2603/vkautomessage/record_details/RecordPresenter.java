@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.record_details;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
@@ -15,6 +16,8 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import rx.Subscription;
@@ -27,10 +30,20 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
+    Context mAppContext;
+
+    @Inject
     DataManager mDataManager;
+
+    private String[] mRepeatTypes;
+    private String[] mMonths;
+    private String[] mDaysOfWeek;
 
     public RecordPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordPresenter.this);
+        mRepeatTypes = mAppContext.getResources().getStringArray(R.array.repeat_types);
+        mMonths = mAppContext.getResources().getStringArray(R.array.months);
+        mDaysOfWeek = mAppContext.getResources().getStringArray(R.array.days_of_week_short);
     }
 
     public void setRecordId(int recordId) {
@@ -86,24 +99,50 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
         view.showTime(getTimeString());
+        showRepeatTypeAndInfo();
+    }
+
+    private void showRepeatTypeAndInfo() {
+        RecordWithUser model = getModel();
+        RecordView view = getView();
+        if (model == null || view == null) {
+            return;
+        }
+        Record record = model.mRecord;
+        view.showRepeatType(mRepeatTypes[record.getRepeatType()]);
         switch (record.getRepeatType()) {
             case Record.REPEAT_TYPE_HOURS_IN_DAY:
-                view.showPeriod(record.getRepeatInfo());
+                int period = record.getPeriod();
+                view.showRepeatInfo(mAppContext.getResources().getQuantityString(R.plurals.hours, period, period));
+                break;
+            case Record.REPEAT_TYPE_DAYS_IN_WEEK:
+                String delimiter = ", ";
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < Const.DAYS_PER_WEEK; i++) {
+                    if (record.isDayOfWeek(i)) {
+                        stringBuilder.append(mDaysOfWeek[i]).append(delimiter);
+                    }
+                }
+                int length = stringBuilder.length();
+                stringBuilder.delete(length - delimiter.length(), length);
+                view.showRepeatInfo(stringBuilder.toString());
+                break;
+            case Record.REPEAT_TYPE_DAY_IN_YEAR:
+                view.showRepeatInfo(String.format(Locale.getDefault(),
+                        "%s, %d", mMonths[record.getMonth()], record.getDayOfMonth()));
                 break;
         }
     }
 
-    public void onTimeEdited(int minuteAtDay) {
+    public void onTimeEdited(int hour, int minute) {
         RecordWithUser model = getModel();
         if (model == null) {
             return;
         }
         Record record = model.mRecord;
-        int newHour = minuteAtDay / Const.MINUTES_PER_HOUR;
-        int newMinute = minuteAtDay % Const.MINUTES_PER_HOUR;
-        if (newHour != record.getHour() || newMinute != record.getMinute()) {
-            record.setHour(newHour);
-            record.setMinute(newMinute);
+        if (hour != record.getHour() || minute != record.getMinute()) {
+            record.setHour(hour);
+            record.setMinute(minute);
             getView().showTime(getTimeString());
             mDataManager.onRecordUpdated(model.mRecord);
         }
@@ -139,15 +178,56 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         }
     }
 
+    public void onRepeatTypeEdited(int repeatType) {
+        RecordWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        Record record = model.mRecord;
+        if (record.getRepeatType() != repeatType) {
+            record.setRepeatType(repeatType);
+            showRepeatTypeAndInfo();
+            mDataManager.onRecordUpdated(record);
+        }
+    }
+
     public void onPeriodEdited(int period) {
         RecordWithUser model = getModel();
         if (model == null) {
             return;
         }
         Record record = model.mRecord;
-        if (record.getRepeatType() == Record.REPEAT_TYPE_HOURS_IN_DAY && record.getRepeatInfo() != period) {
-            record.setRepeatInfo(period);
-            getView().showPeriod(period);
+        if (record.getRepeatType() == Record.REPEAT_TYPE_HOURS_IN_DAY && record.getPeriod() != period) {
+            record.setPeriod(period);
+            showRepeatTypeAndInfo();
+            mDataManager.onRecordUpdated(record);
+        }
+    }
+
+    public void onDaysInWeekEdited(int daysInWeek) {
+        RecordWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        Record record = model.mRecord;
+        if (record.getRepeatType() == Record.REPEAT_TYPE_DAYS_IN_WEEK && record.getDaysInWeek() != daysInWeek) {
+            record.setDaysOfWeek(daysInWeek);
+            showRepeatTypeAndInfo();
+            mDataManager.onRecordUpdated(record);
+        }
+    }
+
+    public void onDayInYearEdited(int month, int dayOfMonth) {
+        RecordWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        Record record = model.mRecord;
+        if (record.getRepeatType() == Record.REPEAT_TYPE_DAY_IN_YEAR
+                && (record.getMonth() != month || record.getDayOfMonth() != dayOfMonth)) {
+            record.setMonth(month);
+            record.setDayOfMonth(dayOfMonth);
+            showRepeatTypeAndInfo();
             mDataManager.onRecordUpdated(record);
         }
     }
@@ -166,16 +246,35 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
             return;
         }
         Record record = model.mRecord;
-        getView().showEditTime(record.getHour() * Const.MINUTES_PER_HOUR + record.getMinute());
+        getView().showEditTime(record.getHour(), record.getMinute());
     }
 
-    public void onEditPeriodClicked() {
+    public void onEditRepeatTypeClicked() {
         RecordWithUser model = getModel();
-        if (model == null || model.mRecord.getRepeatType() != Record.REPEAT_TYPE_HOURS_IN_DAY) {
+        if (model == null) {
             return;
         }
         Record record = model.mRecord;
-        getView().showEditPeriod(record.getRepeatInfo());
+        getView().showEditRepeatType(record.getRepeatType());
+    }
+
+    public void onEditRepeatInfoClicked() {
+        RecordWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        Record record = model.mRecord;
+        switch (record.getRepeatType()) {
+            case Record.REPEAT_TYPE_HOURS_IN_DAY:
+                getView().showEditPeriod(record.getPeriod());
+                break;
+            case Record.REPEAT_TYPE_DAYS_IN_WEEK:
+                getView().showEditDaysInWeek(record.getDaysInWeek());
+                break;
+            case Record.REPEAT_TYPE_DAY_IN_YEAR:
+                getView().showEditDayInYear(record.getMonth(), record.getDayOfMonth());
+                break;
+        }
     }
 
     private String getTimeString() {

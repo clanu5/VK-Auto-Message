@@ -34,6 +34,9 @@ public final class StringUtils {
         return h + ":" + pm + m;
     }
 
+    /**
+     * @return текст сообщения для новой записи.
+     */
     public static String getNewRecordMessage() {
         return String.format(Locale.getDefault(), "Vk Auto Message %x", sRandom.nextInt());
     }

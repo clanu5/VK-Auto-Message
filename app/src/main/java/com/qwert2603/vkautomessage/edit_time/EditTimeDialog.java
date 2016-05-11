@@ -14,13 +14,17 @@ import javax.inject.Inject;
 
 public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements EditTimeView {
 
-    private static final String minuteAtDayKey = "minuteAtDay";
-    public static final String EXTRA_MINUTE_AT_DAY = "com.qwert2603.vkautomessage.EXTRA_MINUTE_AT_DAY";
+    private static final String hourKey = "hour";
+    private static final String minuteKey = "minuteAtDay";
 
-    public static EditTimeDialog newInstance(int minuteAtDay) {
+    public static final String EXTRA_HOUR = "com.qwert2603.vkautomessage.EXTRA_HOUR";
+    public static final String EXTRA_MINUTE = "com.qwert2603.vkautomessage.EXTRA_MINUTE";
+
+    public static EditTimeDialog newInstance(int hour, int minute) {
         EditTimeDialog editTimeDialog = new EditTimeDialog();
         Bundle args = new Bundle();
-        args.putInt(minuteAtDayKey, minuteAtDay);
+        args.putInt(hourKey, hour);
+        args.putInt(minuteKey, minute);
         editTimeDialog.setArguments(args);
         return editTimeDialog;
     }
@@ -42,7 +46,8 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(EditTimeDialog.this);
-        mEditTimePresenter.setMinuteAtDay(getArguments().getInt(minuteAtDayKey));
+        mEditTimePresenter.setHour(getArguments().getInt(hourKey));
+        mEditTimePresenter.setMinute(getArguments().getInt(minuteKey));
         super.onCreate(savedInstanceState);
     }
 
@@ -54,9 +59,10 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
     }
 
     @Override
-    public void submitDone(int minuteAtDay) {
+    public void submitDone(int hour, int minute) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_MINUTE_AT_DAY, minuteAtDay);
+        intent.putExtra(EXTRA_HOUR, hour);
+        intent.putExtra(EXTRA_MINUTE, minute);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
     }
 }

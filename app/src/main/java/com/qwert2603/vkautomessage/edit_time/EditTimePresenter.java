@@ -2,16 +2,25 @@ package com.qwert2603.vkautomessage.edit_time;
 
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 
-public class EditTimePresenter extends BasePresenter<Integer, EditTimeView> {
+public class EditTimePresenter extends BasePresenter<EditTimePresenter.Time, EditTimeView> {
 
-    public EditTimePresenter() {
+    static class Time {
+        public int mHour = 19;
+        public int mMinute = 18;
     }
 
-    public void setMinuteAtDay(int minuteAtDay) {
-        setModel(minuteAtDay);
+    public EditTimePresenter() {
+        setModel(new Time());
+    }
+
+    public void setHour(int hour) {
+        getModel().mHour = hour;
+    }
+
+    public void setMinute(int minute) {
+       getModel().mMinute = minute;
     }
 
     @Override
@@ -19,15 +28,16 @@ public class EditTimePresenter extends BasePresenter<Integer, EditTimeView> {
     }
 
     public int getHours() {
-        return getModel() / Const.MINUTES_PER_HOUR;
+        return getModel().mHour;
     }
 
     public int getMinutes() {
-        return getModel() % Const.MINUTES_PER_HOUR;
+        return getModel().mMinute;
     }
 
     void onSubmitClicked(int hours, int minutes) {
-        setModel(hours * Const.MINUTES_PER_HOUR + minutes);
-        getView().submitDone(getModel());
+        getModel().mHour = hours;
+        getModel().mMinute = minutes;
+        getView().submitDone(getModel().mHour, getModel().mMinute);
     }
 }

@@ -152,7 +152,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;
-            TextView periodTextView = viewHolder.mPeriodTextView;
+            TextView periodTextView = viewHolder.mRepeatInfoTextView;
             CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
             View toolbar = getActivity().findViewById(R.id.toolbar);
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),

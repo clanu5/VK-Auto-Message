@@ -23,9 +23,15 @@
     <string name="nothing_found">Nothing found</string>
     <string name="delete_user">Delete user and all records for him?</string>
 
+    <string-array name="repeat_types">
+        <item>Periodically by hours</item>
+        <item>Days in week</item>
+        <item>Day in year</item>
+    </string-array>
+
     <string name="message_transition">message_transition</string>
     <string name="time_transition">time_transition</string>
-    <string name="period_transition">period_transition</string>
+    <string name="repeat_info_transition">repeat_info_transition</string>
     <string name="enabled_transition">enabled_transition</string>
     <string name="toolbar_transition">toolbar_transition</string>
 </resources>

@@ -20,7 +20,7 @@ import rx.Observable;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "records.sqlite";
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
 
     private static final String TABLE_RECORD = "record";
     private static final String COLUMN_RECORD_ID = "_id";
@@ -359,7 +359,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TABLE_RECORD,
                 new String[]{"COUNT(" + TABLE_RECORD + "." + COLUMN_RECORD_ID + ")"},
                 COLUMN_RECORD_USER_ID + " = ? AND " + COLUMN_RECORD_ENABLED + " = ?",
-                new String[]{String.valueOf(userId), String .valueOf(1)},
+                new String[]{String.valueOf(userId), String.valueOf(1)},
                 null,
                 null,
                 null

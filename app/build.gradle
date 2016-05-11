@@ -10,8 +10,8 @@ android {
         applicationId "com.qwert2603.vkautomessage"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 9
-        versionName "2.1.1"
+        versionCode 10
+        versionName "2.2-beta"
     }
     buildTypes {
         release {
