@@ -119,7 +119,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
                 String delimiter = ", ";
                 StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 0; i < Const.DAYS_PER_WEEK; i++) {
-                    if (record.isDayOfWeek(i)) {
+                    if (record.isDayOfWeekEnabled(i)) {
                         stringBuilder.append(mDaysOfWeek[i]).append(delimiter);
                     }
                 }

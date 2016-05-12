@@ -191,6 +191,7 @@ public class Record implements Identifiable {
 
     /**
      * Установить "включенность отправки" на все дни недели.
+     *
      * @param daysOfWeek число, определяющее в какие дни неледи включена отправка
      */
     public void setDaysOfWeek(int daysOfWeek) {
@@ -203,7 +204,7 @@ public class Record implements Identifiable {
      * @return включена ли отправка в конкретный день недели
      * при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAYS_IN_WEEK}.
      */
-    public boolean isDayOfWeek(int dayOfWeek) {
+    public boolean isDayOfWeekEnabled(int dayOfWeek) {
         checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
         return (mRepeatInfo & (1 << dayOfWeek)) != 0;
     }
@@ -255,6 +256,8 @@ public class Record implements Identifiable {
 
     /**
      * Проверить что {@link #mRepeatType} == repeatType.
+     *
+     * @throws RuntimeException
      */
     private void checkRepeatType(int repeatType) throws RuntimeException {
         if (mRepeatType != repeatType) {
