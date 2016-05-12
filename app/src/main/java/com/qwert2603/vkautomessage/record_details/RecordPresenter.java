@@ -209,6 +209,10 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         if (model == null) {
             return;
         }
+        if (daysInWeek == 0) {
+            getView().showToast(R.string.no_days_in_week_selected_toast);
+            return;
+        }
         Record record = model.mRecord;
         if (record.getRepeatType() == Record.REPEAT_TYPE_DAYS_IN_WEEK && record.getDaysInWeek() != daysInWeek) {
             record.setDaysOfWeek(daysInWeek);

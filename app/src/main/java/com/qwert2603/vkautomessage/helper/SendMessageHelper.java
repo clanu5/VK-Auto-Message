@@ -9,8 +9,10 @@ import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.service.SendMessageService;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -31,6 +33,7 @@ public class SendMessageHelper {
         intent.putExtra(SendMessageService.EXTRA_RECORD_ID, record.getId());
         PendingIntent pendingIntent = PendingIntent.getService(mContext, record.getId(), intent, 0);
         if (record.isEnabled()) {
+            LogUtils.d(String.valueOf(new Date(getNextSendingInMillis(record, System.currentTimeMillis()))));
             mAlarmManager.setExact(
                     AlarmManager.RTC_WAKEUP,
                     getNextSendingInMillis(record, System.currentTimeMillis()),
@@ -71,7 +74,7 @@ public class SendMessageHelper {
             }
             calendar.setTimeInMillis(timeInMillis);
             if (repeatType == Record.REPEAT_TYPE_DAYS_IN_WEEK) {
-                while (!record.isDayOfWeekEnabled(calendar.get(Calendar.DAY_OF_WEEK))) {
+                while (!record.isDayOfWeekEnabled(calendar.get(Calendar.DAY_OF_WEEK) - 1)) {
                     calendar.setTimeInMillis(calendar.getTimeInMillis() + Const.MILLIS_PER_DAY);
                 }
             }
