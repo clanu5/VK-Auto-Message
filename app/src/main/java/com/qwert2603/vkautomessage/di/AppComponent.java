@@ -6,6 +6,8 @@ import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
+import com.qwert2603.vkautomessage.edit_day_in_year.EditDayOfYearDialog;
+import com.qwert2603.vkautomessage.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
@@ -92,4 +94,8 @@ public interface AppComponent {
     void inject(RecordListAdapter recordListAdapter);
 
     void inject(EditRepeatTypeDialog editRepeatTypeDialog);
+
+    void inject(EditDaysInWeekDialog editDaysInWeekDialog);
+
+    void inject(EditDayOfYearDialog editDayOfYearDialog);
 }

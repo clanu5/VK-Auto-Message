@@ -185,7 +185,7 @@ public class Record implements Identifiable {
         if (enabled) {
             mRepeatInfo |= 1 << dayOfWeek;
         } else {
-            mRepeatInfo &= 1 << dayOfWeek;
+            mRepeatInfo &= ~(1 << dayOfWeek);
         }
     }
 

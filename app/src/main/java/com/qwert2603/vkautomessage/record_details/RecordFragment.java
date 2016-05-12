@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.edit_day_in_year.EditDayOfYearDialog;
+import com.qwert2603.vkautomessage.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
@@ -139,10 +141,13 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
                 mRecordPresenter.onPeriodEdited(period);
                 break;
             case REQUEST_EDIT_DAYS_IN_WEEK:
-                // TODO: 11.05.2016
+                int daysInWeek = data.getIntExtra(EditDaysInWeekDialog.EXTRA_DAYS_IN_WEEK, 0);
+                mRecordPresenter.onDaysInWeekEdited(daysInWeek);
                 break;
             case REQUEST_EDIT_DAY_IN_YEAR:
-                // TODO: 11.05.2016
+                int month = data.getIntExtra(EditDayOfYearDialog.EXTRA_MONTH, 0);
+                int dayOfMonth = data.getIntExtra(EditDayOfYearDialog.EXTRA_DAY_OF_MONTH, 0);
+                mRecordPresenter.onDayInYearEdited(month, dayOfMonth);
                 break;
         }
     }
@@ -221,12 +226,16 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
 
     @Override
     public void showEditDaysInWeek(int daysInWeek) {
-        // TODO: 11.05.2016
+        EditDaysInWeekDialog editDaysInWeekDialog = EditDaysInWeekDialog.newInstance(daysInWeek);
+        editDaysInWeekDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_DAYS_IN_WEEK);
+        editDaysInWeekDialog.show(getFragmentManager(), editDaysInWeekDialog.getClass().getName());
     }
 
     @Override
     public void showEditDayInYear(int month, int dayOfMonth) {
-        // TODO: 11.05.2016
+        EditDayOfYearDialog editDayOfYearDialog = EditDayOfYearDialog.newInstance(month, dayOfMonth);
+        editDayOfYearDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_DAY_IN_YEAR);
+        editDayOfYearDialog.show(getFragmentManager(), editDayOfYearDialog.getClass().getName());
     }
 
     @Override

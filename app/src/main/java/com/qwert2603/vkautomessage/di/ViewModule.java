@@ -3,6 +3,8 @@ package com.qwert2603.vkautomessage.di;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
+import com.qwert2603.vkautomessage.edit_day_in_year.EditDayInYearPresenter;
+import com.qwert2603.vkautomessage.edit_days_in_week.EditDaysInWeekPresenter;
 import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodPresenter;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypePresenter;
@@ -80,6 +82,16 @@ public class ViewModule {
     @Provides
     EditRepeatTypePresenter provideEditRepeatTypePresenter() {
         return new EditRepeatTypePresenter();
+    }
+
+    @Provides
+    EditDaysInWeekPresenter provideEditDaysInWeekPresenter() {
+        return new EditDaysInWeekPresenter();
+    }
+
+    @Provides
+    EditDayInYearPresenter provideEditDayInYearPresenter() {
+        return new EditDayInYearPresenter();
     }
 
     @Provides

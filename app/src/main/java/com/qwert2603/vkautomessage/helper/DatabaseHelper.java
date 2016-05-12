@@ -68,9 +68,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE " + TABLE_RECORD);
-        db.execSQL("DROP TABLE " + TABLE_USER);
-        onCreate(db);
+        if (oldVersion <= 2) {
+            db.execSQL("DROP TABLE " + TABLE_RECORD);
+            db.execSQL("DROP TABLE " + TABLE_USER);
+            onCreate(db);
+        }
+        if (oldVersion == 3 && newVersion == 4) {
+            for (int i = 0; i <= 2; i++) {
+                ContentValues cv = new ContentValues();
+                cv.put(COLUMN_RECORD_REPEAT_TYPE, i);
+                db.update(TABLE_RECORD, cv, COLUMN_RECORD_REPEAT_TYPE + " = ?", new String[]{String.valueOf(i + 1)});
+            }
+        }
     }
 
     public static class RecordsCountInfo {
