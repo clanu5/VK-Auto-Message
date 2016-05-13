@@ -12,6 +12,7 @@ import java.util.Date;
 public class SendMessageHelperTest {
 
     private Record mRecord;
+    private int mTodayOfWeek;
     private long mTodayTimeMillis;    // 12 мая 2016 года. 15:09:43.263.
     private long mFeb29TimeMillis;    // 29 февраля 2016 года. 15:09:43.263.
     private long mDec31TimeMillis;    // 31 декабря 2016 года. 15:09:43.263.
@@ -21,6 +22,9 @@ public class SendMessageHelperTest {
         mRecord = new Record(0);
 
         Calendar calendar = Calendar.getInstance();
+
+        mTodayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
         calendar.set(Calendar.YEAR, 2016);
         calendar.set(Calendar.MONTH, Calendar.MAY);
         calendar.set(Calendar.DAY_OF_MONTH, 12);
@@ -273,6 +277,8 @@ public class SendMessageHelperTest {
     @Test
     public void test11() {
         mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
+        mRecord.setDayOfWeek(Calendar.WEDNESDAY, true);
         mRecord.setHour(19);
         mRecord.setMinute(18);
 
@@ -281,7 +287,7 @@ public class SendMessageHelperTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2016);
         calendar.set(Calendar.MONTH, Calendar.MAY);
-        calendar.set(Calendar.DAY_OF_MONTH, 12);
+        calendar.set(Calendar.DAY_OF_MONTH, 18);
         calendar.set(Calendar.HOUR_OF_DAY, 19);
         calendar.set(Calendar.MINUTE, 18);
         calendar.set(Calendar.SECOND, 0);
@@ -293,6 +299,8 @@ public class SendMessageHelperTest {
     @Test
     public void test12() {
         mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
+        mRecord.setDayOfWeek(Calendar.WEDNESDAY, true);
         mRecord.setHour(12);
         mRecord.setMinute(15);
 
@@ -301,7 +309,7 @@ public class SendMessageHelperTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2016);
         calendar.set(Calendar.MONTH, Calendar.MAY);
-        calendar.set(Calendar.DAY_OF_MONTH, 19);
+        calendar.set(Calendar.DAY_OF_MONTH, 18);
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 15);
         calendar.set(Calendar.SECOND, 0);
@@ -313,6 +321,7 @@ public class SendMessageHelperTest {
     @Test
     public void test13() {
         mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
         mRecord.setDayOfWeek(Calendar.SUNDAY, true);
         mRecord.setHour(12);
         mRecord.setMinute(15);
@@ -334,7 +343,7 @@ public class SendMessageHelperTest {
     @Test
     public void test14() {
         mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
-        mRecord.setDayOfWeek(Calendar.THURSDAY, false);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
         mRecord.setDayOfWeek(Calendar.MONDAY, true);
         mRecord.setHour(12);
         mRecord.setMinute(15);
@@ -356,7 +365,7 @@ public class SendMessageHelperTest {
     @Test
     public void test14_2() {
         mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
-        mRecord.setDayOfWeek(Calendar.THURSDAY, false);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
         mRecord.setDayOfWeek(Calendar.FRIDAY, true);
         mRecord.setHour(12);
         mRecord.setMinute(15);
@@ -378,7 +387,7 @@ public class SendMessageHelperTest {
     @Test
     public void test14_3() {
         mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
-        mRecord.setDayOfWeek(Calendar.THURSDAY, false);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
         mRecord.setDayOfWeek(Calendar.WEDNESDAY, true);
         mRecord.setHour(12);
         mRecord.setMinute(15);
@@ -391,6 +400,94 @@ public class SendMessageHelperTest {
         calendar.set(Calendar.DAY_OF_MONTH, 18);
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 15);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Assert.assertEquals(new Date(calendar.getTimeInMillis()), new Date(sendingInMillis));
+    }
+
+    @Test
+    public void test14_4() {
+        mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
+        mRecord.setDayOfWeek(Calendar.FRIDAY, true);
+        mRecord.setHour(0);
+        mRecord.setMinute(0);
+
+        long sendingInMillis = SendMessageHelper.getNextSendingInMillis(mRecord, mTodayTimeMillis);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2016);
+        calendar.set(Calendar.MONTH, Calendar.MAY);
+        calendar.set(Calendar.DAY_OF_MONTH, 13);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Assert.assertEquals(new Date(calendar.getTimeInMillis()), new Date(sendingInMillis));
+    }
+
+    @Test
+    public void test14_5() {
+        mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
+        mRecord.setDayOfWeek(Calendar.THURSDAY, true);
+        mRecord.setHour(0);
+        mRecord.setMinute(0);
+
+        long sendingInMillis = SendMessageHelper.getNextSendingInMillis(mRecord, mTodayTimeMillis);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2016);
+        calendar.set(Calendar.MONTH, Calendar.MAY);
+        calendar.set(Calendar.DAY_OF_MONTH, 19);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Assert.assertEquals(new Date(calendar.getTimeInMillis()), new Date(sendingInMillis));
+    }
+
+    @Test
+    public void test14_6() {
+        mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
+        mRecord.setDayOfWeek(Calendar.THURSDAY, true);
+        mRecord.setHour(12);
+        mRecord.setMinute(0);
+
+        long sendingInMillis = SendMessageHelper.getNextSendingInMillis(mRecord, mTodayTimeMillis);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2016);
+        calendar.set(Calendar.MONTH, Calendar.MAY);
+        calendar.set(Calendar.DAY_OF_MONTH, 19);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Assert.assertEquals(new Date(calendar.getTimeInMillis()), new Date(sendingInMillis));
+    }
+
+    @Test
+    public void test14_7() {
+        mRecord.setRepeatType(Record.REPEAT_TYPE_DAYS_IN_WEEK);
+        mRecord.setDayOfWeek(mTodayOfWeek, false);
+        mRecord.setDayOfWeek(Calendar.THURSDAY, true);
+        mRecord.setHour(15);
+        mRecord.setMinute(27);
+
+        long sendingInMillis = SendMessageHelper.getNextSendingInMillis(mRecord, mTodayTimeMillis);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2016);
+        calendar.set(Calendar.MONTH, Calendar.MAY);
+        calendar.set(Calendar.DAY_OF_MONTH, 12);
+        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.MINUTE,27);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 

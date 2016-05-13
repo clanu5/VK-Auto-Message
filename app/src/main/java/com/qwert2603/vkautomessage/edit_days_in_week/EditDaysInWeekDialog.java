@@ -16,6 +16,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -72,6 +73,11 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
 
         ButterKnife.bind(EditDaysInWeekDialog.this, view);
 
+        /**
+         * {@link Calendar#SUNDAY} == 1, поэтому добавим в начало один CheckBox, но не будем его отображать.
+         */
+        mCheckBoxList.add(new CheckBox(getActivity()));
+
         for (String s : mDaysOfWeek) {
             CheckBox checkBox = new CheckBox(getActivity());
             checkBox.setText(s);
@@ -79,7 +85,7 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
             mLinearLayout.addView(checkBox);
         }
 
-        for (int i = 0, mCheckBoxListSize = mCheckBoxList.size(); i < mCheckBoxListSize; i++) {
+        for (int i = 1, mCheckBoxListSize = mCheckBoxList.size(); i < mCheckBoxListSize; i++) {
             CheckBox checkBox = mCheckBoxList.get(i);
             final int finalI = i;
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->

@@ -20,7 +20,7 @@ public class EditDaysInWeekPresenter extends BasePresenter<Integer, EditDaysInWe
         if (model == null) {
             return;
         }
-        for (int i = 0; i < Const.DAYS_PER_WEEK; i++) {
+        for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {
             boolean enable = (model & (1 << i)) != 0;
             view.setDayInWeekEnable(i, enable);
         }

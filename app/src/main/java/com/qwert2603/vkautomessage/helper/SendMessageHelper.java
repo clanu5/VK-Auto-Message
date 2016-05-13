@@ -33,10 +33,11 @@ public class SendMessageHelper {
         intent.putExtra(SendMessageService.EXTRA_RECORD_ID, record.getId());
         PendingIntent pendingIntent = PendingIntent.getService(mContext, record.getId(), intent, 0);
         if (record.isEnabled()) {
-            LogUtils.d(String.valueOf(new Date(getNextSendingInMillis(record, System.currentTimeMillis()))));
+            long nextSendingInMillis = getNextSendingInMillis(record, System.currentTimeMillis());
+            LogUtils.d(String.valueOf(new Date(nextSendingInMillis)));
             mAlarmManager.setExact(
                     AlarmManager.RTC_WAKEUP,
-                    getNextSendingInMillis(record, System.currentTimeMillis()),
+                    nextSendingInMillis,
                     pendingIntent);
         } else {
             mAlarmManager.cancel(pendingIntent);
@@ -72,13 +73,12 @@ public class SendMessageHelper {
             while (timeInMillis - interval > currentTimeMillis) {
                 timeInMillis -= interval;
             }
-            calendar.setTimeInMillis(timeInMillis);
+            calendar.setTimeInMillis(timeInMillis + delta);
             if (repeatType == Record.REPEAT_TYPE_DAYS_IN_WEEK) {
-                while (!record.isDayOfWeekEnabled(calendar.get(Calendar.DAY_OF_WEEK) - 1)) {
+                while (!record.isDayOfWeekEnabled(calendar.get(Calendar.DAY_OF_WEEK))) {
                     calendar.setTimeInMillis(calendar.getTimeInMillis() + Const.MILLIS_PER_DAY);
                 }
             }
-            calendar.setTimeInMillis(calendar.getTimeInMillis() + delta);
         } else if (repeatType == Record.REPEAT_TYPE_DAY_IN_YEAR) {
             calendar.set(Calendar.MONTH, record.getMonth());
             calendar.set(Calendar.DAY_OF_MONTH, record.getDayOfMonth());

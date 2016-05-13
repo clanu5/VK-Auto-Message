@@ -118,9 +118,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
             case Record.REPEAT_TYPE_DAYS_IN_WEEK:
                 String delimiter = ", ";
                 StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 0; i < Const.DAYS_PER_WEEK; i++) {
+                for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {
                     if (record.isDayOfWeekEnabled(i)) {
-                        stringBuilder.append(mDaysOfWeek[i]).append(delimiter);
+                        stringBuilder.append(mDaysOfWeek[i - 1]).append(delimiter);
                     }
                 }
                 int length = stringBuilder.length();

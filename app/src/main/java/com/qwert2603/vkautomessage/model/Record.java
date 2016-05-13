@@ -14,7 +14,8 @@ public class Record implements Identifiable {
     /**
      * Повтор в те дни недели, для которых установлен в 1 соответствующий бит {@link #mRepeatInfo}.
      * Начиная с Вс.
-     * 0100101 = Вс, Вт, Пт.
+     * {@link Calendar#SUNDAY} == 1, поэтому первый бит пропускается.
+     * 01001110 = Вс, Пн, Вт, Пт.
      */
     public static final int REPEAT_TYPE_DAYS_IN_WEEK = 1;
 
@@ -125,7 +126,7 @@ public class Record implements Identifiable {
                 break;
             case Record.REPEAT_TYPE_DAYS_IN_WEEK:
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                mRepeatInfo = 1 << (dayOfWeek - 1);
+                mRepeatInfo = 1 << dayOfWeek;
                 break;
             case Record.REPEAT_TYPE_DAY_IN_YEAR:
                 int month = calendar.get(Calendar.MONTH);
