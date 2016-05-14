@@ -31,7 +31,7 @@ public class RxBus {
 
     @Named(Const.UI_THREAD)
     @Inject
-    Scheduler mUiThread;
+    Scheduler mUiScheduler;
 
     public RxBus() {
         VkAutoMessageApplication.getAppComponent().inject(RxBus.this);
@@ -44,7 +44,7 @@ public class RxBus {
     }
 
     public Observable<Event> toObservable() {
-        return mBus.observeOn(mUiThread);
+        return mBus.observeOn(mUiScheduler);
     }
 
 }
