@@ -116,6 +116,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
                 view.showRepeatInfo(mAppContext.getResources().getQuantityString(R.plurals.hours, period, period));
                 break;
             case Record.REPEAT_TYPE_DAYS_IN_WEEK:
+                // TODO: 18.05.16 выводить "все, кроме СР"
                 String delimiter = ", ";
                 StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {

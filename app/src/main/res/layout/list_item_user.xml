@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/list_item_user_background"
     android:orientation="horizontal"
-    android:padding="4dp"
-    android:background="@drawable/list_item_user_background">
+    android:padding="4dp">
 
     <ImageView
         android:id="@+id/photo_image_view"
@@ -17,39 +17,49 @@
         android:id="@+id/user_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_weight="1"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
         android:singleLine="true"
-        android:text="Alex Zhdanov"
+        android:text="Alex Zhdanov toolbar_transition toolbar_transition"
         android:textColor="@color/user_name"
         android:textSize="20sp"
         android:transitionName="@string/toolbar_transition"/>
 
-    <TextView
-        android:id="@+id/enabled_records_count_text_view"
+    <LinearLayout
+        android:id="@+id/records_count_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textSize="16sp"
-        android:textColor="@color/enabled_records_count"
-        android:text="14"/>
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="4dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:text="/"
-        android:textSize="16sp"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"/>
+        <TextView
+            android:id="@+id/enabled_records_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="14"
+            android:textColor="@color/enabled_records_count"
+            android:textSize="20sp"/>
 
-    <TextView
-        android:id="@+id/records_count_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textSize="16sp"
-        android:textColor="@color/records_count"
-        android:text="26"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_marginStart="2dp"
+            android:text="/"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/records_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="26"
+            android:textColor="@color/records_count"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

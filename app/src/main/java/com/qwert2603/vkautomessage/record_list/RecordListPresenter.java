@@ -92,7 +92,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
 
     private void showUserNameAndRecordsCount(@NonNull User user, @NonNull RecordListView view) {
         view.showUserName(String.format(Locale.getDefault(),
-                "%s (%d/%d)", getUserName(user), user.getEnabledRecordsCount(), user.getRecordsCount()));
+                "(%d/%d) %s", user.getEnabledRecordsCount(), user.getRecordsCount(), getUserName(user)));
     }
 
     public void onReload() {

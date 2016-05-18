@@ -7,6 +7,6 @@ import com.qwert2603.vkautomessage.base.BaseView;
 public interface UserView extends BaseView {
     void showName(String name);
     ImageView getPhotoImageView();
-    void showEnabledRecordsCount(String enabledRecordsCount);
-    void showRecordsCount(String recordsCount);
+    void hideRecordsCount();
+    void showRecordsCount(String recordsCount, String enabledRecordsCount);
 }

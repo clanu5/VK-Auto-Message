@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
@@ -38,6 +39,9 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
 
         @BindView(R.id.user_name_text_view)
         TextView mUsernameTextView;
+
+        @BindView(R.id.records_count_layout)
+        LinearLayout mRecordsCountLinearLayout;
 
         @BindView(R.id.records_count_text_view)
         TextView mRecordsCountTextView;
@@ -81,12 +85,14 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         }
 
         @Override
-        public void showRecordsCount(String recordsCount) {
-            mRecordsCountTextView.setText(recordsCount);
+        public void hideRecordsCount() {
+            mRecordsCountLinearLayout.setVisibility(View.GONE);
         }
 
         @Override
-        public void showEnabledRecordsCount(String enabledRecordsCount) {
+        public void showRecordsCount(String recordsCount, String enabledRecordsCount) {
+            mRecordsCountLinearLayout.setVisibility(View.VISIBLE);
+            mRecordsCountTextView.setText(recordsCount);
             mEnabledRecordsCountTextView.setText(enabledRecordsCount);
         }
     }
