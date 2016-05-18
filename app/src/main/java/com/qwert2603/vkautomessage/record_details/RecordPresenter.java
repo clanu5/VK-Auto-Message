@@ -116,7 +116,19 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
                 view.showRepeatInfo(mAppContext.getResources().getQuantityString(R.plurals.hours, period, period));
                 break;
             case Record.REPEAT_TYPE_DAYS_IN_WEEK:
-                // TODO: 18.05.16 выводить "все, кроме СР"
+                if (record.getDaysInWeekCount() == Const.DAYS_PER_WEEK) {
+                    view.showRepeatInfo(mAppContext.getString(R.string.all_days));
+                    break;
+                }
+                if (record.getDaysInWeekCount() == Const.DAYS_PER_WEEK - 1) {
+                    for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {
+                        if (!record.isDayOfWeekEnabled(i)) {
+                            view.showRepeatInfo(mAppContext.getString(R.string.all_except, mDaysOfWeek[i - 1]));
+                            break;
+                        }
+                    }
+                    break;
+                }
                 String delimiter = ", ";
                 StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {

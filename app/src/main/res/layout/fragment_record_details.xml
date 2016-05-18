@@ -133,7 +133,7 @@
                 android:id="@+id/repeat_info_card"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:layout_margin="4dp"
                 card_view:cardCornerRadius="4dp"
                 android:transitionName="@string/repeat_info_transition">
@@ -145,7 +145,8 @@
                     android:layout_gravity="center_horizontal"
                     android:gravity="center"
                     android:layout_margin="12dp"
-                    android:text="Su, Mo, Tu, We, Th"
+                    android:singleLine="true"
+                    android:text="Su Mo Tu We Th"
                     android:textColor="@color/repeat_info"
                     android:textSize="20sp"/>
 

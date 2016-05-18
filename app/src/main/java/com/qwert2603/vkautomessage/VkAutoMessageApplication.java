@@ -64,8 +64,6 @@ public class VkAutoMessageApplication extends Application {
                 .defaultDisplayImageOptions(displayImageOptions)
                 .build();
         ImageLoader.getInstance().init(config);
-
-        // TODO: 02.04.2016 добавить испанский язык. (или французский)
     }
 
     protected AppComponent buildAppComponent() {

@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:text="24 hours"
+                android:text="Su,Mo,Tu,We,Th"
                 android:textColor="@color/repeat_info"
                 android:textSize="14sp"
                 android:transitionName="@string/repeat_info_transition"/>

@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.model;
 
+import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.Calendar;
@@ -217,6 +218,21 @@ public class Record implements Identifiable {
     public int getDaysInWeek() {
         checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
         return mRepeatInfo;
+    }
+
+    /**
+     * @return число дней в неделю, в которые включена отправка
+     * при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAYS_IN_WEEK}.
+     */
+    public int getDaysInWeekCount() {
+        checkRepeatType(REPEAT_TYPE_DAYS_IN_WEEK);
+        int res = 0;
+        for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {
+            if (isDayOfWeekEnabled(i)) {
+                ++res;
+            }
+        }
+        return res;
     }
 
     /**

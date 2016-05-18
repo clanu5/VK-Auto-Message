@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
@@ -13,6 +14,7 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -108,6 +110,12 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         RecordListWithUser recordListWithUser = getModel();
         if (recordListWithUser == null) {
             return;
+        }
+        if (recordListWithUser.mUser.getId() == Const.DEVELOPER_VK_ID) {
+            if (new Random().nextBoolean()) {
+                getView().showDontWriteToDeveloper();
+                return;
+            }
         }
         Record record = new Record(recordListWithUser.mUser.getId());
         mDataManager.addRecord(record)

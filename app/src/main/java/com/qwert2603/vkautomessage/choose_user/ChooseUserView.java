@@ -14,4 +14,8 @@ public interface ChooseUserView extends ListView<VkUser> {
     void showNothingFound();
 
     void showItemSelected(int position);
+
+    void showDontWriteToDeveloper();
+
+    void showGreatChoice();
 }

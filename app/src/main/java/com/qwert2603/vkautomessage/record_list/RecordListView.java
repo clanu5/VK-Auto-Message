@@ -9,4 +9,5 @@ public interface RecordListView extends ListView<Record> {
     void showDeleteRecord(int recordId);
     void notifyItemRemoved(int position);
     void notifyItemInserted(int position);
+    void showDontWriteToDeveloper();
 }

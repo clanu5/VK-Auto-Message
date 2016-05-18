@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.choose_user;
 
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -87,6 +88,14 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
     public void onUserAtPositionClicked(int position) {
         VkUser user = mShowingUserList.get(position);
         if (user.isCanWrite()) {
+            switch (user.getId()) {
+                case Const.DEVELOPER_VK_ID:
+                    getView().showDontWriteToDeveloper();
+                    break;
+                case Const.RITA_VK_ID:
+                    getView().showGreatChoice();
+                    break;
+            }
             getView().showItemSelected(position);
             getView().submitDode(user.getId());
         } else {

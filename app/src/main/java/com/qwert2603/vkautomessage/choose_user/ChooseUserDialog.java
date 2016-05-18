@@ -142,6 +142,16 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void showDontWriteToDeveloper() {
+        Toast.makeText(getActivity(), R.string.toast_dont_write_to_developer, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showGreatChoice() {
+        Toast.makeText(getActivity(), R.string.toast_great_choice, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void showNothingFound() {
         setViewAnimatorDisplayedChild(POSITION_NOTHING_FOUND_TEXT_VIEW);
     }

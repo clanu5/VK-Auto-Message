@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -182,6 +183,11 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void notifyItemInserted(int position) {
         mRecordListAdapter.notifyItemInserted(position);
+    }
+
+    @Override
+    public void showDontWriteToDeveloper() {
+        Toast.makeText(getActivity(), R.string.toast_i_told_you, Toast.LENGTH_SHORT).show();
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

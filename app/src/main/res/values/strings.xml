@@ -23,6 +23,8 @@
     <string name="search_hint">search friend</string>
     <string name="nothing_found">Nothing found</string>
     <string name="delete_user">Delete user and all records for him?</string>
+    <string name="all_days">All days</string>
+    <string name="all_except">All except %s</string>
 
     <string-array name="repeat_types">
         <item>Periodically by hours</item>
@@ -30,9 +32,12 @@
         <item>Day in year</item>
     </string-array>
 
-    <string name="message_transition">message_transition</string>
-    <string name="time_transition">time_transition</string>
-    <string name="repeat_info_transition">repeat_info_transition</string>
-    <string name="enabled_transition">enabled_transition</string>
-    <string name="toolbar_transition">toolbar_transition</string>
+    <string name="message_transition" translatable="false">message_transition</string>
+    <string name="time_transition" translatable="false">time_transition</string>
+    <string name="repeat_info_transition" translatable="false">repeat_info_transition</string>
+    <string name="enabled_transition" translatable="false">enabled_transition</string>
+    <string name="toolbar_transition" translatable="false">toolbar_transition</string>
+    <string name="toast_dont_write_to_developer">I do not recommend you to do that!</string>
+    <string name="toast_great_choice">Great choice!</string>
+    <string name="toast_i_told_you">I told you!</string>
 </resources>
