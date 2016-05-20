@@ -38,6 +38,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    @BindView(R.id.toolbar_title_text_view)
+    TextView mToolbarTitleTextView;
+
     private ImageView mUserPhotoImageView;
     private TextView mUserNameTextView;
 
@@ -165,5 +168,10 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     public void showLoading() {
         mUserNameTextView.setText(R.string.loading);
         mUserPhotoImageView.setImageBitmap(null);
+    }
+
+    @Override
+    public void setToolbarTitle(String title) {
+        mToolbarTitleTextView.setText(title);
     }
 }

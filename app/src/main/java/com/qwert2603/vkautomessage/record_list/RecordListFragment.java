@@ -24,6 +24,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.navigation.NavigationView;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 
 import java.util.List;
@@ -142,7 +143,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
     @Override
     public void showUserName(String userName) {
-        getActivity().setTitle(userName);
+        ((NavigationView) getActivity()).setToolbarTitle(userName);
     }
 
     @SuppressWarnings("unchecked")
@@ -155,13 +156,13 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mRepeatInfoTextView;
             CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
-            View toolbar = getActivity().findViewById(R.id.toolbar);
+            View toolbarTitle = getActivity().findViewById(R.id.toolbar_title_text_view);
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(timeTextView, timeTextView.getTransitionName()),
                     Pair.create(periodTextView, periodTextView.getTransitionName()),
                     Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
-                    Pair.create(toolbar, toolbar.getTransitionName()));
+                    Pair.create(toolbarTitle, toolbarTitle.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
