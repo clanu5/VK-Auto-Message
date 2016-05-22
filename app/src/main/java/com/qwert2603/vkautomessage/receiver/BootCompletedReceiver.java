@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -18,7 +19,9 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     DataManager mDataManager;
 
     public BootCompletedReceiver() {
-        VkAutoMessageApplication.getAppComponent().inject(BootCompletedReceiver.this);
+        if (!Const.IS_TESTING) {
+            VkAutoMessageApplication.getAppComponent().inject(BootCompletedReceiver.this);
+        }
     }
 
     @Override

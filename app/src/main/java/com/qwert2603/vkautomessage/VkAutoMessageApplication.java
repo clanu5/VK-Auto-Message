@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage;
 
 import android.app.Application;
-import android.support.annotation.Nullable;
 
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
@@ -14,8 +13,6 @@ import com.qwert2603.vkautomessage.di.AppComponent;
 import com.qwert2603.vkautomessage.di.AppModule;
 import com.qwert2603.vkautomessage.di.DaggerAppComponent;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.util.VKUtil;
 
@@ -36,9 +33,12 @@ public class VkAutoMessageApplication extends Application {
 
         sAppComponent = buildAppComponent();
 
-        VKSdk.initialize(this);
-        for (String s : VKUtil.getCertificateFingerprint(this, this.getPackageName())) {
-            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
+        VKSdk.initialize(VkAutoMessageApplication.this);
+        if (!Const.IS_TESTING) {
+            for (String s : VKUtil.getCertificateFingerprint(VkAutoMessageApplication.this,
+                    VkAutoMessageApplication.this.getPackageName())) {
+                LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
+            }
         }
 
         /*new VKAccessTokenTracker() {
