@@ -10,5 +10,5 @@ public interface Const {
     int DEVELOPER_VK_ID = 137183400;
     int RITA_VK_ID = 289088576;
 
-    boolean IS_TESTING = true;
+    boolean IS_TESTING = false;
 }
