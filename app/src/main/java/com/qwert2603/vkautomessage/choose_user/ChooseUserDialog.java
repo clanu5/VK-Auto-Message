@@ -76,8 +76,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(ChooseUserDialog.this);
-        mChooseUserAdapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
         super.onCreate(savedInstanceState);
+        mChooseUserAdapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
     }
 
     @SuppressLint("InflateParams")
