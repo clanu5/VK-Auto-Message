@@ -70,8 +70,6 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(UserListFragment.this);
-        mUserListAdapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
-        mUserListAdapter.setLongClickCallbacks(mUserListPresenter::onUserAtPositionLongClicked);
         super.onCreate(savedInstanceState);
     }
 
@@ -84,6 +82,8 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mUserListAdapter);
+        mUserListAdapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
+        mUserListAdapter.setLongClickCallbacks(mUserListPresenter::onUserAtPositionLongClicked);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
 

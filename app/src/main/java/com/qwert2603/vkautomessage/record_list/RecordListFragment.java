@@ -78,8 +78,6 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
         mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
-        mRecordListAdapter.setClickCallbacks(mRecordListPresenter::onRecordAtPositionClicked);
-        mRecordListAdapter.setLongClickCallbacks(mRecordListPresenter::onRecordAtPositionLongClicked);
         super.onCreate(savedInstanceState);
     }
 
@@ -92,6 +90,8 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mRecordListAdapter);
+        mRecordListAdapter.setClickCallbacks(mRecordListPresenter::onRecordAtPositionClicked);
+        mRecordListAdapter.setLongClickCallbacks(mRecordListPresenter::onRecordAtPositionLongClicked);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 

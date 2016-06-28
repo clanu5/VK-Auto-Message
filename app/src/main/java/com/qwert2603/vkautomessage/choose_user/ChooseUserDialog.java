@@ -77,7 +77,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(ChooseUserDialog.this);
         super.onCreate(savedInstanceState);
-        mChooseUserAdapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
     }
 
     @SuppressLint("InflateParams")
@@ -92,6 +91,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mChooseUserAdapter);
+        mChooseUserAdapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReload());
 
