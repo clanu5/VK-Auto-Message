@@ -71,7 +71,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         if (model == null) {
             return;
         }
-        getView().moveToRecordsForUser(model.get(position).getId());
+        getView().moveToRecordsForUser(model.get(position).getId(), position);
     }
 
     public void onUserAtPositionLongClicked(int position) {
@@ -112,7 +112,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     public void onUserChosen(int userId) {
         int userPosition = getUserPosition(userId);
         if (userPosition >= 0) {
-            getView().moveToRecordsForUser(userId);
+            getView().moveToRecordsForUser(userId, userPosition);
         } else {
             mDataManager.getVkUserById(userId)
                     .flatMap(mDataManager::addUser)
@@ -129,7 +129,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                                 } else {
                                     updateView();
                                 }
-                                view.moveToRecordsForUser(userId);
+                                view.moveToRecordsForUser(userId, userList.size() - 1);
                             }, LogUtils::e
                     );
         }

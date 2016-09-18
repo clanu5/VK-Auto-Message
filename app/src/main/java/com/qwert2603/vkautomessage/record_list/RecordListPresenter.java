@@ -135,7 +135,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                     } else {
                         updateView();
                     }
-                    view.moveToRecordDetails(record.getId());
+                    view.moveToRecordDetails(record.getId(), recordList.size() - 1);
                 }, LogUtils::e);
     }
 
@@ -144,7 +144,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         if (model == null) {
             return;
         }
-        getView().moveToRecordDetails(model.mRecordList.get(position).getId());
+        getView().moveToRecordDetails(model.mRecordList.get(position).getId(), position);
     }
 
     public void onRecordAtPositionLongClicked(int position) {

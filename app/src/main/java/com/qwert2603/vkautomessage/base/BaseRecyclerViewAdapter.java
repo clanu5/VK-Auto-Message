@@ -1,15 +1,12 @@
 package com.qwert2603.vkautomessage.base;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.qwert2603.vkautomessage.model.Identifiable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Базовый адаптер для {@link RecyclerView} для шаблона MVP.
@@ -54,12 +51,6 @@ public abstract class BaseRecyclerViewAdapter
     private LongClickCallbacks mLongClickCallbacks;
     private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
 
-    /**
-     * Карта id модели -- ее ViewHolder.
-     * Если нет, то null.
-     */
-    private Map<Integer, VH> mVHMap = new HashMap<>();
-
     public BaseRecyclerViewAdapter() {
     }
 
@@ -90,12 +81,6 @@ public abstract class BaseRecyclerViewAdapter
         mRecyclerViewSelector.setSelectedPosition(position);
     }
 
-    @Nullable
-    public VH getViewHolderForModel(int modelId) {
-        return mVHMap.get(modelId);
-    }
-
-
     @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(VH holder, int position) {
@@ -105,7 +90,6 @@ public abstract class BaseRecyclerViewAdapter
         holder.bindPresenter();
         // отображаем выделен элемент или нет.
         mRecyclerViewSelector.showWhetherItemSelected(holder.mItemView, position);
-        mVHMap.put(model.getId(), holder);
     }
 
     @Override

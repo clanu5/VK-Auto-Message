@@ -12,9 +12,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.qwert2603.vkautomessage.di.AppComponent;
 import com.qwert2603.vkautomessage.di.AppModule;
 import com.qwert2603.vkautomessage.di.DaggerAppComponent;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.vk.sdk.VKSdk;
-import com.vk.sdk.util.VKUtil;
 
 import java.io.File;
 
@@ -34,12 +32,10 @@ public class VkAutoMessageApplication extends Application {
         sAppComponent = buildAppComponent();
 
         VKSdk.initialize(VkAutoMessageApplication.this);
-        if (!Const.IS_TESTING) {
-            for (String s : VKUtil.getCertificateFingerprint(VkAutoMessageApplication.this,
-                    VkAutoMessageApplication.this.getPackageName())) {
-                LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
-            }
-        }
+        /*for (String s : VKUtil.getCertificateFingerprint(VkAutoMessageApplication.this,
+                VkAutoMessageApplication.this.getPackageName())) {
+            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
+        }*/
 
         /*new VKAccessTokenTracker() {
             @Override

@@ -148,9 +148,10 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
     @SuppressWarnings("unchecked")
     @Override
-    public void moveToRecordDetails(int recordId) {
+    public void moveToRecordDetails(int recordId, int position) {
         ActivityOptions activityOptions = null;
-        RecordListAdapter.RecordViewHolder viewHolder = mRecordListAdapter.getViewHolderForModel(recordId);
+        RecordListAdapter.RecordViewHolder viewHolder =
+                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForLayoutPosition(position);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;

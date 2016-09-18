@@ -139,9 +139,10 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
     @SuppressWarnings("unchecked")
     @Override
-    public void moveToRecordsForUser(int userId) {
+    public void moveToRecordsForUser(int userId, int position) {
         ActivityOptions activityOptions = null;
-        UserListAdapter.UserViewHolder viewHolder = mUserListAdapter.getViewHolderForModel(userId);
+        UserListAdapter.UserViewHolder viewHolder =
+                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForLayoutPosition(position);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView usernameTextView = viewHolder.mUsernameTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
