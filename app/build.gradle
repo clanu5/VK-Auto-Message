@@ -14,8 +14,8 @@ android {
         applicationId "com.qwert2603.vkautomessage"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 17
-        versionName "2.3.2"
+        versionCode 18
+        versionName "2.3.3"
     }
     buildTypes {
         release {
@@ -34,9 +34,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:design:24.0.0'
-    compile 'com.android.support:cardview-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.3'
     compile 'com.vk:androidsdk:1.6.7'
