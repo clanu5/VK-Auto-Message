@@ -9,7 +9,6 @@ android {
         maxProcessCount 2
         javaMaxHeapSize "3g"
     }
-
     defaultConfig {
         applicationId "com.qwert2603.vkautomessage"
         minSdkVersion 19

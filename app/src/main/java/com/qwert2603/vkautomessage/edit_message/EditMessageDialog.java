@@ -82,7 +82,7 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
         });
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setNegativeButton(getString(R.string.cancel), null)
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.submit, (dialog, which) -> {
                     mEditMessagePresenter.onSubmitClicked();
                 })

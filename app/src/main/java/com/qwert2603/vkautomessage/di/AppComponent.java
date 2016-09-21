@@ -13,6 +13,9 @@ import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
+import com.qwert2603.vkautomessage.errors_show.ErrorsHolder;
+import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
+import com.qwert2603.vkautomessage.errors_show.ErrorsShowPresenter;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -98,4 +101,10 @@ public interface AppComponent {
     void inject(EditDaysInWeekDialog editDaysInWeekDialog);
 
     void inject(EditDayOfYearDialog editDayOfYearDialog);
+
+    void inject(ErrorsShowPresenter errorsShowPresenter);
+
+    void inject(ErrorsHolder errorsHolder);
+
+    void inject(ErrorsShowDialog errorsShowDialog);
 }

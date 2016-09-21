@@ -40,4 +40,10 @@
     <string name="toast_dont_write_to_developer">I do not recommend you to do that!</string>
     <string name="toast_great_choice">Great choice!</string>
     <string name="toast_i_told_you">I told you!</string>
+    <string name="clear_errors">clear errors</string>
+    <string name="ok">ok</string>
+    <string name="show_errors">Show errors</string>
+    <string name="send_to_developer">send to developer</string>
+    <string name="message_to_developer_success">Message to developer was sent successfully.</string>
+    <string name="message_to_developer_fail">Message to developer was NOT sent!</string>
 </resources>

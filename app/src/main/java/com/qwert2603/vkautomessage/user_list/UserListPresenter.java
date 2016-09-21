@@ -62,6 +62,12 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         }
     }
 
+    @Override
+    public void unbindView() {
+        mSubscription.unsubscribe();
+        super.unbindView();
+    }
+
     public void onResume() {
         loadUserList();
     }

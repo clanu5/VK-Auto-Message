@@ -113,7 +113,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setNegativeButton(getString(R.string.cancel), null)
+                .setNegativeButton(R.string.cancel, null)
                 .create();
     }
 

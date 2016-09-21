@@ -11,13 +11,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
 import com.qwert2603.vkautomessage.login.MainActivity;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -47,6 +51,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @Inject
     NavigationPresenter mNavigationPresenter;
 
+    @Inject
+    RxBus mRxBus;
+
     protected abstract boolean isNavigationButtonVisible();
 
     protected abstract Fragment createFragment();
@@ -62,12 +69,24 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
         setSupportActionBar(mToolbar);
 
+        mRxBus.toObservable().subscribe(
+                event -> {
+                    if (event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED && event.mObject instanceof Boolean) {
+                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.show_errors);
+                        menuItem.setVisible((Boolean) event.mObject);
+                    }
+                }, LogUtils::e
+        );
+
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(item -> {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 switch (item.getItemId()) {
                     case R.id.log_out:
                         mNavigationPresenter.onLogOutClicked();
+                        return true;
+                    case R.id.show_errors:
+                        ErrorsShowDialog.newInstance().show(getFragmentManager(), "");
                         return true;
                 }
                 return false;

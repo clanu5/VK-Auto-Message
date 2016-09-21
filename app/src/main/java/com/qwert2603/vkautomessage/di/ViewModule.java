@@ -9,6 +9,7 @@ import com.qwert2603.vkautomessage.edit_message.EditMessagePresenter;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodPresenter;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypePresenter;
 import com.qwert2603.vkautomessage.edit_time.EditTimePresenter;
+import com.qwert2603.vkautomessage.errors_show.ErrorsShowPresenter;
 import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
@@ -107,6 +108,11 @@ public class ViewModule {
     @Provides
     ChooseUserAdapter provideChooseUserAdapter() {
         return new ChooseUserAdapter();
+    }
+
+    @Provides
+    ErrorsShowPresenter errorsShowPresenter() {
+        return new ErrorsShowPresenter();
     }
 
 }

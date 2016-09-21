@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.di;
 
+import com.qwert2603.vkautomessage.errors_show.ErrorsHolder;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.user_details.UserView;
 
@@ -23,6 +24,12 @@ public class PresenterTestModule {
     @Singleton
     UserView provideUserView() {
         return Mockito.mock(UserView.class);
+    }
+
+    @Provides
+    @Singleton
+    ErrorsHolder errorsHolder() {
+        return new ErrorsHolder();
     }
 
 }

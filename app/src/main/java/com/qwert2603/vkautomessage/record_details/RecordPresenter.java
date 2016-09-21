@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -34,6 +35,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     @Inject
     DataManager mDataManager;
+
+    @Inject
+    RxBus mRxBus;
 
     private String[] mRepeatTypes;
     private String[] mMonths;
@@ -182,6 +186,11 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         if (message.isEmpty()) {
             getView().showToast(R.string.empty_message_toast);
             return;
+        }
+        if (message.equals(Const.MODE_SHOW_ERRORS_ON)) {
+            mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED, true));
+        } else if (message.equals(Const.MODE_SHOW_ERRORS_OFF)) {
+            mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED, false));
         }
         Record record = model.mRecord;
         if (!record.getMessage().equals(message)) {
