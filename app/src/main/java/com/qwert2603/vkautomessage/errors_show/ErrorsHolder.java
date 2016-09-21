@@ -7,6 +7,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,6 +44,12 @@ public class ErrorsHolder {
 
     public void addError(Throwable throwable) {
         synchronized (ErrorsHolder.this) {
+            File file = new File(mContext.getFilesDir(), FILE_NAME);
+            long length = file.length();
+            LogUtils.d(TAG, "addError#length == " + length);
+            if (length > 256 * 1024) {
+                clearErrors();
+            }
             try (FileOutputStream outputStream = mContext.openFileOutput(FILE_NAME, Context.MODE_APPEND)) {
                 PrintWriter printWriter = new PrintWriter(outputStream, true);
                 printWriter.write(new Date() + "\n");
