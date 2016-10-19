@@ -128,9 +128,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
-            if (mIsNavigationButtonVisible) {
-                supportActionBar.setHomeButtonEnabled(true);
-            }
         }
     }
 
@@ -164,6 +161,18 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (!mIsNavigationButtonVisible) {
+                    onBackPressed();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

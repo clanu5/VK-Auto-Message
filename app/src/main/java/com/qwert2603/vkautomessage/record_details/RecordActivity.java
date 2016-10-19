@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.record_details;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.view.MenuItem;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.navigation.NavigationActivity;
@@ -31,15 +30,5 @@ public class RecordActivity extends NavigationActivity {
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commitAllowingStateLoss();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
