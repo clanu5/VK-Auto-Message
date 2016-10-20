@@ -40,13 +40,15 @@
         <activity
             android:name=".record_list.RecordListActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".user_list.UserListActivity">
         </activity>
 
         <activity
             android:name=".record_details.RecordActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".record_list.RecordListActivity">
         </activity>
 
         <service android:name=".service.SendMessageService"/>
