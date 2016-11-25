@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/nav_header_background">
+    android:background="@color/nav_header_background"
+    android:paddingTop="12dp">
 
     <ImageView
         android:id="@+id/user_photo_image_view"
@@ -17,12 +18,11 @@
         android:id="@+id/user_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="12dp"
-        android:layout_below="@id/user_photo_image_view"
         android:singleLine="true"
         android:text="User User"
         android:textColor="@color/user_name"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:layout_below="@+id/user_photo_image_view"
+        android:layout_alignStart="@+id/user_photo_image_view"/>
 
 </RelativeLayout>

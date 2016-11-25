@@ -46,6 +46,8 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
     @BindView(R.id.records_count_text_view)
     TextView mRecordsTextView;
 
+    private boolean mSubmitResultSent = false;
+
     @NonNull
     @Override
     protected DeleteUserPresenter getPresenter() {
@@ -73,7 +75,7 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setNegativeButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, (dialog, which) -> mDeleteUserPresenter.onCancelClicked())
                 .setPositiveButton(R.string.submit, (dialog, which) -> mDeleteUserPresenter.onSubmitClicked())
                 .create();
     }
@@ -103,9 +105,18 @@ public class DeleteUserDialog extends BaseDialog<DeleteUserPresenter> implements
     }
 
     @Override
-    public void submitDone(int userId) {
+    public void submitResult(boolean submit, int userId) {
+        mSubmitResultSent = true;
         Intent intent = new Intent();
         intent.putExtra(EXTRA_USER_TO_DELETE_ID, userId);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), submit ? Activity.RESULT_OK : Activity.RESULT_CANCELED, intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (!mSubmitResultSent) {
+            mDeleteUserPresenter.onCancelClicked();
+        }
+        super.onDestroy();
     }
 }

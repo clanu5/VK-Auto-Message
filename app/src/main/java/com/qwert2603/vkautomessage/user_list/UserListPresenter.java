@@ -85,6 +85,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     }
 
     public void onUserDeleteClicked(int userId) {
+        getView().showUserSelected(-1);
         int position = getUserPosition(userId);
         mDataManager.removeUser(userId)
                 .subscribe(aVoid -> {
@@ -100,6 +101,10 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                         updateView();
                     }
                 }, LogUtils::e);
+    }
+
+    public void onUserDeleteCanceled(int recordId) {
+        getView().showUserSelected(-1);
     }
 
     public void onChooseUserClicked() {
@@ -162,6 +167,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
             return;
         }
         getView().showDeleteUser(model.get(position).getId());
+        getView().showUserSelected(position);
     }
 
     private int getUserPosition(int userId) {

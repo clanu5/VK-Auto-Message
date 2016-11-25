@@ -88,8 +88,8 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
         mUserListAdapter.setClickCallback(mUserListPresenter::onUserAtPositionClicked);
         mUserListAdapter.setLongClickCallback(mUserListPresenter::onUserAtPositionLongClicked);
-        mUserListAdapter.setItemDismissCallback(position -> {
-            LogUtils.d("UserListFragment setItemDismissCallback" + position);
+        mUserListAdapter.setItemSwipeDismissCallback(position -> {
+            LogUtils.d("UserListFragment setItemSwipeDismissCallback" + position);
             mUserListAdapter.notifyItemChanged(position);
             mUserListPresenter.onUserDismissed(position);
         });
@@ -113,17 +113,21 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
+
         switch (requestCode) {
             case REQUEST_CHOOSE_USER:
-                int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
-                mUserListPresenter.onUserChosen(userId);
+                if (resultCode == Activity.RESULT_OK) {
+                    int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
+                    mUserListPresenter.onUserChosen(userId);
+                }
                 break;
             case REQUEST_DELETE_USER:
                 int deletingUserId = data.getIntExtra(DeleteUserDialog.EXTRA_USER_TO_DELETE_ID, 0);
-                mUserListPresenter.onUserDeleteClicked(deletingUserId);
+                if (resultCode == Activity.RESULT_OK) {
+                    mUserListPresenter.onUserDeleteClicked(deletingUserId);
+                } else {
+                    mUserListPresenter.onUserDeleteCanceled(deletingUserId);
+                }
                 break;
         }
     }
@@ -186,6 +190,11 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void notifyItemInserted(int position) {
         mUserListAdapter.notifyItemInserted(position);
+    }
+
+    @Override
+    public void showUserSelected(int position) {
+        mUserListAdapter.setSelectedItemPosition(position);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

@@ -81,6 +81,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
         mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
         super.onCreate(savedInstanceState);
+        // TODO: 25.11.2016 скроллинг на самый верх при нажатии на тулбар во всех списках
     }
 
     @Nullable
@@ -95,7 +96,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
         mRecordListAdapter.setClickCallback(mRecordListPresenter::onRecordAtPositionClicked);
         mRecordListAdapter.setLongClickCallback(mRecordListPresenter::onRecordAtPositionLongClicked);
-        mRecordListAdapter.setItemDismissCallback(position -> {
+        mRecordListAdapter.setItemSwipeDismissCallback(position -> {
             mRecordListAdapter.notifyItemChanged(position);
             mRecordListPresenter.onRecordDismissed(position);
         });
@@ -119,13 +120,15 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
+
         switch (requestCode) {
             case REQUEST_DELETE_RECORD:
                 int recordId = data.getIntExtra(DeleteRecordDialog.EXTRA_RECORD_TO_DELETE_ID, 0);
-                mRecordListPresenter.onRecordDeleteClicked(recordId);
+                if (resultCode == Activity.RESULT_OK) {
+                    mRecordListPresenter.onRecordDeleteClicked(recordId);
+                } else {
+                    mRecordListPresenter.onRecordDeleteCanceled(recordId);
+                }
                 break;
         }
     }
@@ -156,7 +159,6 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         ((NavigationView) getActivity()).setToolbarTitle(userName);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void moveToRecordDetails(int recordId) {
         ActivityOptions activityOptions = null;
@@ -200,6 +202,11 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void showDontWriteToDeveloper() {
         Toast.makeText(getActivity(), R.string.toast_i_told_you, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showRecordSelected(int position) {
+        mRecordListAdapter.setSelectedItemPosition(position);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

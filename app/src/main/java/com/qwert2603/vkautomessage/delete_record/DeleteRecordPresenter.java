@@ -64,6 +64,14 @@ public class DeleteRecordPresenter extends BasePresenter<RecordWithUser, DeleteR
         if (model == null) {
             return;
         }
-        getView().submitDone(model.mRecord.getId());
+        getView().submitResult(true, model.mRecord.getId());
+    }
+
+    public void onCancelClicked() {
+        RecordWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().submitResult(false, model.mRecord.getId());
     }
 }

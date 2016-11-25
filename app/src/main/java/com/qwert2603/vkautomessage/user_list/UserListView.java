@@ -9,4 +9,5 @@ public interface UserListView extends ListView<User> {
     void showDeleteUser(int userId);
     void notifyItemRemoved(int position);
     void notifyItemInserted(int position);
+    void showUserSelected(int position);
 }

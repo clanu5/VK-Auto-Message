@@ -6,5 +6,5 @@ public interface DeleteRecordView extends BaseView {
     void showLoading();
     void showUserName(String userName);
     void showMessage(String message);
-    void submitDone(int recordId);
+    void submitResult(boolean submit, int recordId);
 }

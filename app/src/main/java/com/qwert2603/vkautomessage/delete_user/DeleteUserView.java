@@ -7,5 +7,5 @@ public interface DeleteUserView extends BaseView {
     void showUserName(String userName);
     void showRecordsCount(int recordsCount);
     void showEnabledRecordsCount(int enabledRecordsCount);
-    void submitDone(int userId);
+    void submitResult(boolean submit, int userId);
 }

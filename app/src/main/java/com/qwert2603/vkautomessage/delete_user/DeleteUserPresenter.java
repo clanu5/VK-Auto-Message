@@ -60,6 +60,14 @@ public class DeleteUserPresenter extends BasePresenter<User, DeleteUserView> {
         if (user == null) {
             return;
         }
-        getView().submitDone(user.getId());
+        getView().submitResult(true, user.getId());
+    }
+
+    public void onCancelClicked() {
+        User user = getModel();
+        if (user == null) {
+            return;
+        }
+        getView().submitResult(false, user.getId());
     }
 }

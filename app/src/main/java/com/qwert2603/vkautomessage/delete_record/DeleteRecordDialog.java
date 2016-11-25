@@ -42,6 +42,8 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
     @Inject
     DeleteRecordPresenter mDeleteRecordPresenter;
 
+    private boolean mSubmitResultSent = false;
+
     @NonNull
     @Override
     protected DeleteRecordPresenter getPresenter() {
@@ -69,7 +71,7 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setNegativeButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, (dialog, which) -> mDeleteRecordPresenter.onCancelClicked())
                 .setPositiveButton(R.string.submit, (dialog, which) -> mDeleteRecordPresenter.onSubmitClicked())
                 .create();
     }
@@ -91,9 +93,19 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
     }
 
     @Override
-    public void submitDone(int recordId) {
+    public void submitResult(boolean submit, int recordId) {
+        mSubmitResultSent = true;
         Intent intent = new Intent();
         intent.putExtra(EXTRA_RECORD_TO_DELETE_ID, recordId);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), submit ? Activity.RESULT_OK : Activity.RESULT_CANCELED, intent);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (!mSubmitResultSent) {
+            mDeleteRecordPresenter.onCancelClicked();
+        }
+        super.onDestroy();
     }
 }

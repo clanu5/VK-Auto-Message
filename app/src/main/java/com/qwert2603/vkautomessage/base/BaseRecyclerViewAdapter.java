@@ -52,11 +52,11 @@ public abstract class BaseRecyclerViewAdapter
     /**
      * Callback для swiped-dismissed применительно к элементу.
      */
-    public interface ItemDismissCallback {
+    public interface ItemSwipeDismissCallback {
         /**
          * Элемент был swiped-dismissed.
          *
-         * @param position позиуия элемента, который был swiped-dismissed.
+         * @param position позиция элемента, который был swiped-dismissed.
          */
         void onItemDismiss(int position);
     }
@@ -64,7 +64,7 @@ public abstract class BaseRecyclerViewAdapter
     private volatile List<M> mModelList = new ArrayList<>();
     private ClickCallback mClickCallback;
     private LongClickCallback mLongClickCallback;
-    private ItemDismissCallback mItemDismissCallback;
+    private ItemSwipeDismissCallback mItemSwipeDismissCallback;
     private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
 
     public BaseRecyclerViewAdapter() {
@@ -90,8 +90,8 @@ public abstract class BaseRecyclerViewAdapter
     }
 
 
-    public void setItemDismissCallback(ItemDismissCallback itemDismissCallback) {
-        mItemDismissCallback = itemDismissCallback;
+    public void setItemSwipeDismissCallback(ItemSwipeDismissCallback itemSwipeDismissCallback) {
+        mItemSwipeDismissCallback = itemSwipeDismissCallback;
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class BaseRecyclerViewAdapter
     @Override
     public void onItemDismiss(RecyclerView.ViewHolder viewHolder) {
         LogUtils.d("BaseRecyclerViewAdapter onItemDismiss" + viewHolder);
-        mItemDismissCallback.onItemDismiss(viewHolder.getAdapterPosition());
+        mItemSwipeDismissCallback.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
     /**
@@ -169,6 +169,7 @@ public abstract class BaseRecyclerViewAdapter
          * @param selectedPosition позиция выделенного элемента.
          */
         public void setSelectedPosition(int selectedPosition) {
+            LogUtils.d("RecyclerViewSelector setSelectedPosition " + selectedPosition);
             int oldSelectedPosition = mSelectedPosition;
             mSelectedPosition = selectedPosition;
             notifyItemChanged(oldSelectedPosition);

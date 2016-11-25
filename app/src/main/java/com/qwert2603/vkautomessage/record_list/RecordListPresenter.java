@@ -152,6 +152,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     }
 
     public void onRecordDeleteClicked(int recordId) {
+        getView().showRecordSelected(-1);
         int position = getRecordPosition(recordId);
         mDataManager.removeRecord(recordId)
                 .subscribe(aLong -> {
@@ -174,6 +175,10 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                         updateView();
                     }
                 }, LogUtils::e);
+    }
+
+    public void onRecordDeleteCanceled(int recordId) {
+        getView().showRecordSelected(-1);
     }
 
     public void onRecordDismissed(int position) {
@@ -199,6 +204,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
             return;
         }
         getView().showDeleteRecord(model.mRecordList.get(position).getId());
+        getView().showRecordSelected(position);
     }
 
     private int getRecordPosition(int recordId) {
