@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,8 @@ import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
+import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -82,8 +85,17 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mUserListAdapter);
-        mUserListAdapter.setClickCallbacks(mUserListPresenter::onUserAtPositionClicked);
-        mUserListAdapter.setLongClickCallbacks(mUserListPresenter::onUserAtPositionLongClicked);
+
+        mUserListAdapter.setClickCallback(mUserListPresenter::onUserAtPositionClicked);
+        mUserListAdapter.setLongClickCallback(mUserListPresenter::onUserAtPositionLongClicked);
+        mUserListAdapter.setItemDismissCallback(position -> {
+            LogUtils.d("UserListFragment setItemDismissCallback" + position);
+            mUserListAdapter.notifyItemChanged(position);
+            mUserListPresenter.onUserDismissed(position);
+        });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(mUserListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
 
@@ -137,12 +149,11 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
         mUserListAdapter.setModelList(list);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void moveToRecordsForUser(int userId, int position) {
+    public void moveToRecordsForUser(int userId) {
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
-                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForLayoutPosition(position);
+                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView usernameTextView = viewHolder.mUsernameTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),

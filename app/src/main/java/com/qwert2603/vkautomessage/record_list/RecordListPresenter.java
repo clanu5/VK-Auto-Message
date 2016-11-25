@@ -135,7 +135,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                     } else {
                         updateView();
                     }
-                    view.moveToRecordDetails(record.getId(), recordList.size() - 1);
+                    view.moveToRecordDetails(record.getId());
                 }, LogUtils::e);
     }
 
@@ -144,15 +144,11 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         if (model == null) {
             return;
         }
-        getView().moveToRecordDetails(model.mRecordList.get(position).getId(), position);
+        getView().moveToRecordDetails(model.mRecordList.get(position).getId());
     }
 
     public void onRecordAtPositionLongClicked(int position) {
-        RecordListWithUser model = getModel();
-        if (model == null) {
-            return;
-        }
-        getView().showDeleteRecord(model.mRecordList.get(position).getId());
+        showDeleteRecord(position);
     }
 
     public void onRecordDeleteClicked(int recordId) {
@@ -180,6 +176,10 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                 }, LogUtils::e);
     }
 
+    public void onRecordDismissed(int position) {
+        showDeleteRecord(position);
+    }
+
     private void loadRecordList() {
         mSubscription.unsubscribe();
         mSubscription = mDataManager.getRecordsForUser(mUserId)
@@ -191,6 +191,14 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                             LogUtils.e(throwable);
                         }
                 );
+    }
+
+    private void showDeleteRecord(int position) {
+        RecordListWithUser model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().showDeleteRecord(model.mRecordList.get(position).getId());
     }
 
     private int getRecordPosition(int recordId) {

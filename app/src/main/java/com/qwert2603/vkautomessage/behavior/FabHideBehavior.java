@@ -10,6 +10,7 @@ import android.view.View;
 public class FabHideBehavior extends FloatingActionButton.Behavior {
 
     public FabHideBehavior(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     @Override

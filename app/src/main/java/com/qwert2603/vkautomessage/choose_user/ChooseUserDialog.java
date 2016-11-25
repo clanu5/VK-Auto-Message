@@ -91,7 +91,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mChooseUserAdapter);
-        mChooseUserAdapter.setClickCallbacks(mChooseUserPresenter::onUserAtPositionClicked);
+        mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onUserAtPositionClicked);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReload());
 

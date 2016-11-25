@@ -5,7 +5,7 @@ import com.qwert2603.vkautomessage.model.Record;
 
 public interface RecordListView extends ListView<Record> {
     void showUserName(String userName);
-    void moveToRecordDetails(int recordId, int position);
+    void moveToRecordDetails(int recordId);
     void showDeleteRecord(int recordId);
     void notifyItemRemoved(int position);
     void notifyItemInserted(int position);

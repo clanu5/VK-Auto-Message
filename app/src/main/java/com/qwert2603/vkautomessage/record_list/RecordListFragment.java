@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.navigation.NavigationView;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 
 import java.util.List;
 
@@ -90,8 +92,16 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mRecordListAdapter);
-        mRecordListAdapter.setClickCallbacks(mRecordListPresenter::onRecordAtPositionClicked);
-        mRecordListAdapter.setLongClickCallbacks(mRecordListPresenter::onRecordAtPositionLongClicked);
+
+        mRecordListAdapter.setClickCallback(mRecordListPresenter::onRecordAtPositionClicked);
+        mRecordListAdapter.setLongClickCallback(mRecordListPresenter::onRecordAtPositionLongClicked);
+        mRecordListAdapter.setItemDismissCallback(position -> {
+            mRecordListAdapter.notifyItemChanged(position);
+            mRecordListPresenter.onRecordDismissed(position);
+        });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(mRecordListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 
@@ -148,10 +158,10 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
     @SuppressWarnings("unchecked")
     @Override
-    public void moveToRecordDetails(int recordId, int position) {
+    public void moveToRecordDetails(int recordId) {
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
-                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForLayoutPosition(position);
+                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(recordId);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;

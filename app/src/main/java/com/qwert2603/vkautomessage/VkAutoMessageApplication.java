@@ -32,17 +32,10 @@ public class VkAutoMessageApplication extends Application {
         sAppComponent = buildAppComponent();
 
         VKSdk.initialize(VkAutoMessageApplication.this);
-        /*for (String s : VKUtil.getCertificateFingerprint(VkAutoMessageApplication.this,
-                VkAutoMessageApplication.this.getPackageName())) {
-            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
-        }*/
-
-        /*new VKAccessTokenTracker() {
-            @Override
-            public void onVKAccessTokenChanged(@Nullable VKAccessToken oldToken, @Nullable VKAccessToken newToken) {
-                LogUtils.d("accessToken == " + newToken.accessToken);
-            }
-        }.startTracking();*/
+//        for (String s : VKUtil.getCertificateFingerprint(VkAutoMessageApplication.this,
+//                VkAutoMessageApplication.this.getPackageName())) {
+//            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
+//        }
 
         File cacheDir = new File(VkAutoMessageApplication.this.getFilesDir(), "images");
         DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()

@@ -77,15 +77,11 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         if (model == null) {
             return;
         }
-        getView().moveToRecordsForUser(model.get(position).getId(), position);
+        getView().moveToRecordsForUser(model.get(position).getId());
     }
 
     public void onUserAtPositionLongClicked(int position) {
-        List<User> model = getModel();
-        if (model == null) {
-            return;
-        }
-        getView().showDeleteUser(model.get(position).getId());
+        showDeleteUser(position);
     }
 
     public void onUserDeleteClicked(int userId) {
@@ -110,6 +106,11 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         getView().showChooseUser();
     }
 
+    public void onUserDismissed(int position) {
+        LogUtils.d("UserListPresenter onUserDismissed " + position);
+        showDeleteUser(position);
+    }
+
     public void onReload() {
         loadUserList();
         updateView();
@@ -118,7 +119,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     public void onUserChosen(int userId) {
         int userPosition = getUserPosition(userId);
         if (userPosition >= 0) {
-            getView().moveToRecordsForUser(userId, userPosition);
+            getView().moveToRecordsForUser(userId);
         } else {
             mDataManager.getVkUserById(userId)
                     .flatMap(mDataManager::addUser)
@@ -135,7 +136,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                                 } else {
                                     updateView();
                                 }
-                                view.moveToRecordsForUser(userId, userList.size() - 1);
+                                view.moveToRecordsForUser(userId);
                             }, LogUtils::e
                     );
         }
@@ -153,6 +154,14 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                         }
                 );
 
+    }
+
+    private void showDeleteUser(int position) {
+        List<User> model = getModel();
+        if (model == null) {
+            return;
+        }
+        getView().showDeleteUser(model.get(position).getId());
     }
 
     private int getUserPosition(int userId) {

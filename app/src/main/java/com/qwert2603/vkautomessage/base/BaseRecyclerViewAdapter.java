@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.qwert2603.vkautomessage.model.Identifiable;
+import com.qwert2603.vkautomessage.recycler.ItemTouchHelperAdapter;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
 /**
  * Базовый адаптер для {@link RecyclerView} для шаблона MVP.
  * Может передавать callback'и о нажатии и долгом нажатии на отдельный элемент.
- * {@link #setClickCallbacks(ClickCallbacks)}, {@link #setLongClickCallbacks(LongClickCallbacks)}.
+ * {@link #setClickCallback(ClickCallback)}, {@link #setLongClickCallback(LongClickCallback)}.
  * Позволяет выделять отдельный элемент {@link #setSelectedItemPosition(int)}.
  *
  * @param <M>  тип модели, отображаемой в каждом элементе.
@@ -20,12 +22,13 @@ import java.util.List;
  */
 public abstract class BaseRecyclerViewAdapter
         <M extends Identifiable, VH extends BaseRecyclerViewAdapter.RecyclerViewHolder, P extends BasePresenter>
-        extends RecyclerView.Adapter<VH> {
+        extends RecyclerView.Adapter<VH>
+        implements ItemTouchHelperAdapter {
 
     /**
      * Callback для нажатия на элемент.
      */
-    public interface ClickCallbacks {
+    public interface ClickCallback {
         /**
          * Нажатие на элемент.
          *
@@ -37,7 +40,7 @@ public abstract class BaseRecyclerViewAdapter
     /**
      * Callback для долгого нажатия на элемент.
      */
-    public interface LongClickCallbacks {
+    public interface LongClickCallback {
         /**
          * Долгое нажатие на элемент.
          *
@@ -46,30 +49,49 @@ public abstract class BaseRecyclerViewAdapter
         void onItemLongClicked(int position);
     }
 
+    /**
+     * Callback для swiped-dismissed применительно к элементу.
+     */
+    public interface ItemDismissCallback {
+        /**
+         * Элемент был swiped-dismissed.
+         *
+         * @param position позиуия элемента, который был swiped-dismissed.
+         */
+        void onItemDismiss(int position);
+    }
+
     private volatile List<M> mModelList = new ArrayList<>();
-    private ClickCallbacks mClickCallbacks;
-    private LongClickCallbacks mLongClickCallbacks;
+    private ClickCallback mClickCallback;
+    private LongClickCallback mLongClickCallback;
+    private ItemDismissCallback mItemDismissCallback;
     private RecyclerViewSelector mRecyclerViewSelector = new RecyclerViewSelector();
 
     public BaseRecyclerViewAdapter() {
+        setHasStableIds(true);
     }
 
     /**
      * Назначить callback для нажатия на элемент.
      *
-     * @param clickCallbacks callback для нажатия на элемент.
+     * @param clickCallback callback для нажатия на элемент.
      */
-    public void setClickCallbacks(ClickCallbacks clickCallbacks) {
-        mClickCallbacks = clickCallbacks;
+    public void setClickCallback(ClickCallback clickCallback) {
+        mClickCallback = clickCallback;
     }
 
     /**
      * Назначить callback для долгого нажатия на элемент.
      *
-     * @param longClickCallbacks callback для долгого нажатия на элемент.
+     * @param longClickCallback callback для долгого нажатия на элемент.
      */
-    public void setLongClickCallbacks(LongClickCallbacks longClickCallbacks) {
-        mLongClickCallbacks = longClickCallbacks;
+    public void setLongClickCallback(LongClickCallback longClickCallback) {
+        mLongClickCallback = longClickCallback;
+    }
+
+
+    public void setItemDismissCallback(ItemDismissCallback itemDismissCallback) {
+        mItemDismissCallback = itemDismissCallback;
     }
 
     /**
@@ -106,13 +128,26 @@ public abstract class BaseRecyclerViewAdapter
 
     @Override
     public boolean onFailedToRecycleView(VH holder) {
+        LogUtils.d("onFailedToRecycleView " + holder);
         // в случае ошибки переработки отвязяваем презентер.
         holder.unbindPresenter();
         return super.onFailedToRecycleView(holder);
     }
 
+    @Override
+    public long getItemId(int position) {
+        return mModelList.get(position).getId();
+    }
+
+    @Override
+    public void onItemDismiss(RecyclerView.ViewHolder viewHolder) {
+        LogUtils.d("BaseRecyclerViewAdapter onItemDismiss" + viewHolder);
+        mItemDismissCallback.onItemDismiss(viewHolder.getAdapterPosition());
+    }
+
     /**
      * Назначить список объектов модели для отображения.
+     *
      * @param modelList список объектов модели для отображения.
      */
     public void setModelList(List<M> modelList) {
@@ -163,13 +198,15 @@ public abstract class BaseRecyclerViewAdapter
             mItemView = itemView;
             // назначаем callback'и для клика и долгого клика по элементу.
             mItemView.setOnClickListener(v -> {
-                if (mClickCallbacks != null) {
-                    mClickCallbacks.onItemClicked(getLayoutPosition());
+                int layoutPosition = getLayoutPosition();
+                if (mClickCallback != null && layoutPosition != RecyclerView.NO_POSITION) {
+                    mClickCallback.onItemClicked(layoutPosition);
                 }
             });
             mItemView.setOnLongClickListener(v -> {
-                if (mLongClickCallbacks != null) {
-                    mLongClickCallbacks.onItemLongClicked(getLayoutPosition());
+                int layoutPosition = getLayoutPosition();
+                if (mLongClickCallback != null && layoutPosition != RecyclerView.NO_POSITION) {
+                    mLongClickCallback.onItemLongClicked(layoutPosition);
                 }
                 return true;
             });
