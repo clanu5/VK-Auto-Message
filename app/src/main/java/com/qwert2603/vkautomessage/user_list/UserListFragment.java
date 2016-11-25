@@ -25,6 +25,7 @@ import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -41,7 +42,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
         return new UserListFragment();
     }
 
-    private static final int POSITION_RECYCLER_VIEW = 0;
+    private static final int POSITION_EMPTY_VIEW = 0;
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
@@ -85,12 +86,17 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mUserListAdapter);
+        mRecyclerView.setItemAnimator(new RecyclerItemAnimator());
+        LogUtils.d("UserListFragment mRecyclerView.setItemAnimator(new RecyclerItemAnimator());");
 
         mUserListAdapter.setClickCallback(mUserListPresenter::onUserAtPositionClicked);
         mUserListAdapter.setLongClickCallback(mUserListPresenter::onUserAtPositionLongClicked);
         mUserListAdapter.setItemSwipeDismissCallback(position -> {
             LogUtils.d("UserListFragment setItemSwipeDismissCallback" + position);
+
+            // чтобы элемент вернулся в свое исходное положение после swipe.
             mUserListAdapter.notifyItemChanged(position);
+
             mUserListPresenter.onUserDismissed(position);
         });
 
@@ -148,9 +154,9 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     }
 
     @Override
-    public void showList(List<User> list) {
-        setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
-        mUserListAdapter.setModelList(list);
+    public void showList(List<User> list, boolean animate) {
+        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
+        mUserListAdapter.setModelList(list, animate);
     }
 
     @Override
@@ -198,6 +204,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
+        mRecyclerView.setVisibility(position == POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }

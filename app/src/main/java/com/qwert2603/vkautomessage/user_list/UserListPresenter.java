@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.user_list;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.RxBus;
@@ -25,6 +27,8 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
 
     @Inject
     RxBus mRxBus;
+
+    private boolean mPendingIntroAnimation = true;
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
@@ -57,7 +61,15 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
             if (userList.isEmpty()) {
                 view.showEmpty();
             } else {
-                view.showList(userList);
+                LogUtils.d("UserListPresenter view.showList(userList, mPendingIntroAnimation); " + mPendingIntroAnimation);
+                if (mPendingIntroAnimation) {
+                    new Handler(Looper.getMainLooper()).post(() -> view.showList(userList, true));
+                } else {
+                    view.showList(userList, false);
+                }
+            }
+            if (mPendingIntroAnimation) {
+                mPendingIntroAnimation = false;
             }
         }
     }

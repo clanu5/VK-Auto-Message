@@ -27,6 +27,7 @@ import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.navigation.NavigationView;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         return recordListFragment;
     }
 
-    private static final int POSITION_RECYCLER_VIEW = 0;
+    private static final int POSITION_EMPTY_VIEW = 0;
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
@@ -94,10 +95,16 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mRecordListAdapter);
 
+        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
+        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+
         mRecordListAdapter.setClickCallback(mRecordListPresenter::onRecordAtPositionClicked);
         mRecordListAdapter.setLongClickCallback(mRecordListPresenter::onRecordAtPositionLongClicked);
         mRecordListAdapter.setItemSwipeDismissCallback(position -> {
+            // чтобы элемент вернулся в свое исходное положение после swipe.
             mRecordListAdapter.notifyItemChanged(position);
+
             mRecordListPresenter.onRecordDismissed(position);
         });
 
@@ -149,9 +156,9 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     }
 
     @Override
-    public void showList(List<Record> list) {
-        setViewAnimatorDisplayedChild(POSITION_RECYCLER_VIEW);
-        mRecordListAdapter.setModelList(list);
+    public void showList(List<Record> list, boolean animate) {
+        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
+        mRecordListAdapter.setModelList(list, animate);
     }
 
     @Override
@@ -210,6 +217,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
+        mRecyclerView.setVisibility(position == POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }

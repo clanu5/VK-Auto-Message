@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.choose_user;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
@@ -27,6 +29,8 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
 
     @Inject
     DataManager mDataManager;
+
+    private boolean mPendingIntroAnimation = true;
 
     public ChooseUserPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(ChooseUserPresenter.this);
@@ -58,7 +62,14 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
                     view.showNothingFound();
                 }
             } else {
-                view.showList(mShowingUserList);
+                if (mPendingIntroAnimation) {
+                    new Handler(Looper.getMainLooper()).post(() -> view.showList(mShowingUserList, true));
+                } else {
+                    view.showList(mShowingUserList, false);
+                }
+            }
+            if (mPendingIntroAnimation) {
+                mPendingIntroAnimation = false;
             }
         }
     }

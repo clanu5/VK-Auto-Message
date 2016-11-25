@@ -14,12 +14,9 @@
         android:singleLine="true"
         android:textSize="18sp"/>
 
-    <ViewAnimator
-        android:id="@+id/view_animator"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inAnimation="@android:anim/fade_in"
-        android:outAnimation="@android:anim/fade_out">
+        android:layout_height="match_parent">
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/refresh_layout"
@@ -34,38 +31,52 @@
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
-        <TextView
+        <ViewAnimator
+            android:id="@+id/view_animator"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/loading"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/loading_error_empty_text_size"/>
+            android:layout_height="wrap_content"
+            android:inAnimation="@android:anim/fade_in"
+            android:outAnimation="@android:anim/fade_out">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/text_error"
-            android:textColor="@color/error"
-            android:textSize="@dimen/loading_error_empty_text_size"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/no_friends"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/loading_error_empty_text_size"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/loading"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/loading_error_empty_text_size"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/nothing_found"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/loading_error_empty_text_size"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/text_error"
+                android:textColor="@color/error"
+                android:textSize="@dimen/loading_error_empty_text_size"/>
 
-    </ViewAnimator>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/no_friends"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/loading_error_empty_text_size"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/nothing_found"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/loading_error_empty_text_size"/>
+
+        </ViewAnimator>
+
+    </FrameLayout>
 
 </LinearLayout>

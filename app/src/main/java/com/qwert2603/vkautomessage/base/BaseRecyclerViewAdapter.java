@@ -150,11 +150,17 @@ public abstract class BaseRecyclerViewAdapter
      *
      * @param modelList список объектов модели для отображения.
      */
-    public void setModelList(List<M> modelList) {
-        if (modelList != mModelList) {
+    public void setModelList(List<M> modelList, boolean animate) {
+        LogUtils.d("setModelList animate == " + animate);
+        if (animate) {
             mModelList = modelList;
+            notifyItemRangeInserted(0, mModelList.size());
+        } else {
+            if (modelList != mModelList) {
+                mModelList = modelList;
+            }
+            notifyDataSetChanged();
         }
-        notifyDataSetChanged();
     }
 
     /**

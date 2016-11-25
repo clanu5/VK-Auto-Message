@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.record_list;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
@@ -34,6 +36,8 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
 
     @Inject
     RxBus mRxBus;
+
+    private boolean mPendingIntroAnimation = true;
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
@@ -86,7 +90,15 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
             if (recordList.isEmpty()) {
                 view.showEmpty();
             } else {
-                view.showList(recordList);
+                LogUtils.d("UserListPresenter view.showList(recordList, mPendingIntroAnimation); " + mPendingIntroAnimation);
+                if (mPendingIntroAnimation) {
+                    new Handler(Looper.getMainLooper()).post(() -> view.showList(recordList, true));
+                } else {
+                    view.showList(recordList, false);
+                }
+            }
+            if (mPendingIntroAnimation) {
+                mPendingIntroAnimation = false;
             }
             showUserNameAndRecordsCount(recordListWithUser.mUser, view);
         }

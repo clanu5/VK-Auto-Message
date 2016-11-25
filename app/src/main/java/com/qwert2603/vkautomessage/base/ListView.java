@@ -29,6 +29,6 @@ public interface ListView<T> extends BaseView {
      *
      * @param list список для отображения.
      */
-    void showList(List<T> list);
+    void showList(List<T> list, boolean animate);
 
 }

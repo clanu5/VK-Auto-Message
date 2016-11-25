@@ -22,6 +22,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 import com.qwert2603.vkautomessage.model.VkUser;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         return new ChooseUserDialog();
     }
 
-    private static final int POSITION_REFRESH_LAYOUT = 0;
+    private static final int POSITION_EMPTY_VIEW = 0;
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
@@ -91,6 +92,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mChooseUserAdapter);
+
+        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
+        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+
         mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onUserAtPositionClicked);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReload());
@@ -172,12 +178,13 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void showList(List<VkUser> list) {
-        setViewAnimatorDisplayedChild(POSITION_REFRESH_LAYOUT);
-        mChooseUserAdapter.setModelList(list);
+    public void showList(List<VkUser> list, boolean animate) {
+        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
+        mChooseUserAdapter.setModelList(list, animate);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
+        mRecyclerView.setVisibility(position == POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
