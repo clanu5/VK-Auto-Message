@@ -23,6 +23,7 @@
         android:textColor="@color/user_name"
         android:textSize="20sp"
         android:layout_below="@+id/user_photo_image_view"
-        android:layout_alignStart="@+id/user_photo_image_view"/>
+        android:layout_alignStart="@+id/user_photo_image_view"
+        android:layout_marginBottom="16dp"/>
 
 </RelativeLayout>

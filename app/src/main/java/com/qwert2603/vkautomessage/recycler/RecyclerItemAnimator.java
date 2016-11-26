@@ -18,7 +18,8 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public enum EnterOrigin {
         BOTTOM,
-        LEFT
+        LEFT,
+        LEFT_OR_RIGHT
     }
 
     private Map<RecyclerView.ViewHolder, Animator> mEnterAnimation = new HashMap<>();
@@ -59,7 +60,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
             viewHolder.itemView.setTranslationY(heightPixels);
             ObjectAnimator translationY = ObjectAnimator.ofFloat(viewHolder.itemView, "translationY", 0);
             translationY.setDuration(500);
-            translationY.setStartDelay(Math.min(800, viewHolder.getAdapterPosition() * 60) + 500);
+            translationY.setStartDelay(Math.min(800, viewHolder.getAdapterPosition() * 60));
             translationY.setInterpolator(new DecelerateInterpolator(3.0f));
             translationY.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -80,7 +81,28 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
             viewHolder.itemView.setTranslationX(-1 * widthPixels);
             ObjectAnimator translationX = ObjectAnimator.ofFloat(viewHolder.itemView, "translationX", 0);
             translationX.setDuration(800);
-            translationX.setStartDelay(Math.min(1200, viewHolder.getAdapterPosition() * 80) + 1000);
+            translationX.setStartDelay(Math.min(1200, viewHolder.getAdapterPosition() * 80));
+            translationX.setInterpolator(new DecelerateInterpolator(3.0f));
+            translationX.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    dispatchAddFinished(viewHolder);
+                    mEnterAnimation.remove(viewHolder);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    viewHolder.itemView.setTranslationX(0);
+                }
+            });
+            mEnterAnimation.put(viewHolder, translationX);
+            translationX.start();
+        } else if (mEnterOrigin == EnterOrigin.LEFT_OR_RIGHT) {
+            int widthPixels = viewHolder.itemView.getResources().getDisplayMetrics().widthPixels;
+            viewHolder.itemView.setTranslationX((viewHolder.getAdapterPosition() % 2 == 0 ? -1 : 1) * widthPixels);
+            ObjectAnimator translationX = ObjectAnimator.ofFloat(viewHolder.itemView, "translationX", 0);
+            translationX.setDuration(800);
+            translationX.setStartDelay(Math.min(1200, viewHolder.getAdapterPosition() * 80));
             translationX.setInterpolator(new DecelerateInterpolator(3.0f));
             translationX.addListener(new AnimatorListenerAdapter() {
                 @Override

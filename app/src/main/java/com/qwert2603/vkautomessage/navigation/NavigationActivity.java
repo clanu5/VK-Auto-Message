@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,7 +29,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public abstract class NavigationActivity extends AppCompatActivity implements NavigationView {
+public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ToolbarHolder {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -98,9 +99,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         if (mIsNavigationButtonVisible) {
             mActionBarDrawerToggle = new ActionBarDrawerToggle(NavigationActivity.this, mDrawerLayout, R.string.open, R.string.close);
             mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
-            if (mToolbar != null) {
-                mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
-            }
+
+            mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+
             mActionBarDrawerToggle.setDrawerIndicatorEnabled(false);
             mActionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         }
@@ -196,6 +197,31 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     public void showLoading() {
         mUserNameTextView.setText(R.string.loading);
         mUserPhotoImageView.setImageBitmap(null);
+    }
+
+    @Override
+    public Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    @Override
+    public TextView getToolbarTitle() {
+        return mToolbarTitleTextView;
+    }
+
+    @Override
+    public ImageView getToolbarIcon() {
+        int size = mToolbar.getChildCount();
+        for (int i = 0; i < size; i++) {
+            View child = mToolbar.getChildAt(i);
+            if (child instanceof ImageButton) {
+                ImageButton btn = (ImageButton) child;
+                if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
+                    return btn;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

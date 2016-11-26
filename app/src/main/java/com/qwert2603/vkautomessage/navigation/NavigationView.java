@@ -9,5 +9,4 @@ public interface NavigationView extends BaseView {
     void showUserName(String userName);
     ImageView getUserPhotoImageView();
     void showLoading();
-    void setToolbarTitle(String title);
 }

@@ -94,7 +94,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRecyclerView.setAdapter(mChooseUserAdapter);
 
         RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
-        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
         mRecyclerView.setItemAnimator(recyclerItemAnimator);
 
         mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onUserAtPositionClicked);

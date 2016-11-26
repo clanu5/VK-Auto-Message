@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.record_list;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -13,9 +15,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
@@ -25,7 +31,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
-import com.qwert2603.vkautomessage.navigation.NavigationView;
+import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
@@ -82,6 +88,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
         mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         // TODO: 25.11.2016 скроллинг на самый верх при нажатии на тулбар во всех списках
     }
 
@@ -125,6 +132,12 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        mRecordListPresenter.onCreateOptionsMenu();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -163,7 +176,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
 
     @Override
     public void showUserName(String userName) {
-        ((NavigationView) getActivity()).setToolbarTitle(userName);
+        ((ToolbarHolder) getActivity()).setToolbarTitle(userName);
     }
 
     @Override
@@ -176,7 +189,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mRepeatInfoTextView;
             CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
-            View toolbarTitle = getActivity().findViewById(R.id.toolbar_title_text_view);
+            View toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(timeTextView, timeTextView.getTransitionName()),
@@ -214,6 +227,41 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     @Override
     public void showRecordSelected(int position) {
         mRecordListAdapter.setSelectedItemPosition(position);
+    }
+
+    @Override
+    public void prepareForIntroAnimation() {
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
+        toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
+
+        int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
+        mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
+    }
+
+    @Override
+    public void runToolbarIntroAnimation() {
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+
+        toolbarIcon.animate()
+                .setStartDelay(300)
+                .setDuration(400)
+                .translationX(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mRecordListPresenter.onToolbarIntroAnimationFinished();
+                    }
+                });
+    }
+
+    @Override
+    public void runFABIntroAnimation() {
+        mNewRecordFAB.animate()
+                .translationX(0)
+                .setDuration(500)
+                .setStartDelay(900)
+                .setInterpolator(new OvershootInterpolator());
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

@@ -1,7 +1,5 @@
 package com.qwert2603.vkautomessage.user_list;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.RxBus;
@@ -28,7 +26,8 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     @Inject
     RxBus mRxBus;
 
-    private boolean mPendingIntroAnimation = true;
+    private boolean mPendingToolbarIntroAnimation = true;
+    private AnimationState mListAnimationState = AnimationState.WAITING_FOR_TRIGGER;
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
@@ -57,19 +56,15 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
             } else {
                 view.showLoading();
             }
-        } else {
+        } else if (mListAnimationState != AnimationState.WAITING_FOR_TRIGGER) {
             if (userList.isEmpty()) {
                 view.showEmpty();
             } else {
-                LogUtils.d("UserListPresenter view.showList(userList, mPendingIntroAnimation); " + mPendingIntroAnimation);
-                if (mPendingIntroAnimation) {
-                    new Handler(Looper.getMainLooper()).post(() -> view.showList(userList, true));
-                } else {
-                    view.showList(userList, false);
-                }
+                view.showList(userList, mListAnimationState == AnimationState.SHOULD_START);
             }
-            if (mPendingIntroAnimation) {
-                mPendingIntroAnimation = false;
+            if (mListAnimationState == AnimationState.SHOULD_START) {
+                view.runFABIntroAnimation();
+                mListAnimationState = AnimationState.STARTED;
             }
         }
     }
@@ -80,8 +75,21 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         super.unbindView();
     }
 
+    public void onCreateOptionsMenu() {
+        if (mPendingToolbarIntroAnimation) {
+            mPendingToolbarIntroAnimation = false;
+            getView().prepareForIntroAnimation();
+            getView().runToolbarIntroAnimation();
+        }
+    }
+
     public void onResume() {
         loadUserList();
+    }
+
+    public void onToolbarIntroAnimationFinished() {
+        mListAnimationState = AnimationState.SHOULD_START;
+        updateView();
     }
 
     public void onUserAtPositionClicked(int position) {

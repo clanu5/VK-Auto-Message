@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.user_list;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -10,11 +12,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
@@ -24,6 +31,7 @@ import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
+import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
@@ -56,8 +64,8 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @BindView(R.id.new_record_fab)
-    FloatingActionButton mNewRecordFAB;
+    @BindView(R.id.choose_user_fab)
+    FloatingActionButton mChooseUserFAB;
 
     @Inject
     UserListPresenter mUserListPresenter;
@@ -75,6 +83,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(UserListFragment.this);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -105,7 +114,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mUserListPresenter.onReload());
 
-        mNewRecordFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
+        mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
         return view;
     }
@@ -114,6 +123,12 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     public void onResume() {
         super.onResume();
         mUserListPresenter.onResume();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        mUserListPresenter.onCreateOptionsMenu();
     }
 
     @Override
@@ -201,6 +216,50 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void showUserSelected(int position) {
         mUserListAdapter.setSelectedItemPosition(position);
+    }
+
+    @Override
+    public void prepareForIntroAnimation() {
+        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
+        toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
+
+        int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
+        mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
+    }
+
+    @Override
+    public void runToolbarIntroAnimation() {
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        toolbarIcon.animate()
+                .setStartDelay(400)
+                .setDuration(400)
+                .translationY(0);
+
+        toolbarTitle.animate()
+                .setStartDelay(500)
+                .setDuration(400)
+                .translationY(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mUserListPresenter.onToolbarIntroAnimationFinished();
+                    }
+                });
+    }
+
+    @Override
+    public void runFABIntroAnimation() {
+        mChooseUserFAB.animate()
+                .translationY(0)
+                .setDuration(500)
+                .setStartDelay(900)
+                .setInterpolator(new OvershootInterpolator());
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

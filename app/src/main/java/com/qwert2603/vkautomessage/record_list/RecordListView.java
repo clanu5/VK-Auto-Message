@@ -11,4 +11,7 @@ public interface RecordListView extends ListView<Record> {
     void notifyItemInserted(int position);
     void showDontWriteToDeveloper();
     void showRecordSelected(int position);
+    void prepareForIntroAnimation();
+    void runToolbarIntroAnimation();
+    void runFABIntroAnimation();
 }

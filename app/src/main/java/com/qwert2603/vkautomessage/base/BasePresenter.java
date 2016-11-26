@@ -11,6 +11,13 @@ import java.lang.ref.WeakReference;
  * @param <V> тип представления, которым управляет презентер.
  */
 public abstract class BasePresenter<M, V extends BaseView> {
+
+    protected enum AnimationState {
+        WAITING_FOR_TRIGGER,
+        SHOULD_START,
+        STARTED
+    }
+
     private M mModel;
     private WeakReference<V> mView;
 

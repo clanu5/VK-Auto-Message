@@ -1,7 +1,5 @@
 package com.qwert2603.vkautomessage.record_list;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
@@ -38,6 +36,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     RxBus mRxBus;
 
     private boolean mPendingIntroAnimation = true;
+    private AnimationState mListAnimationState = AnimationState.WAITING_FOR_TRIGGER;
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
@@ -86,21 +85,20 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                 view.showLoading();
             }
         } else {
-            List<Record> recordList = recordListWithUser.mRecordList;
-            if (recordList.isEmpty()) {
-                view.showEmpty();
-            } else {
-                LogUtils.d("UserListPresenter view.showList(recordList, mPendingIntroAnimation); " + mPendingIntroAnimation);
-                if (mPendingIntroAnimation) {
-                    new Handler(Looper.getMainLooper()).post(() -> view.showList(recordList, true));
+            if (mListAnimationState != AnimationState.WAITING_FOR_TRIGGER) {
+                List<Record> recordList = recordListWithUser.mRecordList;
+                if (recordList.isEmpty()) {
+                    view.showEmpty();
                 } else {
-                    view.showList(recordList, false);
+                    view.showList(recordList, mListAnimationState == AnimationState.SHOULD_START);
+                }
+                if (mListAnimationState == AnimationState.SHOULD_START) {
+                    view.runFABIntroAnimation();// TODO: 26.11.2016 не задерживать анимацию fab, если список пустой и список тоже, может, не надо задерживать
+                    mListAnimationState = AnimationState.STARTED;
                 }
             }
-            if (mPendingIntroAnimation) {
-                mPendingIntroAnimation = false;
-            }
             showUserNameAndRecordsCount(recordListWithUser.mUser, view);
+            // TODO: 26.11.2016 анимация, чтобы стрелка наверх уходила влево при возвращении в предыдущей активити
         }
     }
 
@@ -114,8 +112,21 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         updateView();
     }
 
+    public void onCreateOptionsMenu() {
+        if (mPendingIntroAnimation) {
+            mPendingIntroAnimation = false;
+            getView().prepareForIntroAnimation();
+            getView().runToolbarIntroAnimation();
+        }
+    }
+
     public void onResume() {
         loadRecordList();
+    }
+
+    public void onToolbarIntroAnimationFinished() {
+        mListAnimationState = AnimationState.SHOULD_START;
+        updateView();
     }
 
     public void onNewRecordClicked() {

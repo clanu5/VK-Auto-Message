@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 public class FabHideBehavior extends FloatingActionButton.Behavior {
 
@@ -16,6 +17,11 @@ public class FabHideBehavior extends FloatingActionButton.Behavior {
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+
+        child.animate()
+                .setDuration(400)
+                .setInterpolator(new LinearInterpolator())
+                .setStartDelay(0);
 
         if (dyConsumed > 0) {
             CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
