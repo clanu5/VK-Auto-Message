@@ -1,12 +1,10 @@
 package com.qwert2603.vkautomessage.choose_user;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -19,7 +17,7 @@ import javax.inject.Inject;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserView> {
+public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, ChooseUserView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private boolean mIsLoading;
@@ -30,46 +28,67 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
     @Inject
     DataManager mDataManager;
 
-    private boolean mPendingIntroAnimation = true;
-
     public ChooseUserPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(ChooseUserPresenter.this);
+    }
+
+    @Override
+    protected List<VkUser> getList() {
+        return mShowingUserList;
+    }
+
+    @Override
+    protected boolean isError() {
+        return getModel() == null && mSubscription.isUnsubscribed();
+    }
+
+    @Override
+    protected boolean isFirstAnimateInWithLargeDelay() {
+        return false;
+    }
+
+    @Override
+    protected void doLoadList() {
+        mSubscription.unsubscribe();
+        mIsLoading = true;
+        mSubscription = mDataManager
+                .getAllVkFriends()
+                .subscribe(
+                        userList -> {
+                            mIsLoading = false;
+                            ChooseUserPresenter.this.setModel(userList);
+                        },
+                        throwable -> {
+                            mIsLoading = false;
+                            mSubscription.unsubscribe();
+                            setModel(null);
+                            updateView();
+                            LogUtils.e(throwable);
+                        }
+                );
     }
 
     @Override
     public void bindView(ChooseUserView view) {
         super.bindView(view);
         if (getModel() == null && mSubscription.isUnsubscribed()) {
-            loadFriendsList();
+            doLoadList();
         }
     }
 
     @Override
     protected void onUpdateView(@NonNull ChooseUserView view) {
+        LogUtils.d("ChooseUserPresenter onUpdateView mShowingUserList == " + mShowingUserList);
+        LogUtils.d("ChooseUserPresenter onUpdateView getModel() == " + getModel());
+        super.onUpdateView(view);
         if (mShowingUserList == null) {
             view.setRefreshingConfig(false, false);
-            if (mSubscription.isUnsubscribed()) {
-                view.showError();
-            } else {
-                view.showLoading();
-            }
         } else {
             view.setRefreshingConfig(true, mIsLoading);
             if (mShowingUserList.isEmpty()) {
-                if (mQuery == null || mQuery.isEmpty()) {
-                    view.showEmpty();
-                } else {
+                if (mQuery != null && !mQuery.isEmpty()) {
                     view.showNothingFound();
                 }
-            } else {
-                if (mPendingIntroAnimation) {
-                    new Handler(Looper.getMainLooper()).post(() -> view.showList(mShowingUserList, true));
-                } else {
-                    view.showList(mShowingUserList, false);
-                }
-            }
-            if (mPendingIntroAnimation) {
-                mPendingIntroAnimation = false;
             }
         }
     }
@@ -91,12 +110,14 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
         return mQuery;
     }
 
-    public void onReload() {
-        loadFriendsList();
-        updateView();
+    @Override
+    public void onAnimateOutFinished(int id) {
+        super.onAnimateOutFinished(id);
+        getView().submitDode(id);
     }
 
-    public void onUserAtPositionClicked(int position) {
+    @Override
+    public void onItemAtPositionClicked(int position) {
         VkUser user = mShowingUserList.get(position);
         if (user.isCanWrite()) {
             switch (user.getId()) {
@@ -107,12 +128,12 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
                     getView().showGreatChoice();
                     break;
             }
-            getView().showItemSelected(position);
-            getView().submitDode(user.getId());
+            super.onItemAtPositionClicked(position);
         } else {
             getView().showCantWrite();
         }
     }
+
 
     public void onSearchQueryChanged(String query) {
         mQuery = query.toLowerCase();
@@ -135,26 +156,6 @@ public class ChooseUserPresenter extends BasePresenter<List<VkUser>, ChooseUserV
                 }
             }
         }
-    }
-
-    private void loadFriendsList() {
-        mSubscription.unsubscribe();
-        mIsLoading = true;
-        mSubscription = mDataManager
-                .getAllVkFriends()
-                .subscribe(
-                        userList -> {
-                            mIsLoading = false;
-                            ChooseUserPresenter.this.setModel(userList);
-                        },
-                        throwable -> {
-                            mIsLoading = false;
-                            mSubscription.unsubscribe();
-                            setModel(null);
-                            updateView();
-                            LogUtils.e(throwable);
-                        }
-                );
     }
 
 }

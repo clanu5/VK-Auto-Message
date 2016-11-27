@@ -1,22 +1,16 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
@@ -24,26 +18,22 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
+import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
-import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
-import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecordListFragment extends BaseFragment<RecordListPresenter> implements RecordListView {
+public class RecordListFragment extends ListFragment<Record> implements RecordListView {
 
     private static final String userIdKey = "userId";
 
@@ -54,19 +44,6 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         recordListFragment.setArguments(args);
         return recordListFragment;
     }
-
-    private static final int POSITION_EMPTY_VIEW = 0;
-    private static final int POSITION_LOADING_TEXT_VIEW = 1;
-    private static final int POSITION_ERROR_TEXT_VIEW = 2;
-    private static final int POSITION_EMPTY_TEXT_VIEW = 3;
-
-    private static final int REQUEST_DELETE_RECORD = 1;
-
-    @BindView(R.id.view_animator)
-    ViewAnimator mViewAnimator;
-
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
 
     @BindView(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;
@@ -83,96 +60,33 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         return mRecordListPresenter;
     }
 
+    @NonNull
+    @Override
+    protected BaseRecyclerViewAdapter<Record, ?, ?> getAdapter() {
+        return mRecordListAdapter;
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_record_list;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
         mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        // TODO: 25.11.2016 скроллинг на самый верх при нажатии на тулбар во всех списках
-        // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
     }
 
-    @Nullable
+    @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_record_list, container, false);
-
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.setAdapter(mRecordListAdapter);
-
-        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
-        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
-        mRecyclerView.setItemAnimator(recyclerItemAnimator);
-
-        mRecordListAdapter.setClickCallback(mRecordListPresenter::onRecordAtPositionClicked);
-        mRecordListAdapter.setLongClickCallback(mRecordListPresenter::onRecordAtPositionLongClicked);
-        mRecordListAdapter.setItemSwipeDismissCallback(position -> {
-            // чтобы элемент вернулся в свое исходное положение после swipe.
-            mRecordListAdapter.notifyItemChanged(position);
-
-            mRecordListPresenter.onRecordDismissed(position);
-        });
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(mRecordListAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
-
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mRecordListPresenter.onReload());
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mRecordListPresenter.onResume();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        mRecordListPresenter.onCreateOptionsMenu();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case REQUEST_DELETE_RECORD:
-                int recordId = data.getIntExtra(DeleteRecordDialog.EXTRA_RECORD_TO_DELETE_ID, 0);
-                if (resultCode == Activity.RESULT_OK) {
-                    mRecordListPresenter.onRecordDeleteClicked(recordId);
-                } else {
-                    mRecordListPresenter.onRecordDeleteCanceled(recordId);
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void showLoading() {
-        setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
-    }
-
-    @Override
-    public void showError() {
-        setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
-    }
-
-    @Override
-    public void showEmpty() {
-        setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
-    }
-
-    @Override
-    public void showList(List<Record> list, boolean animate) {
-        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        mRecordListAdapter.setModelList(list, animate);
     }
 
     @Override
@@ -181,10 +95,10 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     }
 
     @Override
-    public void moveToRecordDetails(int recordId) {
+    public void moveToDetailsForItem(int id) {
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
-                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(recordId);
+                (RecordListAdapter.RecordViewHolder) getRecyclerView().findViewHolderForItemId(id);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;
@@ -199,25 +113,15 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
                     Pair.create(toolbarTitle, toolbarTitle.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
-        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordId);
-        startActivity(intent, activityOptions != null ? activityOptions.toBundle() : null);
+        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, id);
+        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override
-    public void showDeleteRecord(int recordId) {
+    public void askDeleteItem(int recordId) {
         DeleteRecordDialog deleteRecordDialog = DeleteRecordDialog.newInstance(recordId);
-        deleteRecordDialog.setTargetFragment(RecordListFragment.this, REQUEST_DELETE_RECORD);
+        deleteRecordDialog.setTargetFragment(RecordListFragment.this, REQUEST_DELETE_ITEM);
         deleteRecordDialog.show(getFragmentManager(), deleteRecordDialog.getClass().getName());
-    }
-
-    @Override
-    public void notifyItemRemoved(int position) {
-        mRecordListAdapter.notifyItemRemoved(position);
-    }
-
-    @Override
-    public void notifyItemInserted(int position) {
-        mRecordListAdapter.notifyItemInserted(position);
     }
 
     @Override
@@ -226,12 +130,44 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
     }
 
     @Override
-    public void showRecordSelected(int position) {
-        mRecordListAdapter.setSelectedItemPosition(position);
+    protected Animator createInAnimator(boolean withLargeDelay) {
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
+        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setDuration(200);
+
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
+        objectAnimator1.setStartDelay(withLargeDelay ? 1400 : 200);
+        objectAnimator1.setDuration(300);
+        objectAnimator1.setInterpolator(new OvershootInterpolator());
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(objectAnimator).with(objectAnimator1);
+        return animatorSet;
+    }
+
+
+    @Override
+    protected Animator createOutAnimator() {
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+
+        int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
+        objectAnimator.setDuration(200);
+
+        int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
+        objectAnimator1.setDuration(200);
+        objectAnimator1.setInterpolator(new OvershootInterpolator());
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(objectAnimator).with(objectAnimator1);
+        return animatorSet;
     }
 
     @Override
-    public void prepareForIntroAnimation() {
+    public void prepareForIn() {
         ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
@@ -240,35 +176,4 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
     }
 
-    @Override
-    public void runToolbarIntroAnimation() {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-
-        toolbarIcon.animate()
-                .setStartDelay(300)
-                .setDuration(400)
-                .translationX(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mRecordListPresenter.onToolbarIntroAnimationFinished();
-                    }
-                });
-    }
-
-    @Override
-    public void runFABIntroAnimation() {
-        mNewRecordFAB.animate()
-                .translationX(0)
-                .setDuration(500)
-                .setStartDelay(900)
-                .setInterpolator(new OvershootInterpolator());
-    }
-
-    private void setViewAnimatorDisplayedChild(int position) {
-        mRecyclerView.setVisibility(position == POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
-        if (mViewAnimator.getDisplayedChild() != position) {
-            mViewAnimator.setDisplayedChild(position);
-        }
-    }
 }

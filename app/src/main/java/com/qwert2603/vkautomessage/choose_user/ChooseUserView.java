@@ -1,6 +1,6 @@
 package com.qwert2603.vkautomessage.choose_user;
 
-import com.qwert2603.vkautomessage.base.ListView;
+import com.qwert2603.vkautomessage.base.list.ListView;
 import com.qwert2603.vkautomessage.model.VkUser;
 
 public interface ChooseUserView extends ListView<VkUser> {
@@ -12,8 +12,6 @@ public interface ChooseUserView extends ListView<VkUser> {
     void showCantWrite();
 
     void showNothingFound();
-
-    void showItemSelected(int position);
 
     void showDontWriteToDeveloper();
 

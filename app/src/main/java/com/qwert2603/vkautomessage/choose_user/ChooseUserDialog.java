@@ -23,6 +23,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements ChooseUserView {
-    
+
     public static final String EXTRA_SELECTED_USER_ID = "com.qwert2603.vkautomessage.EXTRA_SELECTED_USER_ID";
 
     public static ChooseUserDialog newInstance() {
@@ -87,7 +88,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
         ButterKnife.bind(ChooseUserDialog.this, view);
 
-        mRefreshLayout.setOnRefreshListener(mChooseUserPresenter::onReload);
+        mRefreshLayout.setOnRefreshListener(mChooseUserPresenter::onReloadList);
         mRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -97,9 +98,9 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
         mRecyclerView.setItemAnimator(recyclerItemAnimator);
 
-        mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onUserAtPositionClicked);
+        mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onItemAtPositionClicked);
 
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReload());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReloadList());
 
         mSearchEditText.setText(mChooseUserPresenter.getCurrentQuery());
         mSearchEditText.addTextChangedListener(new TextWatcher() {
@@ -121,6 +122,12 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
                 .create();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mChooseUserPresenter.onReadyToAnimateIn();
     }
 
     @Override
@@ -178,9 +185,52 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void showList(List<VkUser> list, boolean animate) {
+    public void showListEnter(List<VkUser> list) {
+        LogUtils.d("ChooseUserDialog showListEnter" + list);
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        mChooseUserAdapter.setModelList(list, animate);
+        mChooseUserAdapter.insertModelList(list);
+    }
+
+    @Override
+    public void showList(List<VkUser> list) {
+        LogUtils.d("ChooseUserDialog showList" + list);
+        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
+        mChooseUserAdapter.replaceModelList(list);
+    }
+
+    @Override
+    public void moveToDetailsForItem(int id) {
+        // nth
+    }
+
+    @Override
+    public void askDeleteItem(int id) {
+        mChooseUserPresenter.onItemDeleteCanceled(id);
+    }
+
+    @Override
+    public void notifyItemRemoved(int position) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
+    public void notifyItemInserted(int position) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
+    public void animateIn(boolean withLargeDelay) {
+        mChooseUserPresenter.onAnimateInFinished();
+    }
+
+    @Override
+    public void animateOut(int id) {
+        mChooseUserPresenter.onAnimateOutFinished(id);
+    }
+
+    @Override
+    public void prepareForIn() {
+        // nth
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

@@ -146,21 +146,25 @@ public abstract class BaseRecyclerViewAdapter
     }
 
     /**
-     * Назначить список объектов модели для отображения.
+     * Добавить список объектов модели для отображения.
      *
-     * @param modelList список объектов модели для отображения.
+     * @param modelList список объектов модели для добавления.
      */
-    public void setModelList(List<M> modelList, boolean animate) {
-        LogUtils.d("setModelList animate == " + animate);
-        if (animate) {
+    public void insertModelList(List<M> modelList) {
+        mModelList = modelList;
+        notifyItemRangeInserted(0, mModelList.size());
+    }
+
+    /**
+     * Заменить список объектов модели для отображения.
+     *
+     * @param modelList новый список объектов модели для отображения.
+     */
+    public void replaceModelList(List<M> modelList) {
+        if (modelList != mModelList) {
             mModelList = modelList;
-            notifyItemRangeInserted(0, mModelList.size());
-        } else {
-            if (modelList != mModelList) {
-                mModelList = modelList;
-            }
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
     }
 
     /**

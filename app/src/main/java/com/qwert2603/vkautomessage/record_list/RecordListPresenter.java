@@ -5,12 +5,13 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.RecordListWithUser;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -21,9 +22,7 @@ import javax.inject.Inject;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
-
-public class RecordListPresenter extends BasePresenter<RecordListWithUser, RecordListView> {
+public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
 
@@ -35,8 +34,20 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
     @Inject
     RxBus mRxBus;
 
-    private boolean mPendingIntroAnimation = true;
-    private AnimationState mListAnimationState = AnimationState.WAITING_FOR_TRIGGER;
+    @Override
+    protected List<Record> getList() {
+        return getModel() == null ? null : getModel().mRecordList;
+    }
+
+    @Override
+    protected boolean isError() {
+        return getModel() == null && mSubscription.isUnsubscribed();
+    }
+
+    @Override
+    protected boolean isFirstAnimateInWithLargeDelay() {
+        return false;
+    }
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
@@ -66,7 +77,7 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
         setModel(null);
         mSubscription.unsubscribe();
         mUserId = userId;
-        loadRecordList();
+        doLoadList();
     }
 
     @Override
@@ -77,55 +88,30 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
 
     @Override
     protected void onUpdateView(@NonNull RecordListView view) {
+        super.onUpdateView(view);
         RecordListWithUser recordListWithUser = getModel();
-        if (recordListWithUser == null) {
-            if (mSubscription.isUnsubscribed()) {
-                view.showError();
-            } else {
-                view.showLoading();
-            }
-        } else {
-            if (mListAnimationState != AnimationState.WAITING_FOR_TRIGGER) {
-                List<Record> recordList = recordListWithUser.mRecordList;
-                if (recordList.isEmpty()) {
-                    view.showEmpty();
-                } else {
-                    view.showList(recordList, mListAnimationState == AnimationState.SHOULD_START);
-                }
-                if (mListAnimationState == AnimationState.SHOULD_START) {
-                    view.runFABIntroAnimation();
-                    mListAnimationState = AnimationState.STARTED;
-                }
-            }
+        if (recordListWithUser != null) {
             showUserNameAndRecordsCount(recordListWithUser.mUser, view);
         }
     }
 
     private void showUserNameAndRecordsCount(@NonNull User user, @NonNull RecordListView view) {
         view.showUserName(String.format(Locale.getDefault(),
-                "(%d/%d) %s", user.getEnabledRecordsCount(), user.getRecordsCount(), getUserName(user)));
+                "(%d/%d) %s", user.getEnabledRecordsCount(), user.getRecordsCount(), StringUtils.getUserName(user)));
     }
 
-    public void onReload() {
-        loadRecordList();
-        updateView();
-    }
-
-    public void onCreateOptionsMenu() {
-        if (mPendingIntroAnimation) {
-            mPendingIntroAnimation = false;
-            getView().prepareForIntroAnimation();
-            getView().runToolbarIntroAnimation();
-        }
-    }
-
-    public void onResume() {
-        loadRecordList();
-    }
-
-    public void onToolbarIntroAnimationFinished() {
-        mListAnimationState = AnimationState.SHOULD_START;
-        updateView();
+    @Override
+    protected void doLoadList() {
+        mSubscription.unsubscribe();
+        mSubscription = mDataManager.getRecordsForUser(mUserId)
+                .subscribe(
+                        recordListWithUser -> RecordListPresenter.this.setModel(recordListWithUser),
+                        throwable -> {
+                            mSubscription.unsubscribe();
+                            updateView();
+                            LogUtils.e(throwable);
+                        }
+                );
     }
 
     public void onNewRecordClicked() {
@@ -157,26 +143,14 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                     } else {
                         updateView();
                     }
-                    view.moveToRecordDetails(record.getId());
+                    animateOut(record.getId());
                 }, LogUtils::e);
     }
 
-    public void onRecordAtPositionClicked(int position) {
-        RecordListWithUser model = getModel();
-        if (model == null) {
-            return;
-        }
-        getView().moveToRecordDetails(model.mRecordList.get(position).getId());
-    }
-
-    public void onRecordAtPositionLongClicked(int position) {
-        showDeleteRecord(position);
-    }
-
-    public void onRecordDeleteClicked(int recordId) {
-        getView().showRecordSelected(-1);
-        int position = getRecordPosition(recordId);
-        mDataManager.removeRecord(recordId)
+    public void onItemDeleteSubmitted(int id) {
+        super.onItemDeleteSubmitted(id);
+        int position = getRecordPosition(id);
+        mDataManager.removeRecord(id)
                 .subscribe(aLong -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
@@ -197,36 +171,6 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                         updateView();
                     }
                 }, LogUtils::e);
-    }
-
-    public void onRecordDeleteCanceled(int recordId) {
-        getView().showRecordSelected(-1);
-    }
-
-    public void onRecordDismissed(int position) {
-        showDeleteRecord(position);
-    }
-
-    private void loadRecordList() {
-        mSubscription.unsubscribe();
-        mSubscription = mDataManager.getRecordsForUser(mUserId)
-                .subscribe(
-                        recordListWithUser -> RecordListPresenter.this.setModel(recordListWithUser),
-                        throwable -> {
-                            mSubscription.unsubscribe();
-                            updateView();
-                            LogUtils.e(throwable);
-                        }
-                );
-    }
-
-    private void showDeleteRecord(int position) {
-        RecordListWithUser model = getModel();
-        if (model == null) {
-            return;
-        }
-        getView().showDeleteRecord(model.mRecordList.get(position).getId());
-        getView().showRecordSelected(position);
     }
 
     private int getRecordPosition(int recordId) {

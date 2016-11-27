@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.base;
 
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
@@ -11,20 +12,6 @@ import java.lang.ref.WeakReference;
  * @param <V> тип представления, которым управляет презентер.
  */
 public abstract class BasePresenter<M, V extends BaseView> {
-
-    protected enum AnimationState {
-        WAITING_FOR_TRIGGER,
-        SHOULD_START,
-        STARTED
-    }
-
-    protected enum InOutState {
-        FIRST_TIME,
-        OUTSIDE,
-        INNING,
-        INSIDE,
-        OUTING
-    }
 
     private M mModel;
     private WeakReference<V> mView;
@@ -96,6 +83,7 @@ public abstract class BasePresenter<M, V extends BaseView> {
      * Обновить представление.
      * Если представление привязано и готово к отображению, будет вызван метод {@link #onUpdateView(BaseView)}.
      */
+    @MainThread
     protected void updateView() {
         if (mView != null && mView.get() != null && mIsViewReady) {
             onUpdateView(mView.get());
@@ -107,5 +95,6 @@ public abstract class BasePresenter<M, V extends BaseView> {
      *
      * @param view представление, которым управляет презентер.
      */
+    @MainThread
     protected abstract void onUpdateView(@NonNull V view);
 }
