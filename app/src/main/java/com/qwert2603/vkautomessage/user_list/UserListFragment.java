@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.user_list;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -57,6 +58,7 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
     private static final int REQUEST_CHOOSE_USER = 1;
     private static final int REQUEST_DELETE_USER = 2;
+    private static final int REQUEST_RECORDS_FOR_USER = 3;
 
     @BindView(R.id.view_animator)
     ViewAnimator mViewAnimator;
@@ -122,13 +124,13 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     @Override
     public void onResume() {
         super.onResume();
-        mUserListPresenter.onResume();
+        mUserListPresenter.onNeedToReloadUserList();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        mUserListPresenter.onCreateOptionsMenu();
+        mUserListPresenter.onReadyToAnimateIn();
     }
 
     @Override
@@ -149,6 +151,9 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
                 } else {
                     mUserListPresenter.onUserDeleteCanceled(deletingUserId);
                 }
+                break;
+            case REQUEST_RECORDS_FOR_USER:
+                mUserListPresenter.onReturnFromRecordsForUser();
                 break;
         }
     }
@@ -176,17 +181,19 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
 
     @Override
     public void moveToRecordsForUser(int userId) {
+        LogUtils.d("UserListFragment moveToRecordsForUser " + userId);
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            TextView usernameTextView = viewHolder.mUsernameTextView;
+            // TODO: 26.11.2016 делать фон синим как тулбар во время TransitionAnimation
+            View itemView = viewHolder.itemView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(usernameTextView, usernameTextView.getTransitionName()));
+                    Pair.create(itemView, itemView.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_USER_ID, userId);
-        startActivity(intent, activityOptions != null ? activityOptions.toBundle() : null);
+        startActivityForResult(intent, REQUEST_RECORDS_FOR_USER, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override
@@ -219,7 +226,71 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
     }
 
     @Override
-    public void prepareForIntroAnimation() {
+    public void animateIn(boolean withLargeDelay) {
+        LogUtils.d("UserListFragment animateIn " + withLargeDelay);
+
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
+        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setDuration(200);
+
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
+        objectAnimator1.setStartDelay(withLargeDelay ? 500 : 200);
+        objectAnimator1.setDuration(200);
+        objectAnimator1.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mUserListPresenter.onReadyAnimateList();
+            }
+        });
+
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
+        objectAnimator2.setStartDelay(withLargeDelay ? 1600 : 300);
+        objectAnimator2.setDuration(300);
+        objectAnimator2.setInterpolator(new OvershootInterpolator());
+
+        objectAnimator.start();
+        objectAnimator1.start();
+        objectAnimator2.start();
+    }
+
+    @Override
+    public void animateOut(int userId) {
+        LogUtils.d("UserListFragment animateOut " + userId);
+
+        int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", mChooseUserFAB.getHeight() + fabBottomMargin);
+        objectAnimator.setDuration(200);
+        objectAnimator.setInterpolator(new OvershootInterpolator());
+
+        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarIcon, "translationY", -1 * toolbar.getHeight());
+        objectAnimator1.setDuration(200);
+
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
+        objectAnimator2.setStartDelay(100);
+        objectAnimator2.setDuration(200);
+        objectAnimator2.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                LogUtils.d("mUserListPresenter.onAnimateOutFinished(userId);" + userId);
+                mUserListPresenter.onAnimateOutFinished(userId);
+            }
+        });
+
+        objectAnimator.start();
+        objectAnimator1.start();
+        objectAnimator2.start();
+    }
+
+    @Override
+    public void prepareForIn() {
+        LogUtils.d("prepareForIn");
         Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
         ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
         TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
@@ -228,38 +299,8 @@ public class UserListFragment extends BaseFragment<UserListPresenter> implements
         toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
 
         int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
+        LogUtils.d("mChooseUserFAB.getHeight() == " + mChooseUserFAB.getHeight());
         mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
-    }
-
-    @Override
-    public void runToolbarIntroAnimation() {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
-
-        toolbarIcon.animate()
-                .setStartDelay(400)
-                .setDuration(400)
-                .translationY(0);
-
-        toolbarTitle.animate()
-                .setStartDelay(500)
-                .setDuration(400)
-                .translationY(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mUserListPresenter.onToolbarIntroAnimationFinished();
-                    }
-                });
-    }
-
-    @Override
-    public void runFABIntroAnimation() {
-        mChooseUserFAB.animate()
-                .translationY(0)
-                .setDuration(500)
-                .setStartDelay(900)
-                .setInterpolator(new OvershootInterpolator());
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

@@ -24,7 +24,6 @@ public class VkAutoMessageApplication extends Application {
         return sAppComponent;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreate() {
         super.onCreate();

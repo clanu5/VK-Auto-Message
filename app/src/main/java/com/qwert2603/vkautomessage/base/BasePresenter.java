@@ -18,6 +18,14 @@ public abstract class BasePresenter<M, V extends BaseView> {
         STARTED
     }
 
+    protected enum InOutState {
+        FIRST_TIME,
+        OUTSIDE,
+        INNING,
+        INSIDE,
+        OUTING
+    }
+
     private M mModel;
     private WeakReference<V> mView;
 

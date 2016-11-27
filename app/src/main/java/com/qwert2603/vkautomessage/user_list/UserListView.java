@@ -10,7 +10,8 @@ public interface UserListView extends ListView<User> {
     void notifyItemRemoved(int position);
     void notifyItemInserted(int position);
     void showUserSelected(int position);
-    void prepareForIntroAnimation();
-    void runToolbarIntroAnimation();
-    void runFABIntroAnimation();
+
+    void animateIn(boolean withDelay);
+    void animateOut(int userId);
+    void prepareForIn();
 }

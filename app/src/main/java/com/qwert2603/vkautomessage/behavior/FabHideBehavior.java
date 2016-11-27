@@ -1,12 +1,12 @@
 package com.qwert2603.vkautomessage.behavior;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 
 public class FabHideBehavior extends FloatingActionButton.Behavior {
 
@@ -18,16 +18,11 @@ public class FabHideBehavior extends FloatingActionButton.Behavior {
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
 
-        child.animate()
-                .setDuration(400)
-                .setInterpolator(new LinearInterpolator())
-                .setStartDelay(0);
-
         if (dyConsumed > 0) {
             CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-            child.animate().translationY(child.getHeight() + layoutParams.bottomMargin).start();
+            ObjectAnimator.ofFloat(child, "translationY", child.getHeight() + layoutParams.bottomMargin).start();
         } else if (dyConsumed < 0) {
-            child.animate().translationY(0).start();
+            ObjectAnimator.ofFloat(child, "translationY", 0).start();
         }
     }
 

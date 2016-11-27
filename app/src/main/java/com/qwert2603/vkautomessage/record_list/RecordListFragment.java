@@ -90,6 +90,7 @@ public class RecordListFragment extends BaseFragment<RecordListPresenter> implem
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         // TODO: 25.11.2016 скроллинг на самый верх при нажатии на тулбар во всех списках
+        // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
     }
 
     @Nullable

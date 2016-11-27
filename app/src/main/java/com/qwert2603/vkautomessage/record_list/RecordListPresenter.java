@@ -93,12 +93,11 @@ public class RecordListPresenter extends BasePresenter<RecordListWithUser, Recor
                     view.showList(recordList, mListAnimationState == AnimationState.SHOULD_START);
                 }
                 if (mListAnimationState == AnimationState.SHOULD_START) {
-                    view.runFABIntroAnimation();// TODO: 26.11.2016 не задерживать анимацию fab, если список пустой и список тоже, может, не надо задерживать
+                    view.runFABIntroAnimation();
                     mListAnimationState = AnimationState.STARTED;
                 }
             }
             showUserNameAndRecordsCount(recordListWithUser.mUser, view);
-            // TODO: 26.11.2016 анимация, чтобы стрелка наверх уходила влево при возвращении в предыдущей активити
         }
     }
 

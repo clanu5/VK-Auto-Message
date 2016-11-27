@@ -26,8 +26,8 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     @Inject
     RxBus mRxBus;
 
-    private boolean mPendingToolbarIntroAnimation = true;
     private AnimationState mListAnimationState = AnimationState.WAITING_FOR_TRIGGER;
+    private InOutState mInOutState = InOutState.FIRST_TIME;
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
@@ -48,6 +48,12 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     }
 
     @Override
+    public void unbindView() {
+        mSubscription.unsubscribe();
+        super.unbindView();
+    }
+
+    @Override
     protected void onUpdateView(@NonNull UserListView view) {
         List<User> userList = getModel();
         if (userList == null) {
@@ -63,48 +69,73 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                 view.showList(userList, mListAnimationState == AnimationState.SHOULD_START);
             }
             if (mListAnimationState == AnimationState.SHOULD_START) {
-                view.runFABIntroAnimation();
                 mListAnimationState = AnimationState.STARTED;
             }
         }
     }
 
-    @Override
-    public void unbindView() {
-        mSubscription.unsubscribe();
-        super.unbindView();
-    }
-
-    public void onCreateOptionsMenu() {
-        if (mPendingToolbarIntroAnimation) {
-            mPendingToolbarIntroAnimation = false;
-            getView().prepareForIntroAnimation();
-            getView().runToolbarIntroAnimation();
+    public void onReadyToAnimateIn() {
+        LogUtils.d("onReadyToAnimateIn");
+        if (mInOutState == InOutState.FIRST_TIME) {
+            mInOutState = InOutState.INNING;
+            getView().prepareForIn();
+            getView().animateIn(true);
+        } else if (mInOutState == InOutState.OUTSIDE) {
+            // TODO: 27.11.2016 при уничтожении активити SceneTransitionAnimation не работает.
+            // если получится сделать, чтобы работало, то можно и анимацию In делать.
+            //getView().prepareForIn();
         }
     }
 
-    public void onResume() {
+    public void onNeedToReloadUserList() {
         loadUserList();
     }
 
-    public void onToolbarIntroAnimationFinished() {
-        mListAnimationState = AnimationState.SHOULD_START;
-        updateView();
+    public void onReadyAnimateList() {
+        mInOutState = InOutState.INSIDE;
+
+        if (mListAnimationState == AnimationState.WAITING_FOR_TRIGGER) {
+            mListAnimationState = AnimationState.SHOULD_START;
+            updateView();
+        }
+    }
+
+    public void onAnimateOutFinished(int userId) {
+        mInOutState = InOutState.OUTSIDE;
+        getView().moveToRecordsForUser(userId);
+    }
+
+    public void onReturnFromRecordsForUser() {
+        LogUtils.d("onReturnFromRecordsForUser " + mInOutState);
+        if (mInOutState == InOutState.OUTSIDE) {
+            mInOutState = InOutState.INNING;
+            getView().animateIn(false);
+        }
     }
 
     public void onUserAtPositionClicked(int position) {
+        if (mInOutState != InOutState.INSIDE) {
+            // TODO: 26.11.2016 сделать функцию isInside
+            return;
+        }
         List<User> model = getModel();
         if (model == null) {
             return;
         }
-        getView().moveToRecordsForUser(model.get(position).getId());
+        animateOut(model.get(position).getId());
     }
 
     public void onUserAtPositionLongClicked(int position) {
+        if (mInOutState != InOutState.INSIDE) {
+            return;
+        }
         showDeleteUser(position);
     }
 
     public void onUserDeleteClicked(int userId) {
+        if (mInOutState != InOutState.INSIDE) {
+            return;
+        }
         getView().showUserSelected(-1);
         int position = getUserPosition(userId);
         mDataManager.removeUser(userId)
@@ -128,23 +159,35 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
     }
 
     public void onChooseUserClicked() {
+        if (mInOutState != InOutState.INSIDE) {
+            return;
+        }
         getView().showChooseUser();
     }
 
     public void onUserDismissed(int position) {
+        if (mInOutState != InOutState.INSIDE) {
+            return;
+        }
         LogUtils.d("UserListPresenter onUserDismissed " + position);
         showDeleteUser(position);
     }
 
     public void onReload() {
+        if (mInOutState != InOutState.INSIDE) {
+            return;
+        }
         loadUserList();
         updateView();
     }
 
     public void onUserChosen(int userId) {
+        if (mInOutState != InOutState.INSIDE) {
+            return;
+        }
         int userPosition = getUserPosition(userId);
         if (userPosition >= 0) {
-            getView().moveToRecordsForUser(userId);
+            animateOut(userId);
         } else {
             mDataManager.getVkUserById(userId)
                     .flatMap(mDataManager::addUser)
@@ -161,7 +204,7 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
                                 } else {
                                     updateView();
                                 }
-                                view.moveToRecordsForUser(userId);
+                                animateOut(userId);
                             }, LogUtils::e
                     );
         }
@@ -188,6 +231,11 @@ public class UserListPresenter extends BasePresenter<List<User>, UserListView> {
         }
         getView().showDeleteUser(model.get(position).getId());
         getView().showUserSelected(position);
+    }
+
+    private void animateOut(int userId) {
+        mInOutState = InOutState.OUTING;
+        getView().animateOut(userId);
     }
 
     private int getUserPosition(int userId) {
