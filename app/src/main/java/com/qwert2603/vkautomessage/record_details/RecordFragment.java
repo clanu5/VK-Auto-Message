@@ -1,11 +1,15 @@
 package com.qwert2603.vkautomessage.record_details;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,20 +20,21 @@ import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
 import com.qwert2603.vkautomessage.edit_day_in_year.EditDayOfYearDialog;
 import com.qwert2603.vkautomessage.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
+import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecordFragment extends BaseFragment<RecordPresenter> implements RecordView {
+public class RecordFragment extends InOutAnimationFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
 
@@ -241,5 +246,52 @@ public class RecordFragment extends BaseFragment<RecordPresenter> implements Rec
     @Override
     public void showToast(int stringRes) {
         Toast.makeText(getActivity(), stringRes, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected Animator createInAnimator(boolean withLargeDelay) {
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
+        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setDuration(400);
+
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
+        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
+        objectAnimator1.setDuration(400);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(objectAnimator).with(objectAnimator1);
+        return animatorSet;
+    }
+
+    @Override
+    protected Animator createOutAnimator() {
+        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
+        objectAnimator.setDuration(200);
+
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(toolbarIcon, "translationY", -1 * toolbar.getHeight());
+        objectAnimator2.setStartDelay(100);
+        objectAnimator2.setDuration(200);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(objectAnimator).with(objectAnimator2);
+        return animatorSet;
+    }
+
+
+    @Override
+    public void prepareForIn() {
+        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+
+        toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
+        toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
     }
 }

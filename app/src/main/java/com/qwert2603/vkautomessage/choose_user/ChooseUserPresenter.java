@@ -118,7 +118,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     @ShouldCheckIsInside
     @Override
     public void onItemAtPositionClicked(int position) {
-        if (!isInside()) {
+        if (!isInningOrInside()) {
             return;
         }
         VkUser user = mShowingUserList.get(position);

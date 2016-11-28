@@ -3,7 +3,7 @@ package com.qwert2603.vkautomessage.delete_user;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.base.delete_item.DeleteItemPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class DeleteUserPresenter extends BasePresenter<User, DeleteUserView> {
+public class DeleteUserPresenter extends DeleteItemPresenter<User, DeleteUserView> {
     private Subscription mSubscription = Subscriptions.unsubscribed();
 
     @Inject
@@ -25,6 +25,7 @@ public class DeleteUserPresenter extends BasePresenter<User, DeleteUserView> {
     }
 
     public void setUserId(int userId) {
+        mId = userId;
         mSubscription.unsubscribe();
         mSubscription = mDataManager
                 .getUserById(userId)
@@ -55,19 +56,4 @@ public class DeleteUserPresenter extends BasePresenter<User, DeleteUserView> {
         super.unbindView();
     }
 
-    public void onSubmitClicked() {
-        User user = getModel();
-        if (user == null) {
-            return;
-        }
-        getView().submitResult(true, user.getId());
-    }
-
-    public void onCancelClicked() {
-        User user = getModel();
-        if (user == null) {
-            return;
-        }
-        getView().submitResult(false, user.getId());
-    }
 }

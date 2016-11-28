@@ -9,7 +9,7 @@ import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.RecordWithUser;
@@ -26,7 +26,7 @@ import rx.subscriptions.Subscriptions;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
-public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
+public class RecordPresenter extends InOutAnimationPresenter<RecordWithUser, RecordView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
 
@@ -48,6 +48,11 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         mRepeatTypes = mAppContext.getResources().getStringArray(R.array.repeat_types);
         mMonths = mAppContext.getResources().getStringArray(R.array.months);
         mDaysOfWeek = mAppContext.getResources().getStringArray(R.array.days_of_week_short);
+    }
+
+    @Override
+    protected boolean isFirstAnimateInWithLargeDelay() {
+        return false;
     }
 
     public void setRecordId(int recordId) {

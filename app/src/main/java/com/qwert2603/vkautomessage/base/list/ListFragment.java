@@ -15,8 +15,8 @@ import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
+import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
-import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
@@ -92,7 +92,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     @Override
     public void onDestroy() {
         // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        //mRecyclerView.setVisibility(View.INVISIBLE);
         super.onDestroy();
     }
 
@@ -102,11 +102,11 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
         switch (requestCode) {
             case REQUEST_DELETE_ITEM:
-                int deletingUserId = data.getIntExtra(DeleteUserDialog.EXTRA_USER_TO_DELETE_ID, 0);
+                int deletingItemId = data.getIntExtra(DeleteItemDialog.EXTRA_ITEM_TO_DELETE_ID, 0);
                 if (resultCode == Activity.RESULT_OK) {
-                    getPresenter().onItemDeleteSubmitted(deletingUserId);
+                    getPresenter().onItemDeleteSubmitted(deletingItemId);
                 } else {
-                    getPresenter().onItemDeleteCanceled(deletingUserId);
+                    getPresenter().onItemDeleteCanceled(deletingItemId);
                 }
                 break;
             case REQUEST_DETAILS_FOT_ITEM:

@@ -1,10 +1,7 @@
 package com.qwert2603.vkautomessage.delete_record;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -13,17 +10,16 @@ import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BaseDialog;
+import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implements DeleteRecordView {
+public class DeleteRecordDialog extends DeleteItemDialog<DeleteRecordPresenter> implements DeleteRecordView {
 
     private static final String recordIdKey = "recordId";
-    public static final String EXTRA_RECORD_TO_DELETE_ID = "com.qwert2603.vkautomessage.EXTRA_RECORD_TO_DELETE_ID";
 
     public static DeleteRecordDialog newInstance(int recordId) {
         DeleteRecordDialog deleteRecordDialog = new DeleteRecordDialog();
@@ -41,8 +37,6 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
 
     @Inject
     DeleteRecordPresenter mDeleteRecordPresenter;
-
-    private boolean mSubmitResultSent = false;
 
     @NonNull
     @Override
@@ -64,16 +58,12 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
 
     @SuppressLint("InflateParams")
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    protected AlertDialog.Builder modifyDialog(AlertDialog.Builder builder) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_delete_record, null);
 
         ButterKnife.bind(DeleteRecordDialog.this, view);
 
-        return new AlertDialog.Builder(getActivity())
-                .setView(view)
-                .setNegativeButton(R.string.cancel, (dialog, which) -> mDeleteRecordPresenter.onCancelClicked())
-                .setPositiveButton(R.string.submit, (dialog, which) -> mDeleteRecordPresenter.onSubmitClicked())
-                .create();
+        return builder.setView(view);
     }
 
     @Override
@@ -92,20 +82,4 @@ public class DeleteRecordDialog extends BaseDialog<DeleteRecordPresenter> implem
         mMessageTextView.setText(R.string.loading);
     }
 
-    @Override
-    public void submitResult(boolean submit, int recordId) {
-        mSubmitResultSent = true;
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_RECORD_TO_DELETE_ID, recordId);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), submit ? Activity.RESULT_OK : Activity.RESULT_CANCELED, intent);
-    }
-
-
-    @Override
-    public void onDestroy() {
-        if (!mSubmitResultSent) {
-            mDeleteRecordPresenter.onCancelClicked();
-        }
-        super.onDestroy();
-    }
 }

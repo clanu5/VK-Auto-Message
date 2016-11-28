@@ -149,5 +149,17 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         public void showToast(int stringRes) {
             Toast.makeText(mMessageTextView.getContext(), stringRes, Toast.LENGTH_SHORT).show();
         }
+
+        @Override
+        public void animateIn(boolean withLargeDelay) {
+        }
+
+        @Override
+        public void animateOut(int id) {
+        }
+
+        @Override
+        public void prepareForIn() {
+        }
     }
 }

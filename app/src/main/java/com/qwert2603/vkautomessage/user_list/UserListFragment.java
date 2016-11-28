@@ -133,7 +133,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
     }
 
-
     @Override
     public void scrollListToTop() {
         super.scrollListToTop();

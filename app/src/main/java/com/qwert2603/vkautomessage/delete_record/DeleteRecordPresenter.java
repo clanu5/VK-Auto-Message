@@ -3,7 +3,7 @@ package com.qwert2603.vkautomessage.delete_record;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.base.delete_item.DeleteItemPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.RecordWithUser;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -16,7 +16,7 @@ import rx.subscriptions.Subscriptions;
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
-public class DeleteRecordPresenter extends BasePresenter<RecordWithUser, DeleteRecordView> {
+public class DeleteRecordPresenter extends DeleteItemPresenter<RecordWithUser, DeleteRecordView> {
 
     private static final int MESSAGE_LENGTH_LIMIT = 52;
 
@@ -30,6 +30,7 @@ public class DeleteRecordPresenter extends BasePresenter<RecordWithUser, DeleteR
     }
 
     public void setRecordId(int recordId) {
+        mId = recordId;
         mSubscription.unsubscribe();
         mSubscription = mDataManager
                 .getRecordById(recordId)
@@ -59,19 +60,4 @@ public class DeleteRecordPresenter extends BasePresenter<RecordWithUser, DeleteR
         super.unbindView();
     }
 
-    public void onSubmitClicked() {
-        RecordWithUser model = getModel();
-        if (model == null) {
-            return;
-        }
-        getView().submitResult(true, model.mRecord.getId());
-    }
-
-    public void onCancelClicked() {
-        RecordWithUser model = getModel();
-        if (model == null) {
-            return;
-        }
-        getView().submitResult(false, model.mRecord.getId());
-    }
 }

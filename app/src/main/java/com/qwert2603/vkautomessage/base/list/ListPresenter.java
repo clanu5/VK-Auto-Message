@@ -80,7 +80,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @ShouldCheckIsInside
     public void onItemAtPositionClicked(int position) {
-        if (!isInside()) {
+        if (!isInningOrInside()) {
             return;
         }
         List<T> list = getList();
@@ -92,7 +92,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @ShouldCheckIsInside
     public void onItemAtPositionLongClicked(int position) {
-        if (!isInside()) {
+        if (!isInningOrInside()) {
             return;
         }
         askDeleteItem(position);
@@ -100,7 +100,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @ShouldCheckIsInside
     public void onItemDismissed(int position) {
-        if (!isInside()) {
+        if (!isInningOrInside()) {
             return;
         }
         askDeleteItem(position);
@@ -121,7 +121,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @ShouldCheckIsInside
     public void onToolbarClicked() {
-        if (!isInside()) {
+        if (!isInningOrInside()) {
             return;
         }
         getView().scrollListToTop();
