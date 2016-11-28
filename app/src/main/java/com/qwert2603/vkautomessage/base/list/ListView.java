@@ -54,8 +54,16 @@ public interface ListView<T extends Identifiable> extends InOutAnimationView {
 
     void notifyItemRemoved(int position);
 
-    void notifyItemInserted(int position);
+    void notifyItemInserted(int position, int id);
 
     void scrollListToTop();
+
+    void scrollListToBottom();
+
+    void scrollToPosition(int position);
+
+    void animateAllItemsEnter(boolean animate);
+
+    void delayEachItemEnterAnimation(boolean delay);
 
 }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
@@ -114,7 +115,11 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                 );
     }
 
+    @ShouldCheckIsInningOrInside
     public void onNewRecordClicked() {
+        if (!isInningOrInside()) {
+            return;
+        }
         RecordListWithUser recordListWithUser = getModel();
         if (recordListWithUser == null) {
             return;
@@ -133,21 +138,32 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     if (model == null || view == null) {
                         return;
                     }
+
                     List<Record> recordList = model.mRecordList;
                     User user = model.mUser;
                     recordList.add(record);
                     user.setRecordsCount(user.getRecordsCount() + 1);
-                    if (recordList.size() > 1) {
-                        showUserNameAndRecordsCount(user, view);
-                        view.notifyItemInserted(recordList.size() - 1);
+
+                    showUserNameAndRecordsCount(user, view);
+
+                    view.animateAllItemsEnter(false);
+                    view.delayEachItemEnterAnimation(false);
+                    if (recordList.size() == 1) {
+                        view.showList(recordList);
                     } else {
-                        updateView();
+                        view.scrollListToBottom();
                     }
+                    view.notifyItemInserted(recordList.size() - 1, record.getId());
+
                     animateOut(record.getId());
                 }, LogUtils::e);
     }
 
+    @ShouldCheckIsInningOrInside
     public void onItemDeleteSubmitted(int id) {
+        if (!isInningOrInside()) {
+            return;
+        }
         super.onItemDeleteSubmitted(id);
         int position = getRecordPosition(id);
         mDataManager.removeRecord(id)

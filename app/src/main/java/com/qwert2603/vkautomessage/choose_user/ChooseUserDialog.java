@@ -212,15 +212,25 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     public void notifyItemRemoved(int position) {
         LogUtils.e(new RuntimeException("Should not be called!"));
     }
-
+    
     @Override
-    public void notifyItemInserted(int position) {
+    public void notifyItemInserted(int position, int id) {
         LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override
     public void scrollListToTop() {
-        mRecyclerView.smoothScrollToPosition(0);
+        mRecyclerView.scrollToPosition(0);
+    }
+
+    @Override
+    public void scrollListToBottom() {
+        mRecyclerView.scrollToPosition(mChooseUserAdapter.getItemCount());
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        mRecyclerView.scrollToPosition(position);
     }
 
     @Override
@@ -236,6 +246,16 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void prepareForIn() {
         // nth
+    }
+
+    @Override
+    public void animateAllItemsEnter(boolean animate) {
+        ((RecyclerItemAnimator) mRecyclerView.getItemAnimator()).setAlwaysAnimateEnter(animate);
+    }
+
+    @Override
+    public void delayEachItemEnterAnimation(boolean delay) {
+        ((RecyclerItemAnimator) mRecyclerView.getItemAnimator()).setDelayEnter(delay);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

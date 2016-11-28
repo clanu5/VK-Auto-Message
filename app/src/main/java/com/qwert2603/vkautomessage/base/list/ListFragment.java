@@ -19,6 +19,7 @@ import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 
 import java.util.List;
@@ -48,6 +49,8 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     @BindView(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
 
+    protected RecyclerItemAnimator mRecyclerItemAnimator;
+
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
@@ -61,8 +64,15 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
         ButterKnife.bind(ListFragment.this, view);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()){
+            @Override
+            protected int getExtraLayoutSpace(RecyclerView.State state) {
+                return 500;
+            }
+        });
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 20);
         mRecyclerView.setAdapter(getAdapter());
+
 
         getAdapter().setClickCallback(getPresenter()::onItemAtPositionClicked);
         getAdapter().setLongClickCallback(getPresenter()::onItemAtPositionLongClicked);
@@ -77,6 +87,9 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(getAdapter()));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+        mRecyclerItemAnimator = new RecyclerItemAnimator();
+        mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
 
@@ -153,13 +166,34 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     }
 
     @Override
-    public void notifyItemInserted(int position) {
+    public void notifyItemInserted(int position, int id) {
+        mRecyclerItemAnimator.addItemToAnimateEnter(id);
         getAdapter().notifyItemInserted(position);
     }
 
     @Override
     public void scrollListToTop() {
         mRecyclerView.smoothScrollToPosition(0);
+    }
+
+    @Override
+    public void scrollListToBottom() {
+        mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        mRecyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
+    public void animateAllItemsEnter(boolean animate) {
+        mRecyclerItemAnimator.setAlwaysAnimateEnter(animate);
+    }
+
+    @Override
+    public void delayEachItemEnterAnimation(boolean delay) {
+        mRecyclerItemAnimator.setDelayEnter(delay);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

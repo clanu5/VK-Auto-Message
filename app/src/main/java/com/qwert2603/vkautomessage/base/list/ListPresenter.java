@@ -3,7 +3,7 @@ package com.qwert2603.vkautomessage.base.list;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationPresenter;
-import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInside;
+import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.model.Identifiable;
 
 import java.util.List;
@@ -54,6 +54,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
                 } else {
                     if (mListEnterAnimationState == AnimationState.SHOULD_START) {
                         mListEnterAnimationState = AnimationState.STARTED;
+                        view.animateAllItemsEnter(true);
+                        view.delayEachItemEnterAnimation(true);
                         view.showListEnter(list);
                     } else {
                         view.showList(list);
@@ -78,7 +80,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().moveToDetailsForItem(id);
     }
 
-    @ShouldCheckIsInside
+    @ShouldCheckIsInningOrInside
     public void onItemAtPositionClicked(int position) {
         if (!isInningOrInside()) {
             return;
@@ -87,10 +89,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         if (list == null) {
             return;
         }
+        getView().scrollToPosition(position);
         animateOut(list.get(position).getId());
     }
 
-    @ShouldCheckIsInside
+    @ShouldCheckIsInningOrInside
     public void onItemAtPositionLongClicked(int position) {
         if (!isInningOrInside()) {
             return;
@@ -98,7 +101,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         askDeleteItem(position);
     }
 
-    @ShouldCheckIsInside
+    @ShouldCheckIsInningOrInside
     public void onItemDismissed(int position) {
         if (!isInningOrInside()) {
             return;
@@ -119,7 +122,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         updateView();
     }
 
-    @ShouldCheckIsInside
+    @ShouldCheckIsInningOrInside
     public void onToolbarClicked() {
         if (!isInningOrInside()) {
             return;

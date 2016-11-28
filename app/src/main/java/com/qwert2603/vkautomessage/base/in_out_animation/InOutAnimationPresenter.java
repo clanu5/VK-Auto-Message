@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.base.in_out_animation;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 /**
  * Презентер для view с поддержкой анимации появления и исчезновения элементов UI.
@@ -29,7 +28,6 @@ public abstract class InOutAnimationPresenter<M, V extends InOutAnimationView> e
     protected abstract boolean isFirstAnimateInWithLargeDelay();
 
     public void onReadyToAnimateIn() {
-        LogUtils.d("onReadyToAnimateIn");
         if (mInOutState == InOutState.FIRST_TIME) {
             mInOutState = InOutState.OUTSIDE;
             getView().prepareForIn();

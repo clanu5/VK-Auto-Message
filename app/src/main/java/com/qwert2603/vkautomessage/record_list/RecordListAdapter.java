@@ -15,6 +15,7 @@ import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -34,6 +35,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
     @Override
     public RecordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LogUtils.d("RecordListAdapter onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_record, parent, false);
         return new RecordViewHolder(view);
     }

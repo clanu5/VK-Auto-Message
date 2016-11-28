@@ -83,8 +83,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
-        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
-        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
 
         return view;
     }
@@ -149,7 +148,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         objectAnimator.setDuration(400);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
+        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 200);
         objectAnimator1.setDuration(400);
 
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
@@ -166,7 +165,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     protected Animator createOutAnimator() {
         int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", mChooseUserFAB.getHeight() + fabBottomMargin);
-        objectAnimator.setDuration(200);
+        objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new OvershootInterpolator());
 
         Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
@@ -174,11 +173,11 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
-        objectAnimator1.setDuration(200);
+        objectAnimator1.setDuration(300);
 
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(toolbarIcon, "translationY", -1 * toolbar.getHeight());
         objectAnimator2.setStartDelay(100);
-        objectAnimator2.setDuration(200);
+        objectAnimator2.setDuration(300);
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);

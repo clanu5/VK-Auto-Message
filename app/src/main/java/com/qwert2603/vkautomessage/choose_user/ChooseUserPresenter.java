@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInside;
+import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.VkUser;
@@ -115,7 +115,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
         getView().submitDode(id);
     }
 
-    @ShouldCheckIsInside
+    @ShouldCheckIsInningOrInside
     @Override
     public void onItemAtPositionClicked(int position) {
         if (!isInningOrInside()) {

@@ -87,9 +87,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
-        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
-        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
-        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
 
         return view;
     }
@@ -165,11 +163,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
-        objectAnimator.setDuration(200);
+        objectAnimator.setDuration(300);
 
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
-        objectAnimator1.setDuration(300);
+        objectAnimator1.setDuration(400);
         objectAnimator1.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
