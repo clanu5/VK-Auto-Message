@@ -56,4 +56,6 @@ public interface ListView<T extends Identifiable> extends InOutAnimationView {
 
     void notifyItemInserted(int position);
 
+    void scrollListToTop();
+
 }

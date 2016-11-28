@@ -27,6 +27,7 @@ import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
 import javax.inject.Inject;
 
@@ -86,6 +87,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
+        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
+        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+
         return view;
     }
 
@@ -98,7 +103,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     public void moveToDetailsForItem(int id) {
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
-                (RecordListAdapter.RecordViewHolder) getRecyclerView().findViewHolderForItemId(id);
+                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(id);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;
@@ -125,6 +130,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    public void scrollListToTop() {
+        super.scrollListToTop();
+        ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0).start();
+    }
+
+    @Override
     public void showDontWriteToDeveloper() {
         Toast.makeText(getActivity(), R.string.toast_i_told_you, Toast.LENGTH_SHORT).show();
     }
@@ -135,11 +146,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
-        objectAnimator.setDuration(200);
+        objectAnimator.setDuration(400);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 1400 : 200);
-        objectAnimator1.setDuration(300);
+        objectAnimator1.setStartDelay(withLargeDelay ? 1000 : 100);
+        objectAnimator1.setDuration(400);
         objectAnimator1.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -158,7 +169,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
-        objectAnimator1.setDuration(200);
+        objectAnimator1.setDuration(300);
         objectAnimator1.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();

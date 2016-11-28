@@ -219,6 +219,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void scrollListToTop() {
+        mRecyclerView.smoothScrollToPosition(0);
+    }
+
+    @Override
     public void animateIn(boolean withLargeDelay) {
         mChooseUserPresenter.onAnimateInFinished();
     }

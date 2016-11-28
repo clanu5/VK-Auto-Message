@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.VkUser;
@@ -78,8 +79,6 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
 
     @Override
     protected void onUpdateView(@NonNull ChooseUserView view) {
-        LogUtils.d("ChooseUserPresenter onUpdateView mShowingUserList == " + mShowingUserList);
-        LogUtils.d("ChooseUserPresenter onUpdateView getModel() == " + getModel());
         super.onUpdateView(view);
         if (mShowingUserList == null) {
             view.setRefreshingConfig(false, false);
@@ -116,8 +115,12 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
         getView().submitDode(id);
     }
 
+    @ShouldCheckIsInside
     @Override
     public void onItemAtPositionClicked(int position) {
+        if (!isInside()) {
+            return;
+        }
         VkUser user = mShowingUserList.get(position);
         if (user.isCanWrite()) {
             switch (user.getId()) {

@@ -28,6 +28,7 @@ import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
 import javax.inject.Inject;
 
@@ -82,6 +83,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
+        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
+        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+
         return view;
     }
 
@@ -103,7 +107,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     public void moveToDetailsForItem(int userId) {
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
-                (UserListAdapter.UserViewHolder) getRecyclerView().findViewHolderForItemId(userId);
+                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
         if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // TODO: 26.11.2016 делать фон синим как тулбар во время TransitionAnimation
             View itemView = viewHolder.itemView;
@@ -129,6 +133,13 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
     }
 
+
+    @Override
+    public void scrollListToTop() {
+        super.scrollListToTop();
+        ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0).start();
+    }
+
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
         ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
@@ -139,11 +150,11 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         objectAnimator.setDuration(400);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 500 : 200);
+        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
         objectAnimator1.setDuration(400);
 
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
-        objectAnimator2.setStartDelay(withLargeDelay ? 1400 : 300);
+        objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 100);
         objectAnimator2.setDuration(400);
         objectAnimator2.setInterpolator(new OvershootInterpolator());
 

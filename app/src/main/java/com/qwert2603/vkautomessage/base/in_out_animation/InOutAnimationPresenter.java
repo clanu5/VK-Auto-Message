@@ -61,4 +61,8 @@ public abstract class InOutAnimationPresenter<M, V extends InOutAnimationView> e
         mInOutState = InOutState.OUTING;
         getView().animateOut(id);
     }
+
+    protected boolean isInside() {
+        return mInOutState == InOutState.INSIDE;
+    }
 }

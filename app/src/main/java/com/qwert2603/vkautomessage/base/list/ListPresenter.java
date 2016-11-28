@@ -3,8 +3,8 @@ package com.qwert2603.vkautomessage.base.list;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationPresenter;
+import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInside;
 import com.qwert2603.vkautomessage.model.Identifiable;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -40,7 +40,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @Override
     protected void onUpdateView(@NonNull V view) {
-        LogUtils.d("ListPresenter onUpdateView" + getClass() + " " + getModel());
         if (getModel() == null) {
             if (isError()) {
                 view.showError();
@@ -79,7 +78,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().moveToDetailsForItem(id);
     }
 
+    @ShouldCheckIsInside
     public void onItemAtPositionClicked(int position) {
+        if (!isInside()) {
+            return;
+        }
         List<T> list = getList();
         if (list == null) {
             return;
@@ -87,11 +90,19 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         animateOut(list.get(position).getId());
     }
 
+    @ShouldCheckIsInside
     public void onItemAtPositionLongClicked(int position) {
+        if (!isInside()) {
+            return;
+        }
         askDeleteItem(position);
     }
 
+    @ShouldCheckIsInside
     public void onItemDismissed(int position) {
+        if (!isInside()) {
+            return;
+        }
         askDeleteItem(position);
     }
 
@@ -103,10 +114,17 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().showItemSelected(-1);
     }
 
-
     public void onReloadList() {
         doLoadList();
         updateView();
+    }
+
+    @ShouldCheckIsInside
+    public void onToolbarClicked() {
+        if (!isInside()) {
+            return;
+        }
+        getView().scrollListToTop();
     }
 
     private void askDeleteItem(int position) {

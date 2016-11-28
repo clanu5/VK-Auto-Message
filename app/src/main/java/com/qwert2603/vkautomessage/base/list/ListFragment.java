@@ -1,7 +1,5 @@
 package com.qwert2603.vkautomessage.base.list;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,18 +9,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
+import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.Identifiable;
-import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 
 import java.util.List;
@@ -31,13 +27,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Фрагмент для отображения списка и показа in/out-анимаций.
- * Отображает сообщение об ошибке/загрузке/пустом списке или сам список.
+ * Фрагмент для отображения сообщения об ошибке/загрузке/пустом списке или самого список.
  * Обрабатывает запросы на удаление элемента и переход к подробностям об элементе.
  *
  * @param <T> тип элемента списка
  */
-public abstract class ListFragment<T extends Identifiable> extends BaseFragment<ListPresenter> implements ListView<T> {
+public abstract class ListFragment<T extends Identifiable> extends InOutAnimationFragment<ListPresenter> implements ListView<T> {
 
     private static final int POSITION_EMPTY_VIEW = 0;
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
@@ -48,24 +43,16 @@ public abstract class ListFragment<T extends Identifiable> extends BaseFragment<
     protected static final int REQUEST_DETAILS_FOT_ITEM = 2;
 
     @BindView(R.id.view_animator)
-    ViewAnimator mViewAnimator;
+    protected ViewAnimator mViewAnimator;
 
     @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    protected RecyclerView mRecyclerView;
 
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
     @LayoutRes
     protected abstract int getLayoutRes();
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        // TODO: 25.11.2016 скроллинг на самый верх при нажатии на тулбар во всех списках
-        // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
-    }
 
     @NonNull
     @Override
@@ -76,7 +63,6 @@ public abstract class ListFragment<T extends Identifiable> extends BaseFragment<
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(getAdapter());
-        mRecyclerView.setItemAnimator(new RecyclerItemAnimator());
 
         getAdapter().setClickCallback(getPresenter()::onItemAtPositionClicked);
         getAdapter().setLongClickCallback(getPresenter()::onItemAtPositionLongClicked);
@@ -86,6 +72,8 @@ public abstract class ListFragment<T extends Identifiable> extends BaseFragment<
 
             getPresenter().onItemDismissed(position);
         });
+
+        ((ToolbarHolder) getActivity()).getToolbarTitle().setOnClickListener(v -> getPresenter().onToolbarClicked());
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(getAdapter()));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
@@ -102,9 +90,10 @@ public abstract class ListFragment<T extends Identifiable> extends BaseFragment<
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        getPresenter().onReadyToAnimateIn();
+    public void onDestroy() {
+        // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        super.onDestroy();
     }
 
     @Override
@@ -168,36 +157,9 @@ public abstract class ListFragment<T extends Identifiable> extends BaseFragment<
         getAdapter().notifyItemInserted(position);
     }
 
-    protected abstract Animator createInAnimator(boolean withLargeDelay);
-
     @Override
-    public void animateIn(boolean withLargeDelay) {
-        Animator inAnimator = createInAnimator(withLargeDelay);
-        inAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                getPresenter().onAnimateInFinished();
-            }
-        });
-        inAnimator.start();
-    }
-
-    protected abstract Animator createOutAnimator();
-
-    @Override
-    public void animateOut(int id) {
-        Animator outAnimator = createOutAnimator();
-        outAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                getPresenter().onAnimateOutFinished(id);
-            }
-        });
-        outAnimator.start();
-    }
-
-    protected RecyclerView getRecyclerView() {
-        return mRecyclerView;
+    public void scrollListToTop() {
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
