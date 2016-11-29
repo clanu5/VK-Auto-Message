@@ -19,6 +19,7 @@ import rx.subscriptions.Subscriptions;
 public class UserListPresenter extends ListPresenter<User, List<User>, UserListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
+    private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -28,7 +29,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
-        mRxBus.toObservable()
+        mRxBusSubscription = mRxBus.toObservable()
                 .subscribe(event -> {
                     if (event.mEvent == RxBus.Event.EVENT_USERS_PHOTO_UPDATED) {
                         doLoadList();
@@ -61,6 +62,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     @Override
     public void unbindView() {
+        mRxBusSubscription.unsubscribe();
         mSubscription.unsubscribe();
         super.unbindView();
     }

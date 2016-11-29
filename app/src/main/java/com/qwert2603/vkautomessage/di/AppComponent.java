@@ -94,8 +94,6 @@ public interface AppComponent {
 
     void inject(EditPeriodDialog editPeriodDialog);
 
-    void inject(RecordListAdapter recordListAdapter);
-
     void inject(EditRepeatTypeDialog editRepeatTypeDialog);
 
     void inject(EditDaysInWeekDialog editDaysInWeekDialog);

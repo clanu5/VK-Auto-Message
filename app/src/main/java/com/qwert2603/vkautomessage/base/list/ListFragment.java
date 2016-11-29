@@ -97,6 +97,13 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     }
 
     @Override
+    public void onDestroyView() {
+        ((ToolbarHolder) getActivity()).getToolbarTitle().setOnClickListener(null);
+        mRecyclerView.setAdapter(null);
+        super.onDestroyView();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getPresenter().onReloadList();

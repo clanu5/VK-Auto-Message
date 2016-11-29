@@ -12,6 +12,8 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.qwert2603.vkautomessage.di.AppComponent;
 import com.qwert2603.vkautomessage.di.AppModule;
 import com.qwert2603.vkautomessage.di.DaggerAppComponent;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKSdk;
 
 import java.io.File;
@@ -24,9 +26,16 @@ public class VkAutoMessageApplication extends Application {
         return sAppComponent;
     }
 
+    public static RefWatcher sRefWatcher;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        sRefWatcher = LeakCanary.install(VkAutoMessageApplication.this);
 
         sAppComponent = buildAppComponent();
 

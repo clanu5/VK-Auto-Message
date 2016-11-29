@@ -26,6 +26,7 @@ import rx.subscriptions.Subscriptions;
 public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
+    private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -52,7 +53,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
-        mRxBus.toObservable()
+        mRxBusSubscription = mRxBus.toObservable()
                 .subscribe(event -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
@@ -84,6 +85,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     @Override
     public void unbindView() {
         mSubscription.unsubscribe();
+        mRxBusSubscription.unsubscribe();
         super.unbindView();
     }
 

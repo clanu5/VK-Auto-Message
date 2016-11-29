@@ -1,6 +1,5 @@
 package com.qwert2603.vkautomessage.record_list;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +25,7 @@ import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter> {
 
-    @Inject
-    Context mAppContext;
-
     public RecordListAdapter() {
-        VkAutoMessageApplication.getAppComponent().inject(RecordListAdapter.this);
     }
 
     @Override

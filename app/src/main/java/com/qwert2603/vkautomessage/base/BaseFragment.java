@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+
 /**
  * Базовый фрагмент, построенный для работы с шаблоном MVP.
  * Организует взаимодействие с презентером:
@@ -39,6 +41,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     public void onDestroy() {
         getPresenter().unbindView();
         super.onDestroy();
+        VkAutoMessageApplication.sRefWatcher.watch(this);
     }
 
     @CallSuper

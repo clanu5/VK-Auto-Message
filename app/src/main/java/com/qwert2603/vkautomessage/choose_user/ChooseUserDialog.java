@@ -125,6 +125,12 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void onDestroyView() {
+        mRecyclerView.setAdapter(null);
+        super.onDestroyView();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mChooseUserPresenter.onReadyToAnimateIn();

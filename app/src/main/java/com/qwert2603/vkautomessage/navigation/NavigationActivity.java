@@ -28,6 +28,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ToolbarHolder {
 
@@ -55,6 +57,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @Inject
     RxBus mRxBus;
 
+    private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
+
     protected abstract boolean isNavigationButtonVisible();
 
     protected abstract Fragment createFragment();
@@ -70,7 +74,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
         setSupportActionBar(mToolbar);
 
-        mRxBus.toObservable().subscribe(
+        mRxBusSubscription = mRxBus.toObservable().subscribe(
                 event -> {
                     if (event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED && event.mObject instanceof Boolean) {
                         MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.show_errors);
@@ -150,6 +154,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     @Override
     protected void onDestroy() {
+        mRxBusSubscription.unsubscribe();
         mNavigationPresenter.onViewNotReady();
         mNavigationPresenter.unbindView();
         super.onDestroy();
