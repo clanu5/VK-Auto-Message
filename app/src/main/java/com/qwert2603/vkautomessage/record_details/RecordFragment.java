@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,7 +60,7 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
     TextView mUsernameTextView;
 
     @BindView(R.id.enable_switch)
-    Switch mEnableSwitch;
+    SwitchCompat mEnableSwitch;
 
     @BindView(R.id.message_text_view)
     TextView mMessageTextView;
@@ -111,6 +111,10 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
         View view = inflater.inflate(R.layout.fragment_record_details, container, false);
 
         ButterKnife.bind(RecordFragment.this, view);
+
+        // TODO: 29.11.2016 ripple эффект на всех cardView
+
+        // TODO: 29.11.2016 transition для всех диалогов
 
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
@@ -175,6 +179,7 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
     @Override
     public void showEnabled(boolean enabled) {
         mEnableSwitch.setChecked(enabled);
+        mEnableSwitch.jumpDrawablesToCurrentState();
     }
 
     @Override

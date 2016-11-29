@@ -29,6 +29,7 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.recycler.SimpleItemDecoration;
 
 import javax.inject.Inject;
 
@@ -82,6 +83,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         ButterKnife.bind(UserListFragment.this, view);
 
         mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
+
+        mRecyclerView.addItemDecoration(new SimpleItemDecoration(getActivity()));
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
 
@@ -151,6 +154,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         objectAnimator1.setStartDelay(withLargeDelay ? 100 : 200);
         objectAnimator1.setDuration(400);
 
+        // TODO: 29.11.2016 анимировать появление FAB сразу после появления списка (delay зависит от размера списка)
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
         objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 100);
         objectAnimator2.setDuration(400);
@@ -163,6 +167,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     protected Animator createOutAnimator() {
+        // TODO: 29.11.2016 на API 19 после завершения иконка тулбара почему-то возвращается
+
         int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", mChooseUserFAB.getHeight() + fabBottomMargin);
         objectAnimator.setDuration(300);

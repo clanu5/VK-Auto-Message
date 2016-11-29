@@ -43,6 +43,8 @@ public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> 
 
     @Override
     public void animateOut(int id) {
+        // TODO: 29.11.2016 уничтожать активити после out-анимации
+        // NavigationActivity#onBackPressed
         Animator outAnimator = createOutAnimator();
         outAnimator.addListener(new AnimatorListenerAdapter() {
             @Override

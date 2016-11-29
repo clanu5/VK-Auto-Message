@@ -60,6 +60,7 @@ public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements
         super.onCreate(savedInstanceState);
     }
 
+    @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

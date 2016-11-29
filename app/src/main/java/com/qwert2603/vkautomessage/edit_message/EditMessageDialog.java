@@ -59,6 +59,7 @@ public class EditMessageDialog extends BaseDialog<EditMessagePresenter> implemen
         super.onCreate(savedInstanceState);
     }
 
+    @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

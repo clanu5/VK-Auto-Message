@@ -60,6 +60,7 @@ public class EditRepeatTypeDialog extends BaseDialog<EditRepeatTypePresenter> im
         mRepeatTypes = getResources().getStringArray(R.array.repeat_types);
     }
 
+    @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

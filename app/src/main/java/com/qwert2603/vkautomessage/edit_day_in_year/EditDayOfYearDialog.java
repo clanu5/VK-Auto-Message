@@ -53,6 +53,7 @@ public class EditDayOfYearDialog extends BaseDialog<EditDayInYearPresenter> impl
         super.onCreate(savedInstanceState);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Calendar calendar = Calendar.getInstance();

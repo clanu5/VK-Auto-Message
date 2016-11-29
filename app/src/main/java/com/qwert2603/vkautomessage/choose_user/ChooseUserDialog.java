@@ -81,6 +81,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         super.onCreate(savedInstanceState);
     }
 
+    @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

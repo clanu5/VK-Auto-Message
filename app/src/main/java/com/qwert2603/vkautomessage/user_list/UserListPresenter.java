@@ -32,6 +32,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mRxBusSubscription = mRxBus.toObservable()
                 .subscribe(event -> {
                     if (event.mEvent == RxBus.Event.EVENT_USERS_PHOTO_UPDATED) {
+                        // TODO: 29.11.2016 анимация изменения авы
                         doLoadList();
                     }
                 }, LogUtils::e);

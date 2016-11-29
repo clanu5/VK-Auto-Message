@@ -85,6 +85,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
 
+        // TODO: 29.11.2016 http://frogermcs.github.io/Instagram-with-Material-Design-concept-part-2-Comments-transition/
+        // на всех активити
+        // Expanding CommentsActivity from tapped place
+        // Static Toolbar
+        // Exit transition
+
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);

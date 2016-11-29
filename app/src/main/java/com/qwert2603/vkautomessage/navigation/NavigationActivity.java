@@ -1,10 +1,10 @@
 package com.qwert2603.vkautomessage.navigation;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -91,7 +91,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
                         mNavigationPresenter.onLogOutClicked();
                         return true;
                     case R.id.show_errors:
-                        ErrorsShowDialog.newInstance().show(getFragmentManager(), "");
+                        ErrorsShowDialog.newInstance().show(getSupportFragmentManager(), "");
                         return true;
                 }
                 return false;
@@ -121,10 +121,10 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mNavigationPresenter.bindView(this);
         mNavigationPresenter.onViewReady();
 
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             fragment = createFragment();
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commitAllowingStateLoss();

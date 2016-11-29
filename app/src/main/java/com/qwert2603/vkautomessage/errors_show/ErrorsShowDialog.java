@@ -47,6 +47,7 @@ public class ErrorsShowDialog extends BaseDialog<ErrorsShowPresenter> implements
         mPresenter = presenter;
     }
 
+    @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

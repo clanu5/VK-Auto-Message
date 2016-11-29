@@ -95,6 +95,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @ShouldCheckIsInningOrInside
     public void onItemAtPositionLongClicked(int position) {
+        // TODO: 29.11.2016 начинать множественное выделение на longClick (чтобы удалять сразу несколько потом)
         if (!isInningOrInside()) {
             return;
         }

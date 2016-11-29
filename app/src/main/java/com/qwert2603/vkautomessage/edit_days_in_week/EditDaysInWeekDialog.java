@@ -66,6 +66,7 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
         mDaysOfWeek = getResources().getStringArray(R.array.days_of_week);
     }
 
+    @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

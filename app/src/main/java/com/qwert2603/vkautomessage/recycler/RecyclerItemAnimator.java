@@ -1,12 +1,16 @@
 package com.qwert2603.vkautomessage.recycler;
 
 import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+
+import com.qwert2603.vkautomessage.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +32,8 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         LEFT_OR_RIGHT
     }
 
-    private Map<RecyclerView.ViewHolder, Animator> mEnterAnimation = new HashMap<>();
+    private Map<RecyclerView.ViewHolder, Animator> mEnterAnimations = new HashMap<>();
+    private Map<RecyclerView.ViewHolder, Animator> mRemoveAnimations = new HashMap<>();
 
     private EnterOrigin mEnterOrigin = EnterOrigin.BOTTOM;
 
@@ -37,6 +42,11 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     private Set<Integer> mItemsToAnimateEnter = new HashSet<>();
     private boolean mAlwaysAnimateEnter = true;
     private boolean mDelayEnter = false;
+
+    @Override
+    public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
+        return true;
+    }
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
@@ -48,6 +58,41 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
         dispatchAddFinished(holder);
         return false;
+    }
+
+    @Override
+    public boolean animateRemove(RecyclerView.ViewHolder holder) {
+        // TODO: 29.11.2016 сделать нормальнцю анимацию и одновременном удалении нескольких элементов
+        runRemoveAnimation(holder);
+        return false;
+    }
+
+    private int REM_DUR = 300;
+
+    @Override
+    public void runPendingAnimations() {
+        if (mRemoveAnimations.isEmpty()) {
+            super.runPendingAnimations();
+        } else {
+            //new Handler(Looper.getMainLooper()).postDelayed(RecyclerItemAnimator.super::runPendingAnimations, REM_DUR);
+        }
+    }
+
+    private void runRemoveAnimation(RecyclerView.ViewHolder viewHolder) {
+        Animator animator = AnimatorInflater.loadAnimator(viewHolder.itemView.getContext(), R.animator.item_remove_rotate);
+        animator.setTarget(viewHolder.itemView);
+        animator.setDuration(REM_DUR);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                resetItemViewStateAfterRemove(viewHolder);
+                dispatchRemoveFinished(viewHolder);
+                mRemoveAnimations.remove(viewHolder);
+                runPendingAnimations();
+            }
+        });
+        mRemoveAnimations.put(viewHolder, animator);
+        animator.start();
     }
 
     private void runEnterAnimation(RecyclerView.ViewHolder viewHolder) {
@@ -105,25 +150,39 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
             @Override
             public void onAnimationEnd(Animator animation) {
                 dispatchAddFinished(viewHolder);
-                mEnterAnimation.remove(viewHolder);
+                mEnterAnimations.remove(viewHolder);
             }
         });
-        mEnterAnimation.put(viewHolder, objectAnimator);
+        mEnterAnimations.put(viewHolder, objectAnimator);
         objectAnimator.start();
+    }
+
+    private void resetItemViewStateAfterRemove(RecyclerView.ViewHolder viewHolder) {
+        viewHolder.itemView.setScaleX(1);
+        viewHolder.itemView.setScaleY(1);
+        viewHolder.itemView.setRotationY(0);
     }
 
     @Override
     public void endAnimation(RecyclerView.ViewHolder item) {
-        if (mEnterAnimation.containsKey(item)) {
-            mEnterAnimation.remove(item).cancel();
+        if (mEnterAnimations.containsKey(item)) {
+            mEnterAnimations.remove(item).cancel();
+        }
+        if (mRemoveAnimations.containsKey(item)) {
+            mRemoveAnimations.remove(item).cancel();
         }
         super.endAnimation(item);
     }
 
     @Override
     public void endAnimations() {
-        List<Animator> animators = new ArrayList<>(mEnterAnimation.values());
-        mEnterAnimation.clear();
+        List<Animator> animators = new ArrayList<>(mEnterAnimations.values());
+        mEnterAnimations.clear();
+        for (Animator animator : animators) {
+            animator.cancel();
+        }
+        animators = new ArrayList<>(mRemoveAnimations.values());
+        mRemoveAnimations.clear();
         for (Animator animator : animators) {
             animator.cancel();
         }

@@ -51,6 +51,7 @@ public class EditTimeDialog extends BaseDialog<EditTimePresenter> implements Edi
         super.onCreate(savedInstanceState);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new TimePickerDialog(getActivity(),

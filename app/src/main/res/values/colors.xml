@@ -5,6 +5,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="divider">#7777</color>
+
     <color name="dialog_delete_record_title">#111111</color>
     <color name="user_name">#6F4081</color>
     <color name="enabled_records_count">#FF9021</color>

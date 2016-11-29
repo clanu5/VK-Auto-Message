@@ -106,6 +106,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     @Override
     public void onResume() {
         super.onResume();
+        // TODO: 29.11.2016 загружать список при возвращении от DETAILS_FOT_ITEM, а не в onResume (на всех активити)
         getPresenter().onReloadList();
     }
 
@@ -185,6 +186,8 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
     @Override
     public void scrollListToBottom() {
+        // TODO: 29.11.2016 сделать плавный скроллинг на другой конец списка
+        // может, сначала scrollToPosition, а потом smoothScrollToPosition
         mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
     }
 

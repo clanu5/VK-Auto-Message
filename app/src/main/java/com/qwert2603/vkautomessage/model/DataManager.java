@@ -268,6 +268,7 @@ public class DataManager {
      * @param userObservable пользователи, которые будут обновлены.
      */
     private <U extends User> void updateUsersInDatabase(Observable<List<U>> userObservable) {
+        // TODO: 29.11.2016 отправлять event для каждого обновленного друга отдельно, чтобы в презентере не перезагружаь весь список
         userObservable
                 .flatMap(Observable::from)
                 .flatMap(user -> mDatabaseHelper.updateUser(user))

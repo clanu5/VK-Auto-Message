@@ -1,9 +1,9 @@
 package com.qwert2603.vkautomessage.base;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 
