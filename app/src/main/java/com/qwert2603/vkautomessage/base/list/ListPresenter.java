@@ -109,6 +109,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         askDeleteItem(position);
     }
 
+    @ShouldCheckIsInningOrInside
     public void onItemDeleteSubmitted(int id) {
         getView().showItemSelected(-1);
     }

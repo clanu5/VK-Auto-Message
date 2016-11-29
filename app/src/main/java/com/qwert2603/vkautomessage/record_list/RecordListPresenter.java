@@ -166,26 +166,24 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         }
         super.onItemDeleteSubmitted(id);
         int position = getRecordPosition(id);
+        RecordListWithUser model = getModel();
+        RecordListView view = getView();
+        List<Record> recordList = model.mRecordList;
+        User user = model.mUser;
+        user.setRecordsCount(user.getRecordsCount() - 1);
+        if (recordList.get(position).isEnabled()) {
+            user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
+        }
+        recordList.remove(position);
+        if (recordList.size() > 0) {
+            showUserNameAndRecordsCount(user, view);
+            view.notifyItemRemoved(position);
+        } else {
+            updateView();
+        }
+
         mDataManager.removeRecord(id)
                 .subscribe(aLong -> {
-                    RecordListWithUser model = getModel();
-                    RecordListView view = getView();
-                    if (model == null || view == null) {
-                        return;
-                    }
-                    List<Record> recordList = model.mRecordList;
-                    User user = model.mUser;
-                    user.setRecordsCount(user.getRecordsCount() - 1);
-                    if (recordList.get(position).isEnabled()) {
-                        user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
-                    }
-                    recordList.remove(position);
-                    if (recordList.size() > 0) {
-                        showUserNameAndRecordsCount(user, view);
-                        view.notifyItemRemoved(position);
-                    } else {
-                        updateView();
-                    }
                 }, LogUtils::e);
     }
 
