@@ -77,7 +77,9 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     @Override
     public void onAnimateOutFinished(int id) {
         super.onAnimateOutFinished(id);
-        getView().moveToDetailsForItem(id);
+        if (id != InOutAnimationPresenter.ON_BACK_PRESSED_ANIMATE_OUT_ID) {
+            getView().moveToDetailsForItem(id);
+        }
     }
 
     @ShouldCheckIsInningOrInside

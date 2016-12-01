@@ -26,10 +26,13 @@ import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
-import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
+import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleItemDecoration;
+import com.qwert2603.vkautomessage.util.LogUtils;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -129,6 +132,14 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
+    public void notifyUsersUpdated(List<Integer> updatedUserPositions) {
+        LogUtils.d("updatedUserPositions " + updatedUserPositions);
+        for (Integer updatedUserPosition : updatedUserPositions) {
+            mUserListAdapter.notifyItemChanged(updatedUserPosition);
+        }
+    }
+
+    @Override
     public void askDeleteItem(int id) {
         DeleteUserDialog deleteUserDialog = DeleteUserDialog.newInstance(id);
         deleteUserDialog.setTargetFragment(UserListFragment.this, REQUEST_DELETE_ITEM);
@@ -143,8 +154,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
@@ -174,9 +185,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new OvershootInterpolator());
 
-        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
         objectAnimator1.setDuration(300);
@@ -192,9 +203,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     public void prepareForIn() {
-        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
         toolbarTitle.setTranslationY(-1 * toolbar.getHeight());

@@ -25,7 +25,7 @@ import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
-import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
+import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
@@ -100,7 +100,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void showUserName(String userName) {
-        ((ToolbarHolder) getActivity()).setToolbarTitle(userName);
+        ((ActivityInterface) getActivity()).setToolbarTitle(userName);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mRepeatInfoTextView;
             CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
-            View toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+            View toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(timeTextView, timeTextView.getTransitionName()),
@@ -146,7 +146,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
@@ -165,7 +165,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createOutAnimator() {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
 
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
@@ -183,7 +183,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void prepareForIn() {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
 

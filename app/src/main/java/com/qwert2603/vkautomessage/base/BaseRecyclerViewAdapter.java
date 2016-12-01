@@ -106,6 +106,7 @@ public abstract class BaseRecyclerViewAdapter
     @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(VH holder, int position) {
+        LogUtils.d("onBindViewHolder " + holder + " " + position);
         M model = mModelList.get(position);
         // назначаем модель viewHolder'у элемента.
         holder.setModel(model);
@@ -121,6 +122,7 @@ public abstract class BaseRecyclerViewAdapter
 
     @Override
     public void onViewRecycled(VH holder) {
+        LogUtils.d("onViewRecycled " + holder);
         super.onViewRecycled(holder);
         // отвязываем презентер от переработанного представления.
         holder.unbindPresenter();
@@ -128,7 +130,7 @@ public abstract class BaseRecyclerViewAdapter
 
     @Override
     public boolean onFailedToRecycleView(VH holder) {
-        LogUtils.d("onFailedToRecycleView " + holder);
+        LogUtils.e("onFailedToRecycleView " + holder);
         // в случае ошибки переработки отвязяваем презентер.
         holder.unbindPresenter();
         return super.onFailedToRecycleView(holder);

@@ -18,7 +18,7 @@ import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
 import com.qwert2603.vkautomessage.model.Identifiable;
-import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
+import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 
@@ -83,7 +83,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
             getPresenter().onItemDismissed(position);
         });
 
-        ((ToolbarHolder) getActivity()).getToolbarTitle().setOnClickListener(v -> getPresenter().onToolbarClicked());
+        ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(v -> getPresenter().onToolbarClicked());
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(getAdapter()));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
@@ -98,7 +98,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
     @Override
     public void onDestroyView() {
-        ((ToolbarHolder) getActivity()).getToolbarTitle().setOnClickListener(null);
+        ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(null);
         mRecyclerView.setAdapter(null);
         super.onDestroyView();
     }

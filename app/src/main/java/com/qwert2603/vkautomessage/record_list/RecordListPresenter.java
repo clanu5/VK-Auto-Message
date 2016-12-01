@@ -53,26 +53,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
-        mRxBusSubscription = mRxBus.toObservable()
-                .subscribe(event -> {
-                    RecordListWithUser model = getModel();
-                    RecordListView view = getView();
-                    if (model == null || view == null) {
-                        return;
-                    }
-                    User user = model.mUser;
-                    if (event.mEvent == RxBus.Event.EVENT_RECORD_ENABLED_CHANGED) {
-                        if (event.mObject instanceof Record) {
-                            Record record = (Record) event.mObject;
-                            if (record.getUserId() == user.getId()) {
-                                int enabledRecordsCount = user.getEnabledRecordsCount();
-                                enabledRecordsCount += record.isEnabled() ? 1 : -1;
-                                user.setEnabledRecordsCount(enabledRecordsCount);
-                                showUserNameAndRecordsCount(user, view);
-                            }
-                        }
-                    }
-                }, LogUtils::e);
     }
 
     public void setUserId(int userId) {
@@ -83,9 +63,35 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     }
 
     @Override
+    public void bindView(RecordListView view) {
+        super.bindView(view);
+        mRxBusSubscription = mRxBus.toObservable()
+                .filter(event -> event.mEvent == RxBus.Event.EVENT_RECORD_ENABLED_CHANGED)
+                .subscribe(event -> {
+                    RecordListWithUser model = getModel();
+                    RecordListView view1 = getView();
+                    if (model == null || view1 == null) {
+                        return;
+                    }
+                    User user = model.mUser;
+                    if (event.mObject instanceof Record) {
+                        Record record = (Record) event.mObject;
+                        if (record.getUserId() == user.getId()) {
+                            int enabledRecordsCount = user.getEnabledRecordsCount();
+                            enabledRecordsCount += record.isEnabled() ? 1 : -1;
+                            user.setEnabledRecordsCount(enabledRecordsCount);
+                            showUserNameAndRecordsCount(user, view1);
+                        }
+                    }
+
+                }, LogUtils::e);
+    }
+
+    @Override
     public void unbindView() {
         mSubscription.unsubscribe();
         mRxBusSubscription.unsubscribe();
+        mRxBusSubscription = Subscriptions.unsubscribed();
         super.unbindView();
     }
 

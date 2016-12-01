@@ -69,12 +69,6 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         }
 
         @Override
-        public void unbindPresenter() {
-            mPhotoImageView.setImageBitmap(null);
-            super.unbindPresenter();
-        }
-
-        @Override
         public void showName(String name) {
             mUsernameTextView.setText(name);
         }

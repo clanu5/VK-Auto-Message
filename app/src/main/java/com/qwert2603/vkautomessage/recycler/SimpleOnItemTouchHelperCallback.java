@@ -63,7 +63,7 @@ public class SimpleOnItemTouchHelperCallback extends ItemTouchHelper.Callback {
             } else {
                 c.drawRect(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), viewHolder.itemView.getLeft() + dX, viewHolder.itemView.getBottom(), paint);
             }
-            Drawable drawable = ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.ic_delete_black_24dp);
+            Drawable drawable = ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.ic_delete_white_24dp);
             drawable.setBounds(
                     viewHolder.itemView.getLeft(),
                     viewHolder.itemView.getTop(),

@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.animation.DecelerateInterpolator;
@@ -43,10 +42,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     private boolean mAlwaysAnimateEnter = true;
     private boolean mDelayEnter = false;
 
-    @Override
-    public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
-        return true;
-    }
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
@@ -62,7 +57,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     @Override
     public boolean animateRemove(RecyclerView.ViewHolder holder) {
-        // TODO: 29.11.2016 сделать нормальнцю анимацию и одновременном удалении нескольких элементов
+        // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
         runRemoveAnimation(holder);
         return false;
     }
@@ -85,7 +80,9 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                resetItemViewStateAfterRemove(viewHolder);
+                viewHolder.itemView.setScaleX(1);
+                viewHolder.itemView.setScaleY(1);
+                viewHolder.itemView.setRotationY(0);
                 dispatchRemoveFinished(viewHolder);
                 mRemoveAnimations.remove(viewHolder);
                 runPendingAnimations();
@@ -157,21 +154,19 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         objectAnimator.start();
     }
 
-    private void resetItemViewStateAfterRemove(RecyclerView.ViewHolder viewHolder) {
-        viewHolder.itemView.setScaleX(1);
-        viewHolder.itemView.setScaleY(1);
-        viewHolder.itemView.setRotationY(0);
-    }
-
-    @Override
-    public void endAnimation(RecyclerView.ViewHolder item) {
+    private void cancelCurrentAnimationIfExist(RecyclerView.ViewHolder item) {
         if (mEnterAnimations.containsKey(item)) {
             mEnterAnimations.remove(item).cancel();
         }
         if (mRemoveAnimations.containsKey(item)) {
             mRemoveAnimations.remove(item).cancel();
         }
+    }
+
+    @Override
+    public void endAnimation(RecyclerView.ViewHolder item) {
         super.endAnimation(item);
+        cancelCurrentAnimationIfExist(item);
     }
 
     @Override

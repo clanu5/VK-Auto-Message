@@ -74,11 +74,6 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void unbindPresenter() {
-            super.unbindPresenter();
-        }
-
-        @Override
         public ImageView getPhotoImageView() {
             return null;
         }
@@ -157,6 +152,10 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         public void prepareForIn() {
+        }
+
+        @Override
+        public void performBackPressed() {
         }
     }
 }

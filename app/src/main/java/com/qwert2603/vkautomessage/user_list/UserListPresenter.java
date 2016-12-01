@@ -9,7 +9,9 @@ import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,13 +31,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
-        mRxBusSubscription = mRxBus.toObservable()
-                .subscribe(event -> {
-                    if (event.mEvent == RxBus.Event.EVENT_USERS_PHOTO_UPDATED) {
-                        // TODO: 29.11.2016 анимация изменения авы
-                        doLoadList();
-                    }
-                }, LogUtils::e);
     }
 
     @Override
@@ -59,11 +54,34 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         if (getModel() == null && mSubscription.isUnsubscribed()) {
             doLoadList();
         }
+        mRxBusSubscription = mRxBus.toObservable()
+                .filter(event -> event.mEvent == RxBus.Event.EVENT_USERS_VK_DATA_UPDATED)
+                .subscribe(event -> {
+                    List<User> userList = getModel();
+                    Map<Integer, User> updatedUsers = (Map<Integer, User>) event.mObject;
+                    if (userList == null || updatedUsers == null) {
+                        return;
+                    }
+                    List<Integer> updatedPositions = new ArrayList<>();
+                    for (int i = 0; i < userList.size(); i++) {
+                        int id = userList.get(i).getId();
+                        if (updatedUsers.containsKey(id)) {
+                            userList.get(i).setVkDataFrom(updatedUsers.get(id));
+                            updatedPositions.add(i);
+                        }
+                    }
+                    UserListView view1 = getView();
+                    if (view1 == null || updatedPositions.isEmpty()) {
+                        return;
+                    }
+                    view1.notifyUsersUpdated(updatedPositions);
+                }, LogUtils::e);
     }
 
     @Override
     public void unbindView() {
         mRxBusSubscription.unsubscribe();
+        mRxBusSubscription = Subscriptions.unsubscribed();
         mSubscription.unsubscribe();
         super.unbindView();
     }

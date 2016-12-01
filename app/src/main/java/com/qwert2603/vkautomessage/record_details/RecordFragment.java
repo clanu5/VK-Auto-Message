@@ -27,7 +27,7 @@ import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.navigation.ToolbarHolder;
+import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 
 import javax.inject.Inject;
 
@@ -255,8 +255,8 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
 
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
@@ -273,9 +273,9 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
 
     @Override
     protected Animator createOutAnimator() {
-        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
         objectAnimator.setDuration(200);
@@ -292,9 +292,9 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
 
     @Override
     public void prepareForIn() {
-        Toolbar toolbar = ((ToolbarHolder) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ToolbarHolder) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ToolbarHolder) getActivity()).getToolbarTitle();
+        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
+        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
         toolbarTitle.setTranslationY(-1 * toolbar.getHeight());

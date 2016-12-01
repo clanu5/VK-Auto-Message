@@ -4,9 +4,11 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public interface ToolbarHolder {
+public interface ActivityInterface {
     Toolbar getToolbar();
     TextView getToolbarTitle();
     ImageView getToolbarIcon();
     void setToolbarTitle(String title);
+    void setOnBackPressedListener(OnBackPressedListener onBackPressedListener);
+    void performOnBackPressed();
 }

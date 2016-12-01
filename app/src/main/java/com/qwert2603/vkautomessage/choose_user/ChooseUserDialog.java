@@ -193,14 +193,12 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void showListEnter(List<VkUser> list) {
-        LogUtils.d("ChooseUserDialog showListEnter" + list);
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
         mChooseUserAdapter.insertModelList(list);
     }
 
     @Override
     public void showList(List<VkUser> list) {
-        LogUtils.d("ChooseUserDialog showList" + list);
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
         mChooseUserAdapter.replaceModelList(list);
     }
@@ -252,7 +250,10 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void prepareForIn() {
-        // nth
+    }
+
+    @Override
+    public void performBackPressed() {
     }
 
     @Override

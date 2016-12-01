@@ -24,4 +24,7 @@ public final class LogUtils {
         Log.e(APP_TAG, ERROR_MSG, t);
     }
 
+    public static void e(String s) {
+        Log.e(APP_TAG, s);
+    }
 }

@@ -3,6 +3,8 @@ package com.qwert2603.vkautomessage.model;
 import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
+import java.util.Objects;
+
 public class User implements Identifiable {
 
     public static final int NO_INFO = -1;
@@ -91,5 +93,19 @@ public class User implements Identifiable {
     @Override
     public String toString() {
         return mId + " " + StringUtils.getUserName(User.this) + " " + mPhoto;
+    }
+
+    public boolean equalsVkData(User user) {
+        return user.mId == mId
+                && Objects.equals(user.mFirstName, mFirstName)
+                && Objects.equals(user.mLastName, mLastName)
+                && Objects.equals(user.mPhoto, mPhoto);
+    }
+
+    public void setVkDataFrom(User user) {
+        mId = user.mId;
+        mFirstName = user.mFirstName;
+        mLastName = user.mLastName;
+        mPhoto = user.mPhoto;
     }
 }

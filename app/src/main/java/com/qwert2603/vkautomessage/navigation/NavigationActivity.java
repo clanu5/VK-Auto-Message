@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ToolbarHolder {
+public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ActivityInterface {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -59,6 +59,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
+    private OnBackPressedListener mOnBackPressedListener;
+
     protected abstract boolean isNavigationButtonVisible();
 
     protected abstract Fragment createFragment();
@@ -74,14 +76,14 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
         setSupportActionBar(mToolbar);
 
-        mRxBusSubscription = mRxBus.toObservable().subscribe(
-                event -> {
-                    if (event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED && event.mObject instanceof Boolean) {
+        mRxBusSubscription = mRxBus.toObservable()
+                .filter(event -> event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED)
+                .subscribe(event -> {
+                    if (event.mObject instanceof Boolean) {
                         MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.show_errors);
                         menuItem.setVisible((Boolean) event.mObject);
                     }
-                }, LogUtils::e
-        );
+                }, LogUtils::e);
 
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(item -> {
@@ -165,7 +167,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (mOnBackPressedListener != null) {
+                mOnBackPressedListener.onBackPressed();
+            }
         }
     }
 
@@ -232,5 +236,15 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @Override
     public void setToolbarTitle(String title) {
         mToolbarTitleTextView.setText(title);
+    }
+
+    @Override
+    public void setOnBackPressedListener(OnBackPressedListener onBackPressedListener) {
+        mOnBackPressedListener = onBackPressedListener;
+    }
+
+    @Override
+    public void performOnBackPressed() {
+        super.onBackPressed();
     }
 }

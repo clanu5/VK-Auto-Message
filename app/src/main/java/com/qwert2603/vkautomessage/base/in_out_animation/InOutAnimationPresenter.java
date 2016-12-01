@@ -15,6 +15,9 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
  * @param <V> тип представления, которым управляет презентер.
  */
 public abstract class InOutAnimationPresenter<M, V extends InOutAnimationView> extends BasePresenter<M, V> {
+
+    public static final int ON_BACK_PRESSED_ANIMATE_OUT_ID = -1;
+
     private enum InOutState {
         FIRST_TIME,
         OUTSIDE,
@@ -43,12 +46,19 @@ public abstract class InOutAnimationPresenter<M, V extends InOutAnimationView> e
         }
     }
 
+    public void onBackPressed() {
+        animateOut(ON_BACK_PRESSED_ANIMATE_OUT_ID);
+    }
+
     public void onAnimateInFinished() {
         mInOutState = InOutState.INSIDE;
     }
 
     public void onAnimateOutFinished(int id) {
         mInOutState = InOutState.OUTSIDE;
+        if (id == ON_BACK_PRESSED_ANIMATE_OUT_ID) {
+            getView().performBackPressed();
+        }
     }
 
     /**

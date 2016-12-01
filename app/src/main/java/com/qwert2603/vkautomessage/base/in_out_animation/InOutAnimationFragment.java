@@ -2,11 +2,14 @@ package com.qwert2603.vkautomessage.base.in_out_animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 
 /**
  * Фрагмент для отображения списка и показа in/out-анимаций.
@@ -30,6 +33,18 @@ public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> 
     protected abstract Animator createOutAnimator();
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((ActivityInterface) context).setOnBackPressedListener(() -> getPresenter().onBackPressed());
+    }
+
+    @Override
+    public void onDetach() {
+        ((ActivityInterface) getActivity()).setOnBackPressedListener(null);
+        super.onDetach();
+    }
+
+    @Override
     public void animateIn(boolean withLargeDelay) {
         Animator inAnimator = createInAnimator(withLargeDelay);
         inAnimator.addListener(new AnimatorListenerAdapter() {
@@ -43,8 +58,6 @@ public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> 
 
     @Override
     public void animateOut(int id) {
-        // TODO: 29.11.2016 уничтожать активити после out-анимации
-        // NavigationActivity#onBackPressed
         Animator outAnimator = createOutAnimator();
         outAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -55,4 +68,11 @@ public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> 
         outAnimator.start();
     }
 
+    @Override
+    public void performBackPressed() {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            ((ActivityInterface) activity).performOnBackPressed();
+        }
+    }
 }

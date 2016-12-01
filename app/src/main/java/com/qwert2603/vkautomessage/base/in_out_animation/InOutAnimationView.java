@@ -9,4 +9,5 @@ public interface InOutAnimationView extends BaseView {
     void animateIn(boolean withLargeDelay);
     void animateOut(int id);
     void prepareForIn();
+    void performBackPressed();
 }

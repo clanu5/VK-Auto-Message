@@ -11,6 +11,7 @@ import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -268,17 +269,20 @@ public class DataManager {
      * @param userObservable пользователи, которые будут обновлены.
      */
     private <U extends User> void updateUsersInDatabase(Observable<List<U>> userObservable) {
-        // TODO: 29.11.2016 отправлять event для каждого обновленного друга отдельно, чтобы в презентере не перезагружаь весь список
-        userObservable
+        mDatabaseHelper.getAllUsers()
                 .flatMap(Observable::from)
-                .flatMap(user -> mDatabaseHelper.updateUser(user))
+                .toMap(User::getId, user -> user, HashMap::new)
+                .flatMap(dbUsers -> userObservable
+                        .flatMap(Observable::from)
+                        .filter(vkUser -> dbUsers.containsKey(vkUser.getId()))
+                        .filter(vkUser -> !dbUsers.get(vkUser.getId()).equalsVkData(vkUser))
+                        .doOnNext(vkUser -> mDatabaseHelper.doUpdateUser(vkUser))
+                        .toMap(User::getId, user -> user, HashMap::new))
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler)
                 .subscribe(
-                        b -> {
-                        },
-                        LogUtils::e,
-                        () -> mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_USERS_PHOTO_UPDATED, null))
+                        updatedUsers -> mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_USERS_VK_DATA_UPDATED, updatedUsers)),
+                        LogUtils::e
                 );
     }
 

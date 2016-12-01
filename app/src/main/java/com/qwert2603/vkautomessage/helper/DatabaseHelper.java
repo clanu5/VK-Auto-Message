@@ -308,7 +308,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    private Void doUpdateUser(User user) {
+    public Void doUpdateUser(User user) {
         getWritableDatabase().update(
                 TABLE_USER,
                 getContentValuesForUser(user),
