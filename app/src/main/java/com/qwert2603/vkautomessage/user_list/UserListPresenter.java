@@ -10,6 +10,7 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                     if (view1 == null || updatedPositions.isEmpty()) {
                         return;
                     }
-                    view1.notifyUsersUpdated(updatedPositions);
+                    view1.notifyItemsUpdated(updatedPositions);
                 }, LogUtils::e);
     }
 
@@ -92,6 +93,33 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mSubscription = mDataManager.getAllUsers()
                 .subscribe(
                         model -> UserListPresenter.this.setModel(model),
+                        throwable -> {
+                            mSubscription.unsubscribe();
+                            updateView();
+                            LogUtils.e(throwable);
+                        }
+                );
+    }
+
+    @Override
+    protected void doLoadItem(int id) {
+        mSubscription.unsubscribe();
+        mSubscription = mDataManager.getUserById(id)
+                .subscribe(
+                        user -> {
+                            List<User> model = getModel();
+                            if (model == null) {
+                                return;
+                            }
+                            int userPosition = getUserPosition(user.getId());
+                            if (userPosition != -1) {
+                                model.set(userPosition, user);
+                                UserListView view = getView();
+                                if (view != null) {
+                                    view.notifyItemsUpdated(Collections.singletonList(userPosition));
+                                }
+                            }
+                        },
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();

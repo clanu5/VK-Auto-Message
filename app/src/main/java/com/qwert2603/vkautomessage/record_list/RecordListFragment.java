@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.record_list;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
@@ -26,6 +27,7 @@ import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
@@ -122,7 +124,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
                     Pair.create(toolbarTitle, toolbarTitle.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
-        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, id);
+        intent.putExtra(RecordActivity.EXTRA_ITEM_ID, id);
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
@@ -191,4 +193,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
     }
 
+    @Override
+    public void performBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(NavigationActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));
+        getActivity().setResult(Activity.RESULT_OK, intent);
+        super.performBackPressed();
+    }
 }

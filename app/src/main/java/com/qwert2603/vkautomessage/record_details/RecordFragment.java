@@ -28,6 +28,7 @@ import com.qwert2603.vkautomessage.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 
 import javax.inject.Inject;
 
@@ -298,5 +299,13 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
 
         toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
         toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
+    }
+
+    @Override
+    public void performBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(NavigationActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
+        getActivity().setResult(Activity.RESULT_OK, intent);
+        super.performBackPressed();
     }
 }

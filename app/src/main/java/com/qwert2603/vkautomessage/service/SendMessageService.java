@@ -69,13 +69,13 @@ public class SendMessageService extends IntentService {
         String ticker = success ? getString(R.string.notification_ticker_success) : getString(R.string.notification_ticker_fail);
 
         Intent intent = new Intent(SendMessageService.this, RecordActivity.class);
-        intent.putExtra(RecordActivity.EXTRA_RECORD_ID, recordWithUser.mRecord.getId());
+        intent.putExtra(RecordActivity.EXTRA_ITEM_ID, recordWithUser.mRecord.getId());
 
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(SendMessageService.this)
                 .addParentStack(RecordActivity.class)
                 .addNextIntent(intent);
         taskStackBuilder.editIntentAt(1)
-                .putExtra(RecordListActivity.EXTRA_USER_ID, recordWithUser.mUser.getId());
+                .putExtra(RecordListActivity.EXTRA_ITEM_ID, recordWithUser.mUser.getId());
         PendingIntent pendingIntent = taskStackBuilder
                 .getPendingIntent(recordWithUser.mRecord.getId(), PendingIntent.FLAG_ONE_SHOT);
 

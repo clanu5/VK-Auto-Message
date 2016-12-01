@@ -38,6 +38,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     protected abstract void doLoadList();
 
+    protected abstract void doLoadItem(int id);
+
     @Override
     protected void onUpdateView(@NonNull V view) {
         if (getModel() == null) {
@@ -121,8 +123,13 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().showItemSelected(-1);
     }
 
-    public void onReloadList() {
+    public final void onReloadList() {
         doLoadList();
+        updateView();
+    }
+
+    public final void onReloadItem(int id) {
+        doLoadItem(id);
         updateView();
     }
 

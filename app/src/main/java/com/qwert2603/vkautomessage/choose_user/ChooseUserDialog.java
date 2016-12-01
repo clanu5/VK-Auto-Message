@@ -224,6 +224,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void notifyItemsUpdated(List<Integer> updatedUserPositions) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
     public void scrollListToTop() {
         mRecyclerView.scrollToPosition(0);
     }

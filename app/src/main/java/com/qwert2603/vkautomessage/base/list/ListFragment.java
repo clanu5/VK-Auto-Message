@@ -19,8 +19,10 @@ import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
 
@@ -64,7 +66,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
         ButterKnife.bind(ListFragment.this, view);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()){
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
                 return 500;
@@ -104,13 +106,6 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // TODO: 29.11.2016 загружать список при возвращении от DETAILS_FOT_ITEM, а не в onResume (на всех активити)
-        getPresenter().onReloadList();
-    }
-
-    @Override
     public void onDestroy() {
         // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
         //mRecyclerView.setVisibility(View.INVISIBLE);
@@ -123,7 +118,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
         switch (requestCode) {
             case REQUEST_DELETE_ITEM:
-                int deletingItemId = data.getIntExtra(DeleteItemDialog.EXTRA_ITEM_TO_DELETE_ID, 0);
+                int deletingItemId = data.getIntExtra(DeleteItemDialog.EXTRA_ITEM_TO_DELETE_ID, -1);
                 if (resultCode == Activity.RESULT_OK) {
                     getPresenter().onItemDeleteSubmitted(deletingItemId);
                 } else {
@@ -131,6 +126,11 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
                 }
                 break;
             case REQUEST_DETAILS_FOT_ITEM:
+                LogUtils.d("onActivityResult REQUEST_DETAILS_FOT_ITEM " + " " + data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1));
+                if (resultCode == Activity.RESULT_OK) {
+                    int id = data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1);
+                    getPresenter().onReloadItem(id);
+                }
                 getPresenter().onReadyToAnimateIn();
                 break;
         }
@@ -177,6 +177,14 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
     public void notifyItemInserted(int position, int id) {
         mRecyclerItemAnimator.addItemToAnimateEnter(id);
         getAdapter().notifyItemInserted(position);
+    }
+
+    @Override
+    public void notifyItemsUpdated(List<Integer> updatedPositions) {
+        LogUtils.d("updatedPositions " + updatedPositions);
+        for (Integer updatedUserPosition : updatedPositions) {
+            getAdapter().notifyItemChanged(updatedUserPosition);
+        }
     }
 
     @Override

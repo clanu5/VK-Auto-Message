@@ -14,6 +14,7 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -115,6 +116,33 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         mSubscription = mDataManager.getRecordsForUser(mUserId)
                 .subscribe(
                         recordListWithUser -> RecordListPresenter.this.setModel(recordListWithUser),
+                        throwable -> {
+                            mSubscription.unsubscribe();
+                            updateView();
+                            LogUtils.e(throwable);
+                        }
+                );
+    }
+
+    @Override
+    protected void doLoadItem(int id) {
+        mSubscription.unsubscribe();
+        mSubscription = mDataManager.getRecordById(id)
+                .subscribe(
+                        recordWithUser -> {
+                            RecordListWithUser model = getModel();
+                            if (model == null) {
+                                return;
+                            }
+                            int recordPosition = getRecordPosition(recordWithUser.mRecord.getId());
+                            if (recordPosition != -1) {
+                                model.mRecordList.set(recordPosition, recordWithUser.mRecord);
+                                RecordListView view = getView();
+                                if (view != null) {
+                                    view.notifyItemsUpdated(Collections.singletonList(recordPosition));
+                                }
+                            }
+                        },
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();

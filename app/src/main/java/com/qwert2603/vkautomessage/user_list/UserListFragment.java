@@ -120,7 +120,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
                     Pair.create(itemView, itemView.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
-        intent.putExtra(RecordListActivity.EXTRA_USER_ID, userId);
+        intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, userId);
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
@@ -129,14 +129,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         ChooseUserDialog userListDialog = ChooseUserDialog.newInstance();
         userListDialog.setTargetFragment(UserListFragment.this, REQUEST_CHOOSE_USER);
         userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
-    }
-
-    @Override
-    public void notifyUsersUpdated(List<Integer> updatedUserPositions) {
-        LogUtils.d("updatedUserPositions " + updatedUserPositions);
-        for (Integer updatedUserPosition : updatedUserPositions) {
-            mUserListAdapter.notifyItemChanged(updatedUserPosition);
-        }
     }
 
     @Override

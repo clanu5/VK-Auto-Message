@@ -33,6 +33,8 @@ import rx.subscriptions.Subscriptions;
 
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ActivityInterface {
 
+    public static final String EXTRA_ITEM_ID = "com.qwert2603.vkautomessage.EXTRA_ITEM_ID";
+
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 

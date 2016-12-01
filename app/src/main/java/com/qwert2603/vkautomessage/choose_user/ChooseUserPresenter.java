@@ -71,6 +71,11 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     }
 
     @Override
+    protected void doLoadItem(int id) {
+        onReloadList();
+    }
+
+    @Override
     public void bindView(ChooseUserView view) {
         super.bindView(view);
         if (getModel() == null && mSubscription.isUnsubscribed()) {
