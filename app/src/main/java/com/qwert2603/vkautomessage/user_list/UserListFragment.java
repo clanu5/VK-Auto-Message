@@ -30,9 +30,6 @@ import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleItemDecoration;
-import com.qwert2603.vkautomessage.util.LogUtils;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -121,7 +118,18 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, userId);
+
+        if (viewHolder != null) {
+            int[] startingPoint = new int[2];
+            viewHolder.itemView.getLocationOnScreen(startingPoint);
+            startingPoint[1] -= ((ActivityInterface) getActivity()).getToolbar().getHeight();
+            startingPoint[1] -= viewHolder.itemView.getHeight() / 2;
+            intent.putExtra(RecordListActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
+        }
+
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
+
+        getActivity().overridePendingTransition(0, 0);
     }
 
     @Override
@@ -142,6 +150,16 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     public void scrollListToTop() {
         super.scrollListToTop();
         ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0).start();
+    }
+
+    @Override
+    protected Animator createEnterAnimator() {
+        return new AnimatorSet();
+    }
+
+    @Override
+    protected Animator createExitAnimator() {
+        return new AnimatorSet();
     }
 
     @Override
@@ -194,7 +212,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
-    public void prepareForIn() {
+    public void prepareForEnter() {
         Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();

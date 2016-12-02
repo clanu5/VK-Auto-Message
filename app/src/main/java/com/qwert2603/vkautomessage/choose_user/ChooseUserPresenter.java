@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationPresenter;
+import com.qwert2603.vkautomessage.base.in_out_animation.AnimationPresenter;
 import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
@@ -118,7 +118,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     @Override
     public void onAnimateOutFinished(int id) {
         super.onAnimateOutFinished(id);
-        if (id != InOutAnimationPresenter.ON_BACK_PRESSED_ANIMATE_OUT_ID) {
+        if (id != AnimationPresenter.ON_BACK_PRESSED_ANIMATE_OUT_ID) {
             getView().submitDode(id);
         }
     }

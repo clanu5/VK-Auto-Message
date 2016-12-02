@@ -2,9 +2,9 @@ package com.qwert2603.vkautomessage.record_details;
 
 import android.widget.ImageView;
 
-import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationView;
+import com.qwert2603.vkautomessage.base.in_out_animation.AnimationView;
 
-public interface RecordView extends InOutAnimationView {
+public interface RecordView extends AnimationView {
     ImageView getPhotoImageView();
     void showUserName(String userName);
     void showMessage(String message);

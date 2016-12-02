@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
  * когда выполняется или выполнилась in-анимация, а out-анимация еще не началась.
  *
  * Проверка осуществляется с помощью метода.
- * {@link InOutAnimationPresenter#isInningOrInside()}
+ * {@link AnimationPresenter#isInningOrInside()}
  *
  */
 // TODO: 28.11.2016 сделать через AnnotationProcessing

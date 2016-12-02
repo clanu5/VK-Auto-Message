@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
+import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
 import com.qwert2603.vkautomessage.edit_day_in_year.EditDayOfYearDialog;
 import com.qwert2603.vkautomessage.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.edit_message.EditMessageDialog;
@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecordFragment extends InOutAnimationFragment<RecordPresenter> implements RecordView {
+public class RecordFragment extends AnimationFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
 
@@ -255,12 +255,22 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
     }
 
     @Override
+    protected Animator createEnterAnimator() {
+        return new AnimatorSet();
+    }
+
+    @Override
+    protected Animator createExitAnimator() {
+        return new AnimatorSet();
+    }
+
+    @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
         objectAnimator.setDuration(400);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
@@ -292,13 +302,13 @@ public class RecordFragment extends InOutAnimationFragment<RecordPresenter> impl
 
 
     @Override
-    public void prepareForIn() {
+    public void prepareForEnter() {
         Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
-        toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
-        toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
+        toolbarIcon.setTranslationY(-1.5f * toolbar.getHeight());
+        toolbarTitle.setTranslationY(-1.5f * toolbar.getHeight());
     }
 
     @Override

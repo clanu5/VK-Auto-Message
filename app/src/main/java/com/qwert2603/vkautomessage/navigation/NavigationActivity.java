@@ -50,6 +50,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @BindView(R.id.toolbar_title_text_view)
     TextView mToolbarTitleTextView;
 
+    @BindView(R.id.fragment_container)
+    protected View mFragmentContainer;
+
     private ImageView mUserPhotoImageView;
     private TextView mUserNameTextView;
 
@@ -170,6 +173,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             if (mOnBackPressedListener != null) {
+                overridePendingTransition(0, 0);
                 mOnBackPressedListener.onBackPressed();
             }
         }

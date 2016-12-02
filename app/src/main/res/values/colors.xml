@@ -17,6 +17,6 @@
     <color name="repeat_info">#6F9081</color>
     <color name="error">#E00</color>
     <color name="selected_item">#BBA</color>
-    <color name="nav_header_background">#e8e8e8</color>
+    <color name="root_view_background">#F6F6F6</color>
 
 </resources>

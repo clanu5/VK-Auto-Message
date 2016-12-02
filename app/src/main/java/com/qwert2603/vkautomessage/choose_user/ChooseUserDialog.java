@@ -134,7 +134,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void onResume() {
         super.onResume();
-        mChooseUserPresenter.onReadyToAnimateIn();
+        mChooseUserPresenter.onReadyToAnimate();
     }
 
     @Override
@@ -217,7 +217,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     public void notifyItemRemoved(int position) {
         LogUtils.e(new RuntimeException("Should not be called!"));
     }
-    
+
     @Override
     public void notifyItemInserted(int position, int id) {
         LogUtils.e(new RuntimeException("Should not be called!"));
@@ -244,6 +244,16 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void animateEnter() {
+        mChooseUserPresenter.onAnimateEnterFinished();
+    }
+
+    @Override
+    public void animateExit() {
+        mChooseUserPresenter.onAnimateExitFinished();
+    }
+
+    @Override
     public void animateIn(boolean withLargeDelay) {
         mChooseUserPresenter.onAnimateInFinished();
     }
@@ -254,7 +264,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void prepareForIn() {
+    public void prepareForEnter() {
     }
 
     @Override

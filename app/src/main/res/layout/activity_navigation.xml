@@ -48,6 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/navigation_view"/>
+        app:menu="@menu/navigation_view"
+        android:background="#FFF"/>
 
 </android.support.v4.widget.DrawerLayout>

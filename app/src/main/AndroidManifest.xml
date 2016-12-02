@@ -40,7 +40,7 @@
         <activity
             android:name=".record_list.RecordListActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.NoActionBar.TransparentActivity"
             android:parentActivityName=".user_list.UserListActivity">
         </activity>
 

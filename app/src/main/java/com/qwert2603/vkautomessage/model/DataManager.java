@@ -286,10 +286,4 @@ public class DataManager {
                 );
     }
 
-    /**
-     * Уведомить о том, что запись была включена/выключена.
-     */
-    public void onRecordEnabledChanged(Record record) {
-        mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_RECORD_ENABLED_CHANGED, record));
-    }
 }

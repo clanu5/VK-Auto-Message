@@ -1,6 +1,6 @@
 package com.qwert2603.vkautomessage.base.list;
 
-import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationView;
+import com.qwert2603.vkautomessage.base.in_out_animation.AnimationView;
 import com.qwert2603.vkautomessage.model.Identifiable;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @param <T> тип элемента списка.
  */
-public interface ListView<T extends Identifiable> extends InOutAnimationView {
+public interface ListView<T extends Identifiable> extends AnimationView {
     /**
      * Отобразить сообщение о загрузке.
      */

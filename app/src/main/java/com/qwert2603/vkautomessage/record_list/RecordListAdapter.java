@@ -1,5 +1,6 @@
 package com.qwert2603.vkautomessage.record_list;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,23 @@ import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter> {
 
+    public interface RecordEnableChangedCallback {
+        /**
+         * Запись была включена или выключена.
+         *
+         * @param position позиция измененное записи.
+         * @param enabled  true, если запись была включена.
+         */
+        void onRecordEnableChanged(int position, boolean enabled);
+    }
+
+    private RecordEnableChangedCallback mRecordEnableChangedCallback;
+
     public RecordListAdapter() {
+    }
+
+    public void setRecordEnableChangedCallback(RecordEnableChangedCallback recordEnableChangedCallback) {
+        mRecordEnableChangedCallback = recordEnableChangedCallback;
     }
 
     @Override
@@ -60,12 +77,24 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
             super(itemView);
             VkAutoMessageApplication.getAppComponent().inject(RecordViewHolder.this);
             ButterKnife.bind(RecordViewHolder.this, itemView);
-            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> getPresenter().onEnableClicked(isChecked));
+            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int layoutPosition = getLayoutPosition();
+                if (mRecordEnableChangedCallback != null && layoutPosition != RecyclerView.NO_POSITION) {
+                    mRecordEnableChangedCallback.onRecordEnableChanged(layoutPosition, isChecked);
+                }
+                getPresenter().onEnableClicked(isChecked);
+            });
         }
 
         @Override
         protected RecordPresenter getPresenter() {
             return mRecordPresenter;
+        }
+
+        @Override
+        public void bindPresenter() {
+            super.bindPresenter();
+            mRecordPresenter.onReadyToAnimate();
         }
 
         @Override
@@ -143,15 +172,27 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
+        public void animateEnter() {
+            mRecordPresenter.onAnimateEnterFinished();
+        }
+
+        @Override
+        public void animateExit() {
+            mRecordPresenter.onAnimateExitFinished();
+        }
+
+        @Override
         public void animateIn(boolean withLargeDelay) {
+            mRecordPresenter.onAnimateInFinished();
         }
 
         @Override
         public void animateOut(int id) {
+            mRecordPresenter.onAnimateOutFinished(id);
         }
 
         @Override
-        public void prepareForIn() {
+        public void prepareForEnter() {
         }
 
         @Override

@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -14,6 +15,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -39,11 +41,13 @@ import butterknife.ButterKnife;
 public class RecordListFragment extends ListFragment<Record> implements RecordListView {
 
     private static final String userIdKey = "userId";
+    private static final String drawingStartYKey = "drawingStart";
 
-    public static RecordListFragment newInstance(int userId) {
+    public static RecordListFragment newInstance(int userId, int drawingStartY) {
         RecordListFragment recordListFragment = new RecordListFragment();
         Bundle args = new Bundle();
         args.putInt(userIdKey, userId);
+        args.putInt(drawingStartYKey, drawingStartY);
         recordListFragment.setArguments(args);
         return recordListFragment;
     }
@@ -97,6 +101,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
 
+        mRecordListAdapter.setRecordEnableChangedCallback((position, enabled) -> mRecordListPresenter.onRecordEnableChanged(position, enabled));
+
         return view;
     }
 
@@ -126,6 +132,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, id);
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
+
+        getActivity().overridePendingTransition(0, 0);
     }
 
     @Override
@@ -147,6 +155,28 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    protected Animator createEnterAnimator() {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 1);
+        objectAnimator.setDuration(300);
+        objectAnimator.setInterpolator(new AccelerateInterpolator());
+        return objectAnimator;
+    }
+
+    @Override
+    protected Animator createExitAnimator() {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0);
+        objectAnimator.setDuration(300);
+        objectAnimator.setInterpolator(new AccelerateInterpolator());
+        objectAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mRecyclerView.setVisibility(View.INVISIBLE);
+            }
+        });
+        return objectAnimator;
+    }
+
+    @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
 
@@ -163,7 +193,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         animatorSet.play(objectAnimator).with(objectAnimator1);
         return animatorSet;
     }
-
 
     @Override
     protected Animator createOutAnimator() {
@@ -184,7 +213,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    public void prepareForIn() {
+    public void prepareForEnter() {
+        mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
+        mRootView.setScaleY(0.1f);
+
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));

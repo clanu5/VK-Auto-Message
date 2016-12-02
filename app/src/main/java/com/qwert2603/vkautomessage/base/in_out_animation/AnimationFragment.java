@@ -14,7 +14,7 @@ import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 /**
  * Фрагмент для отображения списка и показа in/out-анимаций.
  */
-public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> extends BaseFragment<P> implements InOutAnimationView {
+public abstract class AnimationFragment<P extends AnimationPresenter> extends BaseFragment<P> implements AnimationView {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,8 +25,12 @@ public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getPresenter().onReadyToAnimateIn();
+        getPresenter().onReadyToAnimate();
     }
+
+    protected abstract Animator createEnterAnimator();
+
+    protected abstract Animator createExitAnimator();
 
     protected abstract Animator createInAnimator(boolean withLargeDelay);
 
@@ -42,6 +46,30 @@ public abstract class InOutAnimationFragment<P extends InOutAnimationPresenter> 
     public void onDetach() {
         ((ActivityInterface) getActivity()).setOnBackPressedListener(null);
         super.onDetach();
+    }
+
+    @Override
+    public void animateEnter() {
+        Animator enterAnimator = createEnterAnimator();
+        enterAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                getPresenter().onAnimateEnterFinished();
+            }
+        });
+        enterAnimator.start();
+    }
+
+    @Override
+    public void animateExit() {
+        Animator exitAnimator = createExitAnimator();
+        exitAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                getPresenter().onAnimateExitFinished();
+            }
+        });
+        exitAnimator.start();
     }
 
     @Override

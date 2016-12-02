@@ -16,7 +16,7 @@ import android.widget.ViewAnimator;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
-import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationFragment;
+import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.navigation.NavigationActivity;
@@ -35,7 +35,7 @@ import butterknife.ButterKnife;
  *
  * @param <T> тип элемента списка
  */
-public abstract class ListFragment<T extends Identifiable> extends InOutAnimationFragment<ListPresenter> implements ListView<T> {
+public abstract class ListFragment<T extends Identifiable> extends AnimationFragment<ListPresenter> implements ListView<T> {
 
     private static final int POSITION_EMPTY_VIEW = 0;
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
@@ -44,6 +44,9 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
 
     protected static final int REQUEST_DELETE_ITEM = 1;
     protected static final int REQUEST_DETAILS_FOT_ITEM = 2;
+
+    @BindView(R.id.root_view)
+    protected View mRootView;
 
     @BindView(R.id.view_animator)
     protected ViewAnimator mViewAnimator;
@@ -131,7 +134,7 @@ public abstract class ListFragment<T extends Identifiable> extends InOutAnimatio
                     int id = data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1);
                     getPresenter().onReloadItem(id);
                 }
-                getPresenter().onReadyToAnimateIn();
+                getPresenter().onReadyToAnimate();
                 break;
         }
     }

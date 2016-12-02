@@ -85,9 +85,16 @@ public abstract class BasePresenter<M, V extends BaseView> {
      */
     @MainThread
     protected void updateView() {
-        if (mView != null && mView.get() != null && mIsViewReady) {
+        if (canUpdateView()) {
             onUpdateView(mView.get());
         }
+    }
+
+    /**
+     * @return можно ли сейчас обновлять представление.
+     */
+    protected boolean canUpdateView() {
+        return mView != null && mView.get() != null && mIsViewReady;
     }
 
     /**

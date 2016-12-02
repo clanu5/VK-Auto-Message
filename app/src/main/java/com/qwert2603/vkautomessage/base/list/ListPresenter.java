@@ -2,7 +2,7 @@ package com.qwert2603.vkautomessage.base.list;
 
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.base.in_out_animation.InOutAnimationPresenter;
+import com.qwert2603.vkautomessage.base.in_out_animation.AnimationPresenter;
 import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.model.Identifiable;
 
@@ -22,7 +22,7 @@ import java.util.List;
  * @param <M> тип модели
  * @param <V> тип представления
  */
-public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends InOutAnimationPresenter<M, V> {
+public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends AnimationPresenter<M, V> {
 
     private enum AnimationState {
         WAITING_FOR_TRIGGER,
@@ -79,7 +79,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     @Override
     public void onAnimateOutFinished(int id) {
         super.onAnimateOutFinished(id);
-        if (id != InOutAnimationPresenter.ON_BACK_PRESSED_ANIMATE_OUT_ID) {
+        if (id != AnimationPresenter.ON_BACK_PRESSED_ANIMATE_OUT_ID) {
             getView().moveToDetailsForItem(id);
         }
     }

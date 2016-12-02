@@ -27,7 +27,6 @@ import rx.subscriptions.Subscriptions;
 public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
-    private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -64,35 +63,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     }
 
     @Override
-    public void bindView(RecordListView view) {
-        super.bindView(view);
-        mRxBusSubscription = mRxBus.toObservable()
-                .filter(event -> event.mEvent == RxBus.Event.EVENT_RECORD_ENABLED_CHANGED)
-                .subscribe(event -> {
-                    RecordListWithUser model = getModel();
-                    RecordListView view1 = getView();
-                    if (model == null || view1 == null) {
-                        return;
-                    }
-                    User user = model.mUser;
-                    if (event.mObject instanceof Record) {
-                        Record record = (Record) event.mObject;
-                        if (record.getUserId() == user.getId()) {
-                            int enabledRecordsCount = user.getEnabledRecordsCount();
-                            enabledRecordsCount += record.isEnabled() ? 1 : -1;
-                            user.setEnabledRecordsCount(enabledRecordsCount);
-                            showUserNameAndRecordsCount(user, view1);
-                        }
-                    }
-
-                }, LogUtils::e);
-    }
-
-    @Override
     public void unbindView() {
         mSubscription.unsubscribe();
-        mRxBusSubscription.unsubscribe();
-        mRxBusSubscription = Subscriptions.unsubscribed();
         super.unbindView();
     }
 
@@ -136,6 +108,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                             }
                             int recordPosition = getRecordPosition(recordWithUser.mRecord.getId());
                             if (recordPosition != -1) {
+                                onRecordEnableChanged(recordPosition, recordWithUser.mRecord.isEnabled());
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 RecordListView view = getView();
                                 if (view != null) {
@@ -149,6 +122,17 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                             LogUtils.e(throwable);
                         }
                 );
+    }
+
+    public void onRecordEnableChanged(int position, boolean enabled) {
+        if (getModel().mRecordList.get(position).isEnabled() == enabled) {
+            return;
+        }
+        User user = getModel().mUser;
+        int enabledRecordsCount = user.getEnabledRecordsCount();
+        enabledRecordsCount += enabled ? 1 : -1;
+        user.setEnabledRecordsCount(enabledRecordsCount);
+        showUserNameAndRecordsCount(user, getView());
     }
 
     @ShouldCheckIsInningOrInside
