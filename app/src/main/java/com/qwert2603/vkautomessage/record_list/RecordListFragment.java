@@ -99,6 +99,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // * имя друга (android:ellipsize="marquee")
         // каждая часть должна иметь свое transitionName
 
+        mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
+
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
@@ -159,15 +161,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createEnterAnimator() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 1);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0.1f, 1);
         objectAnimator.setDuration(400);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
-                mRootView.setScaleY(0.1f);
-
                 ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
                 int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
                 toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
@@ -180,6 +179,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
                 int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
                 mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
+
+                mViewAnimator.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mViewAnimator.setVisibility(View.VISIBLE);
             }
         });
         return objectAnimator;
@@ -216,9 +222,9 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         if (!AndroidUtils.isLollipopOrHigher()) {
             TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", 0);
-            objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
-            objectAnimator.setDuration(500);
-            animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
+            objectAnimator1.setStartDelay(withLargeDelay ? 400 : 400);
+            objectAnimator1.setDuration(500);
+            animatorSet.play(objectAnimator1).with(objectAnimator).with(objectAnimator2);
         } else {
             animatorSet.play(objectAnimator).with(objectAnimator2);
         }
@@ -236,7 +242,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
         objectAnimator2.setDuration(400);
-        objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
 
@@ -244,7 +249,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) toolbarTitle.getLayoutParams()).rightMargin;
             ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", toolbarTitle.getWidth() + toolbarTitleRightMargin);
-            objectAnimator.setDuration(400);
+            objectAnimator1.setDuration(400);
             animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
         } else {
             animatorSet.play(objectAnimator).with(objectAnimator2);

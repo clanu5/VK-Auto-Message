@@ -45,9 +45,6 @@ public class RecordPresenter extends AnimationPresenter<RecordWithUser, RecordVi
 
     public RecordPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordPresenter.this);
-        mRepeatTypes = mAppContext.getResources().getStringArray(R.array.repeat_types);
-        mMonths = mAppContext.getResources().getStringArray(R.array.months);
-        mDaysOfWeek = mAppContext.getResources().getStringArray(R.array.days_of_week_short);
     }
 
     @Override
@@ -73,6 +70,14 @@ public class RecordPresenter extends AnimationPresenter<RecordWithUser, RecordVi
 
     public void setRecord(Record record) {
         setModel(new RecordWithUser(record, User.createEmptyUser()));
+    }
+
+    @Override
+    public void bindView(RecordView view) {
+        super.bindView(view);
+        mRepeatTypes = mAppContext.getResources().getStringArray(R.array.repeat_types);
+        mMonths = mAppContext.getResources().getStringArray(R.array.months);
+        mDaysOfWeek = mAppContext.getResources().getStringArray(R.array.days_of_week_short);
     }
 
     @Override

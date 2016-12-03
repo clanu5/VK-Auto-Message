@@ -126,7 +126,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             int[] startingPoint = new int[2];
             viewHolder.itemView.getLocationOnScreen(startingPoint);
             startingPoint[1] -= ((ActivityInterface) getActivity()).getToolbar().getHeight();
-            startingPoint[1] -= viewHolder.itemView.getHeight() / 2;
             intent.putExtra(RecordListActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
         }
 

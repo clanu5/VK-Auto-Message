@@ -256,6 +256,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     protected Animator createEnterAnimator() {
+        // TODO: 03.12.2016 expanding animation как в recordListFragment
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override

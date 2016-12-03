@@ -40,11 +40,6 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
         mInOutState = InOutState.FIRST_TIME;
     }
 
-    @Override
-    protected boolean canUpdateView() {
-        return super.canUpdateView() && isInningOrInside();
-    }
-
     public void onReadyToAnimate() {
         if (mInOutState == InOutState.FIRST_TIME) {
             mInOutState = InOutState.ENTERING;
