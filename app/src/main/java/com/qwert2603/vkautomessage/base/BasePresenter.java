@@ -84,7 +84,7 @@ public abstract class BasePresenter<M, V extends BaseView> {
      * Если представление привязано и готово к отображению, будет вызван метод {@link #onUpdateView(BaseView)}.
      */
     @MainThread
-    protected void updateView() {
+    protected final void updateView() {
         if (canUpdateView()) {
             onUpdateView(mView.get());
         }

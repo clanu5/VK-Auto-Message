@@ -93,6 +93,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
 
+        // TODO: 03.12.2016 toolbar должен состоять из отдельных:
+        // * круглая ава пользователя-получателя
+        // * кол-во записей (14/26) -- todo AnimatedIntegerView
+        // * имя друга (android:ellipsize="marquee")
+        // каждая часть должна иметь свое transitionName
+
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
@@ -154,7 +160,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected Animator createEnterAnimator() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 1);
-        objectAnimator.setDuration(300);
+        objectAnimator.setDuration(400);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -182,7 +188,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected Animator createExitAnimator() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0);
-        objectAnimator.setDuration(300);
+        objectAnimator.setDuration(400);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override

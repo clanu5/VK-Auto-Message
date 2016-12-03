@@ -22,8 +22,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
-
 public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter> {
 
     public interface RecordEnableChangedCallback {
@@ -55,8 +53,6 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
     public class RecordViewHolder
             extends BaseRecyclerViewAdapter<Record, ?, RecordPresenter>.RecyclerViewHolder
             implements RecordView {
-
-        private static final int MESSAGE_LENGTH_LIMIT = 52;
 
         @BindView(R.id.enable_check_box)
         CheckBox mEnableCheckBox;
@@ -113,7 +109,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         public void showMessage(String message) {
-            mMessageTextView.setText(noMore(message, MESSAGE_LENGTH_LIMIT));
+            mMessageTextView.setText(message);
         }
 
         @Override

@@ -201,7 +201,6 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         // TODO: 29.11.2016 сделать плавный скроллинг на другой конец списка
         // может, сначала scrollToPosition, а потом smoothScrollToPosition
 
-        // setHasFixedSize (в items)
         mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
     }
 

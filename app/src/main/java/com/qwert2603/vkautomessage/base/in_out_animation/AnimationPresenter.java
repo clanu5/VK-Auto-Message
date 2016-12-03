@@ -97,7 +97,7 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
         getView().animateOut(id);
     }
 
-    protected boolean isInningOrInside() {
+    protected final boolean isInningOrInside() {
         return mInOutState == InOutState.INNING || mInOutState == InOutState.INSIDE;
     }
 }
