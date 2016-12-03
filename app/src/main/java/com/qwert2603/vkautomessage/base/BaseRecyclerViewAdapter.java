@@ -172,7 +172,7 @@ public abstract class BaseRecyclerViewAdapter
     /**
      * Класс для выделения отдельного элемента.
      */
-    public class RecyclerViewSelector {
+    private class RecyclerViewSelector {
         private int mSelectedPosition = -1;
 
         /**
@@ -180,7 +180,7 @@ public abstract class BaseRecyclerViewAdapter
          *
          * @param selectedPosition позиция выделенного элемента.
          */
-        public void setSelectedPosition(int selectedPosition) {
+        void setSelectedPosition(int selectedPosition) {
             LogUtils.d("RecyclerViewSelector setSelectedPosition " + selectedPosition);
             int oldSelectedPosition = mSelectedPosition;
             mSelectedPosition = selectedPosition;
@@ -194,7 +194,7 @@ public abstract class BaseRecyclerViewAdapter
          * @param itemView view элемента.
          * @param position позиция элемента.
          */
-        public void showWhetherItemSelected(View itemView, int position) {
+        void showWhetherItemSelected(View itemView, int position) {
             itemView.setSelected(position == mSelectedPosition);
         }
     }

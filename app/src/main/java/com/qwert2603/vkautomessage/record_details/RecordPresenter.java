@@ -262,6 +262,10 @@ public class RecordPresenter extends AnimationPresenter<RecordWithUser, RecordVi
         }
     }
 
+    public void onUserClicked() {
+        getView().showToast(R.string.receiver_of_message);
+    }
+
     public void onEditMessageClicked() {
         RecordWithUser model = getModel();
         if (model == null) {

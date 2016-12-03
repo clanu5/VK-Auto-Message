@@ -46,4 +46,6 @@
     <string name="send_to_developer">send to developer</string>
     <string name="message_to_developer_success">Message to developer was sent successfully.</string>
     <string name="message_to_developer_fail">Message to developer was NOT sent!</string>
+
+    <string name="receiver_of_message">Receiver of message</string>
 </resources>

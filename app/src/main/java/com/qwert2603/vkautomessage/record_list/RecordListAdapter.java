@@ -192,10 +192,6 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void prepareForEnter() {
-        }
-
-        @Override
         public void performBackPressed() {
         }
     }

@@ -45,6 +45,10 @@ public class VkAutoMessageApplication extends Application {
 //            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
 //        }
 
+        // TODO: 03.12.2016 круглые авы
+        // http://frogermcs.github.io/InstaMaterial-concept-part-6-user-profile/
+        // Circular user photo
+        
         File cacheDir = new File(VkAutoMessageApplication.this.getFilesDir(), "images");
         DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)

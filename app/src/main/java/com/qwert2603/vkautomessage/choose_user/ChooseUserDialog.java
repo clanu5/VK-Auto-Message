@@ -100,6 +100,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRecyclerView.setItemAnimator(recyclerItemAnimator);
 
         mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onItemAtPositionClicked);
+        mChooseUserAdapter.setLongClickCallback(mChooseUserPresenter::onItemAtPositionLongClicked);
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> mChooseUserPresenter.onReloadList());
 
@@ -205,7 +206,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void moveToDetailsForItem(int id) {
-        // nth
     }
 
     @Override
@@ -261,10 +261,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void animateOut(int id) {
         mChooseUserPresenter.onAnimateOutFinished(id);
-    }
-
-    @Override
-    public void prepareForEnter() {
     }
 
     @Override

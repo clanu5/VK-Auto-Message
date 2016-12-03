@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -113,10 +114,9 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
         ButterKnife.bind(RecordFragment.this, view);
 
-        // TODO: 29.11.2016 ripple эффект на всех cardView
-
         // TODO: 29.11.2016 transition для всех диалогов
 
+        mUserCardView.setOnClickListener(v -> mRecordPresenter.onUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());
         mRepeatTypeCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatTypeClicked());
@@ -256,7 +256,19 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     protected Animator createEnterAnimator() {
-        return new AnimatorSet();
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
+                ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+                TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
+
+                toolbarIcon.setTranslationY(-1.5f * toolbar.getHeight());
+                toolbarTitle.setTranslationY(-1.5f * toolbar.getHeight());
+            }
+        });
+        return animatorSet;
     }
 
     @Override
@@ -298,17 +310,6 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(objectAnimator).with(objectAnimator2);
         return animatorSet;
-    }
-
-
-    @Override
-    public void prepareForEnter() {
-        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-        toolbarIcon.setTranslationY(-1.5f * toolbar.getHeight());
-        toolbarTitle.setTranslationY(-1.5f * toolbar.getHeight());
     }
 
     @Override

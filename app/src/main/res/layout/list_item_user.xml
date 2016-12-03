@@ -3,10 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_item_background"
     android:orientation="horizontal"
     android:padding="4dp"
-    android:transitionName="@string/toolbar_transition">
+    android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/photo_image_view"
@@ -24,7 +23,8 @@
         android:singleLine="true"
         android:text="Alex Zhdanov toolbar_transition toolbar_transition"
         android:textColor="@color/user_name"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:transitionName="@string/toolbar_transition"/>
 
     <LinearLayout
         android:id="@+id/records_count_layout"

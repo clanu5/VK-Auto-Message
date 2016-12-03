@@ -1,8 +1,10 @@
 package com.qwert2603.vkautomessage.user_list;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -30,6 +32,7 @@ import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleItemDecoration;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;
 
@@ -105,16 +108,16 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void moveToDetailsForItem(int userId) {
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
-        if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (viewHolder != null && AndroidUtils.isLollipopOrHigher()) {
             // TODO: 26.11.2016 делать фон синим как тулбар во время TransitionAnimation
-            View itemView = viewHolder.itemView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(itemView, itemView.getTransitionName()));
+                    Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, userId);
@@ -154,7 +157,22 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     protected Animator createEnterAnimator() {
-        return new AnimatorSet();
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
+                ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+                TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
+
+                toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
+                toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
+
+                int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
+                mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
+            }
+        });
+        return animatorSet;
     }
 
     @Override
@@ -188,8 +206,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     protected Animator createOutAnimator() {
-        // TODO: 29.11.2016 на API 19 после завершения иконка тулбара почему-то возвращается
-
         int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", mChooseUserFAB.getHeight() + fabBottomMargin);
         objectAnimator.setDuration(300);
@@ -209,19 +225,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
         return animatorSet;
-    }
-
-    @Override
-    public void prepareForEnter() {
-        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-        toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
-        toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
-
-        int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
-        mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
     }
 
 }

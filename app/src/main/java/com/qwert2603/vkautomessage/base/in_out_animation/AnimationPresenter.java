@@ -48,15 +48,14 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
     public void onReadyToAnimate() {
         if (mInOutState == InOutState.FIRST_TIME) {
             mInOutState = InOutState.ENTERING;
-            getView().prepareForEnter();
             getView().animateEnter();
         }
         if (mInOutState == InOutState.OUTSIDE) {
             mInOutState = InOutState.INNING;
             getView().animateIn(false);
             /*
-              TODO: 27.11.2016 при уничтожении активити SceneTransitionAnimation не работает.
-              если получится сделать, чтобы работало, то можно и анимацию In делать.
+              TODO: 27.11.2016 сделать что-нибудь с SceneTransitionAnimation при возвращении к активити в другой ориентации
+              in анимация тоже.
              */
         }
     }

@@ -118,6 +118,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        LogUtils.d("onActivityResult " + requestCode + " " + resultCode + " " + data);
 
         switch (requestCode) {
             case REQUEST_DELETE_ITEM:
@@ -199,6 +200,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     public void scrollListToBottom() {
         // TODO: 29.11.2016 сделать плавный скроллинг на другой конец списка
         // может, сначала scrollToPosition, а потом smoothScrollToPosition
+
+        // setHasFixedSize (в items)
         mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
     }
 

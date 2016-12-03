@@ -145,6 +145,10 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
         }
     }
 
+    @Override
+    public void onItemAtPositionLongClicked(int position) {
+        onItemAtPositionClicked(position);
+    }
 
     public void onSearchQueryChanged(String query) {
         mQuery = query.toLowerCase();

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;
 
@@ -91,12 +93,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
 
-        // TODO: 29.11.2016 http://frogermcs.github.io/Instagram-with-Material-Design-concept-part-2-Comments-transition/
-        // на всех активити
-        // Expanding CommentsActivity from tapped place
-        // Static Toolbar
-        // Exit transition
-
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
@@ -111,12 +107,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         ((ActivityInterface) getActivity()).setToolbarTitle(userName);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void moveToDetailsForItem(int id) {
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
                 (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(id);
-        if (viewHolder != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (viewHolder != null && AndroidUtils.isLollipopOrHigher()) {
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mRepeatInfoTextView;
@@ -159,6 +156,26 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 1);
         objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
+        objectAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
+                mRootView.setScaleY(0.1f);
+
+                ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
+                int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
+                toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
+
+                if (!AndroidUtils.isLollipopOrHigher()) {
+                    TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
+                    int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) toolbarTitle.getLayoutParams()).rightMargin;
+                    toolbarTitle.setTranslationX(toolbarTitle.getWidth() + toolbarTitleRightMargin);
+                }
+
+                int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
+                mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
+            }
+        });
         return objectAnimator;
     }
 
@@ -179,50 +196,55 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
         objectAnimator.setDuration(400);
 
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 1000 : 100);
-        objectAnimator1.setDuration(400);
-        objectAnimator1.setInterpolator(new OvershootInterpolator());
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
+        objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 200);
+        objectAnimator2.setDuration(400);
+        objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1);
+
+        if (!AndroidUtils.isLollipopOrHigher()) {
+            TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
+            ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", 0);
+            objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
+            objectAnimator.setDuration(500);
+            animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
+        } else {
+            animatorSet.play(objectAnimator).with(objectAnimator2);
+        }
+
         return animatorSet;
     }
 
     @Override
     protected Animator createOutAnimator() {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
         objectAnimator.setDuration(300);
 
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
-        objectAnimator1.setDuration(400);
-        objectAnimator1.setInterpolator(new OvershootInterpolator());
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
+        objectAnimator2.setDuration(400);
+        objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1);
+
+        if (!AndroidUtils.isLollipopOrHigher()) {
+            TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
+            int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) toolbarTitle.getLayoutParams()).rightMargin;
+            ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", toolbarTitle.getWidth() + toolbarTitleRightMargin);
+            objectAnimator.setDuration(400);
+            animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
+        } else {
+            animatorSet.play(objectAnimator).with(objectAnimator2);
+        }
+
         return animatorSet;
-    }
-
-    @Override
-    public void prepareForEnter() {
-        mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
-        mRootView.setScaleY(0.1f);
-
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
-        toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
-
-        int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
-        mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
     }
 
     @Override

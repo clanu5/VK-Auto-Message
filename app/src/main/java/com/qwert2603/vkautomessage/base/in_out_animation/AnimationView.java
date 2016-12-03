@@ -11,6 +11,5 @@ public interface AnimationView extends BaseView {
     void animateIn(boolean withLargeDelay);
     void animateOut(int id);
     void animateExit();
-    void prepareForEnter();
     void performBackPressed();
 }

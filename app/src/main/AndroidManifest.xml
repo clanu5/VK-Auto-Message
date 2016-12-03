@@ -30,7 +30,7 @@
 
         <activity
             android:name=".user_list.UserListActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -39,7 +39,7 @@
 
         <activity
             android:name=".record_list.RecordListActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar.TransparentActivity"
             android:parentActivityName=".user_list.UserListActivity">
         </activity>
