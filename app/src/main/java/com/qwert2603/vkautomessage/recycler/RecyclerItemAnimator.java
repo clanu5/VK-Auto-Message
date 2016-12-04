@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class RecyclerItemAnimator extends DefaultItemAnimator {
 
-    public static final int ENTER_DURATION = 400;
+    public static final int ENTER_DURATION = 250;
     public static final int ENTER_EACH_ITEM_DELAY = 50;
     public static final int MAX_ENTER_DURATION = 1200;
 

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -297,6 +298,9 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
                     mContentView.setVisibility(View.VISIBLE);
                 }
             });
+        } else {
+            // без этого пустой AnimatorSet может вызвать onAnimationEnd раньше onAnimationStart
+            animatorSet.play(ValueAnimator.ofInt(1, 2).setDuration(50));
         }
 
         animatorSet.addListener(new AnimatorListenerAdapter() {
@@ -332,6 +336,9 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
                     mContentView.setVisibility(View.INVISIBLE);
                 }
             });
+        } else {
+            // без этого пустой AnimatorSet может вызвать onAnimationEnd раньше onAnimationStart
+            animatorSet.play(ValueAnimator.ofInt(1, 2).setDuration(50));
         }
 
         return animatorSet;
@@ -351,7 +358,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         objectAnimator1.setDuration(300);
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator1).with(objectAnimator);
+        animatorSet.play(objectAnimator).with(objectAnimator1);
         return animatorSet;
     }
 
