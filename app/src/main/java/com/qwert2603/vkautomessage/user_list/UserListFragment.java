@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -31,7 +32,6 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
-import com.qwert2603.vkautomessage.recycler.SimpleItemDecoration;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;
@@ -79,6 +79,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         super.onCreate(savedInstanceState);
     }
 
+    @SuppressWarnings("deprecation")
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,7 +88,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
-        mRecyclerView.addItemDecoration(new SimpleItemDecoration(getActivity()));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider));
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
 
