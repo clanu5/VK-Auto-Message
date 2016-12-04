@@ -189,16 +189,16 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
-        objectAnimator.setDuration(400);
+        objectAnimator.setDuration(300);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
         objectAnimator1.setStartDelay(withLargeDelay ? 100 : 200);
-        objectAnimator1.setDuration(400);
+        objectAnimator1.setDuration(300);
 
         // TODO: 29.11.2016 анимировать появление FAB сразу после появления списка (delay зависит от размера списка)
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
         objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 100);
-        objectAnimator2.setDuration(400);
+        objectAnimator2.setDuration(300);
         objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -218,11 +218,11 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
-        objectAnimator1.setDuration(300);
+        objectAnimator1.setDuration(200);
 
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(toolbarIcon, "translationY", -1 * toolbar.getHeight());
         objectAnimator2.setStartDelay(100);
-        objectAnimator2.setDuration(300);
+        objectAnimator2.setDuration(200);
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);

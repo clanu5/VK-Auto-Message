@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import com.qwert2603.vkautomessage.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;
 
@@ -39,6 +41,8 @@ import butterknife.ButterKnife;
 public class RecordFragment extends AnimationFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
+    private static final String drawingStartXKey = "drawingStartX";
+    private static final String drawingStartYKey = "drawingStartY";
 
     private static final int REQUEST_EDIT_MESSAGE = 1;
     private static final int REQUEST_EDIT_TIME = 2;
@@ -47,13 +51,21 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
     private static final int REQUEST_EDIT_DAYS_IN_WEEK = 5;
     private static final int REQUEST_EDIT_DAY_IN_YEAR = 6;
 
-    public static RecordFragment newInstance(int recordId) {
+    public static RecordFragment newInstance(int recordId, int drawingStartX, int drawingStartY) {
         RecordFragment recordFragment = new RecordFragment();
         Bundle args = new Bundle();
         args.putInt(recordIdKey, recordId);
+        args.putInt(drawingStartXKey, drawingStartX);
+        args.putInt(drawingStartYKey, drawingStartY);
         recordFragment.setArguments(args);
         return recordFragment;
     }
+
+    @BindView(R.id.root_view)
+    View mRootView;
+
+    @BindView(R.id.content_view)
+    View mContentView;
 
     @BindView(R.id.photo_image_view)
     ImageView mPhotoImageView;
@@ -115,6 +127,12 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         ButterKnife.bind(RecordFragment.this, view);
 
         // TODO: 29.11.2016 transition для всех диалогов
+
+
+        if (getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
+            mRootView.setPivotX(getArguments().getInt(drawingStartXKey));
+            mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
+        }
 
         mUserCardView.setOnClickListener(v -> mRecordPresenter.onUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
@@ -256,8 +274,31 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     protected Animator createEnterAnimator() {
-        // TODO: 03.12.2016 expanding animation как в recordListFragment
         AnimatorSet animatorSet = new AnimatorSet();
+
+        if (!AndroidUtils.isLollipopOrHigher() && getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(mRootView, "scaleX", 0.1f, 1);
+            scaleX.setDuration(200);
+
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 0.1f, 1);
+            scaleY.setDuration(200);
+
+            animatorSet.play(scaleX).after(scaleY);
+            animatorSet.setInterpolator(new AccelerateInterpolator());
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mContentView.setVisibility(View.INVISIBLE);
+                    mRootView.setScaleX(0.1f);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mContentView.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -274,7 +315,26 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     protected Animator createExitAnimator() {
-        return new AnimatorSet();
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        if (!AndroidUtils.isLollipopOrHigher() && getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(mRootView, "scaleX", 1, 0.1f);
+            scaleX.setDuration(200);
+
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 1, 0);
+            scaleY.setDuration(200);
+
+            animatorSet.play(scaleX).before(scaleY);
+            animatorSet.setInterpolator(new AccelerateInterpolator());
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mContentView.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+
+        return animatorSet;
     }
 
     @Override
@@ -284,11 +344,11 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
-        objectAnimator.setDuration(400);
+        objectAnimator.setDuration(300);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
         objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
-        objectAnimator1.setDuration(400);
+        objectAnimator1.setDuration(300);
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(objectAnimator).with(objectAnimator1);

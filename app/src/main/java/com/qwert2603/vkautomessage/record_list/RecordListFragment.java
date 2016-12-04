@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 public class RecordListFragment extends ListFragment<Record> implements RecordListView {
 
     private static final String userIdKey = "userId";
-    private static final String drawingStartYKey = "drawingStart";
+    private static final String drawingStartYKey = "drawingStartY";
 
     public static RecordListFragment newInstance(int userId, int drawingStartY) {
         RecordListFragment recordListFragment = new RecordListFragment();
@@ -136,6 +136,16 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, id);
+
+        if (viewHolder != null) {
+            int[] startingPoint = new int[2];
+            viewHolder.itemView.getLocationOnScreen(startingPoint);
+            startingPoint[0] += viewHolder.itemView.getWidth() / 2;
+            startingPoint[1] -= ((ActivityInterface) getActivity()).getToolbar().getHeight();
+            intent.putExtra(RecordActivity.EXTRA_DRAWING_START_X, startingPoint[0]);
+            intent.putExtra(RecordActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
+        }
+
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
 
         getActivity().overridePendingTransition(0, 0);
@@ -162,7 +172,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected Animator createEnterAnimator() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0.1f, 1);
-        objectAnimator.setDuration(400);
+        objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -194,7 +204,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected Animator createExitAnimator() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0);
-        objectAnimator.setDuration(400);
+        objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -209,12 +219,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     protected Animator createInAnimator(boolean withLargeDelay) {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
-        objectAnimator.setDuration(400);
+        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setDuration(300);
 
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
-        objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 200);
-        objectAnimator2.setDuration(400);
+        objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 100);
+        objectAnimator2.setDuration(300);
         objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -222,8 +232,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         if (!AndroidUtils.isLollipopOrHigher()) {
             TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", 0);
-            objectAnimator1.setStartDelay(withLargeDelay ? 400 : 400);
-            objectAnimator1.setDuration(500);
+            objectAnimator1.setStartDelay(withLargeDelay ? 400 : 200);
+            objectAnimator1.setDuration(400);
             animatorSet.play(objectAnimator1).with(objectAnimator).with(objectAnimator2);
         } else {
             animatorSet.play(objectAnimator).with(objectAnimator2);
@@ -237,11 +247,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
-        objectAnimator.setDuration(300);
+        objectAnimator.setDuration(200);
 
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
-        objectAnimator2.setDuration(400);
+        objectAnimator2.setDuration(300);
 
         AnimatorSet animatorSet = new AnimatorSet();
 
@@ -249,7 +259,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) toolbarTitle.getLayoutParams()).rightMargin;
             ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", toolbarTitle.getWidth() + toolbarTitleRightMargin);
-            objectAnimator1.setDuration(400);
+            objectAnimator1.setDuration(300);
             animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
         } else {
             animatorSet.play(objectAnimator).with(objectAnimator2);

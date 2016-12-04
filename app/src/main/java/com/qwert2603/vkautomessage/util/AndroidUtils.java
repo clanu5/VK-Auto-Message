@@ -5,6 +5,7 @@ import android.os.Build;
 public final class AndroidUtils {
 
     public static boolean isLollipopOrHigher() {
+//        return false;
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
