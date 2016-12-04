@@ -343,7 +343,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 400 : 200);
+        objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
         objectAnimator.setDuration(300);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
@@ -351,7 +351,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         objectAnimator1.setDuration(300);
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1);
+        animatorSet.play(objectAnimator1).with(objectAnimator);
         return animatorSet;
     }
 

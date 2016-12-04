@@ -68,4 +68,6 @@ public interface ListView<T extends Identifiable> extends AnimationView {
 
     void delayEachItemEnterAnimation(boolean delay);
 
+    void animateInNewItemButton(int delay);
+
 }

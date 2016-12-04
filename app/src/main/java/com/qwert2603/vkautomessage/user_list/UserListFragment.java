@@ -188,21 +188,17 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
 
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
         objectAnimator.setDuration(300);
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 200);
+        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
         objectAnimator1.setDuration(300);
 
         // TODO: 29.11.2016 анимировать появление FAB сразу после появления списка (delay зависит от размера списка)
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
-        objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 100);
-        objectAnimator2.setDuration(300);
-        objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
+        animatorSet.play(objectAnimator).with(objectAnimator1);
         return animatorSet;
     }
 
@@ -229,4 +225,12 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         return animatorSet;
     }
 
+    @Override
+    public void animateInNewItemButton(int delay) {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
+        objectAnimator.setStartDelay(delay);
+        objectAnimator.setDuration(300);
+        objectAnimator.setInterpolator(new OvershootInterpolator());
+        objectAnimator.start();
+    }
 }

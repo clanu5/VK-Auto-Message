@@ -2,12 +2,13 @@ package com.qwert2603.vkautomessage.edit_repeat_type;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -73,7 +74,9 @@ public class EditRepeatTypeDialog extends BaseDialog<EditRepeatTypePresenter> im
             RadioButton radioButton = new RadioButton(getActivity());
             radioButton.setText(s);
             mRadioGroup.addView(radioButton);
+            radioButton.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
         }
+        mRadioGroup.requestLayout();
 
         mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             for (int i = 0; i < mRepeatTypes.length; i++) {

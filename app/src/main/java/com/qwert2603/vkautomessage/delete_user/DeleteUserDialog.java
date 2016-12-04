@@ -1,9 +1,9 @@
 package com.qwert2603.vkautomessage.delete_user;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -16,7 +16,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 
 public class DeleteUserDialog extends DeleteItemDialog<DeleteUserPresenter> implements DeleteUserView {
 

@@ -21,7 +21,7 @@ import java.util.Set;
 public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public static final int ENTER_DURATION = 400;
-    public static final int ENTER_EACH_ITEM_DELAY = 60;
+    public static final int ENTER_EACH_ITEM_DELAY = 50;
     public static final int MAX_ENTER_DURATION = 1200;
 
     public enum EnterOrigin {
@@ -41,7 +41,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     private Set<Integer> mItemsToAnimateEnter = new HashSet<>();
     private boolean mAlwaysAnimateEnter = true;
     private boolean mDelayEnter = false;
-
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {

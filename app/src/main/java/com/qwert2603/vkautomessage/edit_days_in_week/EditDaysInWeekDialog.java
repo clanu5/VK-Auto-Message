@@ -2,12 +2,13 @@ package com.qwert2603.vkautomessage.edit_days_in_week;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
@@ -84,7 +85,9 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
             checkBox.setText(s);
             mCheckBoxList.add(checkBox);
             mLinearLayout.addView(checkBox);
+            checkBox.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
         }
+        mLinearLayout.requestLayout();
 
         for (int i = 1, mCheckBoxListSize = mCheckBoxList.size(); i < mCheckBoxListSize; i++) {
             CheckBox checkBox = mCheckBoxList.get(i);

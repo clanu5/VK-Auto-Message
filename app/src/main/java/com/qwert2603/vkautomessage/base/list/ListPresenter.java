@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationPresenter;
 import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.model.Identifiable;
+import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
 import java.util.List;
 
@@ -51,20 +52,36 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         } else {
             if (mListEnterAnimationState != AnimationState.WAITING_FOR_TRIGGER) {
                 List<T> list = getList();
-                if (list == null || list.isEmpty()) {
-                    view.showEmpty();
-                } else {
-                    if (mListEnterAnimationState == AnimationState.SHOULD_START) {
-                        mListEnterAnimationState = AnimationState.STARTED;
+                if (mListEnterAnimationState == AnimationState.SHOULD_START) {
+                    mListEnterAnimationState = AnimationState.STARTED;
+                    if (list == null || list.isEmpty()) {
+                        view.showEmpty();
+                        view.animateInNewItemButton(0);
+                    } else {
                         view.animateAllItemsEnter(true);
                         view.delayEachItemEnterAnimation(true);
                         view.showListEnter(list);
+
+                        int delay = (int) (0.75 * Math.min(RecyclerItemAnimator.MAX_ENTER_DURATION, list.size() * RecyclerItemAnimator.ENTER_EACH_ITEM_DELAY));
+                        view.animateInNewItemButton(delay);
+                    }
+                } else {
+                    if (list == null || list.isEmpty()) {
+                        view.showEmpty();
                     } else {
                         view.showList(list);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public void onReadyToAnimate() {
+        if (isOutside()) {
+            getView().animateInNewItemButton(50);
+        }
+        super.onReadyToAnimate();
     }
 
     @Override

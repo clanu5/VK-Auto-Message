@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -219,24 +218,19 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     protected Animator createInAnimator(boolean withLargeDelay) {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 400 : 100);
+        objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
         objectAnimator.setDuration(300);
-
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
-        objectAnimator2.setStartDelay(withLargeDelay ? 1000 : 100);
-        objectAnimator2.setDuration(300);
-        objectAnimator2.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
 
         if (!AndroidUtils.isLollipopOrHigher()) {
             TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", 0);
-            objectAnimator1.setStartDelay(withLargeDelay ? 400 : 200);
+            objectAnimator1.setStartDelay(withLargeDelay ? 300 : 100);
             objectAnimator1.setDuration(400);
-            animatorSet.play(objectAnimator1).with(objectAnimator).with(objectAnimator2);
+            animatorSet.play(objectAnimator1).with(objectAnimator);
         } else {
-            animatorSet.play(objectAnimator).with(objectAnimator2);
+            animatorSet.play(objectAnimator);
         }
 
         return animatorSet;
@@ -266,6 +260,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         }
 
         return animatorSet;
+    }
+
+    @Override
+    public void animateInNewItemButton(int delay) {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
+        objectAnimator.setStartDelay(delay);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
     }
 
     @Override

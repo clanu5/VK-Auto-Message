@@ -2,12 +2,12 @@ package com.qwert2603.vkautomessage.choose_user;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -261,6 +261,10 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void animateOut(int id) {
         mChooseUserPresenter.onAnimateOutFinished(id);
+    }
+
+    @Override
+    public void animateInNewItemButton(int delay) {
     }
 
     @Override

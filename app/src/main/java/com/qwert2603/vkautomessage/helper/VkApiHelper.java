@@ -111,6 +111,7 @@ public class VkApiHelper {
         });
     }
 
+    // TODO: 04.12.2016 добавить пар-р boolean from_cache, чтобы лезть лишний раз в интернет (когда нужно получить выбранного пользователя)
     public Observable<VKApiUserFull> getUserById(int userId) {
         return getUsersById(Collections.singletonList(userId))
                 .flatMap(Observable::from)
