@@ -27,8 +27,6 @@ import rx.subscriptions.Subscriptions;
 public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
-    private Subscription mAddRecordSubscription = Subscriptions.unsubscribed();
-    private Subscription mRemoveRecordSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -67,8 +65,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     @Override
     public void unbindView() {
         mSubscription.unsubscribe();
-        mAddRecordSubscription.unsubscribe();
-        mRemoveRecordSubscription.unsubscribe();
         super.unbindView();
     }
 
@@ -155,8 +151,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             }
         }
         Record record = new Record(recordListWithUser.mUser.getId());
-        mAddRecordSubscription.unsubscribe();
-        mAddRecordSubscription = mDataManager.addRecord(record)
+        mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
@@ -185,7 +180,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     setItemIdToMove(record.getId(), true);
                     animateOut();
-                }, LogUtils::e, mAddRecordSubscription::unsubscribe);
+                }, LogUtils::e);
     }
 
     @ShouldCheckIsInningOrInside
@@ -211,10 +206,9 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             updateView();
         }
 
-        mRemoveRecordSubscription.unsubscribe();
-        mRemoveRecordSubscription = mDataManager.removeRecord(id)
+        mDataManager.removeRecord(id)
                 .subscribe(aLong -> {
-                }, LogUtils::e, mRemoveRecordSubscription::unsubscribe);
+                }, LogUtils::e);
     }
 
     private int getRecordPosition(int recordId) {

@@ -21,7 +21,6 @@ import javax.inject.Named;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 public class DataManager {
 
@@ -95,7 +94,8 @@ public class DataManager {
     public Observable<RecordWithUser> getRecordById(int recordId) {
         Observable<Record> record = mDatabaseHelper.getRecordById(recordId)
                 .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler).cache();
+                .observeOn(mUiScheduler)
+                .cache();
         Observable<User> user = record
                 .map(Record::getUserId)
                 .flatMap(this::getUserById);
@@ -239,12 +239,9 @@ public class DataManager {
         mPreferenceHelper.setLastNotificationId(lastNotificationId);
     }
 
-    private Subscription mLogOutVkSubscription = Subscriptions.unsubscribed();
-
     public void logOutVk() {
         mVkApiHelper.logOut();
-        mLogOutVkSubscription.unsubscribe();
-        mLogOutVkSubscription = getAllRecords()
+        getAllRecords()
                 .flatMap(Observable::from)
                 .doOnNext(record -> {
                     if (record.isEnabled()) {
@@ -258,7 +255,7 @@ public class DataManager {
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler)
                 .subscribe(aVoid -> {
-                }, LogUtils::e, mLogOutVkSubscription::unsubscribe);
+                }, LogUtils::e);
     }
 
     /**
@@ -281,16 +278,13 @@ public class DataManager {
         updateUsersInDatabase(observable);
     }
 
-    private Subscription mUpdateUsersInDatabaseSubscription = Subscriptions.unsubscribed();
-
     /**
      * Обновить пользователей, сохраненных в {@link #mDatabaseHelper}.
      *
      * @param userObservable пользователи, которые будут обновлены.
      */
     private <U extends User> void updateUsersInDatabase(Observable<List<U>> userObservable) {
-        mUpdateUsersInDatabaseSubscription.unsubscribe();
-        mUpdateUsersInDatabaseSubscription = mDatabaseHelper.getAllUsers()
+        mDatabaseHelper.getAllUsers()
                 .flatMap(Observable::from)
                 .toMap(User::getId, user -> user, HashMap::new)
                 .flatMap(dbUsers -> userObservable
@@ -303,8 +297,7 @@ public class DataManager {
                 .observeOn(mUiScheduler)
                 .subscribe(
                         updatedUsers -> mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_USERS_VK_DATA_UPDATED, updatedUsers)),
-                        LogUtils::e,
-                        mUpdateUsersInDatabaseSubscription::unsubscribe
+                        LogUtils::e
                 );
     }
 

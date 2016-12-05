@@ -22,8 +22,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
-    private Subscription mRemoveUserSubscription = Subscriptions.unsubscribed();
-    private Subscription mGetVkUserSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -85,8 +83,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mRxBusSubscription.unsubscribe();
         mRxBusSubscription = Subscriptions.unsubscribed();
         mSubscription.unsubscribe();
-        mRemoveUserSubscription.unsubscribe();
-        mGetVkUserSubscription.unsubscribe();
         super.unbindView();
     }
 
@@ -147,10 +143,9 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             updateView();
         }
 
-        mRemoveUserSubscription.unsubscribe();
-        mRemoveUserSubscription = mDataManager.removeUser(id)
+       mDataManager.removeUser(id)
                 .subscribe(aVoid -> {
-                }, LogUtils::e, mRemoveUserSubscription::unsubscribe);
+                }, LogUtils::e);
     }
 
     public void onChooseUserClicked() {
@@ -174,8 +169,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             setItemIdToMove(userId, true);
             animateOut();
         } else {
-            mGetVkUserSubscription.unsubscribe();
-            mGetVkUserSubscription = mDataManager.getVkUserById(userId)
+            mDataManager.getVkUserById(userId)
                     .flatMap(mDataManager::addUser)
 //                    .doOnNext(user -> {
 //                        for (int i = 0; i < 300; i++) {
@@ -206,7 +200,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
                         setItemIdToMove(userId, true);
                         animateOut();
-                    }, LogUtils::e, mGetVkUserSubscription::unsubscribe);
+                    }, LogUtils::e);
         }
     }
 
