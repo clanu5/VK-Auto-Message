@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.edit_period;
+package com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

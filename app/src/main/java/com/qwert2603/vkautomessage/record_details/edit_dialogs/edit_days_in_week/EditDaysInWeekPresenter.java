@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.edit_days_in_week;
+package com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week;
 
 import android.support.annotation.NonNull;
 

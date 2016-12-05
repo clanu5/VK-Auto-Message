@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.edit_time;
+package com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time;
 
 import android.app.Activity;
 import android.app.Dialog;

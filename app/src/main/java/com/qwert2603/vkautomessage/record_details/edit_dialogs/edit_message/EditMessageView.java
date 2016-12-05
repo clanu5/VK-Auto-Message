@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.edit_message;
+package com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message;
 
 import com.qwert2603.vkautomessage.base.BaseView;
 

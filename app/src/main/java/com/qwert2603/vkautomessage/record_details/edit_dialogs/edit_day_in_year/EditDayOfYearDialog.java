@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.edit_day_in_year;
+package com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
