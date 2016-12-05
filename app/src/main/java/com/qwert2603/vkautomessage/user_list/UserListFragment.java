@@ -195,8 +195,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
         objectAnimator1.setDuration(300);
 
-        // TODO: 29.11.2016 анимировать появление FAB сразу после появления списка (delay зависит от размера списка)
-
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(objectAnimator).with(objectAnimator1);
         return animatorSet;

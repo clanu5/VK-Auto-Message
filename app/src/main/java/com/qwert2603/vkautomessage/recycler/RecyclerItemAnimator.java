@@ -22,7 +22,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public static final int ENTER_DURATION = 250;
     public static final int ENTER_EACH_ITEM_DELAY = 50;
-    public static final int MAX_ENTER_DURATION = 1200;
 
     public enum EnterOrigin {
         BOTTOM,
@@ -38,6 +37,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     private Interpolator mEnterInterpolator = new DecelerateInterpolator();
 
+    private int mMaxEnterDuration = ENTER_EACH_ITEM_DELAY * 15;
     private Set<Integer> mItemsToAnimateEnter = new HashSet<>();
     private boolean mAlwaysAnimateEnter = true;
     private boolean mDelayEnter = false;
@@ -139,7 +139,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
         objectAnimator.setDuration(ENTER_DURATION);
         if (mDelayEnter) {
-            objectAnimator.setStartDelay(Math.min(MAX_ENTER_DURATION, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
+            objectAnimator.setStartDelay(Math.min(mMaxEnterDuration, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
         }
         objectAnimator.setInterpolator(mEnterInterpolator);
         objectAnimator.addListener(new AnimatorListenerAdapter() {
@@ -218,5 +218,19 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public void clearItemsToAnimateEnter() {
         mItemsToAnimateEnter.clear();
+    }
+
+    public int getMaxEnterDuration() {
+        return mMaxEnterDuration;
+    }
+
+    /**
+     * Установить кол-во элементов, которые видны на экране в любой момент времени.
+     * Чтобы анимировалось появление только первых itemsPerScreen элементов.
+     *
+     * @param itemsPerScreen кол-во элементов, которые видны на экране в любой момент времени.
+     */
+    public void setItemsPerScreen(int itemsPerScreen) {
+        mMaxEnterDuration = itemsPerScreen * ENTER_EACH_ITEM_DELAY;
     }
 }

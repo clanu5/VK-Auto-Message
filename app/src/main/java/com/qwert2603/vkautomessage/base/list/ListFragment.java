@@ -11,6 +11,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -95,6 +96,16 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
         mRecyclerItemAnimator = new RecyclerItemAnimator();
         mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                float childHeight = getResources().getDimension(R.dimen.item_user_height);
+                int itemsPerScreen = (int) (mRecyclerView.getHeight() / childHeight);
+                mRecyclerItemAnimator.setItemsPerScreen(itemsPerScreen);
+                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                return true;
+            }
+        });
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
 
@@ -227,4 +238,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         }
     }
 
+    @Override
+    public int getMaxItemEnterDelay() {
+        return mRecyclerItemAnimator.getMaxEnterDuration();
+    }
 }

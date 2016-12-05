@@ -64,6 +64,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Inject
     ChooseUserAdapter mChooseUserAdapter;
 
+    RecyclerItemAnimator mRecyclerItemAnimator;
+
     @NonNull
     @Override
     protected ChooseUserPresenter getPresenter() {
@@ -95,9 +97,9 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mChooseUserAdapter);
 
-        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
-        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
-        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+        mRecyclerItemAnimator = new RecyclerItemAnimator();
+        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
+        mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
 
         mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onItemAtPositionClicked);
         mChooseUserAdapter.setLongClickCallback(mChooseUserPresenter::onItemAtPositionLongClicked);
@@ -288,4 +290,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         }
     }
 
+    @Override
+    public int getMaxItemEnterDelay() {
+        return mRecyclerItemAnimator.getMaxEnterDuration();
+    }
 }
