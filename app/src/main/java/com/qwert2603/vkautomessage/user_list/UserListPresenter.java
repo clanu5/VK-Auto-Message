@@ -22,6 +22,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
+    private Subscription mRemoveUserSubscription = Subscriptions.unsubscribed();
+    private Subscription mGetVkUserSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -83,6 +85,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mRxBusSubscription.unsubscribe();
         mRxBusSubscription = Subscriptions.unsubscribed();
         mSubscription.unsubscribe();
+        mRemoveUserSubscription = Subscriptions.unsubscribed();
+        mGetVkUserSubscription = Subscriptions.unsubscribed();
         super.unbindView();
     }
 
@@ -143,9 +147,10 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             updateView();
         }
 
-        mDataManager.removeUser(id)
+        mRemoveUserSubscription.unsubscribe();
+        mRemoveUserSubscription = mDataManager.removeUser(id)
                 .subscribe(aVoid -> {
-                }, LogUtils::e);
+                }, LogUtils::e, mRemoveUserSubscription::unsubscribe);
     }
 
     public void onChooseUserClicked() {
@@ -165,10 +170,11 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             if (userList == null || view == null) {
                 return;
             }
-            getView().scrollToPosition(userPosition);
+            getView().smoothScrollToPosition(userPosition);
             animateOut(userId);
         } else {
-            mDataManager.getVkUserById(userId)
+            mGetVkUserSubscription.unsubscribe();
+            mGetVkUserSubscription = mDataManager.getVkUserById(userId)
                     .flatMap(mDataManager::addUser)
 //                    .doOnNext(user -> {
 //                        for (int i = 0; i < 300; i++) {
@@ -191,12 +197,12 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                         if (userList.size() == 1) {
                             view.showList(userList);
                         } else {
-                            view.scrollListToBottom();
+                            view.smoothScrollListToBottom();
                         }
                         view.notifyItemInserted(userList.size() - 1, userId);
 
                         animateOut(userId);
-                    }, LogUtils::e);
+                    }, LogUtils::e, mGetVkUserSubscription::unsubscribe);
         }
     }
 

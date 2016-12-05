@@ -18,9 +18,9 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
-import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -100,6 +100,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
             @Override
             public boolean onPreDraw() {
                 float childHeight = getResources().getDimension(R.dimen.item_user_height);
+                LogUtils.d("childHeight == " + childHeight);
                 int itemsPerScreen = (int) (mRecyclerView.getHeight() / childHeight);
                 mRecyclerItemAnimator.setItemsPerScreen(itemsPerScreen);
                 mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
@@ -205,19 +206,19 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
     @Override
     public void scrollListToTop() {
-        mRecyclerView.smoothScrollToPosition(0);
+        mRecyclerView.scrollToPosition(0);
     }
 
     @Override
-    public void scrollListToBottom() {
+    public void smoothScrollListToBottom() {
         // TODO: 29.11.2016 сделать плавный скроллинг на другой конец списка
-        // может, сначала scrollToPosition, а потом smoothScrollToPosition
+        // может, сначала smoothScrollToPosition, а потом smoothScrollToPosition
 
         mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
     }
 
     @Override
-    public void scrollToPosition(int position) {
+    public void smoothScrollToPosition(int position) {
         mRecyclerView.smoothScrollToPosition(position);
     }
 

@@ -236,12 +236,12 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void scrollListToBottom() {
+    public void smoothScrollListToBottom() {
         mRecyclerView.scrollToPosition(mChooseUserAdapter.getItemCount());
     }
 
     @Override
-    public void scrollToPosition(int position) {
+    public void smoothScrollToPosition(int position) {
         mRecyclerView.scrollToPosition(position);
     }
 

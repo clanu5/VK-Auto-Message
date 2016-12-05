@@ -27,6 +27,8 @@ import rx.subscriptions.Subscriptions;
 public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
+    private Subscription mAddRecordSubscription = Subscriptions.unsubscribed();
+    private Subscription mRemoveRecordSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -65,6 +67,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     @Override
     public void unbindView() {
         mSubscription.unsubscribe();
+        mAddRecordSubscription.unsubscribe();
         super.unbindView();
     }
 
@@ -151,7 +154,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             }
         }
         Record record = new Record(recordListWithUser.mUser.getId());
-        mDataManager.addRecord(record)
+        mAddRecordSubscription.unsubscribe();
+        mAddRecordSubscription = mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
                     RecordListWithUser model = getModel();
                     RecordListView view = getView();
@@ -171,12 +175,12 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     if (recordList.size() == 1) {
                         view.showList(recordList);
                     } else {
-                        view.scrollListToBottom();
+                        view.smoothScrollListToBottom();
                     }
                     view.notifyItemInserted(recordList.size() - 1, record.getId());
 
                     animateOut(record.getId());
-                }, LogUtils::e);
+                }, LogUtils::e, mAddRecordSubscription::unsubscribe);
     }
 
     @ShouldCheckIsInningOrInside
@@ -202,9 +206,10 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             updateView();
         }
 
-        mDataManager.removeRecord(id)
+        mRemoveRecordSubscription.unsubscribe();
+        mRemoveRecordSubscription = mDataManager.removeRecord(id)
                 .subscribe(aLong -> {
-                }, LogUtils::e);
+                }, LogUtils::e, mRemoveRecordSubscription::unsubscribe);
     }
 
     private int getRecordPosition(int recordId) {

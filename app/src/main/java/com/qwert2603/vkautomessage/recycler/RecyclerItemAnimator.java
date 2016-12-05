@@ -139,7 +139,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
         objectAnimator.setDuration(ENTER_DURATION);
         if (mDelayEnter) {
-            objectAnimator.setStartDelay(Math.min(mEnterDelayPerScreen, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
+            objectAnimator.setStartDelay(Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
         }
         objectAnimator.setInterpolator(mEnterInterpolator);
         objectAnimator.addListener(new AnimatorListenerAdapter() {

@@ -20,6 +20,8 @@ import javax.inject.Named;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class DataManager {
 
@@ -160,13 +162,26 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
+    private Map<Integer, Subscription> mUpdateRecordSubscriptionMap = new HashMap<>();
+
     public void onRecordUpdated(Record record) {
-        updateRecord(record)
+        Subscription removed = mUpdateRecordSubscriptionMap.remove(record.getId());
+        if (removed != null) {
+            removed.unsubscribe();
+        }
+        Subscription subscription = updateRecord(record)
                 .subscribe(
                         i -> {
                         },
-                        LogUtils::e
+                        LogUtils::e,
+                        () -> {
+                            Subscription s = mUpdateRecordSubscriptionMap.remove(record.getId());
+                            if (s != null) {
+                                s.unsubscribe();
+                            }
+                        }
                 );
+        mUpdateRecordSubscriptionMap.put(record.getId(), subscription);
     }
 
     public Observable<List<VkUser>> getAllVkFriends() {
@@ -224,9 +239,12 @@ public class DataManager {
         mPreferenceHelper.setLastNotificationId(lastNotificationId);
     }
 
+    private Subscription mLogOutVkSubscription = Subscriptions.unsubscribed();
+
     public void logOutVk() {
         mVkApiHelper.logOut();
-        getAllRecords()
+        mLogOutVkSubscription.unsubscribe();
+        mLogOutVkSubscription = getAllRecords()
                 .flatMap(Observable::from)
                 .doOnNext(record -> {
                     if (record.isEnabled()) {
@@ -240,7 +258,7 @@ public class DataManager {
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler)
                 .subscribe(aVoid -> {
-                }, LogUtils::e);
+                }, LogUtils::e, mLogOutVkSubscription::unsubscribe);
     }
 
     /**
@@ -263,13 +281,16 @@ public class DataManager {
         updateUsersInDatabase(observable);
     }
 
+    private Subscription mUpdateUsersInDatabaseSubscription = Subscriptions.unsubscribed();
+
     /**
      * Обновить пользователей, сохраненных в {@link #mDatabaseHelper}.
      *
      * @param userObservable пользователи, которые будут обновлены.
      */
     private <U extends User> void updateUsersInDatabase(Observable<List<U>> userObservable) {
-        mDatabaseHelper.getAllUsers()
+        mUpdateUsersInDatabaseSubscription.unsubscribe();
+        mUpdateUsersInDatabaseSubscription = mDatabaseHelper.getAllUsers()
                 .flatMap(Observable::from)
                 .toMap(User::getId, user -> user, HashMap::new)
                 .flatMap(dbUsers -> userObservable
@@ -282,7 +303,8 @@ public class DataManager {
                 .observeOn(mUiScheduler)
                 .subscribe(
                         updatedUsers -> mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_USERS_VK_DATA_UPDATED, updatedUsers)),
-                        LogUtils::e
+                        LogUtils::e,
+                        mUpdateUsersInDatabaseSubscription::unsubscribe
                 );
     }
 

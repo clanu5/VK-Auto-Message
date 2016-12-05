@@ -23,6 +23,7 @@ import com.qwert2603.vkautomessage.util.StringUtils;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 
 public class SendMessageService extends IntentService {
 
@@ -38,9 +39,11 @@ public class SendMessageService extends IntentService {
         VkAutoMessageApplication.getAppComponent().inject(SendMessageService.this);
     }
 
+    private Subscription mSubscription;
+
     @Override
     protected void onHandleIntent(Intent intent) {
-        mDataManager
+        mSubscription = mDataManager
                 .getRecordById(intent.getIntExtra(EXTRA_RECORD_ID, 0))
                 .flatMap(recordWithUser -> {
                     if (!InternetUtils.isInternetConnected(SendMessageService.this)) {
@@ -59,7 +62,8 @@ public class SendMessageService extends IntentService {
                             LogUtils.e(throwable);
                             RecordWithUser record = (RecordWithUser) ((VkApiHelper.SendMessageException) throwable).mToken;
                             showResultNotification(record, false);
-                        }
+                        },
+                        mSubscription::unsubscribe
                 );
     }
 

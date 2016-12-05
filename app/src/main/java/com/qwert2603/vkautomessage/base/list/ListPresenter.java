@@ -110,7 +110,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         if (list == null) {
             return;
         }
-        getView().scrollToPosition(position);
+        getView().smoothScrollToPosition(position);
         animateOut(list.get(position).getId());
     }
 

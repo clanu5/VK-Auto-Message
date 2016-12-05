@@ -60,9 +60,9 @@ public interface ListView<T extends Identifiable> extends AnimationView {
 
     void scrollListToTop();
 
-    void scrollListToBottom();
+    void smoothScrollListToBottom();
 
-    void scrollToPosition(int position);
+    void smoothScrollToPosition(int position);
 
     void animateAllItemsEnter(boolean animate);
 
