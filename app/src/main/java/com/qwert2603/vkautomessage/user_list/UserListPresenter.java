@@ -85,8 +85,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mRxBusSubscription.unsubscribe();
         mRxBusSubscription = Subscriptions.unsubscribed();
         mSubscription.unsubscribe();
-        mRemoveUserSubscription = Subscriptions.unsubscribed();
-        mGetVkUserSubscription = Subscriptions.unsubscribed();
+        mRemoveUserSubscription.unsubscribe();
+        mGetVkUserSubscription.unsubscribe();
         super.unbindView();
     }
 

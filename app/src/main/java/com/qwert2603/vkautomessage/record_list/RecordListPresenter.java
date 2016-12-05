@@ -68,6 +68,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     public void unbindView() {
         mSubscription.unsubscribe();
         mAddRecordSubscription.unsubscribe();
+        mRemoveRecordSubscription.unsubscribe();
         super.unbindView();
     }
 
