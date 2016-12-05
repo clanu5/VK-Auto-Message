@@ -37,7 +37,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     private Interpolator mEnterInterpolator = new DecelerateInterpolator();
 
-    private int mMaxEnterDuration = ENTER_EACH_ITEM_DELAY * 15;
+    private int mEnterDelayPerScreen = ENTER_EACH_ITEM_DELAY * 15;
     private Set<Integer> mItemsToAnimateEnter = new HashSet<>();
     private boolean mAlwaysAnimateEnter = true;
     private boolean mDelayEnter = false;
@@ -139,7 +139,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
         objectAnimator.setDuration(ENTER_DURATION);
         if (mDelayEnter) {
-            objectAnimator.setStartDelay(Math.min(mMaxEnterDuration, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
+            objectAnimator.setStartDelay(Math.min(mEnterDelayPerScreen, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
         }
         objectAnimator.setInterpolator(mEnterInterpolator);
         objectAnimator.addListener(new AnimatorListenerAdapter() {
@@ -220,8 +220,8 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         mItemsToAnimateEnter.clear();
     }
 
-    public int getMaxEnterDuration() {
-        return mMaxEnterDuration;
+    public int getEnterDelayPerScreen() {
+        return mEnterDelayPerScreen;
     }
 
     /**
@@ -231,6 +231,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
      * @param itemsPerScreen кол-во элементов, которые видны на экране в любой момент времени.
      */
     public void setItemsPerScreen(int itemsPerScreen) {
-        mMaxEnterDuration = itemsPerScreen * ENTER_EACH_ITEM_DELAY;
+        mEnterDelayPerScreen = itemsPerScreen * ENTER_EACH_ITEM_DELAY;
     }
 }

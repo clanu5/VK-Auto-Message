@@ -62,7 +62,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
                         view.delayEachItemEnterAnimation(true);
                         view.showListEnter(list);
 
-                        int delay = Math.min(view.getMaxItemEnterDelay(), list.size() * RecyclerItemAnimator.ENTER_EACH_ITEM_DELAY);
+                        int delay = Math.min(view.getItemEnterDelayPerScreen(), list.size() * RecyclerItemAnimator.ENTER_EACH_ITEM_DELAY);
                         view.animateInNewItemButton(delay);
                     }
                 } else {

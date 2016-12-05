@@ -76,7 +76,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
                 return 500;
             }
         });
-        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 20);
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 42);
         mRecyclerView.setAdapter(getAdapter());
 
 
@@ -239,7 +239,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     }
 
     @Override
-    public int getMaxItemEnterDelay() {
-        return mRecyclerItemAnimator.getMaxEnterDuration();
+    public int getItemEnterDelayPerScreen() {
+        return mRecyclerItemAnimator.getEnterDelayPerScreen();
     }
 }

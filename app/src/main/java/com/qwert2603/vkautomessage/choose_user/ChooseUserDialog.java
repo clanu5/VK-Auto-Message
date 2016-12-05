@@ -291,7 +291,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public int getMaxItemEnterDelay() {
-        return mRecyclerItemAnimator.getMaxEnterDuration();
+    public int getItemEnterDelayPerScreen() {
+        return mRecyclerItemAnimator.getEnterDelayPerScreen();
     }
 }
