@@ -30,8 +30,8 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.Edit
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.navigation.ActivityInterface;
-import com.qwert2603.vkautomessage.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;

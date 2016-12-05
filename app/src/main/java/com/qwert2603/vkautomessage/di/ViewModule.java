@@ -10,7 +10,7 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditP
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypePresenter;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowPresenter;
-import com.qwert2603.vkautomessage.navigation.NavigationPresenter;
+import com.qwert2603.vkautomessage.base.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 import com.qwert2603.vkautomessage.record_list.RecordListPresenter;

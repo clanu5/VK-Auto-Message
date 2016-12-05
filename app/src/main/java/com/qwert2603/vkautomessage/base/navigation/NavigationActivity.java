@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.navigation;
+package com.qwert2603.vkautomessage.base.navigation;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

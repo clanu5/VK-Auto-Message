@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.qwert2603.vkautomessage.base.BaseFragment;
-import com.qwert2603.vkautomessage.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
 
 /**
  * Фрагмент для отображения списка и показа in/out-анимаций.

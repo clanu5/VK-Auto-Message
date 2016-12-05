@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.qwert2603.vkautomessage.R;
-import com.qwert2603.vkautomessage.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 
 public class RecordActivity extends NavigationActivity {
 

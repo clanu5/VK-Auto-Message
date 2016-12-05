@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.navigation;
+package com.qwert2603.vkautomessage.base.navigation;
 
 import android.support.annotation.NonNull;
 import android.widget.ImageView;

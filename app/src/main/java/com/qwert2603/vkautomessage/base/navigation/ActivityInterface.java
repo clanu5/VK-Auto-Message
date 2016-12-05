@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.navigation;
+package com.qwert2603.vkautomessage.base.navigation;
 
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
