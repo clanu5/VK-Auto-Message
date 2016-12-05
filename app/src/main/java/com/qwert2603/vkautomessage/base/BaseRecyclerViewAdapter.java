@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.base;
 
+import android.os.SystemClock;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -9,6 +11,7 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Базовый адаптер для {@link RecyclerView} для шаблона MVP.
@@ -160,13 +163,39 @@ public abstract class BaseRecyclerViewAdapter
     /**
      * Заменить список объектов модели для отображения.
      *
-     * @param modelList новый список объектов модели для отображения.
+     * @param newList новый список объектов модели для отображения.
      */
-    public void replaceModelList(List<M> modelList) {
-        if (modelList != mModelList) {
-            mModelList = modelList;
+    public void replaceModelList(List<M> newList) {
+        List<M> oldList = mModelList;
+        if (newList != mModelList) {
+            mModelList = newList;
         }
-        notifyDataSetChanged();
+
+        long b = SystemClock.elapsedRealtime();
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return oldList.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return newList.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return oldList.get(oldItemPosition).getId() == newList.get(newItemPosition).getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                return Objects.equals(oldList.get(oldItemPosition), newList.get(newItemPosition));
+            }
+        });
+        LogUtils.d("DiffUtil.calculateDiff " + (SystemClock.elapsedRealtime() - b));
+        LogUtils.printCurrentStack();
+        diffResult.dispatchUpdatesTo(this);
     }
 
     /**

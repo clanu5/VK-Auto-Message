@@ -105,10 +105,17 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     }
 
     @Override
+    public void onReloadList() {
+        if (mIsLoading) {
+            return;
+        }
+        super.onReloadList();
+    }
+
+    @Override
     protected void setModel(List<VkUser> userList) {
+        doSearch(userList);
         super.setModel(userList);
-        doSearch();
-        updateView();
     }
 
     public String getCurrentQuery() {
@@ -152,12 +159,11 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
 
     public void onSearchQueryChanged(String query) {
         mQuery = query.toLowerCase();
-        doSearch();
+        doSearch(getModel());
         updateView();
     }
 
-    private void doSearch() {
-        List<VkUser> userList = getModel();
+    private void doSearch(List<VkUser> userList) {
         mShowingUserList = null;
         if (userList != null) {
             if (mQuery == null || mQuery.isEmpty()) {

@@ -130,6 +130,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
                 }
                 break;
             case REQUEST_DETAILS_FOT_ITEM:
+                // TODO: 05.12.2016 при возвращении от активити, созданной через TaskStackBuilder onActivityResult не вызывается =(
                 LogUtils.d("onActivityResult REQUEST_DETAILS_FOT_ITEM " + " " + data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1));
                 if (resultCode == Activity.RESULT_OK) {
                     int id = data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1);

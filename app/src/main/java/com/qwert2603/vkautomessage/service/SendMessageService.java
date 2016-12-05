@@ -18,13 +18,11 @@ import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.util.InternetUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.StringUtils;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-
-import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
-import static com.qwert2603.vkautomessage.util.StringUtils.noMore;
 
 public class SendMessageService extends IntentService {
 
@@ -79,8 +77,8 @@ public class SendMessageService extends IntentService {
         PendingIntent pendingIntent = taskStackBuilder
                 .getPendingIntent(recordWithUser.mRecord.getId(), PendingIntent.FLAG_ONE_SHOT);
 
-        String contentText = getUserName(recordWithUser.mUser)
-                + "\n" + noMore(recordWithUser.mRecord.getMessage(), MESSAGE_LENGTH_LIMIT);
+        String contentText = StringUtils.getUserName(recordWithUser.mUser)
+                + "\n" + StringUtils.noMore(recordWithUser.mRecord.getMessage(), MESSAGE_LENGTH_LIMIT);
 
         Notification notification = new NotificationCompat.Builder(SendMessageService.this)
                 .setSmallIcon(success ? android.R.drawable.stat_sys_upload_done : android.R.drawable.stat_notify_error)

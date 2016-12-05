@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.model;
 
+import android.support.annotation.NonNull;
+
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
@@ -36,7 +38,7 @@ public class Record implements Identifiable {
     /**
      * Период по умолчанию при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
      */
-    public static final int DEFAULT_PERIOD = PERIODS[PERIODS.length - 1];
+    private static final int DEFAULT_PERIOD = PERIODS[PERIODS.length - 1];
 
     /**
      * Множитель для номера месяца при {@link #mRepeatType} == {@link #REPEAT_TYPE_DAY_IN_YEAR}.
@@ -47,6 +49,8 @@ public class Record implements Identifiable {
 
     private int mId;
     private int mUserId;
+
+    @NonNull
     private String mMessage;
     private boolean mEnabled;
 
@@ -67,7 +71,7 @@ public class Record implements Identifiable {
         mMinute = calendar.get(Calendar.MINUTE);
     }
 
-    public Record(int id, int userId, String message, boolean enabled, int repeatType, int repeatInfo, int hour, int minute) {
+    public Record(int id, int userId, @NonNull String message, boolean enabled, int repeatType, int repeatInfo, int hour, int minute) {
         mId = id;
         mUserId = userId;
         mMessage = message;
@@ -95,11 +99,12 @@ public class Record implements Identifiable {
         mUserId = userId;
     }
 
+    @NonNull
     public String getMessage() {
         return mMessage;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(@NonNull String message) {
         mMessage = message;
     }
 
@@ -280,5 +285,22 @@ public class Record implements Identifiable {
         if (mRepeatType != repeatType) {
             throw new RuntimeException(ERROR_WRONG_REPEAT_TYPE);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Record record = (Record) o;
+
+        if (mId != record.mId) return false;
+        if (mUserId != record.mUserId) return false;
+        if (mEnabled != record.mEnabled) return false;
+        if (mRepeatType != record.mRepeatType) return false;
+        if (mRepeatInfo != record.mRepeatInfo) return false;
+        if (mHour != record.mHour) return false;
+        if (mMinute != record.mMinute) return false;
+        return mMessage.equals(record.mMessage);
     }
 }

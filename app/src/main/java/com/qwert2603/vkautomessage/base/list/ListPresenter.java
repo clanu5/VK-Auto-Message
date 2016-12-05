@@ -140,7 +140,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().showItemSelected(-1);
     }
 
-    public final void onReloadList() {
+    public void onReloadList() {
         doLoadList();
         updateView();
     }

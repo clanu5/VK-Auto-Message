@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.model;
 
+import android.support.annotation.NonNull;
+
 import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
@@ -17,8 +19,11 @@ public class User implements Identifiable {
     }
 
     private int mId;
+    @NonNull
     private String mFirstName;
+    @NonNull
     private String mLastName;
+    @NonNull
     private String mPhoto;
     private int mEnabledRecordsCount;
     private int mRecordsCount;
@@ -32,7 +37,7 @@ public class User implements Identifiable {
         mRecordsCount = NO_INFO;
     }
 
-    public User(int id, String firstName, String lastName, String photo) {
+    public User(int id, @NonNull String firstName, @NonNull String lastName, @NonNull String photo) {
         mId = id;
         mFirstName = firstName;
         mLastName = lastName;
@@ -50,27 +55,30 @@ public class User implements Identifiable {
         mId = id;
     }
 
+    @NonNull
     public String getPhoto() {
         return mPhoto;
     }
 
-    public void setPhoto(String photo) {
+    public void setPhoto(@NonNull String photo) {
         mPhoto = photo;
     }
 
+    @NonNull
     public String getLastName() {
         return mLastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(@NonNull String lastName) {
         mLastName = lastName;
     }
 
+    @NonNull
     public String getFirstName() {
         return mFirstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(@NonNull String firstName) {
         mFirstName = firstName;
     }
 
@@ -108,4 +116,20 @@ public class User implements Identifiable {
         mLastName = user.mLastName;
         mPhoto = user.mPhoto;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (mId != user.mId) return false;
+        if (mEnabledRecordsCount != user.mEnabledRecordsCount) return false;
+        if (mRecordsCount != user.mRecordsCount) return false;
+        if (!mFirstName.equals(user.mFirstName)) return false;
+        if (!mLastName.equals(user.mLastName)) return false;
+        return mPhoto.equals(user.mPhoto);
+    }
+
 }

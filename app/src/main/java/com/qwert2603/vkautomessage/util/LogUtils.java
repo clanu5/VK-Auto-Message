@@ -27,4 +27,8 @@ public final class LogUtils {
     public static void e(String s) {
         Log.e(APP_TAG, s);
     }
+
+    public static void printCurrentStack() {
+        Log.v(APP_TAG, "Current Stack", new Exception("Current Stack"));
+    }
 }
