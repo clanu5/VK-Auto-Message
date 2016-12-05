@@ -5,11 +5,9 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 /**
  * Презентер для view с поддержкой анимации появления и исчезновения элементов UI.
  * <p>
- * После окончания out-анимации AnimationView должно вызвать {@link #onAnimateOutFinished(int)} с тем же самым параметром,
- * который был передан в {@link AnimationView#animateOut(int)}.
- * <p>
  * AnimationView должно вызывать {@link #onReadyToAnimate()}, когда будет готово показать анимацию.
  * AnimationView должно вызывать {@link #onAnimateInFinished()} после окончания in-анимации.
+ * AnimationView должно вызывать {@link #onAnimateOutFinished()} после окончания out-анимации.
  * AnimationView должно вызывать {@link #onAnimateEnterFinished()} после окончания анимации входа в экран.
  * AnimationView должно вызывать {@link #onAnimateExitFinished()} после окончания анимации выхода из экрана.
  *
@@ -17,8 +15,6 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
  * @param <V> тип представления, которым управляет презентер.
  */
 public abstract class AnimationPresenter<M, V extends AnimationView> extends BasePresenter<M, V> {
-
-    protected static final int ON_BACK_PRESSED_ANIMATE_OUT_ID = -1;
 
     private enum InOutState {
         FIRST_TIME,
@@ -33,6 +29,8 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
     private InOutState mInOutState = InOutState.FIRST_TIME;
 
     protected abstract boolean isFirstAnimateInWithLargeDelay();
+
+    private boolean mAnimateExitAfterOut = false;
 
     @Override
     public void unbindView() {
@@ -51,12 +49,14 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
             /*
               TODO: 27.11.2016 сделать что-нибудь с SceneTransitionAnimation при возвращении к активити в другой ориентации
               in анимация тоже.
+              https://developer.android.com/training/material/animations.html?hl=ru
              */
         }
     }
 
     public void onBackPressed() {
-        animateOut(ON_BACK_PRESSED_ANIMATE_OUT_ID);
+        mAnimateExitAfterOut = true;
+        animateOut();
     }
 
     public void onAnimateEnterFinished() {
@@ -73,23 +73,19 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
         mInOutState = InOutState.INSIDE;
     }
 
-    public void onAnimateOutFinished(int id) {
-        if (id != ON_BACK_PRESSED_ANIMATE_OUT_ID) {
+    public void onAnimateOutFinished() {
+        if (!mAnimateExitAfterOut) {
             mInOutState = InOutState.OUTSIDE;
         } else {
             mInOutState = InOutState.EXITING;
             getView().animateExit();
+            mAnimateExitAfterOut = false;
         }
     }
 
-    /**
-     * Запустить out анимацию для последующего перехода к элементу с переданному id
-     *
-     * @param id id элемента, к которому будем выполнен переход после завершения анимации.
-     */
-    protected void animateOut(int id) {
+    protected void animateOut() {
         mInOutState = InOutState.OUTING;
-        getView().animateOut(id);
+        getView().animateOut();
     }
 
     protected final boolean isInningOrInside() {

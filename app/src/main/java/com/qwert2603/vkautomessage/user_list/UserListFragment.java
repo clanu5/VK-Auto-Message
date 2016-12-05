@@ -113,7 +113,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void moveToDetailsForItem(int userId) {
+    public void moveToDetailsForItem(int userId, boolean withSetPressed) {
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
@@ -126,6 +126,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, userId);
 
         if (viewHolder != null) {
+            viewHolder.itemView.setPressed(withSetPressed);
+
             int[] startingPoint = new int[2];
             viewHolder.itemView.getLocationOnScreen(startingPoint);
             startingPoint[1] -= ((ActivityInterface) getActivity()).getToolbar().getHeight();

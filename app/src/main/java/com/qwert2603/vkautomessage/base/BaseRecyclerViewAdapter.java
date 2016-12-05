@@ -224,6 +224,8 @@ public abstract class BaseRecyclerViewAdapter
          * @param position позиция элемента.
          */
         void showWhetherItemSelected(View itemView, int position) {
+            // TODO: 05.12.2016 выделять item
+            // http://stackoverflow.com/questions/27496916/how-to-set-state-selected-in-ripple-drawable
             itemView.setSelected(position == mSelectedPosition);
         }
     }

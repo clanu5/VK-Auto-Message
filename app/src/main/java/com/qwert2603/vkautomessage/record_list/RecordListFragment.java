@@ -116,7 +116,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void moveToDetailsForItem(int id) {
+    public void moveToDetailsForItem(int id, boolean withSetPressed) {
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
                 (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(id);
@@ -137,6 +137,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, id);
 
         if (viewHolder != null) {
+            viewHolder.itemView.setPressed(withSetPressed);
+
             int[] startingPoint = new int[2];
             viewHolder.itemView.getLocationOnScreen(startingPoint);
             startingPoint[0] += viewHolder.itemView.getWidth() / 2;

@@ -41,7 +41,7 @@ public interface ListView<T extends Identifiable> extends AnimationView {
      */
     void showListEnter(List<T> list);
 
-    void moveToDetailsForItem(int id);
+    void moveToDetailsForItem(int id, boolean withSetPressed);
 
     /**
      * Спросить у пользователя подтверждение удаления элемента с переданным id.
@@ -64,6 +64,8 @@ public interface ListView<T extends Identifiable> extends AnimationView {
 
     void smoothScrollToPosition(int position);
 
+    void scrollToPosition(int position);
+
     void animateAllItemsEnter(boolean animate);
 
     void delayEachItemEnterAnimation(boolean delay);
@@ -71,5 +73,7 @@ public interface ListView<T extends Identifiable> extends AnimationView {
     void animateInNewItemButton(int delay);
 
     int getItemEnterDelayPerScreen();
+
+    int getLastCompletelyVisibleItemPosition();
 
 }

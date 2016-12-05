@@ -183,8 +183,8 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void animateOut(int id) {
-            mRecordPresenter.onAnimateOutFinished(id);
+        public void animateOut() {
+            mRecordPresenter.onAnimateOutFinished();
         }
 
         @Override

@@ -85,12 +85,12 @@ public abstract class AnimationFragment<P extends AnimationPresenter> extends Ba
     }
 
     @Override
-    public void animateOut(int id) {
+    public void animateOut() {
         Animator outAnimator = createOutAnimator();
         outAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                getPresenter().onAnimateOutFinished(id);
+                getPresenter().onAnimateOutFinished();
             }
         });
         outAnimator.start();

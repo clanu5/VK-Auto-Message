@@ -207,7 +207,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void moveToDetailsForItem(int id) {
+    public void moveToDetailsForItem(int id, boolean withSetPressed) {
     }
 
     @Override
@@ -237,11 +237,16 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void smoothScrollListToBottom() {
-        mRecyclerView.scrollToPosition(mChooseUserAdapter.getItemCount());
+        mRecyclerView.smoothScrollToPosition(mChooseUserAdapter.getItemCount() - 1);
     }
 
     @Override
     public void smoothScrollToPosition(int position) {
+        mRecyclerView.scrollToPosition(position);
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
         mRecyclerView.scrollToPosition(position);
     }
 
@@ -261,8 +266,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void animateOut(int id) {
-        mChooseUserPresenter.onAnimateOutFinished(id);
+    public void animateOut() {
+        mChooseUserPresenter.onAnimateOutFinished();
     }
 
     @Override
@@ -293,5 +298,10 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public int getItemEnterDelayPerScreen() {
         return mRecyclerItemAnimator.getEnterDelayPerScreen();
+    }
+
+    @Override
+    public int getLastCompletelyVisibleItemPosition() {
+        return ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
     }
 }

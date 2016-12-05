@@ -100,8 +100,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
             @Override
             public boolean onPreDraw() {
                 float childHeight = getResources().getDimension(R.dimen.item_user_height);
-                LogUtils.d("childHeight == " + childHeight);
-                int itemsPerScreen = (int) (mRecyclerView.getHeight() / childHeight);
+                // TODO: 05.12.2016 учитывать реальную высоту child
+                int itemsPerScreen = 1 + (int) (mRecyclerView.getHeight() / childHeight);
                 mRecyclerItemAnimator.setItemsPerScreen(itemsPerScreen);
                 mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
                 return true;
@@ -118,13 +118,6 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(null);
         mRecyclerView.setAdapter(null);
         super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        // TODO: 26.11.2016 скрывать ресайклер при уничтожении активити
-        //mRecyclerView.setVisibility(View.INVISIBLE);
-        super.onDestroy();
     }
 
     @Override
@@ -192,6 +185,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
     @Override
     public void notifyItemInserted(int position, int id) {
+        LogUtils.d("notifyItemInserted " + position + " " + id);
         mRecyclerItemAnimator.addItemToAnimateEnter(id);
         getAdapter().notifyItemInserted(position);
     }
@@ -211,15 +205,17 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
     @Override
     public void smoothScrollListToBottom() {
-        // TODO: 29.11.2016 сделать плавный скроллинг на другой конец списка
-        // может, сначала smoothScrollToPosition, а потом smoothScrollToPosition
-
         mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
     }
 
     @Override
     public void smoothScrollToPosition(int position) {
         mRecyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        mRecyclerView.scrollToPosition(position);
     }
 
     @Override
@@ -242,5 +238,10 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     @Override
     public int getItemEnterDelayPerScreen() {
         return mRecyclerItemAnimator.getEnterDelayPerScreen();
+    }
+
+    @Override
+    public int getLastCompletelyVisibleItemPosition() {
+        return ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
     }
 }

@@ -9,7 +9,7 @@ import com.qwert2603.vkautomessage.base.BaseView;
 public interface AnimationView extends BaseView {
     void animateEnter();
     void animateIn(boolean withLargeDelay);
-    void animateOut(int id);
+    void animateOut();
     void animateExit();
     void performBackPressed();
 }

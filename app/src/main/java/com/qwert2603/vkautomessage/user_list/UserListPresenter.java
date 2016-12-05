@@ -171,7 +171,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                 return;
             }
             getView().smoothScrollToPosition(userPosition);
-            animateOut(userId);
+            setItemIdToMove(userId, true);
+            animateOut();
         } else {
             mGetVkUserSubscription.unsubscribe();
             mGetVkUserSubscription = mDataManager.getVkUserById(userId)
@@ -194,14 +195,17 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
                         view.animateAllItemsEnter(false);
                         view.delayEachItemEnterAnimation(false);
+                        if (view.getLastCompletelyVisibleItemPosition() == userList.size() - 2) {
+                            view.notifyItemInserted(userList.size() - 1, userId);
+                        }
                         if (userList.size() == 1) {
                             view.showList(userList);
                         } else {
-                            view.smoothScrollListToBottom();
+                            view.scrollToPosition(userList.size() - 1);
                         }
-                        view.notifyItemInserted(userList.size() - 1, userId);
 
-                        animateOut(userId);
+                        setItemIdToMove(userId, true);
+                        animateOut();
                     }, LogUtils::e, mGetVkUserSubscription::unsubscribe);
         }
     }

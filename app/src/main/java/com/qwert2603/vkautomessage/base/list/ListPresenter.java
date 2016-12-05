@@ -25,6 +25,8 @@ import java.util.List;
  */
 public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends AnimationPresenter<M, V> {
 
+    public static final int NO_ITEM_ID_TO_MOVE = -1;
+
     private enum AnimationState {
         WAITING_FOR_TRIGGER,
         SHOULD_START,
@@ -32,6 +34,9 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     private AnimationState mListEnterAnimationState = AnimationState.WAITING_FOR_TRIGGER;
+
+    private int mItemIdToMove = NO_ITEM_ID_TO_MOVE;
+    private boolean mMoveWithSetPressed = false;
 
     protected abstract List<T> getList();
 
@@ -94,11 +99,16 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     @Override
-    public void onAnimateOutFinished(int id) {
-        super.onAnimateOutFinished(id);
-        if (id != AnimationPresenter.ON_BACK_PRESSED_ANIMATE_OUT_ID) {
-            getView().moveToDetailsForItem(id);
+    public void onAnimateOutFinished() {
+        super.onAnimateOutFinished();
+        if (mItemIdToMove != NO_ITEM_ID_TO_MOVE) {
+            performMoveToItem(mItemIdToMove, mMoveWithSetPressed);
+            mItemIdToMove = NO_ITEM_ID_TO_MOVE;
         }
+    }
+
+    protected void performMoveToItem(int itemIdToMove, boolean moveWithSetPressed) {
+        getView().moveToDetailsForItem(itemIdToMove, moveWithSetPressed);
     }
 
     @ShouldCheckIsInningOrInside
@@ -111,7 +121,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
             return;
         }
         getView().smoothScrollToPosition(position);
-        animateOut(list.get(position).getId());
+        setItemIdToMove(list.get(position).getId(), false);
+        animateOut();
     }
 
     @ShouldCheckIsInningOrInside
@@ -165,6 +176,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         }
         getView().askDeleteItem(list.get(position).getId());
         getView().showItemSelected(position);
+    }
+
+    protected final void setItemIdToMove(int id, boolean withSetPressed) {
+        mItemIdToMove = id;
+        mMoveWithSetPressed = withSetPressed;
     }
 
 }

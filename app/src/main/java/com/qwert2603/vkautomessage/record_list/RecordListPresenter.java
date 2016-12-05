@@ -173,14 +173,18 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     view.animateAllItemsEnter(false);
                     view.delayEachItemEnterAnimation(false);
+                    if (view.getLastCompletelyVisibleItemPosition() == recordList.size() - 2) {
+                        view.notifyItemInserted(recordList.size() - 1, record.getId());
+                    }
                     if (recordList.size() == 1) {
                         view.showList(recordList);
                     } else {
-                        view.smoothScrollListToBottom();
+                        view.scrollToPosition(recordList.size() - 1);
                     }
-                    view.notifyItemInserted(recordList.size() - 1, record.getId());
 
-                    animateOut(record.getId());
+
+                    setItemIdToMove(record.getId(), true);
+                    animateOut();
                 }, LogUtils::e, mAddRecordSubscription::unsubscribe);
     }
 
