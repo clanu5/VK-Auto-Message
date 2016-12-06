@@ -26,14 +26,13 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
-import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
-import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -267,7 +266,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void animateInNewItemButton(int delay) {
-        LogUtils.d("animateInNewItemButton " +delay);
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
         objectAnimator.setStartDelay(delay);
         objectAnimator.setDuration(300);

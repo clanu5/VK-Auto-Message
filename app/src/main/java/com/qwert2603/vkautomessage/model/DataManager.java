@@ -84,8 +84,8 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
-    public Observable<VkUser> getVkUserById(int userId) {
-        return mVkApiHelper.getUserById(userId)
+    public Observable<VkUser> getVkUserById(int userId, boolean allowFromCache) {
+        return mVkApiHelper.getUserById(userId, allowFromCache)
                 .map(VkUser::new)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);

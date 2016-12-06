@@ -118,7 +118,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
         if (viewHolder != null && AndroidUtils.isLollipopOrHigher()) {
-            // TODO: 26.11.2016 делать фон синим как тулбар во время TransitionAnimation
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()));
         }

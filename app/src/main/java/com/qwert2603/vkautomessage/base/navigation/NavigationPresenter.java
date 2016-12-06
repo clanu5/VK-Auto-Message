@@ -62,7 +62,7 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
     }
 
     public void onDrawerSlide(int drawerWidth, float slideOffset) {
-        getView().setContentTranslationX((drawerWidth * slideOffset) / 2);
+        getView().setContentTranslationX((drawerWidth * slideOffset) / 2.6f);
     }
 
     private void loadMyselfUser() {
@@ -70,7 +70,7 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
         mSubscription = mDataManager
                 .getUserMyself()
                 .subscribe(
-                        user -> NavigationPresenter.this.setModel(user),
+                        NavigationPresenter.this::setModel,
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();

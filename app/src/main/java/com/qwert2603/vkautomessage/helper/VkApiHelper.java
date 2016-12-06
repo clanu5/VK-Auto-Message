@@ -3,6 +3,7 @@ package com.qwert2603.vkautomessage.helper;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.support.v4.util.LruCache;
 
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
@@ -77,6 +78,11 @@ public class VkApiHelper {
     private static final int USERS_PER_REQUEST = 1000;
     private static final int FRIENDS_PER_REQUEST = 5000;
 
+    /**
+     * Кеш для хранения пользователей.
+     */
+    private LruCache<Integer, VKApiUserFull> mUsers = new LruCache<>(300);
+
     public Observable<List<VKApiUserFull>> getFriends() {
         Observable<List<VKApiUserFull>> firstFriends = getFriends(FRIENDS_PER_REQUEST, 0).cache();
         return firstFriends.map(friends -> ((VKUsersArray) friends).getCount())
@@ -86,33 +92,44 @@ public class VkApiHelper {
                 .toList();
     }
 
-    public Observable<List<VKApiUserFull>> getFriends(int count, int offset) {
-        return Observable.create(subscriber -> {
-            VKParameters vkParameters = VKParameters.from(
-                    VKApiConst.FIELDS, "photo_100, can_write_private_message",
-                    "order", "hints",
-                    VKApiConst.COUNT, String.valueOf(count),
-                    VKApiConst.OFFSET, String.valueOf(offset)
-            );
-            VKRequest request = VKApi.friends().get(vkParameters);
-            request.setUseLooperForCallListener(false);
-            sendRequest(request, new VKRequest.VKRequestListener() {
-                @Override
-                public void onComplete(VKResponse response) {
-                    subscriber.onNext((VKUsersArray) response.parsedModel);
-                    subscriber.onCompleted();
-                }
+    private Observable<List<VKApiUserFull>> getFriends(int count, int offset) {
+        return Observable
+                .<List<VKApiUserFull>>create(subscriber -> {
+                    VKParameters vkParameters = VKParameters.from(
+                            VKApiConst.FIELDS, "photo_100, can_write_private_message",
+                            "order", "hints",
+                            VKApiConst.COUNT, String.valueOf(count),
+                            VKApiConst.OFFSET, String.valueOf(offset)
+                    );
+                    VKRequest request = VKApi.friends().get(vkParameters);
+                    request.setUseLooperForCallListener(false);
+                    sendRequest(request, new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            subscriber.onNext((VKUsersArray) response.parsedModel);
+                            subscriber.onCompleted();
+                        }
 
-                @Override
-                public void onError(VKError error) {
-                    subscriber.onError(new RuntimeException(error.toString()));
-                }
-            });
-        });
+                        @Override
+                        public void onError(VKError error) {
+                            subscriber.onError(new RuntimeException(error.toString()));
+                        }
+                    });
+                })
+                .doOnNext(vkApiUserFulls -> {
+                    for (VKApiUserFull vkApiUserFull : vkApiUserFulls) {
+                        mUsers.put(vkApiUserFull.getId(), vkApiUserFull);
+                    }
+                });
     }
 
-    // TODO: 04.12.2016 добавить пар-р boolean from_cache, чтобы лезть лишний раз в интернет (когда нужно получить выбранного пользователя)
-    public Observable<VKApiUserFull> getUserById(int userId) {
+    /**
+     * @param allowFromCache если true, будет возвращен кешированный пользователь, если он есть в кеше.
+     */
+    public Observable<VKApiUserFull> getUserById(int userId, boolean allowFromCache) {
+        if (allowFromCache && mUsers.get(userId) != null) {
+            return Observable.just(mUsers.get(userId));
+        }
         return getUsersById(Collections.singletonList(userId))
                 .flatMap(Observable::from)
                 .first();
@@ -150,23 +167,29 @@ public class VkApiHelper {
     }
 
     private Observable<List<VKApiUserFull>> getUsers(VKParameters vkParameters) {
-        return Observable.create(subscriber -> {
-            VKRequest request = VKApi.users().get(vkParameters);
-            request.setUseLooperForCallListener(false);
-            sendRequest(request, new VKRequest.VKRequestListener() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public void onComplete(VKResponse response) {
-                    subscriber.onNext((VKList<VKApiUserFull>) response.parsedModel);
-                    subscriber.onCompleted();
-                }
+        return Observable
+                .<List<VKApiUserFull>>create(subscriber -> {
+                    VKRequest request = VKApi.users().get(vkParameters);
+                    request.setUseLooperForCallListener(false);
+                    sendRequest(request, new VKRequest.VKRequestListener() {
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public void onComplete(VKResponse response) {
+                            subscriber.onNext((VKList<VKApiUserFull>) response.parsedModel);
+                            subscriber.onCompleted();
+                        }
 
-                @Override
-                public void onError(VKError error) {
-                    subscriber.onError(new RuntimeException(error.toString()));
-                }
-            });
-        });
+                        @Override
+                        public void onError(VKError error) {
+                            subscriber.onError(new RuntimeException(error.toString()));
+                        }
+                    });
+                })
+                .doOnNext(vkApiUserFulls -> {
+                    for (VKApiUserFull vkApiUserFull : vkApiUserFulls) {
+                        mUsers.put(vkApiUserFull.getId(), vkApiUserFull);
+                    }
+                });
     }
 
     /**

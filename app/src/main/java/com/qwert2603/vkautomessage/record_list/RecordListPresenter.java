@@ -87,7 +87,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         mSubscription.unsubscribe();
         mSubscription = mDataManager.getRecordsForUser(mUserId)
                 .subscribe(
-                        recordListWithUser -> RecordListPresenter.this.setModel(recordListWithUser),
+                        RecordListPresenter.this::setModel,
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();

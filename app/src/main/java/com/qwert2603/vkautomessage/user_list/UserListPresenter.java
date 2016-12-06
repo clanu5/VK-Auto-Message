@@ -91,7 +91,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mSubscription.unsubscribe();
         mSubscription = mDataManager.getAllUsers()
                 .subscribe(
-                        model -> UserListPresenter.this.setModel(model),
+                        UserListPresenter.this::setModel,
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();
@@ -169,7 +169,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             setItemIdToMove(userId, true);
             animateOut();
         } else {
-            mDataManager.getVkUserById(userId)
+            mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
 //                    .doOnNext(user -> {
 //                        for (int i = 0; i < 300; i++) {

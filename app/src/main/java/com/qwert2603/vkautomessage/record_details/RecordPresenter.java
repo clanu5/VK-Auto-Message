@@ -58,9 +58,7 @@ public class RecordPresenter extends AnimationPresenter<RecordWithUser, RecordVi
         mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
-                        record -> {
-                            RecordPresenter.this.setModel(record);
-                        },
+                        RecordPresenter.this::setModel,
                         throwable -> {
                             mSubscription.unsubscribe();
                             LogUtils.e(throwable);

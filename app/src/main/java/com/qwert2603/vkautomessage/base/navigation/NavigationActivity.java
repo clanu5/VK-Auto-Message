@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -52,6 +53,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     @BindView(R.id.fragment_container)
     protected View mFragmentContainer;
+
+    @BindView(R.id.coordinator)
+    CoordinatorLayout mCoordinatorLayout;
 
     private ImageView mUserPhotoImageView;
     private TextView mUserNameTextView;
@@ -224,8 +228,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     @Override
     public void setContentTranslationX(float translationX) {
-        mFragmentContainer.setTranslationX(translationX);
-        mToolbarTitleTextView.setTranslationX(translationX);
+        mCoordinatorLayout.setTranslationX(translationX);
     }
 
     @Override
