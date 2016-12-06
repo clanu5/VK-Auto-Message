@@ -90,20 +90,25 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
                     }
                 }, LogUtils::e);
 
-        if (mNavigationView != null) {
-            mNavigationView.setNavigationItemSelectedListener(item -> {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                switch (item.getItemId()) {
-                    case R.id.log_out:
-                        mNavigationPresenter.onLogOutClicked();
-                        return true;
-                    case R.id.show_errors:
-                        ErrorsShowDialog.newInstance().show(getSupportFragmentManager(), "");
-                        return true;
-                }
-                return false;
-            });
-        }
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            switch (item.getItemId()) {
+                case R.id.log_out:
+                    mNavigationPresenter.onLogOutClicked();
+                    return true;
+                case R.id.show_errors:
+                    ErrorsShowDialog.newInstance().show(getSupportFragmentManager(), "");
+                    return true;
+            }
+            return false;
+        });
+
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                mNavigationPresenter.onDrawerSlide(drawerView.getWidth(), slideOffset);
+            }
+        });
 
         mIsNavigationButtonVisible = isNavigationButtonVisible();
 
@@ -140,6 +145,9 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
+            if (!mIsNavigationButtonVisible) {
+                mToolbar.setNavigationIcon(R.drawable.back_arrow);
+            }
         }
     }
 
@@ -212,6 +220,12 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     public void showLoading() {
         mUserNameTextView.setText(R.string.loading);
         mUserPhotoImageView.setImageBitmap(null);
+    }
+
+    @Override
+    public void setContentTranslationX(float translationX) {
+        mFragmentContainer.setTranslationX(translationX);
+        mToolbarTitleTextView.setTranslationX(translationX);
     }
 
     @Override

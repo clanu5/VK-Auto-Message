@@ -61,6 +61,10 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
         getView().showLogOut();
     }
 
+    public void onDrawerSlide(int drawerWidth, float slideOffset) {
+        getView().setContentTranslationX((drawerWidth * slideOffset) / 2);
+    }
+
     private void loadMyselfUser() {
         mSubscription.unsubscribe();
         mSubscription = mDataManager

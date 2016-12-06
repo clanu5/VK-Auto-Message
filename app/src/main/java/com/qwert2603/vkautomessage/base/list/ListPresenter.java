@@ -25,7 +25,7 @@ import java.util.List;
  */
 public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends AnimationPresenter<M, V> {
 
-    public static final int NO_ITEM_ID_TO_MOVE = -1;
+    private static final int NO_ITEM_ID_TO_MOVE = -1;
 
     private enum AnimationState {
         WAITING_FOR_TRIGGER,

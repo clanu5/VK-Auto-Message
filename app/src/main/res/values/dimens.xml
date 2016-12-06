@@ -9,4 +9,8 @@
     <dimen name="item_user_height">56dp</dimen>
     <dimen name="item_user_padding">4dp</dimen>
     <dimen name="item_user_photo_size">48dp</dimen>
+
+    <dimen name="divider_height">1dp</dimen>
+    <dimen name="divider_left_margin">56dp</dimen>
+    <dimen name="divider_right_margin">28dp</dimen>
 </resources>

@@ -99,8 +99,9 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
+                // тут считается, что высота элемента всегда равна высоте элемента-пользователя.
+                // высота элемента-записи отличается несильно, так что этим можно пренебречь.
                 float childHeight = getResources().getDimension(R.dimen.item_user_height);
-                // TODO: 05.12.2016 учитывать реальную высоту child
                 int itemsPerScreen = 1 + (int) (mRecyclerView.getHeight() / childHeight);
                 mRecyclerItemAnimator.setItemsPerScreen(itemsPerScreen);
                 mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);

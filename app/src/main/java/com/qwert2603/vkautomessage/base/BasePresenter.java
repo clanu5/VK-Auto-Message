@@ -3,8 +3,6 @@ package com.qwert2603.vkautomessage.base;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -54,7 +52,7 @@ public abstract class BasePresenter<M, V extends BaseView> {
      */
     public void bindView(V view) {
         mView = new WeakReference<>(view);
-        VkAutoMessageApplication.sRefWatcher.watch(this);
+//        VkAutoMessageApplication.sRefWatcher.watch(this);
     }
 
     /**

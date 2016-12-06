@@ -33,6 +33,7 @@ import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -242,8 +243,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     protected Animator createOutAnimator() {
         ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
         int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
-        objectAnimator.setDuration(200);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1.5f * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
+        objectAnimator.setDuration(300);
 
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", mNewRecordFAB.getWidth() + fabRightMargin);
@@ -266,6 +267,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void animateInNewItemButton(int delay) {
+        LogUtils.d("animateInNewItemButton " +delay);
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mNewRecordFAB, "translationX", 0);
         objectAnimator.setStartDelay(delay);
         objectAnimator.setDuration(300);

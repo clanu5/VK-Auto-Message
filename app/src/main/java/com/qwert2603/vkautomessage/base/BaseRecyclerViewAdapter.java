@@ -193,7 +193,7 @@ public abstract class BaseRecyclerViewAdapter
                 return Objects.equals(oldList.get(oldItemPosition), newList.get(newItemPosition));
             }
         });
-        LogUtils.d("DiffUtil.calculateDiff " + (SystemClock.elapsedRealtime() - b));
+        LogUtils.d("DiffUtil.calculateDiff " + (SystemClock.elapsedRealtime() - b) + " ms");
         LogUtils.printCurrentStack();
         diffResult.dispatchUpdatesTo(this);
     }
