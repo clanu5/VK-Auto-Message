@@ -35,6 +35,7 @@ import rx.subscriptions.Subscriptions;
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ActivityInterface {
 
     public static final String EXTRA_ITEM_ID = "com.qwert2603.vkautomessage.EXTRA_ITEM_ID";
+    public static final String EXTRA_CONTENT_TRANSLATION_X = "com.qwert2603.vkautomessage.EXTRA_CONTENT_TRANSLATION_X";
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -84,6 +85,10 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         ButterKnife.bind(NavigationActivity.this, NavigationActivity.this);
 
         setSupportActionBar(mToolbar);
+
+        if (savedInstanceState != null) {
+            mCoordinatorLayout.setTranslationX(savedInstanceState.getFloat(EXTRA_CONTENT_TRANSLATION_X));
+        }
 
         mRxBusSubscription = mRxBus.toObservable()
                 .filter(event -> event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED)
@@ -177,6 +182,12 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mNavigationPresenter.onViewNotReady();
         mNavigationPresenter.unbindView();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putFloat(EXTRA_CONTENT_TRANSLATION_X, mCoordinatorLayout.getTranslationX());
     }
 
     @Override
