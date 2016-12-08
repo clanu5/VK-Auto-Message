@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,7 +36,6 @@ import rx.subscriptions.Subscriptions;
 public abstract class NavigationActivity extends AppCompatActivity implements NavigationView, ActivityInterface {
 
     public static final String EXTRA_ITEM_ID = "com.qwert2603.vkautomessage.EXTRA_ITEM_ID";
-    public static final String EXTRA_CONTENT_TRANSLATION_X = "com.qwert2603.vkautomessage.EXTRA_CONTENT_TRANSLATION_X";
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -85,10 +85,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         ButterKnife.bind(NavigationActivity.this, NavigationActivity.this);
 
         setSupportActionBar(mToolbar);
-
-        if (savedInstanceState != null) {
-            mCoordinatorLayout.setTranslationX(savedInstanceState.getFloat(EXTRA_CONTENT_TRANSLATION_X));
-        }
 
         mRxBusSubscription = mRxBus.toObservable()
                 .filter(event -> event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED)
@@ -140,7 +136,6 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mUserNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
 
         mNavigationPresenter.bindView(this);
-        mNavigationPresenter.onViewReady();
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (fragment == null) {
@@ -179,15 +174,30 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @Override
     protected void onDestroy() {
         mRxBusSubscription.unsubscribe();
-        mNavigationPresenter.onViewNotReady();
         mNavigationPresenter.unbindView();
         super.onDestroy();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putFloat(EXTRA_CONTENT_TRANSLATION_X, mCoordinatorLayout.getTranslationX());
+    protected void onResume() {
+        super.onResume();
+        mNavigationPresenter.onViewReady();
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mDrawerLayout.getViewTreeObserver().removeOnPreDrawListener(this);
+                    mNavigationPresenter.onDrawerSlide(mNavigationView.getWidth(), 1.0f);
+                    return true;
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        mNavigationPresenter.onViewNotReady();
+        super.onPause();
     }
 
     @Override
