@@ -22,4 +22,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="ViewElevation">
+        <!-- empty for api < 21 -->
+    </style>
+
 </resources>

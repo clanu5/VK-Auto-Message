@@ -8,4 +8,8 @@
         <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
     </style>
 
+    <style name="ViewElevation">
+        <item name="android:stateListAnimator">@animator/view_elevation</item>
+    </style>
+
 </resources>
