@@ -46,7 +46,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/empty_records_list"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/no_items"
             android:textSize="@dimen/loading_error_empty_text_size"/>
 
     </ViewAnimator>
