@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 import javax.inject.Inject;
 
-public class EditDayOfYearDialog extends BaseDialog<EditDayInYearPresenter> implements EditDayInYearView {
+public class EditDayInYearDialog extends BaseDialog<EditDayInYearPresenter> implements EditDayInYearView {
 
     private static final String monthKey = "month";
     private static final String dayOfMonthKey = "dayOfMonth";
@@ -22,8 +22,8 @@ public class EditDayOfYearDialog extends BaseDialog<EditDayInYearPresenter> impl
     public static final String EXTRA_MONTH = "com.qwert2603.vkautomessage.EXTRA_MONTH";
     public static final String EXTRA_DAY_OF_MONTH = "com.qwert2603.vkautomessage.EXTRA_DAY_OF_MONTH";
 
-    public static EditDayOfYearDialog newInstance(int month, int dayOfMonth) {
-        EditDayOfYearDialog editTimeDialog = new EditDayOfYearDialog();
+    public static EditDayInYearDialog newInstance(int month, int dayOfMonth) {
+        EditDayInYearDialog editTimeDialog = new EditDayInYearDialog();
         Bundle args = new Bundle();
         args.putInt(monthKey, month);
         args.putInt(dayOfMonthKey, dayOfMonth);
@@ -47,7 +47,7 @@ public class EditDayOfYearDialog extends BaseDialog<EditDayInYearPresenter> impl
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        VkAutoMessageApplication.getAppComponent().inject(EditDayOfYearDialog.this);
+        VkAutoMessageApplication.getAppComponent().inject(EditDayInYearDialog.this);
         mEditDayInYearPresenter.setMonth(getArguments().getInt(monthKey));
         mEditDayInYearPresenter.setDayOfMonth(getArguments().getInt(dayOfMonthKey));
         super.onCreate(savedInstanceState);

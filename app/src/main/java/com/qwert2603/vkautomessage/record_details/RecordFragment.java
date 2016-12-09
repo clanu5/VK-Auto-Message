@@ -24,14 +24,14 @@ import android.widget.Toast;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
-import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayOfYearDialog;
+import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
+import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.EditMessageDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
-import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;
@@ -174,8 +174,8 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
                 mRecordPresenter.onDaysInWeekEdited(daysInWeek);
                 break;
             case REQUEST_EDIT_DAY_IN_YEAR:
-                int month = data.getIntExtra(EditDayOfYearDialog.EXTRA_MONTH, 0);
-                int dayOfMonth = data.getIntExtra(EditDayOfYearDialog.EXTRA_DAY_OF_MONTH, 0);
+                int month = data.getIntExtra(EditDayInYearDialog.EXTRA_MONTH, 0);
+                int dayOfMonth = data.getIntExtra(EditDayInYearDialog.EXTRA_DAY_OF_MONTH, 0);
                 mRecordPresenter.onDayInYearEdited(month, dayOfMonth);
                 break;
         }
@@ -263,9 +263,9 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     public void showEditDayInYear(int month, int dayOfMonth) {
-        EditDayOfYearDialog editDayOfYearDialog = EditDayOfYearDialog.newInstance(month, dayOfMonth);
-        editDayOfYearDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_DAY_IN_YEAR);
-        editDayOfYearDialog.show(getFragmentManager(), editDayOfYearDialog.getClass().getName());
+        EditDayInYearDialog editDayInYearDialog = EditDayInYearDialog.newInstance(month, dayOfMonth);
+        editDayInYearDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_DAY_IN_YEAR);
+        editDayInYearDialog.show(getFragmentManager(), editDayInYearDialog.getClass().getName());
     }
 
     @Override
@@ -320,7 +320,6 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
     @Override
     protected Animator createExitAnimator() {
         AnimatorSet animatorSet = new AnimatorSet();
-
         if (!AndroidUtils.isLollipopOrHigher() && getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
             ObjectAnimator scaleX = ObjectAnimator.ofFloat(mRootView, "scaleX", 1, 0.1f);
             scaleX.setDuration(200);
@@ -328,7 +327,12 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
             ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 1, 0);
             scaleY.setDuration(200);
 
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(mRootView, "alpha", 1, 0);
+            alpha.setDuration(200);
+            alpha.setInterpolator(new AccelerateInterpolator());
+
             animatorSet.play(scaleX).before(scaleY);
+            animatorSet.play(scaleY).with(alpha);
             animatorSet.setInterpolator(new AccelerateInterpolator());
             animatorSet.addListener(new AnimatorListenerAdapter() {
                 @Override

@@ -7,9 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.qwert2603.vkautomessage.R;
@@ -71,7 +71,7 @@ public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements
 
         for (int i = 0; i < Record.PERIODS.length; i++) {
             int period = Record.PERIODS[i];
-            RadioButton radioButton = new RadioButton(getActivity());
+            AppCompatRadioButton radioButton = new AppCompatRadioButton(getActivity());
             radioButton.setText(getResources().getQuantityString(R.plurals.hours, period, period));
             mRadioGroup.addView(radioButton);
             radioButton.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;

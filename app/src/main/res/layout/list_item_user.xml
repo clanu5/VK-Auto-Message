@@ -5,7 +5,7 @@
     android:layout_height="@dimen/item_user_height"
     android:orientation="horizontal"
     android:padding="@dimen/item_user_padding"
-    android:background="?attr/selectableItemBackground">
+    android:background="@drawable/list_item_background">
 
     <ImageView
         android:id="@+id/photo_image_view"

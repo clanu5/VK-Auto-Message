@@ -35,7 +35,7 @@ public class DeleteRecordPresenter extends DeleteItemPresenter<RecordWithUser, D
         mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
-                        record -> DeleteRecordPresenter.this.setModel(record),
+                        DeleteRecordPresenter.this::setModel,
                         throwable -> {
                             mSubscription.unsubscribe();
                             LogUtils.e(throwable);

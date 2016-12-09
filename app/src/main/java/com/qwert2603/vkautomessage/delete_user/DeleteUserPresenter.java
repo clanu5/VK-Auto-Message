@@ -30,7 +30,7 @@ public class DeleteUserPresenter extends DeleteItemPresenter<User, DeleteUserVie
         mSubscription = mDataManager
                 .getUserById(userId)
                 .subscribe(
-                        user -> DeleteUserPresenter.this.setModel(user),
+                        DeleteUserPresenter.this::setModel,
                         throwable -> {
                             mSubscription.unsubscribe();
                             LogUtils.e(throwable);

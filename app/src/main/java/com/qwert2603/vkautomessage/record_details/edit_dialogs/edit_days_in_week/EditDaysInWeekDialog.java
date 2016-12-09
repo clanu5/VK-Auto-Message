@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -81,7 +82,7 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
         mCheckBoxList.add(new CheckBox(getActivity()));
 
         for (String s : mDaysOfWeek) {
-            CheckBox checkBox = new CheckBox(getActivity());
+            AppCompatCheckBox checkBox = new AppCompatCheckBox(getActivity());
             checkBox.setText(s);
             mCheckBoxList.add(checkBox);
             mLinearLayout.addView(checkBox);

@@ -64,9 +64,9 @@ public class SimpleOnItemTouchHelperCallback extends ItemTouchHelper.Callback {
             if (dX < 0) {
                 c.drawRect(viewHolder.itemView.getRight() + dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom(), mPaint);
                 mDeleteDrawable.setBounds(
-                        viewHolder.itemView.getLeft() + viewHolder.itemView.getWidth() - border - mDeleteDrawable.getIntrinsicWidth(),
+                        viewHolder.itemView.getRight() - border - mDeleteDrawable.getIntrinsicWidth(),
                         viewHolder.itemView.getTop() + border,
-                        viewHolder.itemView.getLeft() + viewHolder.itemView.getWidth() - border,
+                        viewHolder.itemView.getRight() - border,
                         viewHolder.itemView.getTop() + border + mDeleteDrawable.getIntrinsicHeight()
                 );
             } else {
