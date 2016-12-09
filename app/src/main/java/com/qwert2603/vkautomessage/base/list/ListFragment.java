@@ -2,9 +2,11 @@ package com.qwert2603.vkautomessage.base.list;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -57,6 +59,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
     protected RecyclerItemAnimator mRecyclerItemAnimator;
 
+    protected SimpleOnItemTouchHelperCallback mSimpleOnItemTouchHelperCallback;
+
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
@@ -91,7 +95,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
         ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(v -> getPresenter().onToolbarClicked());
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleOnItemTouchHelperCallback(getAdapter()));
+        mSimpleOnItemTouchHelperCallback=new SimpleOnItemTouchHelperCallback(getAdapter(), Color.TRANSPARENT, ContextCompat.getDrawable(getActivity(), R.drawable.ic_delete_black_24dp));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mSimpleOnItemTouchHelperCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerItemAnimator = new RecyclerItemAnimator();

@@ -93,6 +93,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
+        mSimpleOnItemTouchHelperCallback.setBackColor(getResources().getColor(R.color.swipe_back_user_list));
 
         return view;
     }
