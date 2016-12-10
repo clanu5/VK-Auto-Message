@@ -7,7 +7,9 @@ import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrIn
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Презентер для view списка с поддержкой in/out анимации и появление списка.
@@ -37,6 +39,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     private int mItemIdToMove = NO_ITEM_ID_TO_MOVE;
     private boolean mMoveWithSetPressed = false;
+
+    private Set<Integer> mSelectedIds = new HashSet<>();
 
     protected abstract List<T> getList();
 
@@ -121,8 +125,12 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
             return;
         }
         getView().smoothScrollToPosition(position);
-        setItemIdToMove(list.get(position).getId(), false);
-        animateOut();
+        if (mSelectedIds.isEmpty()) {
+            setItemIdToMove(list.get(position).getId(), false);
+            animateOut();
+        } else {
+            toggleItemSelectionState(position);
+        }
     }
 
     @ShouldCheckIsInningOrInside
@@ -131,7 +139,35 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         if (!isInningOrInside()) {
             return;
         }
-        askDeleteItem(position);
+        getView().smoothScrollToPosition(position);
+        //askDeleteItem(position);
+        toggleItemSelectionState(position);
+    }
+
+    private void toggleItemSelectionState(int position) {
+        int id = getList().get(position).getId();
+        if (!mSelectedIds.contains(id)) {
+            if (mSelectedIds.isEmpty()) {
+                getView().startListSelectionMode();
+            }
+            mSelectedIds.add(id);
+            getView().setItemSelectionState(position, true);
+        } else {
+            mSelectedIds.remove(id);
+            getView().setItemSelectionState(position, false);
+        }
+    }
+
+    public void onSelectAllClicked() {
+        for (T t : getList()) {
+            mSelectedIds.add(t.getId());
+        }
+        getView().selectAllItems();
+    }
+
+    public void onListSelectionModeDestroyed() {
+        mSelectedIds.clear();
+        getView().unSelectAllItems();
     }
 
     @ShouldCheckIsInningOrInside
@@ -144,11 +180,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @ShouldCheckIsInningOrInside
     public void onItemDeleteSubmitted(int id) {
-        getView().showItemSelected(-1);
+        getView().unSelectAllItems();
     }
 
     public void onItemDeleteCanceled(int id) {
-        getView().showItemSelected(-1);
+        getView().unSelectAllItems();
     }
 
     public void onReloadList() {
@@ -175,7 +211,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
             return;
         }
         getView().askDeleteItem(list.get(position).getId());
-        getView().showItemSelected(position);
+        getView().setItemSelectionState(position, true);
     }
 
     protected final void setItemIdToMove(int id, boolean withSetPressed) {

@@ -160,8 +160,23 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void showItemSelected(int position) {
-        mChooseUserAdapter.setSelectedItemPosition(position);
+    public void setItemSelectionState(int position, boolean select) {
+        mChooseUserAdapter.setItemSelectionState(position, select);
+    }
+
+    @Override
+    public void selectAllItems() {
+        mChooseUserAdapter.selectAllItems();
+    }
+
+    @Override
+    public void unSelectAllItems() {
+        mChooseUserAdapter.unSelectAllItems();
+    }
+
+    @Override
+    public void startListSelectionMode() {
+        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override

@@ -50,7 +50,13 @@ public interface ListView<T extends Identifiable> extends AnimationView {
      */
     void askDeleteItem(int id);
 
-    void showItemSelected(int position);
+    void setItemSelectionState(int position, boolean select);
+
+    void selectAllItems();
+
+    void unSelectAllItems();
+
+    void startListSelectionMode();
 
     void notifyItemRemoved(int position);
 

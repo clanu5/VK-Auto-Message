@@ -10,14 +10,20 @@ import com.qwert2603.vkautomessage.recycler.ItemTouchHelperAdapter;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Базовый адаптер для {@link RecyclerView} для шаблона MVP.
- * Может передавать callback'и о нажатии и долгом нажатии на отдельный элемент.
- * {@link #setClickCallback(ClickCallback)}, {@link #setLongClickCallback(LongClickCallback)}.
- * Позволяет выделять отдельный элемент {@link #setSelectedItemPosition(int)}.
+ * <p>
+ * Может передавать callback'и о нажатии и долгом нажатии на отдельный элемент, а также о том, что элемент был swiped.
+ * {@link #setClickCallback(ClickCallback)},
+ * {@link #setLongClickCallback(LongClickCallback)},
+ * {@link #setItemSwipeDismissCallback(ItemSwipeDismissCallback)}
+ * <p>
+ * Позволяет выделять отдельный элемент: {@link #setItemSelectionState(int, boolean)}.
  *
  * @param <M>  тип модели, отображаемой в каждом элементе.
  * @param <VH> тип объекта (ViewHolder), отвечающего за отображение данных в отдельном элементе.
@@ -27,6 +33,8 @@ public abstract class BaseRecyclerViewAdapter
         <M extends Identifiable, VH extends BaseRecyclerViewAdapter.RecyclerViewHolder, P extends BasePresenter>
         extends RecyclerView.Adapter<VH>
         implements ItemTouchHelperAdapter {
+
+    private static final String PAYLOAD_SELECTED_STATE_CHANGED = "PAYLOAD_SELECTED_STATE_CHANGED";
 
     /**
      * Callback для нажатия на элемент.
@@ -102,8 +110,16 @@ public abstract class BaseRecyclerViewAdapter
      *
      * @param position позиция выделенного элемента.
      */
-    public void setSelectedItemPosition(int position) {
-        mRecyclerViewSelector.setSelectedPosition(position);
+    public void setItemSelectionState(int position, boolean select) {
+        mRecyclerViewSelector.setPositionSelectionState(position, select);
+    }
+
+    public void unSelectAllItems() {
+        mRecyclerViewSelector.unSelectAll();
+    }
+
+    public void selectAllItems() {
+        mRecyclerViewSelector.selectAll();
     }
 
     @SuppressWarnings("unchecked")
@@ -115,7 +131,16 @@ public abstract class BaseRecyclerViewAdapter
         holder.setModel(model);
         holder.bindPresenter();
         // отображаем выделен элемент или нет.
-        mRecyclerViewSelector.showWhetherItemSelected(holder.mItemView, position);
+        mRecyclerViewSelector.showWhetherItemSelected(holder);
+    }
+
+    @Override
+    public void onBindViewHolder(VH holder, int position, List<Object> payloads) {
+        if (payloads.contains(PAYLOAD_SELECTED_STATE_CHANGED)) {
+            mRecyclerViewSelector.showWhetherItemSelected(holder);
+            return;
+        }
+        onBindViewHolder(holder, position);
     }
 
     @Override
@@ -193,38 +218,63 @@ public abstract class BaseRecyclerViewAdapter
                 return Objects.equals(oldList.get(oldItemPosition), newList.get(newItemPosition));
             }
         });
-        LogUtils.d("DiffUtil.calculateDiff " + (SystemClock.elapsedRealtime() - b) + " ms");
+        long time = SystemClock.elapsedRealtime() - b;
+        LogUtils.d("DiffUtil.calculateDiff " + time + " ms");
+        if (time > 20) {
+            LogUtils.e("DiffUtil.calculateDiff is too long: " + time + " ms");
+        }
         LogUtils.printCurrentStack();
         diffResult.dispatchUpdatesTo(this);
     }
 
     /**
-     * Класс для выделения отдельного элемента.
+     * Класс для выделения элементов.
      */
     private class RecyclerViewSelector {
-        private int mSelectedPosition = -1;
+        private Set<Long> mSelectedIds = new HashSet<>();
+
+        void setSelectedIds(Set<Long> selectedIds) {
+            mSelectedIds = selectedIds;
+            notifyItemRangeChanged(0, getItemCount(), PAYLOAD_SELECTED_STATE_CHANGED);
+        }
+
+        void selectAll() {
+            Set<Long> set = new HashSet<>();
+            for (M m : mModelList) {
+                set.add((long) m.getId());
+            }
+            setSelectedIds(set);
+        }
+
+        void unSelectAll() {
+            setSelectedIds(new HashSet<>());
+        }
 
         /**
-         * Установить позицию выделенного элемент.
+         * Установить состояние выделения для элемента.
          *
-         * @param selectedPosition позиция выделенного элемента.
+         * @param position позиция элемента.
+         * @param select   если true, элемент будет выделен, иначе с него будет снято выделение.
          */
-        void setSelectedPosition(int selectedPosition) {
-            LogUtils.d("RecyclerViewSelector setSelectedPosition " + selectedPosition);
-            int oldSelectedPosition = mSelectedPosition;
-            mSelectedPosition = selectedPosition;
-            notifyItemChanged(oldSelectedPosition);
-            notifyItemChanged(mSelectedPosition);
+        void setPositionSelectionState(int position, boolean select) {
+            long id = getItemId(position);
+            LogUtils.d("RecyclerViewSelector setItemSelectionState " + id + " " + position + " " + select);
+            if (select) {
+                if (mSelectedIds.add(id)) {
+                    notifyItemChanged(position, PAYLOAD_SELECTED_STATE_CHANGED);
+                }
+            } else {
+                if (mSelectedIds.remove(id)) {
+                    notifyItemChanged(position, PAYLOAD_SELECTED_STATE_CHANGED);
+                }
+            }
         }
 
         /**
          * Отобразить выделен элемент или нет.
-         *
-         * @param itemView view элемента.
-         * @param position позиция элемента.
          */
-        void showWhetherItemSelected(View itemView, int position) {
-            itemView.setSelected(position == mSelectedPosition);
+        void showWhetherItemSelected(RecyclerView.ViewHolder viewHolder) {
+            viewHolder.itemView.setSelected(mSelectedIds.contains(getItemId(viewHolder.getAdapterPosition())));
         }
     }
 

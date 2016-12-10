@@ -17,7 +17,7 @@
     <color name="repeat_type">#AF7031</color>
     <color name="repeat_info">#6F9081</color>
     <color name="error">#E00</color>
-    <color name="no_items">#00E</color>
+    <color name="no_items">#008</color>
     <color name="selected_item">#DDDDDD</color>
     <color name="root_view_background">#F6F6F6</color>
 

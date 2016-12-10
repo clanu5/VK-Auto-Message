@@ -48,4 +48,6 @@
     <string name="message_to_developer_fail">Message to developer was NOT sent!</string>
 
     <string name="receiver_of_message">Receiver of message</string>
+    <string name="remove_selected">Remove selected</string>
+    <string name="select_all">Select all</string>
 </resources>

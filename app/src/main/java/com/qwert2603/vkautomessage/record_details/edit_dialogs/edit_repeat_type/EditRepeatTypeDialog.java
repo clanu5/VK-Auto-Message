@@ -87,6 +87,11 @@ public class EditRepeatTypeDialog extends BaseDialog<EditRepeatTypePresenter> im
             }
         });
 
+        // TODO: 10.12.2016
+        // use AlertDialog#setItems
+        // https://developer.android.com/guide/topics/ui/dialogs.html
+        // во всех диалогах
+
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)

@@ -95,7 +95,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
         ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(v -> getPresenter().onToolbarClicked());
 
-        mSimpleOnItemTouchHelperCallback=new SimpleOnItemTouchHelperCallback(getAdapter(), Color.TRANSPARENT, ContextCompat.getDrawable(getActivity(), R.drawable.ic_delete_black_24dp));
+        mSimpleOnItemTouchHelperCallback = new SimpleOnItemTouchHelperCallback(getAdapter(), Color.TRANSPARENT, ContextCompat.getDrawable(getActivity(), R.drawable.ic_delete_black_24dp));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mSimpleOnItemTouchHelperCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
@@ -180,8 +180,23 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     }
 
     @Override
-    public void showItemSelected(int position) {
-        getAdapter().setSelectedItemPosition(position);
+    public void setItemSelectionState(int position, boolean select) {
+        getAdapter().setItemSelectionState(position, select);
+    }
+
+    @Override
+    public void selectAllItems() {
+        getAdapter().selectAllItems();
+    }
+
+    @Override
+    public void unSelectAllItems() {
+        getAdapter().unSelectAllItems();
+    }
+
+    @Override
+    public void startListSelectionMode() {
+        // TODO: 10.12.2016
     }
 
     @Override
