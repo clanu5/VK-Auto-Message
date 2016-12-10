@@ -328,7 +328,8 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
             scaleY.setDuration(200);
 
             ObjectAnimator alpha = ObjectAnimator.ofFloat(mRootView, "alpha", 1, 0);
-            alpha.setDuration(200);
+            alpha.setStartDelay(100);
+            alpha.setDuration(100);
             alpha.setInterpolator(new AccelerateInterpolator());
 
             animatorSet.play(scaleX).before(scaleY);

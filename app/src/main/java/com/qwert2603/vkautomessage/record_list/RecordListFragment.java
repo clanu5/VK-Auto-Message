@@ -204,16 +204,23 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createExitAnimator() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0);
-        objectAnimator.setDuration(300);
-        objectAnimator.setInterpolator(new AccelerateInterpolator());
-        objectAnimator.addListener(new AnimatorListenerAdapter() {
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 0);
+        scaleY.setDuration(300);
+        scaleY.setInterpolator(new AccelerateInterpolator());
+        scaleY.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 mRecyclerView.setVisibility(View.INVISIBLE);
             }
         });
-        return objectAnimator;
+
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(mRootView, "alpha", 1, 0);
+        alpha.setDuration(100);
+        alpha.setStartDelay(200);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(scaleY).with(alpha);
+        return animatorSet;
     }
 
     @Override
