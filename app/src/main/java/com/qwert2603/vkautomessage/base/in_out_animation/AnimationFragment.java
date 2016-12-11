@@ -3,28 +3,28 @@ package com.qwert2603.vkautomessage.base.in_out_animation;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.annotation.Nullable;
+import android.view.View;
+import android.view.ViewTreeObserver;
 
-import com.qwert2603.vkautomessage.base.BaseFragment;
-import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
+import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
 
 /**
  * Фрагмент для отображения списка и показа in/out-анимаций.
  */
-public abstract class AnimationFragment<P extends AnimationPresenter> extends BaseFragment<P> implements AnimationView {
+public abstract class AnimationFragment<P extends AnimationPresenter> extends NavigationFragment<P> implements AnimationView {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        getPresenter().onReadyToAnimate();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                view.getViewTreeObserver().removeOnPreDrawListener(this);
+                getPresenter().onReadyToAnimate();
+                return true;
+            }
+        });
     }
 
     protected abstract Animator createEnterAnimator();
@@ -81,13 +81,5 @@ public abstract class AnimationFragment<P extends AnimationPresenter> extends Ba
             }
         });
         outAnimator.start();
-    }
-
-    @Override
-    public void performBackPressed() {
-        FragmentActivity activity = getActivity();
-        if (activity != null) {
-            ((ActivityInterface) activity).performOnBackPressed();
-        }
     }
 }

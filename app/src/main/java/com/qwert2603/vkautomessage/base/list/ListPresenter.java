@@ -12,14 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Презентер для view списка с поддержкой in/out анимации и появление списка.
- * <p>
- * По умолчанию:
- * - при нажатии на элемент происходит out-анимация и последующий переход к подробностям об этом элементе.
- * <p>
- * - при долгом нажатии и свайпе запрашивается подтверждение на удаление.
- * после запроса ListView должно вызвать {@link #onItemDeleteSubmitted(int)} или {@link #onItemDeleteCanceled(int)}
- * элемент для удаления выделяется пока не будет получен результат запроса на удаление.
+ * Презентер для view списка с поддержкой in/out анимации и появления списка.
  *
  * @param <T> тип элемента списка
  * @param <M> тип модели
@@ -52,6 +45,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     @Override
     protected void onUpdateView(@NonNull V view) {
+        super.onUpdateView(view);
         if (getModel() == null) {
             if (isError()) {
                 view.showError();
@@ -168,10 +162,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().selectAllItems();
     }
 
-    public void onListSelectionModeCancelled() {
+    @Override
+    public void onActionModeCancelled() {
+        super.onActionModeCancelled();
         mSelectedIds.clear();
         getView().unSelectAllItems();
-        getView().stopListSelectionMode();
     }
 
     @ShouldCheckIsInningOrInside

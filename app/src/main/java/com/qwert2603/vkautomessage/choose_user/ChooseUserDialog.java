@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
@@ -292,10 +293,33 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void animateInNewItemButton(int delay) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override
     public void performBackPressed() {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
+    public void showLogOut() {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
+    public void showUserName(String userName) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
+    public ImageView getUserPhotoImageView() {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+        return null;
+    }
+
+    @Override
+    public void setContentTranslationX(float translationX) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override

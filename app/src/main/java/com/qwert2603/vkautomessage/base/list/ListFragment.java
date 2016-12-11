@@ -1,12 +1,11 @@
 package com.qwert2603.vkautomessage.base.list;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,12 +17,10 @@ import android.view.ViewTreeObserver;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
-import com.qwert2603.vkautomessage.base.navigation.ActivityActionsListener;
-import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
-import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
@@ -50,8 +47,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     protected static final int REQUEST_DELETE_ITEM = 1;
     protected static final int REQUEST_DETAILS_FOT_ITEM = 2;
 
-    @BindView(R.id.root_view)
-    protected View mRootView;
+    @BindView(R.id.content_root_view)
+    protected View mContentRootView;
 
     @BindView(R.id.view_animator)
     protected ViewAnimator mViewAnimator;
@@ -66,13 +63,10 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
-    @LayoutRes
-    protected abstract int getLayoutRes();
-
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(getLayoutRes(), container, false);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         ButterKnife.bind(ListFragment.this, view);
 
@@ -95,7 +89,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
             getPresenter().onItemDismissed(position);
         });
 
-        ((ActivityInterface) getActivity()).getToolbar().setOnClickListener(v -> getPresenter().onToolbarClicked());
+        mToolbar.setOnClickListener(v -> getPresenter().onToolbarClicked());
 
         mSimpleOnItemTouchHelperCallback = new SimpleOnItemTouchHelperCallback(getAdapter(), Color.TRANSPARENT, ContextCompat.getDrawable(getActivity(), R.drawable.ic_delete_black_24dp));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mSimpleOnItemTouchHelperCallback);
@@ -123,7 +117,6 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
     @Override
     public void onDestroyView() {
-        ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(null);
         mRecyclerView.setAdapter(null);
         super.onDestroyView();
     }
@@ -144,36 +137,14 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
                 break;
             case REQUEST_DETAILS_FOT_ITEM:
                 // TODO: 05.12.2016 при возвращении от активити, созданной через TaskStackBuilder onActivityResult не вызывается =(
-                LogUtils.d("onActivityResult REQUEST_DETAILS_FOT_ITEM " + " " + data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1));
+                LogUtils.d("onActivityResult REQUEST_DETAILS_FOT_ITEM " + " " + data.getIntExtra(BaseActivity.EXTRA_ITEM_ID, -1));
                 if (resultCode == Activity.RESULT_OK) {
-                    int id = data.getIntExtra(NavigationActivity.EXTRA_ITEM_ID, -1);
+                    int id = data.getIntExtra(BaseActivity.EXTRA_ITEM_ID, -1);
                     getPresenter().onReloadItem(id);
                 }
                 getPresenter().onReadyToAnimate();
                 break;
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((ActivityInterface) context).setActivityActionsListener(new ActivityActionsListener() {
-            @Override
-            public void onBackPressed() {
-                getPresenter().onBackPressed();
-            }
-
-            @Override
-            public void onCloseActionModeClicked() {
-                getPresenter().onListSelectionModeCancelled();
-            }
-        });
-    }
-
-    @Override
-    public void onDetach() {
-        ((ActivityInterface) getActivity()).setActivityActionsListener(null);
-        super.onDetach();
     }
 
     @Override
@@ -218,18 +189,22 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         getAdapter().unSelectAllItems();
     }
 
-    private View actionMode;
-
     @Override
     public void startListSelectionMode() {
-        actionMode = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_record, null);
-        ((ActivityInterface) getActivity()).startToolbarActionMode(actionMode);
-        // TODO: 10.12.2016
+        startActionMode(R.layout.user_list_action_mode)
+                .findViewById(R.id.delete)
+                .setOnClickListener(v -> Snackbar.make(mContentRootView, "delete", Snackbar.LENGTH_SHORT).show());
+    }
+
+    @Override
+    protected void onActionModeRestored(View view) {
+        view.findViewById(R.id.delete)
+                .setOnClickListener(v -> Snackbar.make(mContentRootView, "delete restored", Snackbar.LENGTH_SHORT).show());
     }
 
     @Override
     public void stopListSelectionMode() {
-        ((ActivityInterface) getActivity()).stopToolbarActionMode(actionMode);
+        stopActionMode();
     }
 
     @Override

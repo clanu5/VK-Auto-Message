@@ -13,14 +13,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -29,7 +26,6 @@ import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
-import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
@@ -69,8 +65,18 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
-    protected int getLayoutRes() {
+    protected int getToolbarContentRes() {
+        return R.layout.toolbar_title;
+    }
+
+    @Override
+    protected int getScreenContentRes() {
         return R.layout.fragment_user_list;
+    }
+
+    @Override
+    protected boolean isNavigationButtonVisible() {
+        return true;
     }
 
     @Override
@@ -130,7 +136,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
             int[] startingPoint = new int[2];
             viewHolder.itemView.getLocationOnScreen(startingPoint);
-            startingPoint[1] -= ((ActivityInterface) getActivity()).getToolbar().getHeight();
+            startingPoint[1] -= mToolbar.getHeight();
             intent.putExtra(RecordListActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
         }
 
@@ -165,12 +171,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
-                ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-                TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-                toolbarIcon.setTranslationY(-1 * toolbar.getHeight());
-                toolbarTitle.setTranslationY(-1 * toolbar.getHeight());
+                mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
+                mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
 
                 int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
                 mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
@@ -186,14 +188,11 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
         objectAnimator.setDuration(300);
 
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", 0);
         objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
         objectAnimator1.setDuration(300);
 
@@ -209,14 +208,10 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new OvershootInterpolator());
 
-        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", -1 * mToolbar.getHeight());
         objectAnimator1.setDuration(200);
 
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(toolbarIcon, "translationY", -1 * toolbar.getHeight());
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", -1 * mToolbar.getHeight());
         objectAnimator2.setStartDelay(100);
         objectAnimator2.setDuration(200);
 

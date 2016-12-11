@@ -10,4 +10,5 @@ public interface NavigationView extends BaseView {
     ImageView getUserPhotoImageView();
     void showLoading();
     void setContentTranslationX(float translationX);
+    void performBackPressed();
 }

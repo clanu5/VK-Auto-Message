@@ -190,5 +190,18 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         @Override
         public void performBackPressed() {
         }
+
+        @Override
+        public void showLogOut() {
+        }
+
+        @Override
+        public ImageView getUserPhotoImageView() {
+            return null;
+        }
+
+        @Override
+        public void setContentTranslationX(float translationX) {
+        }
     }
 }

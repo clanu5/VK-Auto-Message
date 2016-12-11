@@ -6,14 +6,11 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +21,8 @@ import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
-import com.qwert2603.vkautomessage.base.navigation.ActivityActionsListener;
-import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
-import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.EditMessageDialog;
@@ -35,7 +30,6 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditP
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -65,7 +59,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         return recordFragment;
     }
 
-    @BindView(R.id.root_view)
+    @BindView(R.id.content_root_view)
     View mRootView;
 
     @BindView(R.id.content_view)
@@ -117,21 +111,35 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
     }
 
     @Override
+    protected boolean isNavigationButtonVisible() {
+        return false;
+    }
+
+    @Override
+    protected int getToolbarContentRes() {
+        return R.layout.toolbar_title;
+    }
+
+    @Override
+    protected int getScreenContentRes() {
+        return R.layout.fragment_record_details;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(RecordFragment.this);
         mRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_record_details, container, false);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         ButterKnife.bind(RecordFragment.this, view);
 
         // TODO: 29.11.2016 transition для всех диалогов
-
 
         if (getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
             mRootView.setPivotX(getArguments().getInt(drawingStartXKey));
@@ -182,28 +190,6 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
                 mRecordPresenter.onDayInYearEdited(month, dayOfMonth);
                 break;
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((ActivityInterface) context).setActivityActionsListener(new ActivityActionsListener() {
-            @Override
-            public void onBackPressed() {
-                getPresenter().onBackPressed();
-            }
-
-            @Override
-            public void onCloseActionModeClicked() {
-                LogUtils.e(new RuntimeException("Should not be called!"));
-            }
-        });
-    }
-
-    @Override
-    public void onDetach() {
-        ((ActivityInterface) getActivity()).setActivityActionsListener(null);
-        super.onDetach();
     }
 
     @Override
@@ -331,12 +317,8 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
-                ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-                TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-                toolbarIcon.setTranslationY(-1.5f * toolbar.getHeight());
-                toolbarTitle.setTranslationY(-1.5f * toolbar.getHeight());
+                mToolbarIconImageView.setTranslationY(-1.5f * mToolbar.getHeight());
+                mToolbarTitleTextView.setTranslationY(-1.5f * mToolbar.getHeight());
             }
         });
         return animatorSet;
@@ -376,14 +358,11 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationY", 0);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
         objectAnimator.setDuration(300);
 
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationY", 0);
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", 0);
         objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
         objectAnimator1.setDuration(300);
 
@@ -394,14 +373,10 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
 
     @Override
     protected Animator createOutAnimator() {
-        Toolbar toolbar = ((ActivityInterface) getActivity()).getToolbar();
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarTitle, "translationY", -1 * toolbar.getHeight());
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", -1 * mToolbar.getHeight());
         objectAnimator.setDuration(200);
 
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(toolbarIcon, "translationY", -1 * toolbar.getHeight());
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", -1 * mToolbar.getHeight());
         objectAnimator2.setStartDelay(100);
         objectAnimator2.setDuration(200);
 
@@ -413,7 +388,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
     @Override
     public void performBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra(NavigationActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
+        intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
         getActivity().setResult(Activity.RESULT_OK, intent);
         super.performBackPressed();
     }

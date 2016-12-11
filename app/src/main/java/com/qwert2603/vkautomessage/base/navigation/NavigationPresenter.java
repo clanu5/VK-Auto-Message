@@ -17,19 +17,32 @@ import rx.subscriptions.Subscriptions;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
-public class NavigationPresenter extends BasePresenter<User, NavigationView> {
+public class NavigationPresenter<M, V extends NavigationView> extends BasePresenter<M, V> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
 
-    @Inject
-    DataManager mDataManager;
+    /**
+     * Потому что Dagger не может инжектить в NavigationPresenter, который generic.
+     */
+    public static final class DataManagerHolder {
+        @Inject
+        DataManager mDataManager;
+
+        DataManagerHolder() {
+            VkAutoMessageApplication.getAppComponent().inject(DataManagerHolder.this);
+        }
+    }
+
+    private DataManagerHolder mDataManagerHolder;
+
+    private User mUser;
 
     public NavigationPresenter() {
-        VkAutoMessageApplication.getAppComponent().inject(NavigationPresenter.this);
+        mDataManagerHolder = new DataManagerHolder();
     }
 
     @Override
-    public void bindView(NavigationView view) {
+    public void bindView(V view) {
         super.bindView(view);
         if (getModel() == null && mSubscription.isUnsubscribed()) {
             loadMyselfUser();
@@ -37,13 +50,12 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
     }
 
     @Override
-    protected void onUpdateView(@NonNull NavigationView view) {
-        User user = getModel();
-        if (user != null) {
-            view.showUserName(getUserName(user));
+    protected void onUpdateView(@NonNull V view) {
+        if (mUser != null) {
+            view.showUserName(getUserName(mUser));
             ImageView userPhotoImageView = view.getUserPhotoImageView();
             if (userPhotoImageView != null) {
-                ImageLoader.getInstance().displayImage(user.getPhoto(), userPhotoImageView);
+                ImageLoader.getInstance().displayImage(mUser.getPhoto(), userPhotoImageView);
             }
         } else {
             view.showLoading();
@@ -57,7 +69,7 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
     }
 
     public void onLogOutClicked() {
-        mDataManager.logOutVk();
+        mDataManagerHolder.mDataManager.logOutVk();
         getView().showLogOut();
     }
 
@@ -67,15 +79,25 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
 
     private void loadMyselfUser() {
         mSubscription.unsubscribe();
-        mSubscription = mDataManager
+        mSubscription = mDataManagerHolder.mDataManager
                 .getUserMyself()
                 .subscribe(
-                        NavigationPresenter.this::setModel,
+                        user -> {
+                            mUser = user;
+                            updateView();
+                        },
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();
                             LogUtils.e(throwable);
                         }
                 );
+    }
+
+    public void onActionModeCancelled() {
+    }
+
+    public void onBackPressed() {
+        getView().performBackPressed();
     }
 }

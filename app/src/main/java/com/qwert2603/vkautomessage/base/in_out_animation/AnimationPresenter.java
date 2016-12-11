@@ -1,6 +1,6 @@
 package com.qwert2603.vkautomessage.base.in_out_animation;
 
-import com.qwert2603.vkautomessage.base.BasePresenter;
+import com.qwert2603.vkautomessage.base.navigation.NavigationPresenter;
 
 /**
  * Презентер для view с поддержкой анимации появления и исчезновения элементов UI.
@@ -14,7 +14,7 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
  * @param <M> тип модели, с которой работает презентер.
  * @param <V> тип представления, которым управляет презентер.
  */
-public abstract class AnimationPresenter<M, V extends AnimationView> extends BasePresenter<M, V> {
+public abstract class AnimationPresenter<M, V extends AnimationView> extends NavigationPresenter<M, V> {
 
     private enum InOutState {
         FIRST_TIME,
@@ -54,6 +54,7 @@ public abstract class AnimationPresenter<M, V extends AnimationView> extends Bas
         }
     }
 
+    @Override
     public void onBackPressed() {
         mAnimateExitAfterOut = true;
         animateOut();

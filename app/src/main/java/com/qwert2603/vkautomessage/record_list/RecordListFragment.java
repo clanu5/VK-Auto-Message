@@ -18,16 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
+import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
-import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
-import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
@@ -75,8 +73,18 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    protected int getLayoutRes() {
+    protected int getToolbarContentRes() {
+        return R.layout.toolbar_title;
+    }
+
+    @Override
+    protected int getScreenContentRes() {
         return R.layout.fragment_record_list;
+    }
+
+    @Override
+    protected boolean isNavigationButtonVisible() {
+        return false;
     }
 
     @Override
@@ -98,7 +106,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // * имя друга (android:ellipsize="marquee")
         // каждая часть должна иметь свое transitionName
 
-        mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
+        mContentRootView.setPivotY(getArguments().getInt(drawingStartYKey));
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
@@ -111,7 +119,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void showUserName(String userName) {
-        ((ActivityInterface) getActivity()).setToolbarTitle(userName);
+        mToolbarTitleTextView.setText(userName);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -125,13 +133,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mRepeatInfoTextView;
             CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
-            View toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(timeTextView, timeTextView.getTransitionName()),
                     Pair.create(periodTextView, periodTextView.getTransitionName()),
                     Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
-                    Pair.create(toolbarTitle, toolbarTitle.getTransitionName()));
+                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, id);
@@ -142,7 +149,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             int[] startingPoint = new int[2];
             viewHolder.itemView.getLocationOnScreen(startingPoint);
             startingPoint[0] += viewHolder.itemView.getWidth() / 2;
-            startingPoint[1] -= ((ActivityInterface) getActivity()).getToolbar().getHeight();
+            startingPoint[1] -= mToolbar.getHeight();
             intent.putExtra(RecordActivity.EXTRA_DRAWING_START_X, startingPoint[0]);
             intent.putExtra(RecordActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
         }
@@ -172,20 +179,18 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createEnterAnimator() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mRootView, "scaleY", 0.1f, 1);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mContentRootView, "scaleY", 0.1f, 1);
         objectAnimator.setDuration(300);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-                int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
-                toolbarIcon.setTranslationX(-1 * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
+                int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) mToolbarIconImageView.getLayoutParams()).leftMargin;
+                mToolbarIconImageView.setTranslationX(-1 * (mToolbarIconImageView.getWidth() + toolbarIconLeftMargin));
 
                 if (!AndroidUtils.isLollipopOrHigher()) {
-                    TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-                    int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) toolbarTitle.getLayoutParams()).rightMargin;
-                    toolbarTitle.setTranslationX(toolbarTitle.getWidth() + toolbarTitleRightMargin);
+                    int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) mToolbarTitleTextView.getLayoutParams()).rightMargin;
+                    mToolbarTitleTextView.setTranslationX(mToolbarTitleTextView.getWidth() + toolbarTitleRightMargin);
                 }
 
                 int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
@@ -204,7 +209,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createExitAnimator() {
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 0);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(mContentRootView, "scaleY", 0);
         scaleY.setDuration(300);
         scaleY.setInterpolator(new AccelerateInterpolator());
         scaleY.addListener(new AnimatorListenerAdapter() {
@@ -215,7 +220,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             }
         });
 
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(mRootView, "alpha", 1, 0);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(mContentRootView, "alpha", 1, 0);
         alpha.setDuration(100);
         alpha.setStartDelay(200);
 
@@ -226,16 +231,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createInAnimator(boolean withLargeDelay) {
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", 0);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationX", 0);
         objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
         objectAnimator.setDuration(300);
 
         AnimatorSet animatorSet = new AnimatorSet();
 
         if (!AndroidUtils.isLollipopOrHigher()) {
-            TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-            ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", 0);
+            ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationX", 0);
             objectAnimator1.setStartDelay(withLargeDelay ? 300 : 100);
             objectAnimator1.setDuration(400);
             animatorSet.play(objectAnimator1).with(objectAnimator);
@@ -248,9 +251,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected Animator createOutAnimator() {
-        ImageView toolbarIcon = ((ActivityInterface) getActivity()).getToolbarIcon();
-        int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) toolbarIcon.getLayoutParams()).leftMargin;
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(toolbarIcon, "translationX", -1.5f * (toolbarIcon.getWidth() + toolbarIconLeftMargin));
+        int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) mToolbarIconImageView.getLayoutParams()).leftMargin;
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationX", -1.5f * (mToolbarIconImageView.getWidth() + toolbarIconLeftMargin));
         objectAnimator.setDuration(300);
 
         int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
@@ -260,9 +262,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         AnimatorSet animatorSet = new AnimatorSet();
 
         if (!AndroidUtils.isLollipopOrHigher()) {
-            TextView toolbarTitle = ((ActivityInterface) getActivity()).getToolbarTitle();
-            int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) toolbarTitle.getLayoutParams()).rightMargin;
-            ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(toolbarTitle, "translationX", toolbarTitle.getWidth() + toolbarTitleRightMargin);
+            int toolbarTitleRightMargin = ((ViewGroup.MarginLayoutParams) mToolbarTitleTextView.getLayoutParams()).rightMargin;
+            ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationX", mToolbarTitleTextView.getWidth() + toolbarTitleRightMargin);
             objectAnimator1.setDuration(300);
             animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
         } else {
@@ -283,7 +284,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     public void performBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra(NavigationActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));
+        intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));
         getActivity().setResult(Activity.RESULT_OK, intent);
         super.performBackPressed();
     }

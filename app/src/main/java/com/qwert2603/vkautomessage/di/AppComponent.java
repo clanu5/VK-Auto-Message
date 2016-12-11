@@ -1,11 +1,23 @@
 package com.qwert2603.vkautomessage.di;
 
 import com.qwert2603.vkautomessage.RxBus;
+import com.qwert2603.vkautomessage.base.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
+import com.qwert2603.vkautomessage.choose_user.ChooseUserPresenter;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordPresenter;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.delete_user.DeleteUserPresenter;
+import com.qwert2603.vkautomessage.errors_show.ErrorsHolder;
+import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
+import com.qwert2603.vkautomessage.errors_show.ErrorsShowPresenter;
+import com.qwert2603.vkautomessage.helper.PreferenceHelper;
+import com.qwert2603.vkautomessage.helper.SendMessageHelper;
+import com.qwert2603.vkautomessage.model.DataManager;
+import com.qwert2603.vkautomessage.receiver.BootCompletedReceiver;
+import com.qwert2603.vkautomessage.record_details.RecordFragment;
+import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.EditMessageDialog;
@@ -13,25 +25,12 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.Edit
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.errors_show.ErrorsHolder;
-import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
-import com.qwert2603.vkautomessage.errors_show.ErrorsShowPresenter;
-import com.qwert2603.vkautomessage.helper.PreferenceHelper;
-import com.qwert2603.vkautomessage.helper.SendMessageHelper;
-import com.qwert2603.vkautomessage.model.DataManager;
-import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
-import com.qwert2603.vkautomessage.base.navigation.NavigationPresenter;
-import com.qwert2603.vkautomessage.receiver.BootCompletedReceiver;
-import com.qwert2603.vkautomessage.record_details.RecordFragment;
-import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_list.RecordListAdapter;
 import com.qwert2603.vkautomessage.record_list.RecordListFragment;
 import com.qwert2603.vkautomessage.record_list.RecordListPresenter;
-import com.qwert2603.vkautomessage.user_list.UserListAdapter;
-import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
 import com.qwert2603.vkautomessage.service.SendMessageService;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
-import com.qwert2603.vkautomessage.choose_user.ChooseUserPresenter;
+import com.qwert2603.vkautomessage.user_list.UserListAdapter;
 import com.qwert2603.vkautomessage.user_list.UserListFragment;
 import com.qwert2603.vkautomessage.user_list.UserListPresenter;
 
@@ -66,9 +65,6 @@ public interface AppComponent {
     void inject(EditMessageDialog editMessageDialog);
 
     void inject(EditTimeDialog editTimeDialog);
-
-    void inject(NavigationPresenter navigationPresenter);
-    void inject(NavigationActivity navigationActivity);
 
     void inject(RecordListAdapter.RecordViewHolder recordViewHolder);
 
@@ -105,4 +101,6 @@ public interface AppComponent {
     void inject(ErrorsHolder errorsHolder);
 
     void inject(ErrorsShowDialog errorsShowDialog);
+
+    void inject(NavigationPresenter.DataManagerHolder dataManagerHolder);
 }
