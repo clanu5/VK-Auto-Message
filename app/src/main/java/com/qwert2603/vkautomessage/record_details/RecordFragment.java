@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
+import com.qwert2603.vkautomessage.base.navigation.ActivityActionsListener;
 import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
@@ -33,6 +35,7 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditP
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -179,6 +182,28 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
                 mRecordPresenter.onDayInYearEdited(month, dayOfMonth);
                 break;
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((ActivityInterface) context).setActivityActionsListener(new ActivityActionsListener() {
+            @Override
+            public void onBackPressed() {
+                getPresenter().onBackPressed();
+            }
+
+            @Override
+            public void onCloseActionModeClicked() {
+                LogUtils.e(new RuntimeException("Should not be called!"));
+            }
+        });
+    }
+
+    @Override
+    public void onDetach() {
+        ((ActivityInterface) getActivity()).setActivityActionsListener(null);
+        super.onDetach();
     }
 
     @Override

@@ -8,11 +8,12 @@
     <group
         android:pivotX="12"
         android:pivotY="12"
-        android:scaleX="0.7"
-        android:scaleY="0.7">
+        android:scaleX="0.6"
+        android:scaleY="0.6">
 
         <path
-            android:pathData="L24 24M0 24L24 0"
+            android:name="path"
+            android:pathData="@string/path_close"
             android:strokeColor="#FFF"
             android:strokeWidth="2.4"/>
 

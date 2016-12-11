@@ -155,6 +155,9 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         } else {
             mSelectedIds.remove(id);
             getView().setItemSelectionState(position, false);
+            if (mSelectedIds.isEmpty()) {
+                getView().stopListSelectionMode();
+            }
         }
     }
 
@@ -165,9 +168,10 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().selectAllItems();
     }
 
-    public void onListSelectionModeDestroyed() {
+    public void onListSelectionModeCancelled() {
         mSelectedIds.clear();
         getView().unSelectAllItems();
+        getView().stopListSelectionMode();
     }
 
     @ShouldCheckIsInningOrInside

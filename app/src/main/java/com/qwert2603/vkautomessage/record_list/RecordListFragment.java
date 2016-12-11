@@ -211,6 +211,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             @Override
             public void onAnimationStart(Animator animation) {
                 mRecyclerView.setVisibility(View.INVISIBLE);
+                mNewRecordFAB.setVisibility(View.INVISIBLE);
             }
         });
 

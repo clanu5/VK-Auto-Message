@@ -58,6 +58,8 @@ public interface ListView<T extends Identifiable> extends AnimationView {
 
     void startListSelectionMode();
 
+    void stopListSelectionMode();
+
     void notifyItemRemoved(int position);
 
     void notifyItemInserted(int position, int id);

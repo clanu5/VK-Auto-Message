@@ -11,10 +11,11 @@ android {
     }
     defaultConfig {
         applicationId "com.qwert2603.vkautomessage"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 25
         versionName "3.0"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {

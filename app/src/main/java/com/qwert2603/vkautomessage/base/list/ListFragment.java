@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.base.list;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
+import com.qwert2603.vkautomessage.base.navigation.ActivityActionsListener;
 import com.qwert2603.vkautomessage.base.navigation.ActivityInterface;
 import com.qwert2603.vkautomessage.base.navigation.NavigationActivity;
 import com.qwert2603.vkautomessage.model.Identifiable;
@@ -93,7 +95,7 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
             getPresenter().onItemDismissed(position);
         });
 
-        ((ActivityInterface) getActivity()).getToolbarTitle().setOnClickListener(v -> getPresenter().onToolbarClicked());
+        ((ActivityInterface) getActivity()).getToolbar().setOnClickListener(v -> getPresenter().onToolbarClicked());
 
         mSimpleOnItemTouchHelperCallback = new SimpleOnItemTouchHelperCallback(getAdapter(), Color.TRANSPARENT, ContextCompat.getDrawable(getActivity(), R.drawable.ic_delete_black_24dp));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mSimpleOnItemTouchHelperCallback);
@@ -153,6 +155,28 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((ActivityInterface) context).setActivityActionsListener(new ActivityActionsListener() {
+            @Override
+            public void onBackPressed() {
+                getPresenter().onBackPressed();
+            }
+
+            @Override
+            public void onCloseActionModeClicked() {
+                getPresenter().onListSelectionModeCancelled();
+            }
+        });
+    }
+
+    @Override
+    public void onDetach() {
+        ((ActivityInterface) getActivity()).setActivityActionsListener(null);
+        super.onDetach();
+    }
+
+    @Override
     public void showLoading() {
         setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
@@ -194,9 +218,18 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         getAdapter().unSelectAllItems();
     }
 
+    private View actionMode;
+
     @Override
     public void startListSelectionMode() {
+        actionMode = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_record, null);
+        ((ActivityInterface) getActivity()).startToolbarActionMode(actionMode);
         // TODO: 10.12.2016
+    }
+
+    @Override
+    public void stopListSelectionMode() {
+        ((ActivityInterface) getActivity()).stopToolbarActionMode(actionMode);
     }
 
     @Override

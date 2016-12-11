@@ -2,19 +2,18 @@ package com.qwert2603.vkautomessage.base.navigation;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,14 +42,20 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     @BindView(R.id.navigation_view)
     android.support.design.widget.NavigationView mNavigationView;
 
-    private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mIsNavigationButtonVisible;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    @BindView(R.id.toolbar_frame_layout)
+    FrameLayout mToolbarFrameLayout;
+
+    private ImageView mToolbarImageView;
+
     @BindView(R.id.toolbar_title_text_view)
     TextView mToolbarTitleTextView;
+
+    private boolean mIsInActionMode = false;
 
     @BindView(R.id.fragment_container)
     protected View mFragmentContainer;
@@ -69,7 +74,7 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
-    private OnBackPressedListener mOnBackPressedListener;
+    private ActivityActionsListener mActivityActionsListener;
 
     protected abstract boolean isNavigationButtonVisible();
 
@@ -117,15 +122,19 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
 
         mIsNavigationButtonVisible = isNavigationButtonVisible();
 
-        if (mIsNavigationButtonVisible) {
-            mActionBarDrawerToggle = new ActionBarDrawerToggle(NavigationActivity.this, mDrawerLayout, R.string.open, R.string.close);
-            mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
-
-            mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
-
-            mActionBarDrawerToggle.setDrawerIndicatorEnabled(false);
-            mActionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
-        }
+        mToolbar.setNavigationOnClickListener(v -> {
+            if (mIsInActionMode) {
+                if (mActivityActionsListener != null) {
+                    mActivityActionsListener.onCloseActionModeClicked();
+                }
+                return;
+            }
+            if (mIsNavigationButtonVisible) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            } else {
+                onBackPressed();
+            }
+        });
 
         View headerNavigationView = getLayoutInflater().inflate(R.layout.header_navigation, null);
         if (mNavigationView != null) {
@@ -149,25 +158,11 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
-            if (!mIsNavigationButtonVisible) {
-                mToolbar.setNavigationIcon(R.drawable.back_arrow);
+            if (mIsNavigationButtonVisible) {
+                mToolbar.setNavigationIcon(R.drawable.icon_burger);
+            } else {
+                mToolbar.setNavigationIcon(R.drawable.icon_arrow);
             }
-        }
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        if (mIsNavigationButtonVisible) {
-            mActionBarDrawerToggle.syncState();
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (mIsNavigationButtonVisible) {
-            mActionBarDrawerToggle.onConfigurationChanged(newConfig);
         }
     }
 
@@ -204,24 +199,17 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            if (mOnBackPressedListener != null) {
-                overridePendingTransition(0, 0);
-                mOnBackPressedListener.onBackPressed();
+            return;
+        }
+        if (mActivityActionsListener != null) {
+            if (mIsInActionMode) {
+                mActivityActionsListener.onCloseActionModeClicked();
+                return;
             }
+            overridePendingTransition(0, 0);
+            mActivityActionsListener.onBackPressed();
         }
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (!mIsNavigationButtonVisible) {
-                    onBackPressed();
-                }
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -258,18 +246,44 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
     }
 
     @Override
+    public void startToolbarActionMode(View view) {
+        mIsInActionMode = true;
+        mToolbarFrameLayout.addView(view);
+        getToolbarIcon().setImageState(new int[]{R.attr.state_close}, true);
+    }
+
+    @Override
+    public void restoreToolbarActionMode(View view) {
+        mIsInActionMode = true;
+        mToolbarFrameLayout.addView(view);
+        getToolbarIcon().setImageState(new int[]{R.attr.state_close}, true);
+        getToolbarIcon().jumpDrawablesToCurrentState();
+    }
+
+    @Override
+    public void stopToolbarActionMode(View view) {
+        mIsInActionMode = false;
+        mToolbarFrameLayout.removeView(view);
+        getToolbarIcon().setImageState(new int[]{-R.attr.state_close}, true);
+    }
+
+    @Override
     public TextView getToolbarTitle() {
         return mToolbarTitleTextView;
     }
 
     @Override
     public ImageView getToolbarIcon() {
+        if (mToolbarImageView != null) {
+            return mToolbarImageView;
+        }
         int size = mToolbar.getChildCount();
         for (int i = 0; i < size; i++) {
             View child = mToolbar.getChildAt(i);
             if (child instanceof ImageButton) {
                 ImageButton btn = (ImageButton) child;
                 if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
+                    mToolbarImageView = btn;
                     return btn;
                 }
             }
@@ -282,9 +296,8 @@ public abstract class NavigationActivity extends AppCompatActivity implements Na
         mToolbarTitleTextView.setText(title);
     }
 
-    @Override
-    public void setOnBackPressedListener(OnBackPressedListener onBackPressedListener) {
-        mOnBackPressedListener = onBackPressedListener;
+    public void setActivityActionsListener(ActivityActionsListener activityActionsListener) {
+        mActivityActionsListener = activityActionsListener;
     }
 
     @Override

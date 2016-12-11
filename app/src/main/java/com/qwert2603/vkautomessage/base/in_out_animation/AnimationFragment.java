@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.base.in_out_animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -35,18 +34,6 @@ public abstract class AnimationFragment<P extends AnimationPresenter> extends Ba
     protected abstract Animator createInAnimator(boolean withLargeDelay);
 
     protected abstract Animator createOutAnimator();
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((ActivityInterface) context).setOnBackPressedListener(() -> getPresenter().onBackPressed());
-    }
-
-    @Override
-    public void onDetach() {
-        ((ActivityInterface) getActivity()).setOnBackPressedListener(null);
-        super.onDetach();
-    }
 
     @Override
     public void animateEnter() {
