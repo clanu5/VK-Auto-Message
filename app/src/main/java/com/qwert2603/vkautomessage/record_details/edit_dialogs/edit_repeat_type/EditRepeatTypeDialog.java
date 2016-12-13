@@ -95,9 +95,7 @@ public class EditRepeatTypeDialog extends BaseDialog<EditRepeatTypePresenter> im
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.submit, (dialog, which) -> {
-                    mEditRepeatTypePresenter.onSubmitClicked();
-                })
+                .setPositiveButton(R.string.submit, (dialog, which) -> mEditRepeatTypePresenter.onSubmitClicked())
                 .create();
     }
 

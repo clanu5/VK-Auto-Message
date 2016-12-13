@@ -100,9 +100,7 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.submit, (dialog, which) -> {
-                    mEditRepeatTypePresenter.onSubmitClicked();
-                })
+                .setPositiveButton(R.string.submit, (dialog, which) -> mEditRepeatTypePresenter.onSubmitClicked())
                 .create();
     }
 

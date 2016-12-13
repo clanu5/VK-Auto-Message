@@ -43,6 +43,8 @@ public interface ListView<T extends Identifiable> extends AnimationView {
 
     void moveToDetailsForItem(int id, boolean withSetPressed);
 
+    void moveToDetailsForItem(T item, boolean withSetPressed);
+
     /**
      * Спросить у пользователя подтверждение удаления элемента с переданным id.
      *

@@ -25,4 +25,7 @@
     <color name="transparent">#0000</color>
     <color name="colorControlHighlight">#42838383</color>
 
+    <!--todo use thia color as toolbar background during action_mode-->
+    <color name="actionMode">#D50000</color>
+
 </resources>

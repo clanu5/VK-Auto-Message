@@ -199,9 +199,5 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         public ImageView getUserPhotoImageView() {
             return null;
         }
-
-        @Override
-        public void setContentTranslationX(float translationX) {
-        }
     }
 }

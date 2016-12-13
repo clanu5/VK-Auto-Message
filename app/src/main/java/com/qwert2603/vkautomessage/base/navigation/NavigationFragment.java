@@ -105,7 +105,7 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
                 @Override
                 public boolean onPreDraw() {
                     mDrawerLayout.getViewTreeObserver().removeOnPreDrawListener(this);
-                    getPresenter().onDrawerSlide(mNavigationView.getWidth(), 1.0f);
+                    NavigationFragment.this.onDrawerSlide(mNavigationView.getWidth(), 1.0f);
                     return true;
                 }
             });
@@ -141,7 +141,7 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                getPresenter().onDrawerSlide(drawerView.getWidth(), slideOffset);
+                NavigationFragment.this.onDrawerSlide(drawerView.getWidth(), slideOffset);
             }
         });
 
@@ -218,11 +218,6 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
         mUserPhotoImageView.setImageBitmap(null);
     }
 
-    @Override
-    public void setContentTranslationX(float translationX) {
-        mCoordinatorLayout.setTranslationX(translationX);
-    }
-
     protected View startActionMode(@LayoutRes int actionContentRes) {
         mActionContentRes = actionContentRes;
         View view = getActivity().getLayoutInflater().inflate(actionContentRes, null);
@@ -258,5 +253,9 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
     @Override
     public void performBackPressed() {
         ((BaseActivity) getActivity()).performOnBackPressed();
+    }
+
+    private void onDrawerSlide(int width, float slideOffset) {
+        mCoordinatorLayout.setTranslationX(width * slideOffset / 2);
     }
 }

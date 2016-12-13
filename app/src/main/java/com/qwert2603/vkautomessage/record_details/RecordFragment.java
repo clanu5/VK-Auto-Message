@@ -23,6 +23,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.EditMessageDialog;
@@ -30,6 +31,7 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditP
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -39,6 +41,8 @@ import butterknife.ButterKnife;
 public class RecordFragment extends AnimationFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
+    private static final String recordKey = "recordId";
+
     private static final String drawingStartXKey = "drawingStartX";
     private static final String drawingStartYKey = "drawingStartY";
 
@@ -53,6 +57,16 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         RecordFragment recordFragment = new RecordFragment();
         Bundle args = new Bundle();
         args.putInt(recordIdKey, recordId);
+        args.putInt(drawingStartXKey, drawingStartX);
+        args.putInt(drawingStartYKey, drawingStartY);
+        recordFragment.setArguments(args);
+        return recordFragment;
+    }
+
+    public static RecordFragment newInstance(Record record, int drawingStartX, int drawingStartY) {
+        RecordFragment recordFragment = new RecordFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(recordKey, record);
         args.putInt(drawingStartXKey, drawingStartX);
         args.putInt(drawingStartYKey, drawingStartY);
         recordFragment.setArguments(args);
@@ -128,7 +142,14 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(RecordFragment.this);
-        mRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
+
+        if (getArguments().getParcelable(recordKey) != null) {
+            LogUtils.d("getArguments().getParcelable(recordKey) != null" + getArguments().getParcelable(recordKey));
+            mRecordPresenter.setRecord(getArguments().getParcelable(recordKey));
+        } else {
+            LogUtils.d("getArguments().getInt(recordIdKey) == " + getArguments().getInt(recordIdKey));
+            mRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
+        }
         super.onCreate(savedInstanceState);
     }
 
@@ -388,7 +409,12 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
     @Override
     public void performBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
+        Record record = getArguments().getParcelable(recordKey);
+        if (record != null) {
+            intent.putExtra(BaseActivity.EXTRA_ITEM_ID, record.getId());
+        } else {
+            intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
+        }
         getActivity().setResult(Activity.RESULT_OK, intent);
         super.performBackPressed();
     }

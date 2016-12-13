@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.util.StringUtils;
@@ -7,9 +9,30 @@ import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.Objects;
 
-public class User implements Identifiable {
+public class User implements Identifiable, Parcelable {
 
     public static final int NO_INFO = -1;
+
+    protected User(Parcel in) {
+        mId = in.readInt();
+        mFirstName = in.readString();
+        mLastName = in.readString();
+        mPhoto = in.readString();
+        mEnabledRecordsCount = in.readInt();
+        mRecordsCount = in.readInt();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     /**
      * @return пользователь с пустыми полями.
@@ -132,4 +155,18 @@ public class User implements Identifiable {
         return mPhoto.equals(user.mPhoto);
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mId);
+        parcel.writeString(mFirstName);
+        parcel.writeString(mLastName);
+        parcel.writeString(mPhoto);
+        parcel.writeInt(mEnabledRecordsCount);
+        parcel.writeInt(mRecordsCount);
+    }
 }

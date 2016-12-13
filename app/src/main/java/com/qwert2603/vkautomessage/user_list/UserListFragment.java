@@ -146,6 +146,11 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
+    public void moveToDetailsForItem(User item, boolean withSetPressed) {
+        moveToDetailsForItem(item.getId(), withSetPressed);
+    }
+
+    @Override
     public void showChooseUser() {
         ChooseUserDialog userListDialog = ChooseUserDialog.newInstance();
         userListDialog.setTargetFragment(UserListFragment.this, REQUEST_CHOOSE_USER);

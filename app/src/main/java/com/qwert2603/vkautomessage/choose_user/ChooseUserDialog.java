@@ -232,6 +232,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void moveToDetailsForItem(VkUser item, boolean withSetPressed) {
+        moveToDetailsForItem(item.getId(), withSetPressed);
+    }
+
+    @Override
     public void askDeleteItem(int id) {
         mChooseUserPresenter.onItemDeleteCanceled(id);
     }
@@ -315,11 +320,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     public ImageView getUserPhotoImageView() {
         LogUtils.e(new RuntimeException("Should not be called!"));
         return null;
-    }
-
-    @Override
-    public void setContentTranslationX(float translationX) {
-        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override

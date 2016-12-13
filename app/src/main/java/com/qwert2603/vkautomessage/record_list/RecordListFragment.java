@@ -106,6 +106,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // * имя друга (android:ellipsize="marquee")
         // каждая часть должна иметь свое transitionName
 
+        // TODO: 12.12.2016 фильтрация активных и неактивных записей
+
+        // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
+
         mContentRootView.setPivotY(getArguments().getInt(drawingStartYKey));
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
@@ -142,6 +146,42 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, id);
+
+        if (viewHolder != null) {
+            viewHolder.itemView.setPressed(withSetPressed);
+
+            int[] startingPoint = new int[2];
+            viewHolder.itemView.getLocationOnScreen(startingPoint);
+            startingPoint[0] += viewHolder.itemView.getWidth() / 2;
+            startingPoint[1] -= mToolbar.getHeight();
+            intent.putExtra(RecordActivity.EXTRA_DRAWING_START_X, startingPoint[0]);
+            intent.putExtra(RecordActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
+        }
+
+        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
+
+        getActivity().overridePendingTransition(0, 0);
+    }
+
+    @Override
+    public void moveToDetailsForItem(Record item, boolean withSetPressed) {
+        ActivityOptions activityOptions = null;
+        RecordListAdapter.RecordViewHolder viewHolder =
+                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(item.getId());
+        if (viewHolder != null && AndroidUtils.isLollipopOrHigher()) {
+            TextView messageTextView = viewHolder.mMessageTextView;
+            TextView timeTextView = viewHolder.mTimeTextView;
+            TextView periodTextView = viewHolder.mRepeatInfoTextView;
+            CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(messageTextView, messageTextView.getTransitionName()),
+                    Pair.create(timeTextView, timeTextView.getTransitionName()),
+                    Pair.create(periodTextView, periodTextView.getTransitionName()),
+                    Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
+                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName()));
+        }
+        Intent intent = new Intent(getActivity(), RecordActivity.class);
+        intent.putExtra(RecordActivity.EXTRA_ITEM, item);
 
         if (viewHolder != null) {
             viewHolder.itemView.setPressed(withSetPressed);

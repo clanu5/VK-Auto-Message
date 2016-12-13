@@ -90,9 +90,7 @@ public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.submit, (dialog, which) -> {
-                    mEditPeriodPresenter.onSubmitClicked();
-                })
+                .setPositiveButton(R.string.submit, (dialog, which) -> mEditPeriodPresenter.onSubmitClicked())
                 .create();
     }
 

@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
@@ -9,7 +11,7 @@ import java.util.Calendar;
 
 // TODO: 09.12.2016 сделать Parcelable и передавать в фрагмент и диалоги
 // и User -- тоже.
-public class Record implements Identifiable {
+public class Record implements Identifiable, Parcelable {
 
     /**
      * Повтор каждый день через каждые {@link #mRepeatInfo} часов.
@@ -83,6 +85,29 @@ public class Record implements Identifiable {
         mHour = hour;
         mMinute = minute;
     }
+
+    protected Record(Parcel in) {
+        mId = in.readInt();
+        mUserId = in.readInt();
+        mMessage = in.readString();
+        mEnabled = in.readByte() != 0;
+        mRepeatType = in.readInt();
+        mRepeatInfo = in.readInt();
+        mHour = in.readInt();
+        mMinute = in.readInt();
+    }
+
+    public static final Creator<Record> CREATOR = new Creator<Record>() {
+        @Override
+        public Record createFromParcel(Parcel in) {
+            return new Record(in);
+        }
+
+        @Override
+        public Record[] newArray(int size) {
+            return new Record[size];
+        }
+    };
 
     @Override
     public int getId() {
@@ -304,5 +329,22 @@ public class Record implements Identifiable {
         if (mHour != record.mHour) return false;
         if (mMinute != record.mMinute) return false;
         return mMessage.equals(record.mMessage);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mId);
+        parcel.writeInt(mUserId);
+        parcel.writeString(mMessage);
+        parcel.writeByte((byte) (mEnabled ? 1 : 0));
+        parcel.writeInt(mRepeatType);
+        parcel.writeInt(mRepeatInfo);
+        parcel.writeInt(mHour);
+        parcel.writeInt(mMinute);
     }
 }

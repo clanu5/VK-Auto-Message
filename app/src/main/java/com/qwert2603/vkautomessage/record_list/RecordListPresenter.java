@@ -177,7 +177,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         view.scrollToPosition(recordList.size() - 1);
                     }
 
-
+                    // TODO: 13.12.2016 передавать record для перехода к активити с подробностями
                     setItemIdToMove(record.getId(), true);
                     animateOut();
                 }, LogUtils::e);
