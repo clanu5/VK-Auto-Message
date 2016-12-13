@@ -14,21 +14,22 @@ public abstract class FabHideBehavior extends FloatingActionButton.Behavior {
     }
 
     protected abstract void hideFab(FloatingActionButton child);
+
     protected abstract void showFab(FloatingActionButton child);
-
-    @Override
-    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-
-        if (dyConsumed > 0) {
-            hideFab(child);
-        } else if (dyConsumed < 0) {
-            showFab(child);
-        }
-    }
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
         return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
+    }
+
+    @Override
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dx, int dy, int[] consumed) {
+        super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
+
+        if (dy > 0) {
+            hideFab(child);
+        } else if (dy < 0) {
+            showFab(child);
+        }
     }
 }
