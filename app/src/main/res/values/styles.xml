@@ -6,6 +6,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">false</item>
@@ -15,9 +18,6 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
     </style>
 
     <style name="AppTheme.NoActionBar.White">
