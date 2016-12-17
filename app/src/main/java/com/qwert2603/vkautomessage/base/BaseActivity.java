@@ -1,11 +1,11 @@
 package com.qwert2603.vkautomessage.base;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -16,7 +16,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private NavigationFragment mFragment;
 
-    @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,15 +24,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         mFragment = (NavigationFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (mFragment == null) {
             mFragment = createFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, mFragment)
-                    .commitAllowingStateLoss();
+            AndroidUtils.runOnUI(
+                    () -> getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, mFragment)
+                            .commit(), 2);
         }
     }
 
     public void performOnBackPressed() {
-        super.onBackPressed();
+        AndroidUtils.runOnUI(
+                () -> {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .remove(mFragment)
+                            .commit();
+                    super.onBackPressed();
+                }, 2);
+
+
+
     }
 
     @Override

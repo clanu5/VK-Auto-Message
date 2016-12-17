@@ -1,20 +1,16 @@
 package com.qwert2603.vkautomessage.record_details;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
+import android.transition.Explode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +18,7 @@ import android.widget.Toast;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
-import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
+import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
@@ -30,7 +26,6 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.Edit
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
-import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
@@ -38,7 +33,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecordFragment extends AnimationFragment<RecordPresenter> implements RecordView {
+public class RecordFragment extends NavigationFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
     private static final String recordKey = "recordId";
@@ -60,6 +55,18 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         args.putInt(drawingStartXKey, drawingStartX);
         args.putInt(drawingStartYKey, drawingStartY);
         recordFragment.setArguments(args);
+
+        Explode explode = new Explode();
+        explode.setDuration(400);
+//        explode.addTarget(mContentView);
+
+        recordFragment.setEnterTransition(explode);
+        recordFragment.setExitTransition(explode);
+        recordFragment.setReenterTransition(explode);
+        recordFragment.setReturnTransition(explode);
+        recordFragment.setAllowEnterTransitionOverlap(false);
+        recordFragment.setAllowReturnTransitionOverlap(false);
+
         return recordFragment;
     }
 
@@ -175,6 +182,19 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         mRepeatInfoCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatInfoClicked());
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState == null) {
+            mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
+            mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+
+            animateIn();
+            LogUtils.d("RecordFragment onViewCreated");
+        }
     }
 
     @Override
@@ -305,109 +325,18 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
         Toast.makeText(getActivity(), stringRes, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    protected Animator createEnterAnimator() {
-        AnimatorSet animatorSet = new AnimatorSet();
+    protected void animateIn() {
+        mToolbarTitleTextView.animate().translationY(0).setStartDelay(50).setDuration(300);
+        mToolbarIconImageView.animate().translationY(0).setStartDelay(100).setDuration(300);
+    }
 
-        if (!AndroidUtils.isLollipopOrHigher() && getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
-            ObjectAnimator scaleX = ObjectAnimator.ofFloat(mRootView, "scaleX", 0.1f, 1);
-            scaleX.setDuration(200);
-
-            ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 0.1f, 1);
-            scaleY.setDuration(200);
-
-            animatorSet.play(scaleX).after(scaleY);
-            animatorSet.setInterpolator(new AccelerateInterpolator());
-            animatorSet.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mContentView.setVisibility(View.INVISIBLE);
-                    mRootView.setScaleX(0.1f);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mContentView.setVisibility(View.VISIBLE);
-                }
-            });
-        } else {
-            // без этого пустой AnimatorSet может вызвать onAnimationEnd раньше onAnimationStart
-            animatorSet.play(ValueAnimator.ofInt(1, 2).setDuration(50));
-        }
-
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mToolbarIconImageView.setTranslationY(-1.5f * mToolbar.getHeight());
-                mToolbarTitleTextView.setTranslationY(-1.5f * mToolbar.getHeight());
-            }
-        });
-        return animatorSet;
+    protected void animateOut() {
+        mToolbarTitleTextView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(0).setDuration(200);
+        mToolbarIconImageView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(100).setDuration(200);
     }
 
     @Override
-    protected Animator createExitAnimator() {
-        AnimatorSet animatorSet = new AnimatorSet();
-        if (!AndroidUtils.isLollipopOrHigher() && getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
-            ObjectAnimator scaleX = ObjectAnimator.ofFloat(mRootView, "scaleX", 1, 0.1f);
-            scaleX.setDuration(200);
-
-            ObjectAnimator scaleY = ObjectAnimator.ofFloat(mRootView, "scaleY", 1, 0);
-            scaleY.setDuration(200);
-
-            ObjectAnimator alpha = ObjectAnimator.ofFloat(mRootView, "alpha", 1, 0);
-            alpha.setStartDelay(100);
-            alpha.setDuration(100);
-            alpha.setInterpolator(new AccelerateInterpolator());
-
-            animatorSet.play(scaleX).before(scaleY);
-            animatorSet.play(scaleY).with(alpha);
-            animatorSet.setInterpolator(new AccelerateInterpolator());
-            animatorSet.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mContentView.setVisibility(View.INVISIBLE);
-                }
-            });
-        } else {
-            // без этого пустой AnimatorSet может вызвать onAnimationEnd раньше onAnimationStart
-            animatorSet.play(ValueAnimator.ofInt(1, 2).setDuration(50));
-        }
-
-        return animatorSet;
-    }
-
-    @Override
-    protected Animator createInAnimator(boolean withLargeDelay) {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
-        objectAnimator.setDuration(300);
-
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
-        objectAnimator1.setDuration(300);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1);
-        return animatorSet;
-    }
-
-    @Override
-    protected Animator createOutAnimator() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", -1 * mToolbar.getHeight());
-        objectAnimator.setDuration(200);
-
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", -1 * mToolbar.getHeight());
-        objectAnimator2.setStartDelay(100);
-        objectAnimator2.setDuration(200);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator2);
-        return animatorSet;
-    }
-
-    @Override
-    public void performBackPressed() {
+    protected void performBackPressed() {
         Intent intent = new Intent();
         Record record = getArguments().getParcelable(recordKey);
         if (record != null) {
@@ -416,6 +345,7 @@ public class RecordFragment extends AnimationFragment<RecordPresenter> implement
             intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
         }
         getActivity().setResult(Activity.RESULT_OK, intent);
+        animateOut();
         super.performBackPressed();
     }
 }

@@ -23,8 +23,10 @@ import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
+import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseFragment;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
 import com.qwert2603.vkautomessage.login.MainActivity;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -36,7 +38,7 @@ import butterknife.ButterKnife;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public abstract class NavigationFragment<P extends NavigationPresenter> extends BaseFragment<P> implements NavigationView {
+public abstract class NavigationFragment<P extends BasePresenter> extends BaseFragment<P> implements NavigationView {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -58,14 +60,28 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
     @BindView(R.id.coordinator)
     CoordinatorLayout mCoordinatorLayout;
 
-    private ImageView mUserPhotoImageView;
-    private TextView mUserNameTextView;
+    private ImageView mMyselfPhotoImageView;
+    private TextView mMyselfNameTextView;
 
     @LayoutRes
     private int mActionContentRes = 0;
 
-    @Inject
-    RxBus mRxBus;
+    /**
+     * Потому что Dagger не может инжектить в NavigationPresenter, который generic.
+     */
+    public static final class InjectionsHolder {
+        @Inject
+        RxBus mRxBus;
+
+        @Inject
+        NavigationPresenter mNavigationPresenter;
+
+        InjectionsHolder() {
+            VkAutoMessageApplication.getAppComponent().inject(NavigationFragment.InjectionsHolder.this);
+        }
+    }
+
+    private InjectionsHolder mInjectionsHolder;
 
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
@@ -81,7 +97,9 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mRxBusSubscription = mRxBus.toObservable()
+        mInjectionsHolder = new InjectionsHolder();
+
+        mRxBusSubscription = mInjectionsHolder.mRxBus.toObservable()
                 .filter(event -> event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED)
                 .subscribe(event -> {
                     if (event.mObject instanceof Boolean) {
@@ -129,7 +147,7 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
             mDrawerLayout.closeDrawer(GravityCompat.START);
             switch (item.getItemId()) {
                 case R.id.log_out:
-                    getPresenter().onLogOutClicked();
+                    mInjectionsHolder.mNavigationPresenter.onLogOutClicked();
                     return true;
                 case R.id.show_errors:
                     ErrorsShowDialog.newInstance().show(getFragmentManager(), "");
@@ -148,7 +166,7 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
         mToolbar.setNavigationOnClickListener(v -> {
             if (mActionContentRes != 0) {
                 stopActionMode();
-                getPresenter().onActionModeCancelled();
+                onActionModeCancelled();
                 return;
             }
             if (isNavigationButtonVisible()) {
@@ -161,8 +179,8 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
         View headerNavigationView = inflater.inflate(R.layout.header_navigation, null);
         mNavigationView.addHeaderView(headerNavigationView);
 
-        mUserPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
-        mUserNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
+        mMyselfPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
+        mMyselfNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
 
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
@@ -196,37 +214,42 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
     }
 
     @Override
-    public void showLogOut() {
+    public void performLogOut() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
+        // TODO: 16.12.2016 ??? intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         getActivity().finish();
     }
 
     @Override
-    public void showUserName(String userName) {
-        mUserNameTextView.setText(userName);
+    public void showMyselfName(String userName) {
+        mMyselfNameTextView.setText(userName);
     }
 
     @Override
-    public ImageView getUserPhotoImageView() {
-        return mUserPhotoImageView;
+    public ImageView getMyselfPhotoImageView() {
+        return mMyselfPhotoImageView;
     }
 
     @Override
-    public void showLoading() {
-        mUserNameTextView.setText(R.string.loading);
-        mUserPhotoImageView.setImageBitmap(null);
+    public void showLoadingMyself() {
+        mMyselfNameTextView.setText(R.string.loading);
+        mMyselfPhotoImageView.setImageBitmap(null);
     }
 
     protected View startActionMode(@LayoutRes int actionContentRes) {
         mActionContentRes = actionContentRes;
         View view = getActivity().getLayoutInflater().inflate(actionContentRes, null);
+        // TODO: 16.12.2016 ??? mToolbarFrameLayout.getChildAt(0).setVisibility(View.INVISIBLE);
         mToolbarFrameLayout.addView(view);
         mToolbarIconImageView.setImageState(new int[]{R.attr.state_close}, true);
         return view;
     }
 
     protected void onActionModeRestored(View view) {
+    }
+
+    protected void onActionModeCancelled() {
     }
 
     protected void stopActionMode() {
@@ -243,15 +266,13 @@ public abstract class NavigationFragment<P extends NavigationPresenter> extends 
 
         if (mActionContentRes != 0) {
             stopActionMode();
-            getPresenter().onActionModeCancelled();
+            onActionModeCancelled();
             return;
         }
-        getActivity().overridePendingTransition(0, 0);
-        getPresenter().onBackPressed();
+        performBackPressed();
     }
 
-    @Override
-    public void performBackPressed() {
+    protected void performBackPressed() {
         ((BaseActivity) getActivity()).performOnBackPressed();
     }
 

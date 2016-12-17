@@ -1,9 +1,5 @@
 package com.qwert2603.vkautomessage.user_list;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -11,13 +7,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
+import android.transition.Slide;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -30,6 +28,8 @@ import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -38,7 +38,22 @@ import butterknife.ButterKnife;
 public class UserListFragment extends ListFragment<User> implements UserListView {
 
     public static UserListFragment newInstance() {
-        return new UserListFragment();
+
+        UserListFragment fragment = new UserListFragment();
+
+        Slide slide = new Slide(Gravity.BOTTOM);
+        slide.setDuration(400);
+//        slide.addTarget(mViewAnimator);
+//        slide.addTarget(mRecyclerView);
+
+        fragment.setEnterTransition(slide);
+        fragment.setExitTransition(slide);
+        fragment.setReenterTransition(slide);
+        fragment.setReturnTransition(slide);
+        fragment.setAllowEnterTransitionOverlap(false);
+        fragment.setAllowReturnTransitionOverlap(false);
+
+        return fragment;
     }
 
     private static final int REQUEST_CHOOSE_USER = 3;
@@ -105,10 +120,29 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState == null) {
+            mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
+            mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+
+            int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
+            mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
+
+            animateIn();
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
+            case REQUEST_DETAILS_FOT_ITEM:
+                animateIn();
+                animateInNewItemButton(0);
+                break;
             case REQUEST_CHOOSE_USER:
                 if (resultCode == Activity.RESULT_OK) {
                     int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
@@ -120,19 +154,19 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void moveToDetailsForItem(int userId, boolean withSetPressed) {
+    public void moveToDetailsForItem(User user/*, boolean withSetPressed*/) {
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
-                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(userId);
-        if (viewHolder != null && AndroidUtils.isLollipopOrHigher()) {
+                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(user.getId());
+        if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
-        intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, userId);
+        intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, user.getId());
 
         if (viewHolder != null) {
-            viewHolder.itemView.setPressed(withSetPressed);
+            //todo viewHolder.itemView.setPressed(withSetPressed);
 
             int[] startingPoint = new int[2];
             viewHolder.itemView.getLocationOnScreen(startingPoint);
@@ -140,14 +174,16 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             intent.putExtra(RecordListActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
         }
 
-        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
+        ActivityOptions finalActivityOptions = activityOptions;
+        AndroidUtils.runOnUI(() -> startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null), 400);
 
-        getActivity().overridePendingTransition(0, 0);
+        animateOut();
     }
 
     @Override
-    public void moveToDetailsForItem(User item, boolean withSetPressed) {
-        moveToDetailsForItem(item.getId(), withSetPressed);
+    protected void onFirstContentShow(@Nullable List<User> list) {
+        super.onFirstContentShow(list);
+        animateInNewItemButton(mRecyclerItemAnimator.getEnterDelayPerScreen());
     }
 
     @Override
@@ -164,73 +200,26 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
     }
 
-    @Override
-    public void scrollListToTop() {
-        super.scrollListToTop();
-        ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0).start();
+    private void animateIn() {
+        mToolbarIconImageView.animate().translationY(0).setStartDelay(50).setDuration(300);
+        mToolbarTitleTextView.animate().translationY(0).setStartDelay(100).setDuration(300);
     }
 
-    @Override
-    protected Animator createEnterAnimator() {
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
-                mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
-
-                int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
-                mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
-            }
-        });
-        return animatorSet;
-    }
-
-    @Override
-    protected Animator createExitAnimator() {
-        return new AnimatorSet();
-    }
-
-    @Override
-    protected Animator createInAnimator(boolean withLargeDelay) {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", 0);
-        objectAnimator.setStartDelay(withLargeDelay ? 300 : 50);
-        objectAnimator.setDuration(300);
-
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", 0);
-        objectAnimator1.setStartDelay(withLargeDelay ? 100 : 100);
-        objectAnimator1.setDuration(300);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1);
-        return animatorSet;
-    }
-
-    @Override
-    protected Animator createOutAnimator() {
+    private void animateOut() {
         int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", mChooseUserFAB.getHeight() + fabBottomMargin);
-        objectAnimator.setDuration(300);
-        objectAnimator.setInterpolator(new OvershootInterpolator());
+        mChooseUserFAB.animate().translationY(mChooseUserFAB.getHeight() + fabBottomMargin).setStartDelay(0).setDuration(300);
 
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mToolbarTitleTextView, "translationY", -1 * mToolbar.getHeight());
-        objectAnimator1.setDuration(200);
+        mToolbarTitleTextView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(0).setDuration(200);
+        mToolbarIconImageView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(100).setDuration(200);
+    }
 
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mToolbarIconImageView, "translationY", -1 * mToolbar.getHeight());
-        objectAnimator2.setStartDelay(100);
-        objectAnimator2.setDuration(200);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(objectAnimator).with(objectAnimator1).with(objectAnimator2);
-        return animatorSet;
+    private void animateInNewItemButton(int delay) {
+        mChooseUserFAB.animate().translationY(0).setStartDelay(delay).setDuration(300);
     }
 
     @Override
-    public void animateInNewItemButton(int delay) {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mChooseUserFAB, "translationY", 0);
-        objectAnimator.setStartDelay(delay);
-        objectAnimator.setDuration(300);
-        objectAnimator.setInterpolator(new OvershootInterpolator());
-        objectAnimator.start();
+    protected void performBackPressed() {
+        animateOut();
+        super.performBackPressed();
     }
 }

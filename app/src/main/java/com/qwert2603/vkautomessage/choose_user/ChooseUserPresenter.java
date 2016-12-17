@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.VkUser;
@@ -41,11 +40,6 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     @Override
     protected boolean isError() {
         return getModel() == null && mSubscription.isUnsubscribed();
-    }
-
-    @Override
-    protected boolean isFirstAnimateInWithLargeDelay() {
-        return false;
     }
 
     @Override
@@ -122,16 +116,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     }
 
     @Override
-    protected void performMoveToItem(int itemIdToMove, boolean moveWithSetPressed) {
-        getView().submitDode(itemIdToMove);
-    }
-
-    @ShouldCheckIsInningOrInside
-    @Override
     public void onItemAtPositionClicked(int position) {
-        if (!isInningOrInside()) {
-            return;
-        }
         VkUser user = mShowingUserList.get(position);
         if (user.isCanWrite()) {
             switch (user.getId()) {
@@ -142,7 +127,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
                     getView().showGreatChoice();
                     break;
             }
-            super.onItemAtPositionClicked(position);
+            getView().submitDode(mShowingUserList.get(position).getId());
         } else {
             getView().showCantWrite();
         }

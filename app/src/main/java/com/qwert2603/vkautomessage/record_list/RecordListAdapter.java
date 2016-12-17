@@ -88,12 +88,6 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void bindPresenter() {
-            super.bindPresenter();
-            mRecordPresenter.onReadyToAnimate();
-        }
-
-        @Override
         protected void setModel(Record record) {
             mRecordPresenter.setRecord(record);
         }
@@ -165,39 +159,6 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         @Override
         public void showToast(int stringRes) {
             Toast.makeText(mMessageTextView.getContext(), stringRes, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void animateEnter() {
-            mRecordPresenter.onAnimateEnterFinished();
-        }
-
-        @Override
-        public void animateExit() {
-            mRecordPresenter.onAnimateExitFinished();
-        }
-
-        @Override
-        public void animateIn(boolean withLargeDelay) {
-            mRecordPresenter.onAnimateInFinished();
-        }
-
-        @Override
-        public void animateOut() {
-            mRecordPresenter.onAnimateOutFinished();
-        }
-
-        @Override
-        public void performBackPressed() {
-        }
-
-        @Override
-        public void showLogOut() {
-        }
-
-        @Override
-        public ImageView getUserPhotoImageView() {
-            return null;
         }
     }
 }

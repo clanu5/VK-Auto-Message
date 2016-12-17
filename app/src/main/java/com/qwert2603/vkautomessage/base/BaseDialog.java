@@ -5,8 +5,6 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -43,7 +41,6 @@ public abstract class BaseDialog<P extends BasePresenter> extends DialogFragment
     public void onDestroy() {
         getPresenter().unbindView();
         super.onDestroy();
-        VkAutoMessageApplication.sRefWatcher.watch(this);
     }
 
     @CallSuper

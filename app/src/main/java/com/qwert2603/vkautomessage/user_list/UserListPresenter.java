@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.user_list;
 
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.User;
@@ -41,11 +40,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
     @Override
     protected boolean isError() {
         return getModel() == null && mSubscription.isUnsubscribed();
-    }
-
-    @Override
-    protected boolean isFirstAnimateInWithLargeDelay() {
-        return true;
     }
 
     @Override
@@ -91,7 +85,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mSubscription.unsubscribe();
         mSubscription = mDataManager.getAllUsers()
                 .subscribe(
-                        UserListPresenter.this::setModel,
+                        model -> UserListPresenter.this.setModel(model),
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();
@@ -127,11 +121,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                 );
     }
 
-    @ShouldCheckIsInningOrInside
     public void onItemDeleteSubmitted(int id) {
-        if (!isInningOrInside()) {
-            return;
-        }
         super.onItemDeleteSubmitted(id);
         int position = getUserPosition(id);
         List<User> userList = getModel();
@@ -152,12 +142,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         getView().showChooseUser();
     }
 
-    @ShouldCheckIsInningOrInside
     public void onUserChosen(int userId) {
-        if (!isInningOrInside()) {
-            return;
-        }
-
         int userPosition = getUserPosition(userId);
         if (userPosition >= 0) {
             List<User> userList = getModel();
@@ -165,9 +150,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             if (userList == null || view == null) {
                 return;
             }
-            getView().smoothScrollToPosition(userPosition);
-            setItemIdToMove(userId, true);
-            animateOut();
+            getView().scrollToPosition(userPosition);
+            getView().moveToDetailsForItem(userList.get(userPosition));
         } else {
             mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
@@ -187,19 +171,14 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                         user.setEnabledRecordsCount(0);
                         userList.add(user);
 
-                        view.animateAllItemsEnter(false);
-                        view.delayEachItemEnterAnimation(false);
-                        if (view.getLastCompletelyVisibleItemPosition() == userList.size() - 2) {
-                            view.notifyItemInserted(userList.size() - 1, userId);
-                        }
                         if (userList.size() == 1) {
                             view.showList(userList);
                         } else {
+                            view.notifyItemInserted(userList.size() - 1, userId);
                             view.scrollToPosition(userList.size() - 1);
                         }
 
-                        setItemIdToMove(userId, true);
-                        animateOut();
+                        view.moveToDetailsForItem(user);
                     }, LogUtils::e);
         }
     }

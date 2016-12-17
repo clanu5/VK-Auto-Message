@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,10 +21,11 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
-import com.qwert2603.vkautomessage.base.in_out_animation.AnimationFragment;
+import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.List;
@@ -37,7 +39,7 @@ import butterknife.ButterKnife;
  *
  * @param <T> тип элемента списка
  */
-public abstract class ListFragment<T extends Identifiable> extends AnimationFragment<ListPresenter> implements ListView<T> {
+public abstract class ListFragment<T extends Identifiable> extends NavigationFragment<ListPresenter> implements ListView<T> {
 
     private static final int POSITION_EMPTY_VIEW = 0;
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
@@ -63,6 +65,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
+    private boolean mContentEverShown = false;
+
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,10 +77,11 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
-                return 500;
+                //return super.getExtraLayoutSpace(state);
+                return 200;
             }
         });
-        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 42);
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 10);
         mRecyclerView.setAdapter(getAdapter());
 
 
@@ -97,16 +102,17 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
         mRecyclerItemAnimator = new RecyclerItemAnimator();
         mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
-        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        mRecyclerView.getViewTreeObserver().addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
             @Override
-            public boolean onPreDraw() {
+            public void onDraw() {
+                mRecyclerView.getViewTreeObserver().removeOnDrawListener(this);
+
                 // тут считается, что высота элемента всегда равна высоте элемента-пользователя.
                 // высота элемента-записи отличается несильно, так что этим можно пренебречь.
                 float childHeight = getResources().getDimension(R.dimen.item_user_height);
                 int itemsPerScreen = 1 + (int) (mRecyclerView.getHeight() / childHeight);
+                LogUtils.d("itemsPerScreen == " + itemsPerScreen);
                 mRecyclerItemAnimator.setItemsPerScreen(itemsPerScreen);
-                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                return true;
             }
         });
 
@@ -146,7 +152,6 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
                     int id = data.getIntExtra(BaseActivity.EXTRA_ITEM_ID, -1);
                     getPresenter().onReloadItem(id);
                 }
-                getPresenter().onReadyToAnimate();
                 break;
         }
     }
@@ -163,19 +168,32 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
 
     @Override
     public void showEmpty() {
+        if (!mContentEverShown) {
+            mContentEverShown = true;
+            onFirstContentShow(null);
+        }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
-    }
-
-    @Override
-    public void showListEnter(List<T> list) {
-        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        getAdapter().insertModelList(list);
     }
 
     @Override
     public void showList(List<T> list) {
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        getAdapter().replaceModelList(list);
+        LogUtils.d("showList " + mContentEverShown);
+        if (!mContentEverShown) {
+            mContentEverShown = true;
+            onFirstContentShow(list);
+        } else {
+            getAdapter().replaceModelList(list);
+        }
+    }
+
+    protected void onFirstContentShow(@Nullable List<T> list) {
+        if (list != null) {
+            LogUtils.d("onFirstContentShow");
+            mRecyclerItemAnimator.setAlwaysAnimateEnter(true);
+            mRecyclerItemAnimator.setDelayEnter(true);
+            AndroidUtils.runOnUI(() -> getAdapter().insertModelList(list), 500);
+        }
     }
 
     @Override
@@ -207,6 +225,11 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     }
 
     @Override
+    protected void onActionModeCancelled() {
+        getPresenter().onActionModeCancelled();
+    }
+
+    @Override
     public void stopListSelectionMode() {
         stopActionMode();
     }
@@ -219,6 +242,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     @Override
     public void notifyItemInserted(int position, int id) {
         LogUtils.d("notifyItemInserted " + position + " " + id);
+        mRecyclerItemAnimator.setAlwaysAnimateEnter(false);
+        mRecyclerItemAnimator.setDelayEnter(false);
         mRecyclerItemAnimator.addItemToAnimateEnter(id);
         getAdapter().notifyItemInserted(position);
     }
@@ -232,33 +257,8 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
     }
 
     @Override
-    public void scrollListToTop() {
-        mRecyclerView.scrollToPosition(0);
-    }
-
-    @Override
-    public void smoothScrollListToBottom() {
-        mRecyclerView.smoothScrollToPosition(getAdapter().getItemCount() - 1);
-    }
-
-    @Override
-    public void smoothScrollToPosition(int position) {
-        mRecyclerView.smoothScrollToPosition(position);
-    }
-
-    @Override
     public void scrollToPosition(int position) {
         mRecyclerView.scrollToPosition(position);
-    }
-
-    @Override
-    public void animateAllItemsEnter(boolean animate) {
-        mRecyclerItemAnimator.setAlwaysAnimateEnter(animate);
-    }
-
-    @Override
-    public void delayEachItemEnterAnimation(boolean delay) {
-        mRecyclerItemAnimator.setDelayEnter(delay);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
@@ -268,13 +268,4 @@ public abstract class ListFragment<T extends Identifiable> extends AnimationFrag
         }
     }
 
-    @Override
-    public int getItemEnterDelayPerScreen() {
-        return mRecyclerItemAnimator.getEnterDelayPerScreen();
-    }
-
-    @Override
-    public int getLastCompletelyVisibleItemPosition() {
-        return ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-    }
 }

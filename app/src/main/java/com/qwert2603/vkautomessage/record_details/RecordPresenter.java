@@ -9,7 +9,7 @@ import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.AnimationPresenter;
+import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.RecordWithUser;
@@ -26,7 +26,7 @@ import rx.subscriptions.Subscriptions;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
-public class RecordPresenter extends AnimationPresenter<RecordWithUser, RecordView> {
+public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
 
@@ -47,18 +47,13 @@ public class RecordPresenter extends AnimationPresenter<RecordWithUser, RecordVi
         VkAutoMessageApplication.getAppComponent().inject(RecordPresenter.this);
     }
 
-    @Override
-    protected boolean isFirstAnimateInWithLargeDelay() {
-        return false;
-    }
-
     public void setRecordId(int recordId) {
         setModel(null);
         mSubscription.unsubscribe();
         mSubscription = mDataManager
                 .getRecordById(recordId)
                 .subscribe(
-                        RecordPresenter.this::setModel,
+                        model -> RecordPresenter.this.setModel(model),
                         throwable -> {
                             mSubscription.unsubscribe();
                             LogUtils.e(throwable);

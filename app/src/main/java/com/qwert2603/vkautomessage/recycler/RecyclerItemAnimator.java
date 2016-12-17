@@ -10,6 +10,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.qwert2603.vkautomessage.R;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
+        LogUtils.d("animateAdd " + holder);
         boolean animateEnterThisItem = mItemsToAnimateEnter.remove((int) holder.getItemId());
         if (animateEnterThisItem || mAlwaysAnimateEnter) {
             runEnterAnimation(holder);
@@ -92,6 +94,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     }
 
     private void runEnterAnimation(RecyclerView.ViewHolder viewHolder) {
+        LogUtils.d("runEnterAnimation " + viewHolder);
         int heightPixels = viewHolder.itemView.getResources().getDisplayMetrics().heightPixels;
         int widthPixels = viewHolder.itemView.getResources().getDisplayMetrics().widthPixels;
 
@@ -139,6 +142,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
         objectAnimator.setDuration(ENTER_DURATION);
         if (mDelayEnter) {
+            LogUtils.d("setStartDelay " + Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
             objectAnimator.setStartDelay(Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
         }
         objectAnimator.setInterpolator(mEnterInterpolator);

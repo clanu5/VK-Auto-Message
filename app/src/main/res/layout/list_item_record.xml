@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill_horizontal|center_vertical"
+            android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:text="This is message This is message This is message This is message"

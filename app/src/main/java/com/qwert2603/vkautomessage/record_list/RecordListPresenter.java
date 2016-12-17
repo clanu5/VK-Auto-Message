@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
-import com.qwert2603.vkautomessage.base.in_out_animation.ShouldCheckIsInningOrInside;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
@@ -46,11 +45,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         return getModel() == null && mSubscription.isUnsubscribed();
     }
 
-    @Override
-    protected boolean isFirstAnimateInWithLargeDelay() {
-        return false;
-    }
-
     public RecordListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(RecordListPresenter.this);
     }
@@ -87,7 +81,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         mSubscription.unsubscribe();
         mSubscription = mDataManager.getRecordsForUser(mUserId)
                 .subscribe(
-                        RecordListPresenter.this::setModel,
+                        model -> RecordListPresenter.this.setModel(model),
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();
@@ -135,11 +129,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         showUserNameAndRecordsCount(user, getView());
     }
 
-    @ShouldCheckIsInningOrInside
     public void onNewRecordClicked() {
-        if (!isInningOrInside()) {
-            return;
-        }
         RecordListWithUser recordListWithUser = getModel();
         if (recordListWithUser == null) {
             return;
@@ -166,28 +156,19 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     showUserNameAndRecordsCount(user, view);
 
-                    view.animateAllItemsEnter(false);
-                    view.delayEachItemEnterAnimation(false);
-                    if (view.getLastCompletelyVisibleItemPosition() == recordList.size() - 2) {
-                        view.notifyItemInserted(recordList.size() - 1, record.getId());
-                    }
                     if (recordList.size() == 1) {
                         view.showList(recordList);
                     } else {
+                        view.notifyItemInserted(recordList.size() - 1, record.getId());
                         view.scrollToPosition(recordList.size() - 1);
                     }
 
                     // TODO: 13.12.2016 передавать record для перехода к активити с подробностями
-                    setItemIdToMove(record.getId(), true);
-                    animateOut();
+                    view.moveToDetailsForItem(record);
                 }, LogUtils::e);
     }
 
-    @ShouldCheckIsInningOrInside
     public void onItemDeleteSubmitted(int id) {
-        if (!isInningOrInside()) {
-            return;
-        }
         super.onItemDeleteSubmitted(id);
         int position = getRecordPosition(id);
         RecordListWithUser model = getModel();

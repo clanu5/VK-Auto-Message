@@ -15,7 +15,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
@@ -65,7 +64,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Inject
     ChooseUserAdapter mChooseUserAdapter;
 
-    RecyclerItemAnimator mRecyclerItemAnimator;
+    private boolean mContentEverShown = false;
 
     @NonNull
     @Override
@@ -98,9 +97,9 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mChooseUserAdapter);
 
-        mRecyclerItemAnimator = new RecyclerItemAnimator();
-        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
-        mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
+        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
+        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
+        mRecyclerView.setItemAnimator(recyclerItemAnimator);
 
         mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onItemAtPositionClicked);
         mChooseUserAdapter.setLongClickCallback(mChooseUserPresenter::onItemAtPositionLongClicked);
@@ -133,12 +132,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     public void onDestroyView() {
         mRecyclerView.setAdapter(null);
         super.onDestroyView();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mChooseUserPresenter.onReadyToAnimate();
     }
 
     @Override
@@ -216,24 +209,18 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void showListEnter(List<VkUser> list) {
-        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        mChooseUserAdapter.insertModelList(list);
-    }
-
-    @Override
     public void showList(List<VkUser> list) {
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        mChooseUserAdapter.replaceModelList(list);
+        if (!mContentEverShown) {
+            mContentEverShown = true;
+            mChooseUserAdapter.insertModelList(list);
+        } else {
+            mChooseUserAdapter.replaceModelList(list);
+        }
     }
 
     @Override
-    public void moveToDetailsForItem(int id, boolean withSetPressed) {
-    }
-
-    @Override
-    public void moveToDetailsForItem(VkUser item, boolean withSetPressed) {
-        moveToDetailsForItem(item.getId(), withSetPressed);
+    public void moveToDetailsForItem(VkUser item) {
     }
 
     @Override
@@ -257,79 +244,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void scrollListToTop() {
-        mRecyclerView.scrollToPosition(0);
-    }
-
-    @Override
-    public void smoothScrollListToBottom() {
-        mRecyclerView.smoothScrollToPosition(mChooseUserAdapter.getItemCount() - 1);
-    }
-
-    @Override
-    public void smoothScrollToPosition(int position) {
-        mRecyclerView.scrollToPosition(position);
-    }
-
-    @Override
     public void scrollToPosition(int position) {
         mRecyclerView.scrollToPosition(position);
-    }
-
-    @Override
-    public void animateEnter() {
-        mChooseUserPresenter.onAnimateEnterFinished();
-    }
-
-    @Override
-    public void animateExit() {
-        mChooseUserPresenter.onAnimateExitFinished();
-    }
-
-    @Override
-    public void animateIn(boolean withLargeDelay) {
-        mChooseUserPresenter.onAnimateInFinished();
-    }
-
-    @Override
-    public void animateOut() {
-        mChooseUserPresenter.onAnimateOutFinished();
-    }
-
-    @Override
-    public void animateInNewItemButton(int delay) {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public void performBackPressed() {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public void showLogOut() {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public void showUserName(String userName) {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public ImageView getUserPhotoImageView() {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-        return null;
-    }
-
-    @Override
-    public void animateAllItemsEnter(boolean animate) {
-        ((RecyclerItemAnimator) mRecyclerView.getItemAnimator()).setAlwaysAnimateEnter(animate);
-    }
-
-    @Override
-    public void delayEachItemEnterAnimation(boolean delay) {
-        ((RecyclerItemAnimator) mRecyclerView.getItemAnimator()).setDelayEnter(delay);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
@@ -339,13 +255,4 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         }
     }
 
-    @Override
-    public int getItemEnterDelayPerScreen() {
-        return mRecyclerItemAnimator.getEnterDelayPerScreen();
-    }
-
-    @Override
-    public int getLastCompletelyVisibleItemPosition() {
-        return ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-    }
 }

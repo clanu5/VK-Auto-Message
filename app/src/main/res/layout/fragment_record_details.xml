@@ -1,13 +1,13 @@
-<ScrollView
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/root_view_background"
     android:clipToPadding="false"
     android:orientation="vertical"
-    android:layout_marginTop="?attr/actionBarSize">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
         android:id="@+id/content_view"
@@ -52,7 +52,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="6dp"
-                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:text="Alex Zhdanov"
                         android:textColor="@color/user_name"
                         android:textSize="20sp"
@@ -181,4 +182,4 @@
 
     </LinearLayout>
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>

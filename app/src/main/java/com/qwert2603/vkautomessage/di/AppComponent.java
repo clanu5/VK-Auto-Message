@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.di;
 
 import com.qwert2603.vkautomessage.RxBus;
+import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
 import com.qwert2603.vkautomessage.base.navigation.NavigationPresenter;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserAdapter;
 import com.qwert2603.vkautomessage.choose_user.ChooseUserDialog;
@@ -102,5 +103,7 @@ public interface AppComponent {
 
     void inject(ErrorsShowDialog errorsShowDialog);
 
-    void inject(NavigationPresenter.DataManagerHolder dataManagerHolder);
+    void inject(NavigationPresenter.InjectionsHolder injectionsHolder);
+
+    void inject(NavigationFragment.InjectionsHolder injectionsHolder);
 }

@@ -18,14 +18,14 @@
     <color name="repeat_info">#6F9081</color>
     <color name="error">#E00</color>
     <color name="no_items">#008</color>
-    <color name="selected_item">#DDDDDD</color>
-    <color name="root_view_background">#F6F6F6</color>
+    <color name="selected_item">#EEE</color>
+    <color name="header_view_background">#F6F6F6</color>
 
     <color name="white">#FFFF</color>
     <color name="transparent">#0000</color>
     <color name="colorControlHighlight">#42838383</color>
 
-    <!--todo use thia color as toolbar background during action_mode-->
+    <!--todo use this color as toolbar background during action_mode-->
     <color name="actionMode">#D50000</color>
 
 </resources>

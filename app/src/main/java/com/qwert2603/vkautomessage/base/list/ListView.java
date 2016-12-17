@@ -1,6 +1,6 @@
 package com.qwert2603.vkautomessage.base.list;
 
-import com.qwert2603.vkautomessage.base.in_out_animation.AnimationView;
+import com.qwert2603.vkautomessage.base.BaseView;
 import com.qwert2603.vkautomessage.model.Identifiable;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @param <T> тип элемента списка.
  */
-public interface ListView<T extends Identifiable> extends AnimationView {
+public interface ListView<T extends Identifiable> extends BaseView {
     /**
      * Отобразить сообщение о загрузке.
      */
@@ -34,16 +34,7 @@ public interface ListView<T extends Identifiable> extends AnimationView {
      */
     void showList(List<T> list);
 
-    /**
-     * Отобразить появление списка.
-     *
-     * @param list список для появления.
-     */
-    void showListEnter(List<T> list);
-
-    void moveToDetailsForItem(int id, boolean withSetPressed);
-
-    void moveToDetailsForItem(T item, boolean withSetPressed);
+    void moveToDetailsForItem(T item);
 
     /**
      * Спросить у пользователя подтверждение удаления элемента с переданным id.
@@ -52,38 +43,16 @@ public interface ListView<T extends Identifiable> extends AnimationView {
      */
     void askDeleteItem(int id);
 
+    void startListSelectionMode();
+    void stopListSelectionMode();
     void setItemSelectionState(int position, boolean select);
-
     void selectAllItems();
-
     void unSelectAllItems();
 
-    void startListSelectionMode();
-
-    void stopListSelectionMode();
-
     void notifyItemRemoved(int position);
-
     void notifyItemInserted(int position, int id);
-
     void notifyItemsUpdated(List<Integer> updatedUserPositions);
 
-    void scrollListToTop();
-
-    void smoothScrollListToBottom();
-
-    void smoothScrollToPosition(int position);
-
     void scrollToPosition(int position);
-
-    void animateAllItemsEnter(boolean animate);
-
-    void delayEachItemEnterAnimation(boolean delay);
-
-    void animateInNewItemButton(int delay);
-
-    int getItemEnterDelayPerScreen();
-
-    int getLastCompletelyVisibleItemPosition();
 
 }

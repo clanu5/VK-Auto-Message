@@ -26,6 +26,8 @@ public abstract class FabHideBehavior extends FloatingActionButton.Behavior {
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dx, int dy, int[] consumed) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
 
+        // TODO: 16.12.2016 check consumed[]
+
         if (dy > 0) {
             hideFab(child);
         } else if (dy < 0) {
