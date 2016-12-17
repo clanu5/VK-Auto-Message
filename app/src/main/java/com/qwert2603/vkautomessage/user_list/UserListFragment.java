@@ -14,6 +14,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -107,13 +108,21 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
-            mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+                    mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
+                    mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
 
-            int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
-            mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
+                    int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
+                    mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
 
-            animateIn();
+                    animateIn();
+
+                    return true;
+                }
+            });
         }
     }
 

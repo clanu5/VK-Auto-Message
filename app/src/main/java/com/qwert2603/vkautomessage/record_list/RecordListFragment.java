@@ -11,6 +11,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -122,13 +123,22 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) mToolbarIconImageView.getLayoutParams()).leftMargin;
-            mToolbarIconImageView.setTranslationX(-1 * (mToolbarIconImageView.getWidth() + toolbarIconLeftMargin));
+            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    view.getViewTreeObserver().removeOnPreDrawListener(this);
 
-            int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
-            mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
+                    int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) mToolbarIconImageView.getLayoutParams()).leftMargin;
+                    mToolbarIconImageView.setTranslationX(-1 * (mToolbarIconImageView.getWidth() + toolbarIconLeftMargin));
 
-            animateIn();
+                    int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
+                    mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
+
+                    animateIn();
+
+                    return true;
+                }
+            });
         }
     }
 
@@ -204,44 +214,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     public void showDontWriteToDeveloper() {
         Toast.makeText(getActivity(), R.string.toast_i_told_you, Toast.LENGTH_SHORT).show();
     }
-
-//    private void animateEnter() {
-//        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mContentRootView, "scaleY", 0.1f, 1);
-//        objectAnimator.setDuration(300);
-//        objectAnimator.setInterpolator(new AccelerateInterpolator());
-//        objectAnimator.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//
-//                mViewAnimator.setVisibility(View.INVISIBLE);
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                mViewAnimator.setVisibility(View.VISIBLE);
-//            }
-//        });
-//    }
-//
-//    private void animateExit() {
-//        ObjectAnimator scaleY = ObjectAnimator.ofFloat(mContentRootView, "scaleY", 0);
-//        scaleY.setDuration(300);
-//        scaleY.setInterpolator(new AccelerateInterpolator());
-//        scaleY.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//                mRecyclerView.setVisibility(View.INVISIBLE);
-//                mNewRecordFAB.setVisibility(View.INVISIBLE);
-//            }
-//        });
-//
-//        ObjectAnimator alpha = ObjectAnimator.ofFloat(mContentRootView, "alpha", 1, 0);
-//        alpha.setDuration(100);
-//        alpha.setStartDelay(200);
-//
-//        AnimatorSet animatorSet = new AnimatorSet();
-//        animatorSet.play(scaleY).with(alpha);
-//    }
 
     private void animateIn() {
         mToolbarIconImageView.animate().translationX(0).setStartDelay(50).setDuration(300);

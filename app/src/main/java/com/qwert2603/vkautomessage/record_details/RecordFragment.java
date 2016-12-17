@@ -10,6 +10,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -176,11 +177,19 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
-            mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    view.getViewTreeObserver().removeOnPreDrawListener(this);
 
-            animateIn();
-            LogUtils.d("RecordFragment onViewCreated");
+                    mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
+                    mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+
+                    animateIn();
+
+                    return true;
+                }
+            });
         }
     }
 
