@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
-import android.transition.Explode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,18 +54,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         args.putInt(drawingStartXKey, drawingStartX);
         args.putInt(drawingStartYKey, drawingStartY);
         recordFragment.setArguments(args);
-
-        Explode explode = new Explode();
-        explode.setDuration(400);
-//        explode.addTarget(mContentView);
-
-        recordFragment.setEnterTransition(explode);
-        recordFragment.setExitTransition(explode);
-        recordFragment.setReenterTransition(explode);
-        recordFragment.setReturnTransition(explode);
-        recordFragment.setAllowEnterTransitionOverlap(false);
-        recordFragment.setAllowReturnTransitionOverlap(false);
-
         return recordFragment;
     }
 

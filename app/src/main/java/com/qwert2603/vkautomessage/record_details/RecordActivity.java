@@ -1,7 +1,9 @@
 package com.qwert2603.vkautomessage.record_details;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.transition.Explode;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseActivity;
@@ -19,6 +21,20 @@ public class RecordActivity extends BaseActivity {
     @Override
     protected NavigationFragment createFragment() {
         return createRecordFragmentForIntent(getIntent());
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Explode explode = new Explode();
+        explode.setDuration(400);
+
+        getWindow().setEnterTransition(explode);
+        getWindow().setExitTransition(explode);
+
+        getWindow().setAllowEnterTransitionOverlap(false);
+        getWindow().setAllowReturnTransitionOverlap(false);
     }
 
     @Override

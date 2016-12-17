@@ -10,9 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
-import android.transition.Slide;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,22 +36,7 @@ import butterknife.ButterKnife;
 public class UserListFragment extends ListFragment<User> implements UserListView {
 
     public static UserListFragment newInstance() {
-
-        UserListFragment fragment = new UserListFragment();
-
-        Slide slide = new Slide(Gravity.BOTTOM);
-        slide.setDuration(400);
-//        slide.addTarget(mViewAnimator);
-//        slide.addTarget(mRecyclerView);
-
-        fragment.setEnterTransition(slide);
-        fragment.setExitTransition(slide);
-        fragment.setReenterTransition(slide);
-        fragment.setReturnTransition(slide);
-        fragment.setAllowEnterTransitionOverlap(false);
-        fragment.setAllowReturnTransitionOverlap(false);
-
-        return fragment;
+        return new UserListFragment();
     }
 
     private static final int REQUEST_CHOOSE_USER = 3;

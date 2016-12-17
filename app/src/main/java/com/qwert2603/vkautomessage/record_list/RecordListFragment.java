@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.transition.Slide;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,20 +44,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         args.putInt(userIdKey, userId);
         args.putInt(drawingStartYKey, drawingStartY);
         recordListFragment.setArguments(args);
-
-
-        Slide slide = new Slide(Gravity.LEFT);
-        slide.setDuration(400);
-//        slide.addTarget(mViewAnimator);
-//        slide.addTarget(mRecyclerView);
-
-        recordListFragment.setEnterTransition(slide);
-        recordListFragment.setExitTransition(slide);
-        recordListFragment.setReenterTransition(slide);
-        recordListFragment.setReturnTransition(slide);
-        recordListFragment.setAllowEnterTransitionOverlap(false);
-        recordListFragment.setAllowReturnTransitionOverlap(false);
-
         return recordListFragment;
     }
 
