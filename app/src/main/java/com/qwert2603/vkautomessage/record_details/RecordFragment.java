@@ -180,25 +180,23 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        int duration = getResources().getInteger(R.integer.transition_duration);
+        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
+
         Explode explode = new Explode();
         explode.addTarget(CardView.class);
 
         Slide slide = new Slide(Gravity.TOP);
-        slide.addTarget(mToolbarIconImageView);
         slide.addTarget(mToolbarTitleTextView);
 
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(explode)
                 .addTransition(slide);
 
-        int duration = getResources().getInteger(R.integer.transition_duration);
-
         getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setExitTransition(transitionSet);
         getActivity().getWindow().setReenterTransition(transitionSet);
         getActivity().getWindow().setReturnTransition(transitionSet);
-
-        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
     }
 
     @Override

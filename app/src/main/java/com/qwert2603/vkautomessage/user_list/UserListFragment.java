@@ -1,7 +1,5 @@
 package com.qwert2603.vkautomessage.user_list;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -13,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
 import android.transition.Slide;
-import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
@@ -114,23 +111,12 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
         Slide slideContent = new Slide(Gravity.BOTTOM);
-        slideContent.removeTarget(mToolbarIconImageView);
-        slideContent.removeTarget(mToolbarTitleTextView);
+        slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        slideContent.excludeTarget(mToolbarIconImageView, true);
+        slideContent.excludeTarget(mToolbarTitleTextView, true);
 
         Slide slideToolbar = new Slide(Gravity.TOP);
-//        slideToolbar.addTarget(mToolbarIconImageView);
         slideToolbar.addTarget(mToolbarTitleTextView);
-        slideToolbar.addListener(new TransitionUtils.TransitionListenerAdapter() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                mToolbarIconImageView.animate().translationY(-1 * mToolbar.getHeight()).setDuration(duration).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
-                    }
-                });
-            }
-        });
 
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideToolbar)
@@ -138,31 +124,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
                 .setDuration(duration);
 
         getActivity().getWindow().setExitTransition(transitionSet);
-
-
-        Slide slideToolbarEnter = new Slide(Gravity.TOP);
-//        slideToolbarEnter.addTarget(mToolbarIconImageView);
-        slideToolbarEnter.addTarget(mToolbarTitleTextView);
-        slideToolbarEnter.addListener(new TransitionUtils.TransitionListenerAdapter() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                mToolbarIconImageView.animate().translationY(0).setDuration(duration).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        mToolbarIconImageView.setTranslationY(0);
-                    }
-                });
-            }
-        });
-
-        TransitionSet enterTransitionSet = new TransitionSet()
-                .addTransition(slideToolbarEnter)
-                .addTransition(slideContent)
-                .setDuration(duration);
-
-        getActivity().getWindow().setEnterTransition(enterTransitionSet);
-        getActivity().getWindow().setReenterTransition(enterTransitionSet);
-        getActivity().getWindow().setReturnTransition(enterTransitionSet);
+        getActivity().getWindow().setEnterTransition(transitionSet);
+        getActivity().getWindow().setReenterTransition(transitionSet);
+        getActivity().getWindow().setReturnTransition(transitionSet);
     }
 
     @Override

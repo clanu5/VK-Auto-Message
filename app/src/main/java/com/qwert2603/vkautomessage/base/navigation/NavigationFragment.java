@@ -185,22 +185,24 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
-            if (isNavigationButtonVisible()) {
-                mToolbar.setNavigationIcon(R.drawable.icon_burger);
-            } else {
-                mToolbar.setNavigationIcon(R.drawable.icon_arrow);
-            }
-        }
+            mToolbar.setNavigationIcon(R.drawable.toolbar_icon);
 
-        int size = mToolbar.getChildCount();
-        for (int i = 0; i < size; i++) {
-            View child = mToolbar.getChildAt(i);
-            if (child instanceof ImageButton) {
-                ImageButton btn = (ImageButton) child;
-                if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
-                    mToolbarIconImageView = btn;
-                    break;
+            int size = mToolbar.getChildCount();
+            for (int i = 0; i < size; i++) {
+                View child = mToolbar.getChildAt(i);
+                if (child instanceof ImageButton) {
+                    ImageButton btn = (ImageButton) child;
+                    if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
+                        mToolbarIconImageView = btn;
+                        break;
+                    }
                 }
+            }
+
+            if (isNavigationButtonVisible()) {
+                setToolbarIconState(R.attr.state_burger, true);
+            } else {
+                setToolbarIconState(R.attr.state_back_arrow, true);
             }
         }
 
@@ -242,7 +244,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         View view = getActivity().getLayoutInflater().inflate(actionContentRes, null);
         // TODO: 16.12.2016 ??? mToolbarFrameLayout.getChildAt(0).setVisibility(View.INVISIBLE);
         mToolbarFrameLayout.addView(view);
-        mToolbarIconImageView.setImageState(new int[]{R.attr.state_close}, true);
+        setToolbarIconState(R.attr.state_close, false);
         return view;
     }
 
@@ -255,7 +257,11 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     protected void stopActionMode() {
         mActionContentRes = 0;
         mToolbarFrameLayout.removeViewAt(1);
-        mToolbarIconImageView.setImageState(new int[]{-R.attr.state_close}, true);
+        if (isNavigationButtonVisible()) {
+            setToolbarIconState(R.attr.state_burger, false);
+        } else {
+            setToolbarIconState(R.attr.state_back_arrow, false);
+        }
     }
 
     public void onBackPressed() {
@@ -274,6 +280,21 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
 
     protected void performBackPressed() {
         ((BaseActivity) getActivity()).performOnBackPressed();
+    }
+
+    protected void setToolbarIconState(@ToolbarIconState int state, boolean withJump) {
+        int[] newState = new int[ToolbarIconState.STATES.length];
+        for (int i = 0; i < ToolbarIconState.STATES.length; i++) {
+            if (state == ToolbarIconState.STATES[i]) {
+                newState[i] = ToolbarIconState.STATES[i];
+            } else {
+                newState[i] = -1 * ToolbarIconState.STATES[i];
+            }
+        }
+        mToolbarIconImageView.setImageState(newState, true);
+        if (withJump) {
+            mToolbarIconImageView.jumpDrawablesToCurrentState();
+        }
     }
 
     private void onDrawerSlide(int width, float slideOffset) {

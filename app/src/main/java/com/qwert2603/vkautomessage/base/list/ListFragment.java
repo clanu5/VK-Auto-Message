@@ -192,7 +192,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             LogUtils.d("onFirstContentShow");
             mRecyclerItemAnimator.setAlwaysAnimateEnter(true);
             mRecyclerItemAnimator.setDelayEnter(true);
-            AndroidUtils.runOnUI(() -> getAdapter().insertModelList(list), 500);
+            AndroidUtils.runOnUI(() -> getAdapter().insertModelList(list), 750);
         }
     }
 

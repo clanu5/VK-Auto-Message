@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
@@ -126,29 +127,52 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Slide slideToolbarIcon = new Slide(Gravity.START);
-        slideToolbarIcon.addTarget(mToolbarIconImageView);
+        int duration = getResources().getInteger(R.integer.transition_duration);
+        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
+
+        Slide slideContent = new Slide(Gravity.START);
+        slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        slideContent.excludeTarget(mToolbarIconImageView, true);
+        slideContent.excludeTarget(mViewAnimator, false);
+        slideContent.excludeTarget(mRecyclerView, false);
 
         Slide slideFab = new Slide(Gravity.END);
         slideFab.addTarget(mNewRecordFAB);
-
-        Slide slideContent = new Slide(Gravity.START);
-        slideContent.removeTarget(mToolbarIconImageView);
-        slideContent.removeTarget(mNewRecordFAB);
-
         TransitionSet transitionSet = new TransitionSet()
-                .addTransition(slideToolbarIcon)
                 .addTransition(slideFab)
-                .addTransition(slideContent);
-
-        int duration = getResources().getInteger(R.integer.transition_duration);
-
-        getActivity().getWindow().setEnterTransition(transitionSet);
+                .addTransition(slideContent)
+                .setDuration(duration);
         getActivity().getWindow().setExitTransition(transitionSet);
         getActivity().getWindow().setReenterTransition(transitionSet);
-        getActivity().getWindow().setReturnTransition(transitionSet);
 
-        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
+        Slide slideFabEnter = new Slide(Gravity.END);
+        slideFabEnter.addTarget(mNewRecordFAB);
+        slideFabEnter.addListener(new TransitionUtils.TransitionListenerAdapter(){
+            @Override
+            public void onTransitionStart(Transition transition) {
+                setToolbarIconState(R.attr.state_burger, true);
+                setToolbarIconState(R.attr.state_back_arrow, false);
+            }
+        });
+        TransitionSet transitionSetEnter = new TransitionSet()
+                .addTransition(slideFabEnter)
+                .addTransition(slideContent)
+                .setDuration(duration);
+        getActivity().getWindow().setEnterTransition(transitionSetEnter);
+
+        Slide slideFabReturn = new Slide(Gravity.END);
+        slideFabReturn.addTarget(mNewRecordFAB);
+        slideFabReturn.addListener(new TransitionUtils.TransitionListenerAdapter(){
+            @Override
+            public void onTransitionStart(Transition transition) {
+                setToolbarIconState(R.attr.state_burger, false);
+            }
+        });
+        TransitionSet transitionSetReturn = new TransitionSet()
+                .addTransition(slideFabReturn)
+                .addTransition(slideContent)
+                .setDuration(duration);
+        getActivity().getWindow().setReturnTransition(transitionSetReturn);
     }
 
     @Override
