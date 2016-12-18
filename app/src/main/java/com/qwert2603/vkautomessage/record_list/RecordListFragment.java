@@ -3,15 +3,18 @@ package com.qwert2603.vkautomessage.record_list;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.transition.Slide;
+import android.transition.TransitionSet;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +28,7 @@ import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
-import com.qwert2603.vkautomessage.util.AndroidUtils;
-
-import java.util.List;
+import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import javax.inject.Inject;
 
@@ -107,6 +108,9 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
 
+        // TODO: 18.12.2016 ???
+        mToolbarTitleTextView.setTextColor(Color.BLACK);
+
         mContentRootView.setPivotY(getArguments().getInt(drawingStartYKey));
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
@@ -122,47 +126,34 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (savedInstanceState == null) {
-            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+        Slide slideToolbarIcon = new Slide(Gravity.START);
+        slideToolbarIcon.addTarget(mToolbarIconImageView);
 
-                    int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) mToolbarIconImageView.getLayoutParams()).leftMargin;
-                    mToolbarIconImageView.setTranslationX(-1 * (mToolbarIconImageView.getWidth() + toolbarIconLeftMargin));
+        Slide slideFab = new Slide(Gravity.END);
+        slideFab.addTarget(mNewRecordFAB);
 
-                    int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
-                    mNewRecordFAB.setTranslationX(mNewRecordFAB.getWidth() + fabRightMargin);
+        Slide slideContent = new Slide(Gravity.START);
+        slideContent.removeTarget(mToolbarIconImageView);
+        slideContent.removeTarget(mNewRecordFAB);
 
-                    animateIn();
+        TransitionSet transitionSet = new TransitionSet()
+                .addTransition(slideToolbarIcon)
+                .addTransition(slideFab)
+                .addTransition(slideContent);
 
-                    return true;
-                }
-            });
-        }
-    }
+        int duration = getResources().getInteger(R.integer.transition_duration);
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        getActivity().getWindow().setEnterTransition(transitionSet);
+        getActivity().getWindow().setExitTransition(transitionSet);
+        getActivity().getWindow().setReenterTransition(transitionSet);
+        getActivity().getWindow().setReturnTransition(transitionSet);
 
-        switch (requestCode) {
-            case REQUEST_DETAILS_FOT_ITEM:
-                animateIn();
-                animateInNewItemButton(0);
-                break;
-        }
+        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
     }
 
     @Override
     public void showUserName(String userName) {
         mToolbarTitleTextView.setText(userName);
-    }
-
-    @Override
-    protected void onFirstContentShow(@Nullable List<Record> list) {
-        super.onFirstContentShow(list);
-        animateInNewItemButton(mRecyclerItemAnimator.getEnterDelayPerScreen());
     }
 
     @Override
@@ -198,9 +189,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         }
 
         ActivityOptions finalActivityOptions = activityOptions;
-        AndroidUtils.runOnUI(() -> startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null), 400);
-
-        animateOut();
+        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);
     }
 
     @Override
@@ -215,28 +204,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         Toast.makeText(getActivity(), R.string.toast_i_told_you, Toast.LENGTH_SHORT).show();
     }
 
-    private void animateIn() {
-        mToolbarIconImageView.animate().translationX(0).setStartDelay(50).setDuration(300);
-    }
-
-    private void animateOut() {
-        int toolbarIconLeftMargin = ((ViewGroup.MarginLayoutParams) mToolbarIconImageView.getLayoutParams()).leftMargin;
-        mToolbarIconImageView.animate().translationX(-1 * (mToolbarIconImageView.getWidth() + toolbarIconLeftMargin)).setStartDelay(0).setDuration(300);
-
-        int fabRightMargin = ((ViewGroup.MarginLayoutParams) mNewRecordFAB.getLayoutParams()).rightMargin;
-        mNewRecordFAB.animate().translationX(mNewRecordFAB.getWidth() + fabRightMargin).setStartDelay(0).setDuration(300);
-    }
-
-    public void animateInNewItemButton(int delay) {
-        mNewRecordFAB.animate().translationX(0).setStartDelay(delay).setDuration(300);
-    }
-
     @Override
     protected void performBackPressed() {
         Intent intent = new Intent();
         intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));
         getActivity().setResult(Activity.RESULT_OK, intent);
-        animateOut();
         super.performBackPressed();
     }
 }

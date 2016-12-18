@@ -7,10 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
+import android.transition.Explode;
+import android.transition.Slide;
+import android.transition.TransitionSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +30,7 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditP
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import javax.inject.Inject;
 
@@ -176,21 +180,25 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (savedInstanceState == null) {
-            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+        Explode explode = new Explode();
+        explode.addTarget(CardView.class);
 
-                    mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
-                    mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+        Slide slide = new Slide(Gravity.TOP);
+        slide.addTarget(mToolbarIconImageView);
+        slide.addTarget(mToolbarTitleTextView);
 
-                    animateIn();
+        TransitionSet transitionSet = new TransitionSet()
+                .addTransition(explode)
+                .addTransition(slide);
 
-                    return true;
-                }
-            });
-        }
+        int duration = getResources().getInteger(R.integer.transition_duration);
+
+        getActivity().getWindow().setEnterTransition(transitionSet);
+        getActivity().getWindow().setExitTransition(transitionSet);
+        getActivity().getWindow().setReenterTransition(transitionSet);
+        getActivity().getWindow().setReturnTransition(transitionSet);
+
+        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
     }
 
     @Override
@@ -321,16 +329,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         Toast.makeText(getActivity(), stringRes, Toast.LENGTH_SHORT).show();
     }
 
-    protected void animateIn() {
-        mToolbarTitleTextView.animate().translationY(0).setStartDelay(50).setDuration(300);
-        mToolbarIconImageView.animate().translationY(0).setStartDelay(100).setDuration(300);
-    }
-
-    protected void animateOut() {
-        mToolbarTitleTextView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(0).setDuration(200);
-        mToolbarIconImageView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(100).setDuration(200);
-    }
-
     @Override
     protected void performBackPressed() {
         Intent intent = new Intent();
@@ -341,7 +339,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
             intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
         }
         getActivity().setResult(Activity.RESULT_OK, intent);
-        animateOut();
         super.performBackPressed();
     }
 }

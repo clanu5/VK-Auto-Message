@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.user_list;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -10,11 +12,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -25,9 +30,7 @@ import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
-import com.qwert2603.vkautomessage.util.AndroidUtils;
-
-import java.util.List;
+import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import javax.inject.Inject;
 
@@ -107,23 +110,59 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (savedInstanceState == null) {
-            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    view.getViewTreeObserver().removeOnPreDrawListener(this);
-                    mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
-                    mToolbarTitleTextView.setTranslationY(-1 * mToolbar.getHeight());
+        int duration = getResources().getInteger(R.integer.transition_duration);
+        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
-                    int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
-                    mChooseUserFAB.setTranslationY(mChooseUserFAB.getHeight() + fabBottomMargin);
+        Slide slideContent = new Slide(Gravity.BOTTOM);
+        slideContent.removeTarget(mToolbarIconImageView);
+        slideContent.removeTarget(mToolbarTitleTextView);
 
-                    animateIn();
+        Slide slideToolbar = new Slide(Gravity.TOP);
+//        slideToolbar.addTarget(mToolbarIconImageView);
+        slideToolbar.addTarget(mToolbarTitleTextView);
+        slideToolbar.addListener(new TransitionUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mToolbarIconImageView.animate().translationY(-1 * mToolbar.getHeight()).setDuration(duration).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        mToolbarIconImageView.setTranslationY(-1 * mToolbar.getHeight());
+                    }
+                });
+            }
+        });
 
-                    return true;
-                }
-            });
-        }
+        TransitionSet transitionSet = new TransitionSet()
+                .addTransition(slideToolbar)
+                .addTransition(slideContent)
+                .setDuration(duration);
+
+        getActivity().getWindow().setExitTransition(transitionSet);
+
+
+        Slide slideToolbarEnter = new Slide(Gravity.TOP);
+//        slideToolbarEnter.addTarget(mToolbarIconImageView);
+        slideToolbarEnter.addTarget(mToolbarTitleTextView);
+        slideToolbarEnter.addListener(new TransitionUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mToolbarIconImageView.animate().translationY(0).setDuration(duration).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        mToolbarIconImageView.setTranslationY(0);
+                    }
+                });
+            }
+        });
+
+        TransitionSet enterTransitionSet = new TransitionSet()
+                .addTransition(slideToolbarEnter)
+                .addTransition(slideContent)
+                .setDuration(duration);
+
+        getActivity().getWindow().setEnterTransition(enterTransitionSet);
+        getActivity().getWindow().setReenterTransition(enterTransitionSet);
+        getActivity().getWindow().setReturnTransition(enterTransitionSet);
     }
 
     @Override
@@ -131,10 +170,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case REQUEST_DETAILS_FOT_ITEM:
-                animateIn();
-                animateInNewItemButton(0);
-                break;
             case REQUEST_CHOOSE_USER:
                 if (resultCode == Activity.RESULT_OK) {
                     int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
@@ -167,15 +202,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         }
 
         ActivityOptions finalActivityOptions = activityOptions;
-        AndroidUtils.runOnUI(() -> startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null), 400);
-
-        animateOut();
-    }
-
-    @Override
-    protected void onFirstContentShow(@Nullable List<User> list) {
-        super.onFirstContentShow(list);
-        animateInNewItemButton(mRecyclerItemAnimator.getEnterDelayPerScreen());
+        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);
     }
 
     @Override
@@ -190,28 +217,5 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         DeleteUserDialog deleteUserDialog = DeleteUserDialog.newInstance(id);
         deleteUserDialog.setTargetFragment(UserListFragment.this, REQUEST_DELETE_ITEM);
         deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
-    }
-
-    private void animateIn() {
-        mToolbarIconImageView.animate().translationY(0).setStartDelay(50).setDuration(300);
-        mToolbarTitleTextView.animate().translationY(0).setStartDelay(100).setDuration(300);
-    }
-
-    private void animateOut() {
-        int fabBottomMargin = ((ViewGroup.MarginLayoutParams) mChooseUserFAB.getLayoutParams()).bottomMargin;
-        mChooseUserFAB.animate().translationY(mChooseUserFAB.getHeight() + fabBottomMargin).setStartDelay(0).setDuration(300);
-
-        mToolbarTitleTextView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(0).setDuration(200);
-        mToolbarIconImageView.animate().translationY(-1 * mToolbar.getHeight()).setStartDelay(100).setDuration(200);
-    }
-
-    private void animateInNewItemButton(int delay) {
-        mChooseUserFAB.animate().translationY(0).setStartDelay(delay).setDuration(300);
-    }
-
-    @Override
-    protected void performBackPressed() {
-        animateOut();
-        super.performBackPressed();
     }
 }

@@ -25,7 +25,7 @@
         android:text="Alex Zhdanov toolbar_transition toolbar_transition"
         android:textColor="@color/user_name"
         android:textSize="20sp"
-        android:transitionName="@string/toolbar_transition"/>
+        android:transitionName="@string/toolbar_title_transition"/>
 
     <LinearLayout
         android:id="@+id/records_count_layout"

@@ -11,14 +11,17 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:transitionGroup="false"/>
 
     <ViewAnimator
         android:id="@+id/view_animator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:inAnimation="@android:anim/fade_in"
-        android:outAnimation="@android:anim/fade_out">
+        android:outAnimation="@android:anim/fade_out"
+        android:animateFirstView="false"
+        android:transitionGroup="false">
 
         <View
             android:layout_width="match_parent"

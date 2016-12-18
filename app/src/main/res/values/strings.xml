@@ -36,7 +36,9 @@
     <string name="time_transition" translatable="false">time_transition</string>
     <string name="repeat_info_transition" translatable="false">repeat_info_transition</string>
     <string name="enabled_transition" translatable="false">enabled_transition</string>
+    <string name="toolbar_title_transition" translatable="false">toolbar_title_transition</string>
     <string name="toolbar_transition" translatable="false">toolbar_transition</string>
+
     <string name="toast_dont_write_to_developer">I do not recommend you to do that!</string>
     <string name="toast_great_choice">Great choice!</string>
     <string name="toast_i_told_you">I told you!</string>
