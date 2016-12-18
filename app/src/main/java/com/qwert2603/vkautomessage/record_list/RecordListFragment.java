@@ -25,6 +25,7 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
+import com.qwert2603.vkautomessage.base.navigation.ToolbarIconState;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
@@ -39,13 +40,13 @@ import butterknife.ButterKnife;
 public class RecordListFragment extends ListFragment<Record> implements RecordListView {
 
     private static final String userIdKey = "userId";
-    private static final String drawingStartYKey = "drawingStartY";
+    private static final String prevIconStateKey = "prevIconState";
 
-    public static RecordListFragment newInstance(int userId, int drawingStartY) {
+    public static RecordListFragment newInstance(int userId, @ToolbarIconState int prevIconState) {
         RecordListFragment recordListFragment = new RecordListFragment();
         Bundle args = new Bundle();
         args.putInt(userIdKey, userId);
-        args.putInt(drawingStartYKey, drawingStartY);
+        args.putInt(prevIconStateKey, prevIconState);
         recordListFragment.setArguments(args);
         return recordListFragment;
     }
@@ -112,8 +113,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // TODO: 18.12.2016 ???
         mToolbarTitleTextView.setTextColor(Color.BLACK);
 
-        mContentRootView.setPivotY(getArguments().getInt(drawingStartYKey));
-
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
@@ -145,12 +144,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         getActivity().getWindow().setExitTransition(transitionSet);
         getActivity().getWindow().setReenterTransition(transitionSet);
 
+        @ToolbarIconState int prevIconState = getArguments().getInt(prevIconStateKey);
+
         Slide slideFabEnter = new Slide(Gravity.END);
         slideFabEnter.addTarget(mNewRecordFAB);
-        slideFabEnter.addListener(new TransitionUtils.TransitionListenerAdapter(){
+        slideFabEnter.addListener(new TransitionUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
-                setToolbarIconState(R.attr.state_burger, true);
+                setToolbarIconState(prevIconState, true);
                 setToolbarIconState(R.attr.state_back_arrow, false);
             }
         });
@@ -162,10 +163,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         Slide slideFabReturn = new Slide(Gravity.END);
         slideFabReturn.addTarget(mNewRecordFAB);
-        slideFabReturn.addListener(new TransitionUtils.TransitionListenerAdapter(){
+        slideFabReturn.addListener(new TransitionUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
-                setToolbarIconState(R.attr.state_burger, false);
+                setToolbarIconState(prevIconState, false);
             }
         });
         TransitionSet transitionSetReturn = new TransitionSet()

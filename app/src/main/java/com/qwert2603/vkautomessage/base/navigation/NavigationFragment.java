@@ -66,6 +66,9 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     @LayoutRes
     private int mActionContentRes = 0;
 
+    @ToolbarIconState
+    private int mIconState;
+
     /**
      * Потому что Dagger не может инжектить в NavigationPresenter, который generic.
      */
@@ -283,6 +286,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     }
 
     protected void setToolbarIconState(@ToolbarIconState int state, boolean withJump) {
+        mIconState = state;
         int[] newState = new int[ToolbarIconState.STATES.length];
         for (int i = 0; i < ToolbarIconState.STATES.length; i++) {
             if (state == ToolbarIconState.STATES[i]) {
@@ -295,6 +299,11 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         if (withJump) {
             mToolbarIconImageView.jumpDrawablesToCurrentState();
         }
+    }
+
+    @ToolbarIconState
+    protected int getIconState() {
+        return mIconState;
     }
 
     private void onDrawerSlide(int width, float slideOffset) {

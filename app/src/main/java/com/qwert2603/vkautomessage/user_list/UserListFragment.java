@@ -150,20 +150,15 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(user.getId());
         if (viewHolder != null) {
+            //todo viewHolder.itemView.setPressed(withSetPressed);
+
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()));
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, user.getId());
 
-        if (viewHolder != null) {
-            //todo viewHolder.itemView.setPressed(withSetPressed);
-
-            int[] startingPoint = new int[2];
-            viewHolder.itemView.getLocationOnScreen(startingPoint);
-            startingPoint[1] -= mToolbar.getHeight();
-            intent.putExtra(RecordListActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
-        }
+        intent.putExtra(RecordListActivity.EXTRA_PREV_ICON_STATE, getIconState());
 
         ActivityOptions finalActivityOptions = activityOptions;
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);

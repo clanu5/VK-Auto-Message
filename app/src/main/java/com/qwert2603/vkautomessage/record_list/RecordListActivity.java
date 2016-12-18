@@ -1,17 +1,19 @@
 package com.qwert2603.vkautomessage.record_list;
 
+import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
+import com.qwert2603.vkautomessage.base.navigation.ToolbarIconState;
 
 public class RecordListActivity extends BaseActivity {
 
-    public static final String EXTRA_DRAWING_START_Y = "com.qwert2603.vkautomessage.record_list.EXTRA_DRAWING_START_Y";
+    public static final String EXTRA_PREV_ICON_STATE = "com.qwert2603.vkautomessage.record_list.EXTRA_PREV_ICON_STATE";
 
     @Override
     protected NavigationFragment createFragment() {
         int userId = getIntent().getIntExtra(EXTRA_ITEM_ID, -1);
-        int drawingStartY = getIntent().getIntExtra(EXTRA_DRAWING_START_Y, 0);
-        return RecordListFragment.newInstance(userId, drawingStartY);
+        @ToolbarIconState int prevIconState = getIntent().getIntExtra(EXTRA_PREV_ICON_STATE, R.attr.state_back_arrow);
+        return RecordListFragment.newInstance(userId, prevIconState);
     }
 
 }
