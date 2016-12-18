@@ -191,7 +191,8 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(explode)
-                .addTransition(slide);
+                .addTransition(slide)
+                .setDuration(duration);
 
         getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setExitTransition(transitionSet);

@@ -22,4 +22,6 @@
         <attr name="state_burger" format="boolean"/>
     </declare-styleable>
 
+    <integer name="animation_duration">500</integer>
+
 </resources>

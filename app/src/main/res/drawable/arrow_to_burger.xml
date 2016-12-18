@@ -7,6 +7,7 @@
     <target android:name="path">
         <aapt:attr name="android:animation">
             <objectAnimator
+                android:duration="@integer/animation_duration"
                 android:propertyName="pathData"
                 android:valueFrom="@string/path_back_arrow"
                 android:valueTo="@string/path_burger"
