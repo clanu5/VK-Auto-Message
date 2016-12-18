@@ -205,8 +205,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
                     Pair.create(timeTextView, timeTextView.getTransitionName()),
                     Pair.create(periodTextView, periodTextView.getTransitionName()),
                     Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
-                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName()),
-                    Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
+                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName())
             );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
