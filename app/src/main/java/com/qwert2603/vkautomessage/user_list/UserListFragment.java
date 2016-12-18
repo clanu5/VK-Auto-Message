@@ -116,6 +116,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         slideContent.excludeTarget(mToolbarTitleTextView, true);
 
         Slide slideToolbar = new Slide(Gravity.TOP);
+        slideToolbar.addTarget(mToolbarIconImageView);
         slideToolbar.addTarget(mToolbarTitleTextView);
 
         TransitionSet transitionSet = new TransitionSet()
