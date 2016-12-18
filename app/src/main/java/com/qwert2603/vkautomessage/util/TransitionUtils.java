@@ -13,7 +13,6 @@ public final class TransitionUtils {
     }
 
     public static class TransitionListenerAdapter implements Transition.TransitionListener {
-
         @Override
         public void onTransitionStart(Transition transition) {
         }

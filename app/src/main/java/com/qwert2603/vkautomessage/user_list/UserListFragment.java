@@ -153,7 +153,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             //todo viewHolder.itemView.setPressed(withSetPressed);
 
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()));
+                    Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()),
+                    Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
+            );
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, user.getId());

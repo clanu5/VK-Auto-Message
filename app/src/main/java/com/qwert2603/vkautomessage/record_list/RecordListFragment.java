@@ -3,7 +3,6 @@ package com.qwert2603.vkautomessage.record_list;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -111,7 +110,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
 
         // TODO: 18.12.2016 ???
-        mToolbarTitleTextView.setTextColor(Color.BLACK);
+        mToolbarTitleTextView.setTextColor(getResources().getColor(R.color.user_name));
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
@@ -125,6 +124,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mAppBarLayout.setVisibility(View.INVISIBLE);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
@@ -151,6 +152,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         slideFabEnter.addListener(new TransitionUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
+                mAppBarLayout.setVisibility(View.VISIBLE);
                 setToolbarIconState(prevIconState, true);
                 setToolbarIconState(R.attr.state_back_arrow, false);
             }
@@ -167,6 +169,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             @Override
             public void onTransitionStart(Transition transition) {
                 setToolbarIconState(prevIconState, false);
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mAppBarLayout.setVisibility(View.INVISIBLE);
             }
         });
         TransitionSet transitionSetReturn = new TransitionSet()
@@ -187,6 +194,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         RecordListAdapter.RecordViewHolder viewHolder =
                 (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(record.getId());
         if (viewHolder != null) {
+            // TODO: 16.12.2016 viewHolder.itemView.setPressed(withSetPressed);
+
             TextView messageTextView = viewHolder.mMessageTextView;
             TextView timeTextView = viewHolder.mTimeTextView;
             TextView periodTextView = viewHolder.mRepeatInfoTextView;
@@ -196,22 +205,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
                     Pair.create(timeTextView, timeTextView.getTransitionName()),
                     Pair.create(periodTextView, periodTextView.getTransitionName()),
                     Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
-                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName()));
+                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName()),
+                    Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
+            );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         // TODO: 16.12.2016 ??? intent.putExtra(RecordActivity.EXTRA_ITEM, record);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, record.getId());
-
-        if (viewHolder != null) {
-            // TODO: 16.12.2016 viewHolder.itemView.setPressed(withSetPressed);
-
-            int[] startingPoint = new int[2];
-            viewHolder.itemView.getLocationOnScreen(startingPoint);
-            startingPoint[0] += viewHolder.itemView.getWidth() / 2;
-            startingPoint[1] -= mToolbar.getHeight();
-            intent.putExtra(RecordActivity.EXTRA_DRAWING_START_X, startingPoint[0]);
-            intent.putExtra(RecordActivity.EXTRA_DRAWING_START_Y, startingPoint[1]);
-        }
 
         ActivityOptions finalActivityOptions = activityOptions;
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);

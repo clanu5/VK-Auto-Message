@@ -9,6 +9,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.transition.Explode;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -168,6 +169,8 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mAppBarLayout.setVisibility(View.INVISIBLE);
+
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
@@ -176,16 +179,40 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(mToolbarTitleTextView);
-
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(explode)
                 .addTransition(slide)
                 .setDuration(duration);
-
-        getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setExitTransition(transitionSet);
         getActivity().getWindow().setReenterTransition(transitionSet);
-        getActivity().getWindow().setReturnTransition(transitionSet);
+
+        Slide slideEnter = new Slide(Gravity.TOP);
+        slideEnter.addTarget(mToolbarTitleTextView);
+        slideEnter.addListener(new TransitionUtils.TransitionListenerAdapter(){
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mAppBarLayout.setVisibility(View.VISIBLE);
+            }
+        });
+        TransitionSet transitionSetEnter = new TransitionSet()
+                .addTransition(explode)
+                .addTransition(slideEnter)
+                .setDuration(duration);
+        getActivity().getWindow().setEnterTransition(transitionSetEnter);
+
+        Slide slideReturn = new Slide(Gravity.TOP);
+        slideReturn.addTarget(mToolbarTitleTextView);
+        slideReturn.addListener(new TransitionUtils.TransitionListenerAdapter(){
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mAppBarLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+        TransitionSet transitionSetReturn = new TransitionSet()
+                .addTransition(explode)
+                .addTransition(slideReturn)
+                .setDuration(duration);
+        getActivity().getWindow().setReturnTransition(transitionSetReturn);
     }
 
     @Override

@@ -9,7 +9,7 @@
     <color name="swipe_back_user_list">#FFEB3B</color>
 
     <color name="dialog_delete_record_title">#111111</color>
-    <color name="user_name">#6F4081</color>
+    <color name="user_name">#5F4041</color>
     <color name="enabled_records_count">#FF9021</color>
     <color name="records_count">#89901C</color>
     <color name="message">#5F6566</color>

@@ -15,7 +15,6 @@ import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -72,8 +71,9 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     }
 
     private void showUserNameAndRecordsCount(@NonNull User user, @NonNull RecordListView view) {
-        view.showUserName(String.format(Locale.getDefault(),
-                "(%d/%d) %s", user.getEnabledRecordsCount(), user.getRecordsCount(), StringUtils.getUserName(user)));
+//fixme        view.showUserName(String.format(Locale.getDefault(),
+//                "(%d/%d) %s", user.getEnabledRecordsCount(), user.getRecordsCount(), StringUtils.getUserName(user)));
+        view.showUserName(StringUtils.getUserName(user));
     }
 
     @Override

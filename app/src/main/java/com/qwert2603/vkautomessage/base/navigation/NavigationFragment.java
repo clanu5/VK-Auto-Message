@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +49,9 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
 
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
+
+    @BindView(R.id.app_bar_layout)
+    protected AppBarLayout mAppBarLayout;
 
     @BindView(R.id.toolbar_frame_layout)
     FrameLayout mToolbarFrameLayout;
@@ -197,6 +201,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
                     ImageButton btn = (ImageButton) child;
                     if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
                         mToolbarIconImageView = btn;
+                        mToolbarIconImageView.setTransitionName("mToolbarIconImageView");
                         break;
                     }
                 }
