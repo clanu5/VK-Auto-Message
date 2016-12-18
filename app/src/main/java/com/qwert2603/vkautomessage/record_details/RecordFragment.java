@@ -42,9 +42,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     private static final String recordIdKey = "recordId";
     private static final String recordKey = "recordId";
 
-    private static final String drawingStartXKey = "drawingStartX";
-    private static final String drawingStartYKey = "drawingStartY";
-
     private static final int REQUEST_EDIT_MESSAGE = 1;
     private static final int REQUEST_EDIT_TIME = 2;
     private static final int REQUEST_EDIT_REPEAT_TYPE = 3;
@@ -52,22 +49,18 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     private static final int REQUEST_EDIT_DAYS_IN_WEEK = 5;
     private static final int REQUEST_EDIT_DAY_IN_YEAR = 6;
 
-    public static RecordFragment newInstance(int recordId, int drawingStartX, int drawingStartY) {
+    public static RecordFragment newInstance(int recordId) {
         RecordFragment recordFragment = new RecordFragment();
         Bundle args = new Bundle();
         args.putInt(recordIdKey, recordId);
-        args.putInt(drawingStartXKey, drawingStartX);
-        args.putInt(drawingStartYKey, drawingStartY);
         recordFragment.setArguments(args);
         return recordFragment;
     }
 
-    public static RecordFragment newInstance(Record record, int drawingStartX, int drawingStartY) {
+    public static RecordFragment newInstance(Record record) {
         RecordFragment recordFragment = new RecordFragment();
         Bundle args = new Bundle();
         args.putParcelable(recordKey, record);
-        args.putInt(drawingStartXKey, drawingStartX);
-        args.putInt(drawingStartYKey, drawingStartY);
         recordFragment.setArguments(args);
         return recordFragment;
     }
@@ -160,11 +153,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         ButterKnife.bind(RecordFragment.this, view);
 
         // TODO: 29.11.2016 transition для всех диалогов
-
-        if (getArguments().getInt(drawingStartXKey) != RecordActivity.NO_DRAWING_START) {
-            mRootView.setPivotX(getArguments().getInt(drawingStartXKey));
-            mRootView.setPivotY(getArguments().getInt(drawingStartYKey));
-        }
 
         mUserCardView.setOnClickListener(v -> mRecordPresenter.onUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
