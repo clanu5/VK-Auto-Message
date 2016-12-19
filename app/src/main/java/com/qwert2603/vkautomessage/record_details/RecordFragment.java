@@ -29,6 +29,7 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.Edit
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_period.EditPeriodDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.EditRepeatTypeDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 
@@ -168,11 +169,19 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // чтобы toolbar title не моргал.
+        mAppBarLayout.setAlpha(0);
+        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 150);
+
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
         Fade fade = new Fade();
         fade.addTarget(CardView.class);
+
+        Slide slideContent = new Slide(Gravity.END);
+        slideContent.addTarget(CardView.class);
+        slideContent.addTarget(mEnableSwitch);
 
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(mToolbarTitleTextView);
@@ -181,6 +190,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(fade)
                 .addTransition(slide)
+                .addTransition(slideContent)
                 .setDuration(duration);
 
         getActivity().getWindow().setExitTransition(transitionSet);
@@ -327,6 +337,9 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
             intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
         }
         getActivity().setResult(Activity.RESULT_OK, intent);
+
+        // чтобы toolbar title не моргал.
+        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(0), getResources().getInteger(R.integer.transition_duration) - 17);
         super.performBackPressed();
     }
 }
