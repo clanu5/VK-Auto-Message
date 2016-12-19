@@ -162,7 +162,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             // TODO: 16.12.2016 viewHolder.itemView.setPressed(withSetPressed);
 
             // TODO: 19.12.2016  mToolbarTitleTextView мограет в начале и конце перехода
-            // добавление AppBarLayout в переход не помогает. при обратном переходе mToolbarTitleTextView уходит по AppBarLayout.
+            // добавление AppBarLayout в переход не помогает. при обратном переходе mToolbarTitleTextView уходит под AppBarLayout.
             // делать AppBarLayout background=0x0000 -- не вариант (и у него непонятные темные треугольники по бокам берутся откуда-то).
             // прозрачный AppBarLayout (alpha = 0) тоже не подходит.
             // добавление AppBarLayout в return Transition (Fade) не работает. =(
