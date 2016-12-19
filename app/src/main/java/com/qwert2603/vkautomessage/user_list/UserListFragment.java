@@ -112,6 +112,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         Slide slideContent = new Slide(Gravity.BOTTOM);
         slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        slideContent.excludeTarget(android.R.id.statusBarBackground, true);
         slideContent.excludeTarget(mToolbarIconImageView, true);
         slideContent.excludeTarget(mToolbarTitleTextView, true);
 
@@ -160,8 +161,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, user.getId());
-
-        intent.putExtra(RecordListActivity.EXTRA_PREV_ICON_STATE, getIconState());
 
         ActivityOptions finalActivityOptions = activityOptions;
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);

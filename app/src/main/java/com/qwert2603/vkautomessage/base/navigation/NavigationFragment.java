@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -255,7 +256,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
 
         mToolbarFrameLayout.getChildAt(0).setVisibility(View.INVISIBLE);
         // TODO: 19.12.2016 animate color change (TransitionManager.beginDelayedTransition();)
-        mToolbar.setBackgroundColor(getResources().getColor(R.color.actionMode));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.actionMode));
         return view;
     }
 
@@ -275,7 +276,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         }
 
         mToolbarFrameLayout.getChildAt(0).setVisibility(View.VISIBLE);
-        mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
     }
 
     public void onBackPressed() {
@@ -313,6 +314,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     }
 
     @ToolbarIconState
+    @SuppressWarnings("unused")
     protected int getIconState() {
         return mIconState;
     }

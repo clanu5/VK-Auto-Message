@@ -22,7 +22,6 @@ import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
-import com.qwert2603.vkautomessage.base.navigation.ToolbarIconState;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
@@ -37,13 +36,11 @@ import butterknife.ButterKnife;
 public class RecordListFragment extends ListFragment<Record> implements RecordListView {
 
     private static final String userIdKey = "userId";
-    private static final String prevIconStateKey = "prevIconState";
 
-    public static RecordListFragment newInstance(int userId, @ToolbarIconState int prevIconState) {
+    public static RecordListFragment newInstance(int userId) {
         RecordListFragment recordListFragment = new RecordListFragment();
         Bundle args = new Bundle();
         args.putInt(userIdKey, userId);
-        args.putInt(prevIconStateKey, prevIconState);
         recordListFragment.setArguments(args);
         return recordListFragment;
     }
@@ -128,6 +125,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         Slide slideContent = new Slide(Gravity.START);
         slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        slideContent.excludeTarget(android.R.id.statusBarBackground, true);
         slideContent.excludeTarget(mToolbarTitleTextView, true);
         slideContent.excludeTarget(mViewAnimator, false);
         slideContent.excludeTarget(mRecyclerView, false);
@@ -163,11 +161,16 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         if (viewHolder != null) {
             // TODO: 16.12.2016 viewHolder.itemView.setPressed(withSetPressed);
 
+            // TODO: 19.12.2016  mToolbarTitleTextView мограет в начале и конце перехода
+            // добавление AppBarLayout в переход не помогает. при обратном переходе mToolbarTitleTextView уходит по AppBarLayout.
+            // делать AppBarLayout background=0x0000 -- не вариант (и у него непонятные темные треугольники по бокам берутся откуда-то).
+            // прозрачный AppBarLayout (alpha = 0) тоже не подходит.
+            // добавление AppBarLayout в return Transition (Fade) не работает. =(
+
             TextView messageTextView = viewHolder.mMessageTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
-                    Pair.create(mToolbarTitleTextView, getString(R.string.username_transition)),
-                    Pair.create(mAppBarLayout, "app_bar_layout")
+                    Pair.create(mToolbarTitleTextView, getString(R.string.username_transition))
             );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
