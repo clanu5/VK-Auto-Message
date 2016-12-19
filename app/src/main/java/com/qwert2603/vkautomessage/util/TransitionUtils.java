@@ -5,7 +5,7 @@ import android.app.Activity;
 public final class TransitionUtils {
 
     /**
-     * Set given duration to all "SharedElement*Transition" of given activity.
+     * Set given duration to all "SharedElement***Transition" of given activity.
      */
     public static void setSharedElementTransitionsDuration(Activity activity, int duration) {
         activity.getWindow().getSharedElementEnterTransition().setDuration(duration);

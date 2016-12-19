@@ -154,6 +154,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             //todo viewHolder.itemView.setPressed(withSetPressed);
 
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(mAppBarLayout, "app_bar_layout"),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName())
             );
         }

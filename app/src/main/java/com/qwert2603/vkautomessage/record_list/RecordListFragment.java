@@ -14,7 +14,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,6 +128,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         Slide slideContent = new Slide(Gravity.START);
         slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        slideContent.excludeTarget(mToolbarTitleTextView, true);
         slideContent.excludeTarget(mViewAnimator, false);
         slideContent.excludeTarget(mRecyclerView, false);
 
@@ -164,15 +164,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             // TODO: 16.12.2016 viewHolder.itemView.setPressed(withSetPressed);
 
             TextView messageTextView = viewHolder.mMessageTextView;
-            TextView timeTextView = viewHolder.mTimeTextView;
-            TextView periodTextView = viewHolder.mRepeatInfoTextView;
-            CheckBox enableCheckBox = viewHolder.mEnableCheckBox;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
-                    Pair.create(timeTextView, timeTextView.getTransitionName()),
-                    Pair.create(periodTextView, periodTextView.getTransitionName()),
-                    Pair.create(enableCheckBox, enableCheckBox.getTransitionName()),
-                    Pair.create(mToolbarTitleTextView, mToolbarTitleTextView.getTransitionName())
+                    Pair.create(mToolbarTitleTextView, getString(R.string.username_transition)),
+                    Pair.create(mAppBarLayout, "app_bar_layout")
             );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);

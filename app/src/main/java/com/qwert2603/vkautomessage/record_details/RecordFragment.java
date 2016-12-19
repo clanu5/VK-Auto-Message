@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
-import android.transition.Explode;
+import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
 import android.view.Gravity;
@@ -171,15 +171,15 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
-        Explode explode = new Explode();
-        explode.addTarget(CardView.class);
+        Fade fade = new Fade();
+        fade.addTarget(CardView.class);
 
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(mToolbarTitleTextView);
         slide.addTarget(mToolbarIconImageView);
 
         TransitionSet transitionSet = new TransitionSet()
-                .addTransition(explode)
+                .addTransition(fade)
                 .addTransition(slide)
                 .setDuration(duration);
 

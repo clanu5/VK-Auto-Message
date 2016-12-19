@@ -56,8 +56,8 @@
                         android:ellipsize="end"
                         android:text="Alex Zhdanov"
                         android:textColor="@color/user_name"
-                        android:textSize="20sp"
-                        android:transitionName="@string/toolbar_title_transition"/>
+                        android:textSize="@dimen/user_name_text_size"
+                        android:transitionName="@string/username_transition"/>
 
                 </LinearLayout>
 
@@ -95,7 +95,7 @@
                 android:gravity="top"
                 android:text="enter_your_message"
                 android:textColor="@color/message"
-                android:textSize="16sp"
+                android:textSize="@dimen/message_text_size"
                 android:transitionName="@string/message_transition"/>
 
         </android.support.v7.widget.CardView>

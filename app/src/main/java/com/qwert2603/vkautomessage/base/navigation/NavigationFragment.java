@@ -250,9 +250,12 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     protected View startActionMode(@LayoutRes int actionContentRes) {
         mActionContentRes = actionContentRes;
         View view = getActivity().getLayoutInflater().inflate(actionContentRes, null);
-        // TODO: 16.12.2016 ??? mToolbarFrameLayout.getChildAt(0).setVisibility(View.INVISIBLE);
         mToolbarFrameLayout.addView(view);
         setToolbarIconState(R.attr.state_close, false);
+
+        mToolbarFrameLayout.getChildAt(0).setVisibility(View.INVISIBLE);
+        // TODO: 19.12.2016 animate color change (TransitionManager.beginDelayedTransition();)
+        mToolbar.setBackgroundColor(getResources().getColor(R.color.actionMode));
         return view;
     }
 
@@ -270,6 +273,9 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         } else {
             setToolbarIconState(R.attr.state_back_arrow, false);
         }
+
+        mToolbarFrameLayout.getChildAt(0).setVisibility(View.VISIBLE);
+        mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
 
     public void onBackPressed() {

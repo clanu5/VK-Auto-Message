@@ -25,7 +25,7 @@
             android:layout_marginStart="4dp"
             android:text="This is message This is message This is message This is message"
             android:textColor="@color/message"
-            android:textSize="18sp"
+            android:textSize="@dimen/message_text_size"
             android:layout_marginEnd="4dp"
             android:maxLines="1"
             android:ellipsize="end"
