@@ -266,6 +266,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void showNewItemButton() {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
     public void enableUI() {
         mRecyclerView.setOnTouchListener(null);
     }

@@ -183,6 +183,10 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
     }
 
+    @Override
+    public void showNewItemButton() {
+        mChooseUserFAB.animate().translationY(0);
+    }
 
     @Override
     public void enableUI() {

@@ -195,6 +195,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    public void showNewItemButton() {
+        mNewRecordFAB.animate().translationX(0);
+    }
+
+    @Override
     public void enableUI() {
         super.enableUI();
         mNewRecordFAB.setEnabled(true);

@@ -62,6 +62,8 @@ public interface ListView<T extends Identifiable> extends BaseView {
 
     void scrollToPosition(int position);
 
+    void showNewItemButton();
+
     /**
      * Enable clicking in list items and buttons.
      * UI should be enabled by default.

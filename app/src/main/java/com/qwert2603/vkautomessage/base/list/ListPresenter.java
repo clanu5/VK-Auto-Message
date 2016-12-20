@@ -127,6 +127,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public void onToolbarClicked() {
         getView().scrollToPosition(0);
+        getView().showNewItemButton();
     }
 
     private void askDeleteItem(int position) {
