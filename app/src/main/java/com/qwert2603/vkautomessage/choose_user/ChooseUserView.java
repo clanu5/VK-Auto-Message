@@ -9,6 +9,8 @@ public interface ChooseUserView extends ListView<VkUser> {
 
     void submitDode(int userId);
 
+    void submitCancel();
+
     void showCantWrite();
 
     void showNothingFound();

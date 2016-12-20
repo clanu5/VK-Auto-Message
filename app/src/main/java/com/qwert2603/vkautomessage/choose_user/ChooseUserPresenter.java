@@ -144,6 +144,10 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
         updateView();
     }
 
+    public void onCancelClicked() {
+        getView().submitCancel();
+    }
+
     private void doSearch(List<VkUser> userList) {
         mShowingUserList = null;
         if (userList != null) {

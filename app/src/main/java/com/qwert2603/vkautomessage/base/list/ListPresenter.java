@@ -29,6 +29,12 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     protected abstract void doLoadItem(int id);
 
     @Override
+    public void onViewReady() {
+        super.onViewReady();
+        getView().enableUI();
+    }
+
+    @Override
     protected void onUpdateView(@NonNull V view) {
         if (getModel() == null) {
             if (isError()) {
@@ -53,7 +59,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         }
         getView().scrollToPosition(position);
         if (mSelectedIds.isEmpty()) {
-            getView().moveToDetailsForItem(list.get(position));
+            getView().disableUI();
+            getView().moveToDetailsForItem(list.get(position), false, -1);
         } else {
             toggleItemSelectionState(position);
         }
@@ -112,9 +119,10 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         updateView();
     }
 
-    public final void onReloadItem(int id) {
+    public final void onReturnFromItemDetails(int id) {
         doLoadItem(id);
         updateView();
+        getView().enableUI();
     }
 
     public void onToolbarClicked() {

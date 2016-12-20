@@ -67,6 +67,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     private boolean mContentEverShown = false;
 
+    private boolean mUiEnabled = true;
+
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -85,13 +87,23 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.setAdapter(getAdapter());
 
 
-        getAdapter().setClickCallback(getPresenter()::onItemAtPositionClicked);
-        getAdapter().setLongClickCallback(getPresenter()::onItemAtPositionLongClicked);
+        getAdapter().setClickCallback(position1 -> {
+            if (mUiEnabled) {
+                getPresenter().onItemAtPositionClicked(position1);
+            }
+        });
+        getAdapter().setLongClickCallback(position1 -> {
+            if (mUiEnabled) {
+                getPresenter().onItemAtPositionLongClicked(position1);
+            }
+        });
         getAdapter().setItemSwipeDismissCallback(position -> {
             // чтобы элемент вернулся в свое исходное положение после swipe.
             getAdapter().notifyItemChanged(position);
 
-            getPresenter().onItemDismissed(position);
+            if (mUiEnabled) {
+                getPresenter().onItemDismissed(position);
+            }
         });
 
         mToolbar.setOnClickListener(v -> getPresenter().onToolbarClicked());
@@ -150,7 +162,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                 LogUtils.d("onActivityResult REQUEST_DETAILS_FOT_ITEM " + " " + data.getIntExtra(BaseActivity.EXTRA_ITEM_ID, -1));
                 if (resultCode == Activity.RESULT_OK) {
                     int id = data.getIntExtra(BaseActivity.EXTRA_ITEM_ID, -1);
-                    getPresenter().onReloadItem(id);
+                    getPresenter().onReturnFromItemDetails(id);
                 }
                 break;
         }
@@ -195,6 +207,25 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             AndroidUtils.runOnUI(() -> getAdapter().insertModelList(list), 750);
         }
     }
+
+    @Override
+    public void moveToDetailsForItem(T item, boolean newItem, int newItemPosition) {
+        LogUtils.d("moveToDetailsForItem" + newItemPosition + " _ " + item);
+        mRecyclerView.scrollToPosition(newItemPosition);
+        if (newItem) {
+            AndroidUtils.runOnUI(() -> {
+                RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForItemId(item.getId());
+                if (viewHolder != null) {
+                    viewHolder.itemView.setPressed(true);
+                }
+                moveToDetailsForItem(item);
+            }, RecyclerItemAnimator.ENTER_DURATION + 50);
+        } else {
+            moveToDetailsForItem(item);
+        }
+    }
+
+    protected abstract void moveToDetailsForItem(T item);
 
     @Override
     public void setItemSelectionState(int position, boolean select) {
@@ -261,11 +292,30 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.scrollToPosition(position);
     }
 
+    @Override
+    public void enableUI() {
+        LogUtils.d(getClass() + " enableUI");
+        mUiEnabled = true;
+        mRecyclerView.setOnTouchListener(null);
+    }
+
+    @Override
+    public void disableUI() {
+        LogUtils.d(getClass() + " disableUI");
+        mUiEnabled = false;
+        mRecyclerView.setOnTouchListener((v, event) -> true);
+    }
+
     private void setViewAnimatorDisplayedChild(int position) {
-        mRecyclerView.setVisibility(position == POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
+        mViewAnimator.setVisibility(position != POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
+    }
+
+    protected void prepareRecyclerViewForTransition() {
+        mRecyclerView.stopScroll();
+        mRecyclerItemAnimator.endAnimations();
     }
 
 }

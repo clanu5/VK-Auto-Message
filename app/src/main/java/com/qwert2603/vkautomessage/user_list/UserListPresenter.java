@@ -133,16 +133,25 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             updateView();
         }
 
-       mDataManager.removeUser(id)
+        mDataManager.removeUser(id)
                 .subscribe(aVoid -> {
                 }, LogUtils::e);
     }
 
     public void onChooseUserClicked() {
+        getView().disableUI();
         getView().showChooseUser();
     }
 
+    /**
+     * @param userId id of chosen user.
+     *               If user not chosen should be negative.
+     */
     public void onUserChosen(int userId) {
+        if (userId < 0) {
+            getView().enableUI();
+            return;
+        }
         int userPosition = getUserPosition(userId);
         if (userPosition >= 0) {
             List<User> userList = getModel();
@@ -151,7 +160,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                 return;
             }
             getView().scrollToPosition(userPosition);
-            getView().moveToDetailsForItem(userList.get(userPosition));
+            getView().moveToDetailsForItem(userList.get(userPosition), true, userPosition);
         } else {
             mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
@@ -169,17 +178,21 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
                         user.setRecordsCount(0);
                         user.setEnabledRecordsCount(0);
-                        userList.add(user);
 
-                        if (userList.size() == 1) {
+                        if (userList.isEmpty()) {
                             view.showList(userList);
-                        } else {
-                            view.notifyItemInserted(userList.size() - 1, userId);
-                            view.scrollToPosition(userList.size() - 1);
                         }
+                        userList.add(user);
+                        view.notifyItemInserted(userList.size() - 1, userId);
 
-                        view.moveToDetailsForItem(user);
-                    }, LogUtils::e);
+                        view.moveToDetailsForItem(user, true, userList.size() - 1);
+                    }, t -> {
+                        UserListView view = getView();
+                        if (view != null) {
+                            view.enableUI();
+                        }
+                        LogUtils.e(t);
+                    });
         }
     }
 

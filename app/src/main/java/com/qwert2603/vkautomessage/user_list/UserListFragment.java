@@ -1,10 +1,8 @@
 package com.qwert2603.vkautomessage.user_list;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +25,7 @@ import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import javax.inject.Inject;
@@ -143,14 +142,17 @@ public class UserListFragment extends ListFragment<User> implements UserListView
                 if (resultCode == Activity.RESULT_OK) {
                     int userId = data.getIntExtra(ChooseUserDialog.EXTRA_SELECTED_USER_ID, 0);
                     mUserListPresenter.onUserChosen(userId);
+                } else {
+                    mUserListPresenter.onUserChosen(-1);
                 }
                 break;
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void moveToDetailsForItem(User user/*, boolean withSetPressed*/) {
+    protected void moveToDetailsForItem(User user) {
+        LogUtils.d("moveToDetailsForItem " + user);
+        prepareRecyclerViewForTransition();
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(user.getId());
@@ -164,8 +166,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
         intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, user.getId());
 
-        ActivityOptions finalActivityOptions = activityOptions;
-        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);
+        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override
@@ -180,5 +181,18 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         DeleteUserDialog deleteUserDialog = DeleteUserDialog.newInstance(id);
         deleteUserDialog.setTargetFragment(UserListFragment.this, REQUEST_DELETE_ITEM);
         deleteUserDialog.show(getFragmentManager(), deleteUserDialog.getClass().getName());
+    }
+
+
+    @Override
+    public void enableUI() {
+        super.enableUI();
+        mChooseUserFAB.setEnabled(true);
+    }
+
+    @Override
+    public void disableUI() {
+        super.disableUI();
+        mChooseUserFAB.setEnabled(false);
     }
 }

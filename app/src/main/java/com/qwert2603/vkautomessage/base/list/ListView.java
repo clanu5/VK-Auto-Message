@@ -34,7 +34,14 @@ public interface ListView<T extends Identifiable> extends BaseView {
      */
     void showList(List<T> list);
 
-    void moveToDetailsForItem(T item);
+    /**
+     * Move to details for given item. (Launch Activity with details, for example).
+     *
+     * @param newItem         true if moving to just added item.
+     * @param newItemPosition position of just added item if newItem==true.
+     *                        if newItem==false then newItemPosition is undefined.
+     */
+    void moveToDetailsForItem(T item, boolean newItem, int newItemPosition);
 
     /**
      * Спросить у пользователя подтверждение удаления элемента с переданным id.
@@ -55,4 +62,14 @@ public interface ListView<T extends Identifiable> extends BaseView {
 
     void scrollToPosition(int position);
 
+    /**
+     * Enable clicking in list items and buttons.
+     * UI should be enabled by default.
+     */
+    void enableUI();
+
+    /**
+     * Disable clicking in list items and buttons.
+     */
+    void disableUI();
 }

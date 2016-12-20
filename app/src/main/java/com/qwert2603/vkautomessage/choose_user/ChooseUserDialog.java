@@ -66,6 +66,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     private boolean mContentEverShown = false;
 
+    private boolean mSubmitResultSent = false;
+
     @NonNull
     @Override
     protected ChooseUserPresenter getPresenter() {
@@ -124,7 +126,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setNegativeButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, (dialog, which) -> mChooseUserPresenter.onCancelClicked())
                 .create();
     }
 
@@ -135,6 +137,14 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void onDestroy() {
+        if (!mSubmitResultSent) {
+            getPresenter().onCancelClicked();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void setRefreshingConfig(boolean enable, boolean refreshing) {
         mRefreshLayout.setEnabled(enable);
         mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(refreshing));
@@ -142,10 +152,17 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void submitDode(int userId) {
+        mSubmitResultSent = true;
         Intent intent = new Intent();
         intent.putExtra(EXTRA_SELECTED_USER_ID, userId);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
         dismissAllowingStateLoss();
+    }
+
+    @Override
+    public void submitCancel() {
+        mSubmitResultSent = true;
+        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, null);
     }
 
     @Override
@@ -220,7 +237,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void moveToDetailsForItem(VkUser item) {
+    public void moveToDetailsForItem(VkUser item, boolean newItem, int newItemPosition) {
     }
 
     @Override
@@ -246,6 +263,16 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void scrollToPosition(int position) {
         mRecyclerView.scrollToPosition(position);
+    }
+
+    @Override
+    public void enableUI() {
+        mRecyclerView.setOnTouchListener(null);
+    }
+
+    @Override
+    public void disableUI() {
+        mRecyclerView.setOnTouchListener((v, event) -> true);
     }
 
     private void setViewAnimatorDisplayedChild(int position) {

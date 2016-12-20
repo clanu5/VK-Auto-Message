@@ -140,6 +140,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                 return;
             }
         }
+        getView().disableUI();
         Record record = new Record(recordListWithUser.mUser.getId());
         mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
@@ -150,22 +151,25 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     }
 
                     List<Record> recordList = model.mRecordList;
-                    User user = model.mUser;
+                    if (recordList.isEmpty()) {
+                        view.showList(recordList);
+                    }
                     recordList.add(record);
-                    user.setRecordsCount(user.getRecordsCount() + 1);
+                    view.notifyItemInserted(recordList.size() - 1, record.getId());
 
+                    User user = model.mUser;
+                    user.setRecordsCount(user.getRecordsCount() + 1);
                     showUserNameAndRecordsCount(user, view);
 
-                    if (recordList.size() == 1) {
-                        view.showList(recordList);
-                    } else {
-                        view.notifyItemInserted(recordList.size() - 1, record.getId());
-                        view.scrollToPosition(recordList.size() - 1);
+                    // TODO: 13.12.2016 передавать recordWithUser для перехода к активити с подробностями
+                    view.moveToDetailsForItem(record, true, recordList.size() - 1);
+                }, t -> {
+                    RecordListView view = getView();
+                    if (view != null) {
+                        view.enableUI();
                     }
-
-                    // TODO: 13.12.2016 передавать record для перехода к активити с подробностями
-                    view.moveToDetailsForItem(record);
-                }, LogUtils::e);
+                    LogUtils.e(t);
+                });
     }
 
     public void onItemDeleteSubmitted(int id) {
@@ -184,6 +188,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             showUserNameAndRecordsCount(user, view);
             view.notifyItemRemoved(position);
         } else {
+            // TODO: 20.12.2016 update records count
+            view.notifyItemRemoved(position);
             updateView();
         }
 

@@ -68,7 +68,7 @@ public class ErrorsShowPresenter extends BasePresenter<String, ErrorsShowView> {
         mSubscription.unsubscribe();
         mSubscription = mErrorsHolder.getErrors()
                 .subscribe(
-                        this::setModel,
+                        model -> setModel(model),
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();

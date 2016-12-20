@@ -154,13 +154,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    public void moveToDetailsForItem(Record record/*, boolean withSetPressed*/) {
+    protected void moveToDetailsForItem(Record record) {
+        prepareRecyclerViewForTransition();
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
                 (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(record.getId());
-        if (viewHolder != null) {
-            // TODO: 16.12.2016 viewHolder.itemView.setPressed(withSetPressed);
 
+        if (viewHolder != null) {
             TextView messageTextView = viewHolder.mMessageTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
@@ -170,9 +170,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         // TODO: 16.12.2016 ??? intent.putExtra(RecordActivity.EXTRA_ITEM, record);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, record.getId());
-
-        ActivityOptions finalActivityOptions = activityOptions;
-        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, finalActivityOptions != null ? finalActivityOptions.toBundle() : null);
+        startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }
 
     @Override
@@ -189,9 +187,22 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected void performBackPressed() {
+        prepareRecyclerViewForTransition();
         Intent intent = new Intent();
         intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));
         getActivity().setResult(Activity.RESULT_OK, intent);
         super.performBackPressed();
+    }
+
+    @Override
+    public void enableUI() {
+        super.enableUI();
+        mNewRecordFAB.setEnabled(true);
+    }
+
+    @Override
+    public void disableUI() {
+        super.disableUI();
+        mNewRecordFAB.setEnabled(false);
     }
 }
