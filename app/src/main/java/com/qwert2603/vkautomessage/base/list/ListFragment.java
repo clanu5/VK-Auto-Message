@@ -78,7 +78,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
                 //return super.getExtraLayoutSpace(state);
-                return 200;
+                return 400;
             }
         });
         mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 10);

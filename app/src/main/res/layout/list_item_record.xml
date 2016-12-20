@@ -45,8 +45,7 @@
                 android:layout_gravity="end"
                 android:text="19:18"
                 android:textColor="@color/time"
-                android:textSize="14sp"
-                android:transitionName="@string/time_transition"/>
+                android:textSize="14sp"/>
 
             <TextView
                 android:id="@+id/repeat_info_text_view"
@@ -55,8 +54,7 @@
                 android:layout_gravity="end"
                 android:text="Su,Mo,Tu,We,Th"
                 android:textColor="@color/repeat_info"
-                android:textSize="14sp"
-                android:transitionName="@string/repeat_info_transition"/>
+                android:textSize="14sp"/>
 
         </LinearLayout>
 
@@ -65,8 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:checked="true"
-            android:transitionName="@string/enabled_transition"/>
+            android:checked="true"/>
 
     </LinearLayout>
 

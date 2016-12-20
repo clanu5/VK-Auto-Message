@@ -115,6 +115,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         slideContent.excludeTarget(android.R.id.statusBarBackground, true);
         slideContent.excludeTarget(mToolbarIconImageView, true);
         slideContent.excludeTarget(mToolbarTitleTextView, true);
+        for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
+            slideContent.excludeTarget(mViewAnimator.getChildAt(i), true);
+        }
 
         Slide slideToolbar = new Slide(Gravity.TOP);
         slideToolbar.addTarget(mToolbarIconImageView);
@@ -155,7 +158,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             //todo viewHolder.itemView.setPressed(withSetPressed);
 
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(mAppBarLayout, "app_bar_layout"),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName())
             );
         }

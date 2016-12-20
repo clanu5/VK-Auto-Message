@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.transition.Slide;
 import android.transition.TransitionSet;
 import android.util.Pair;
@@ -104,8 +105,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
 
-        // TODO: 18.12.2016 ???
-        mToolbarTitleTextView.setTextColor(getResources().getColor(R.color.user_name));
+        mToolbarTitleTextView.setTransitionName(getString(R.string.username_transition));
+        mToolbarTitleTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.user_name));
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
@@ -124,11 +125,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
         Slide slideContent = new Slide(Gravity.START);
-        slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
-        slideContent.excludeTarget(android.R.id.statusBarBackground, true);
-        slideContent.excludeTarget(mToolbarTitleTextView, true);
-        slideContent.excludeTarget(mViewAnimator, false);
-        slideContent.excludeTarget(mRecyclerView, false);
+        slideContent.excludeChildren(mRecyclerView, false);
+        for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
+            slideContent.excludeTarget(mViewAnimator.getChildAt(i), true);
+        }
 
         Slide slideFab = new Slide(Gravity.END);
         slideFab.addTarget(mNewRecordFAB);

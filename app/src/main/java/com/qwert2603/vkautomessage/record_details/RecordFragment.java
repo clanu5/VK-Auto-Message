@@ -171,7 +171,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         // чтобы toolbar title не моргал.
         mAppBarLayout.setAlpha(0);
-        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 150);
+        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 170);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
@@ -339,7 +339,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         getActivity().setResult(Activity.RESULT_OK, intent);
 
         // чтобы toolbar title не моргал.
-        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(0), getResources().getInteger(R.integer.transition_duration) - 17);
+        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(0), getResources().getInteger(R.integer.transition_duration));
         super.performBackPressed();
     }
 }
