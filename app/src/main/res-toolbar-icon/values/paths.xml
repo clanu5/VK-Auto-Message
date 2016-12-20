@@ -15,13 +15,4 @@
         M12 12L12 12
         M24 0L0 24
     </string>
-
-    <declare-styleable name="IconState">
-        <attr name="state_close" format="boolean"/>
-        <attr name="state_back_arrow" format="boolean"/>
-        <attr name="state_burger" format="boolean"/>
-    </declare-styleable>
-
-    <integer name="animation_duration">400</integer>
-
 </resources>

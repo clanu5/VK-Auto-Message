@@ -28,22 +28,22 @@
         android:toId="@id/burger"/>
 
     <transition
-        android:drawable="@drawable/burger_to_arrow"
+        android:drawable="@drawable/burger_to_back_arrow"
         android:fromId="@id/burger"
         android:toId="@id/back_arrow"/>
 
     <transition
-        android:drawable="@drawable/arrow_to_burger"
+        android:drawable="@drawable/back_arrow_to_burger"
         android:fromId="@id/back_arrow"
         android:toId="@id/burger"/>
 
     <transition
-        android:drawable="@drawable/arrow_to_close"
+        android:drawable="@drawable/back_arrow_to_close"
         android:fromId="@id/back_arrow"
         android:toId="@id/close"/>
 
     <transition
-        android:drawable="@drawable/close_to_arrow"
+        android:drawable="@drawable/close_to_back_arrow"
         android:fromId="@id/close"
         android:toId="@id/back_arrow"/>
 

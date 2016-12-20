@@ -2,15 +2,15 @@
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
-    android:drawable="@drawable/back_arrow">
+    android:drawable="@drawable/burger">
 
     <target android:name="path">
         <aapt:attr name="android:animation">
             <objectAnimator
-                android:duration="@integer/animation_duration"
+                android:duration="@integer/toolbar_icon_animation_duration"
                 android:propertyName="pathData"
-                android:valueFrom="@string/path_back_arrow"
-                android:valueTo="@string/path_burger"
+                android:valueFrom="@string/path_burger"
+                android:valueTo="@string/path_back_arrow"
                 android:valueType="pathType"/>
         </aapt:attr>
     </target>

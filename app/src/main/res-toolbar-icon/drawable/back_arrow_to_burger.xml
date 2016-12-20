@@ -7,10 +7,10 @@
     <target android:name="path">
         <aapt:attr name="android:animation">
             <objectAnimator
-                android:duration="@integer/animation_duration"
+                android:duration="@integer/toolbar_icon_animation_duration"
                 android:propertyName="pathData"
                 android:valueFrom="@string/path_back_arrow"
-                android:valueTo="@string/path_close"
+                android:valueTo="@string/path_burger"
                 android:valueType="pathType"/>
         </aapt:attr>
     </target>
