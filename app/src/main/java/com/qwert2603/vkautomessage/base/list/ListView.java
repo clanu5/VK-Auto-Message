@@ -56,13 +56,7 @@ public interface ListView<T extends Identifiable> extends BaseView {
     void selectAllItems();
     void unSelectAllItems();
 
-    void notifyItemRemoved(int position);
-    void notifyItemInserted(int position, int id);
-    void notifyItemsUpdated(List<Integer> updatedUserPositions);
-
-    void scrollToPosition(int position);
-
-    void showNewItemButton();
+    void scrollToTop();
 
     /**
      * Enable clicking in list items and buttons.

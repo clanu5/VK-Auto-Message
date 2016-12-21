@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.transition.Fade;
@@ -162,13 +161,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         mTimeCardView.setOnClickListener(v -> mRecordPresenter.onEditTimeClicked());
         mRepeatInfoCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatInfoClicked());
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         // чтобы toolbar title не моргал.
         mAppBarLayout.setAlpha(0);
         AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 170);
@@ -197,7 +189,10 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         getActivity().getWindow().setReenterTransition(transitionSet);
         getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setReturnTransition(transitionSet);
+
+        return view;
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

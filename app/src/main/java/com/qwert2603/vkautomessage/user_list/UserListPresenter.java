@@ -8,7 +8,6 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +67,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                     if (view1 == null || updatedPositions.isEmpty()) {
                         return;
                     }
-                    view1.notifyItemsUpdated(updatedPositions);
+                    view1.showList(userList);
                 }, LogUtils::e);
     }
 
@@ -100,16 +99,16 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         mSubscription = mDataManager.getUserById(id)
                 .subscribe(
                         user -> {
-                            List<User> model = getModel();
-                            if (model == null) {
+                            List<User> userList = getModel();
+                            if (userList == null) {
                                 return;
                             }
                             int userPosition = getUserPosition(user.getId());
                             if (userPosition != -1) {
-                                model.set(userPosition, user);
+                                userList.set(userPosition, user);
                                 UserListView view = getView();
                                 if (view != null) {
-                                    view.notifyItemsUpdated(Collections.singletonList(userPosition));
+                                    view.showList(userList);
                                 }
                             }
                         },
@@ -128,9 +127,9 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         UserListView view = getView();
         userList.remove(position);
         if (userList.size() > 0) {
-            view.notifyItemRemoved(position);
+            view.showList(userList);
         } else {
-            updateView();
+            view.showEmpty();
         }
 
         mDataManager.removeUser(id)
@@ -159,7 +158,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             if (userList == null || view == null) {
                 return;
             }
-            getView().scrollToPosition(userPosition);
             getView().moveToDetailsForItem(userList.get(userPosition), true, userPosition);
         } else {
             mDataManager.getVkUserById(userId, true)
@@ -179,11 +177,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                         user.setRecordsCount(0);
                         user.setEnabledRecordsCount(0);
 
-                        if (userList.isEmpty()) {
-                            view.showList(userList);
-                        }
                         userList.add(user);
-                        view.notifyItemInserted(userList.size() - 1, userId);
+                        view.showList(userList);
 
                         view.moveToDetailsForItem(user, true, userList.size() - 1);
                     }, t -> {

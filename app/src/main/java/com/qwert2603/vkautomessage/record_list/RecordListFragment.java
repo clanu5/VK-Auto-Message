@@ -5,7 +5,6 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.transition.Slide;
@@ -114,18 +113,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         mRecordListAdapter.setRecordEnableChangedCallback((position, enabled) -> mRecordListPresenter.onRecordEnableChanged(position, enabled));
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
         Slide slideContent = new Slide(Gravity.START);
-        slideContent.excludeChildren(mRecyclerView, false);
+        slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        slideContent.excludeTarget(android.R.id.statusBarBackground, true);
         for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
             slideContent.excludeTarget(mViewAnimator.getChildAt(i), true);
         }
@@ -146,6 +139,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         getActivity().getWindow().setReenterTransition(transitionSet);
         getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setReturnTransition(transitionSet);
+
+        return view;
     }
 
     @Override
@@ -195,7 +190,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    public void showNewItemButton() {
+    public void scrollToTop() {
+        super.scrollToTop();
         mNewRecordFAB.animate().translationX(0);
     }
 

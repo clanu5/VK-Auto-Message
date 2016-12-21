@@ -5,7 +5,6 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
 import android.transition.Slide;
@@ -99,13 +98,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
         mSimpleOnItemTouchHelperCallback.setBackColor(getResources().getColor(R.color.swipe_back_user_list));
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
@@ -131,6 +123,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setReenterTransition(transitionSet);
         getActivity().getWindow().setReturnTransition(transitionSet);
+
+        return view;
     }
 
     @Override
@@ -184,7 +178,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
-    public void showNewItemButton() {
+    public void scrollToTop() {
+        super.scrollToTop();
         mChooseUserFAB.animate().translationY(0);
     }
 

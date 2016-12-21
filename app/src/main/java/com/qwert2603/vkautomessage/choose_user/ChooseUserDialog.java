@@ -64,8 +64,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Inject
     ChooseUserAdapter mChooseUserAdapter;
 
-    private boolean mContentEverShown = false;
-
     private boolean mSubmitResultSent = false;
 
     @NonNull
@@ -228,12 +226,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     @Override
     public void showList(List<VkUser> list) {
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        if (!mContentEverShown) {
-            mContentEverShown = true;
-            mChooseUserAdapter.insertModelList(list);
-        } else {
-            mChooseUserAdapter.replaceModelList(list);
-        }
+        mChooseUserAdapter.replaceModelList(list);
     }
 
     @Override
@@ -246,28 +239,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void notifyItemRemoved(int position) {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public void notifyItemInserted(int position, int id) {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public void notifyItemsUpdated(List<Integer> updatedUserPositions) {
-        LogUtils.e(new RuntimeException("Should not be called!"));
-    }
-
-    @Override
-    public void scrollToPosition(int position) {
-        mRecyclerView.scrollToPosition(position);
-    }
-
-    @Override
-    public void showNewItemButton() {
-        LogUtils.e(new RuntimeException("Should not be called!"));
+    public void scrollToTop() {
+        mRecyclerView.scrollToPosition(0);
     }
 
     @Override
@@ -281,10 +254,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     private void setViewAnimatorDisplayedChild(int position) {
-        mRecyclerView.setVisibility(position == POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
+        mViewAnimator.setVisibility(position != POSITION_EMPTY_VIEW ? View.VISIBLE : View.INVISIBLE);
+        mRecyclerView.setVisibility((position == POSITION_EMPTY_VIEW || position == POSITION_EMPTY_TEXT_VIEW) ? View.VISIBLE : View.INVISIBLE);
     }
 
 }

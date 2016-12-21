@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +27,7 @@ import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,8 +65,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
-    private boolean mContentEverShown = false;
-
     private boolean mUiEnabled = true;
 
     @NonNull
@@ -89,11 +87,13 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
         getAdapter().setClickCallback(position1 -> {
             if (mUiEnabled) {
+                mRecyclerView.scrollToPosition(position1);
                 getPresenter().onItemAtPositionClicked(position1);
             }
         });
         getAdapter().setLongClickCallback(position1 -> {
             if (mUiEnabled) {
+                mRecyclerView.scrollToPosition(position1);
                 getPresenter().onItemAtPositionLongClicked(position1);
             }
         });
@@ -106,7 +106,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             }
         });
 
-        mToolbar.setOnClickListener(v -> getPresenter().onToolbarClicked());
+        mToolbar.setOnClickListener(v -> getPresenter().onScrollToTopClicked());
 
         mSimpleOnItemTouchHelperCallback = new SimpleOnItemTouchHelperCallback(getAdapter(), Color.TRANSPARENT, ContextCompat.getDrawable(getActivity(), R.drawable.ic_delete_black_24dp));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mSimpleOnItemTouchHelperCallback);
@@ -178,34 +178,45 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
+    /**
+     * Whether item list or emptyTextView were show earlier.
+     */
+    private boolean mContentEverShown = false;
+
+    /**
+     * List of items to show.
+     * Used to show list after enter transition finish.
+     */
+    private List<T> mListToShow = new ArrayList<>();
+
     @Override
     public void showEmpty() {
-        if (!mContentEverShown) {
-            mContentEverShown = true;
-            onFirstContentShow(null);
-        }
+        // to allow recycler animate items removing, if there were items.
+        getAdapter().replaceModelList(new ArrayList<>());
+
         setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
+        mContentEverShown = true;
     }
 
     @Override
     public void showList(List<T> list) {
-        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        LogUtils.d("showList " + mContentEverShown);
         if (!mContentEverShown) {
-            mContentEverShown = true;
-            onFirstContentShow(list);
-        } else {
-            getAdapter().replaceModelList(list);
+            long enterDuration = getActivity().getWindow().getEnterTransition().getDuration();
+            mListToShow = list;
+            AndroidUtils.runOnUI(() -> {
+                if (!mContentEverShown) {
+                    mContentEverShown = true;
+                    setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
+                    mRecyclerItemAnimator.setDelayEnter(true);
+                    getAdapter().replaceModelList(mListToShow);
+                    mListToShow = new ArrayList<>();
+                }
+            }, enterDuration);
+            return;
         }
-    }
-
-    protected void onFirstContentShow(@Nullable List<T> list) {
-        if (list != null) {
-            LogUtils.d("onFirstContentShow");
-            mRecyclerItemAnimator.setAlwaysAnimateEnter(true);
-            mRecyclerItemAnimator.setDelayEnter(true);
-            AndroidUtils.runOnUI(() -> getAdapter().insertModelList(list), 750);
-        }
+        setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
+        mRecyclerItemAnimator.setDelayEnter(false);
+        getAdapter().replaceModelList(list);
     }
 
     @Override
@@ -219,7 +230,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                     viewHolder.itemView.setPressed(true);
                 }
                 moveToDetailsForItem(item);
-            }, RecyclerItemAnimator.ENTER_DURATION + 50);
+            }, RecyclerItemAnimator.ENTER_DURATION + 80);
         } else {
             moveToDetailsForItem(item);
         }
@@ -266,30 +277,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     }
 
     @Override
-    public void notifyItemRemoved(int position) {
-        getAdapter().notifyItemRemoved(position);
-    }
-
-    @Override
-    public void notifyItemInserted(int position, int id) {
-        LogUtils.d("notifyItemInserted " + position + " " + id);
-        mRecyclerItemAnimator.setAlwaysAnimateEnter(false);
-        mRecyclerItemAnimator.setDelayEnter(false);
-        mRecyclerItemAnimator.addItemToAnimateEnter(id);
-        getAdapter().notifyItemInserted(position);
-    }
-
-    @Override
-    public void notifyItemsUpdated(List<Integer> updatedPositions) {
-        LogUtils.d("updatedPositions " + updatedPositions);
-        for (Integer updatedUserPosition : updatedPositions) {
-            getAdapter().notifyItemChanged(updatedUserPosition);
-        }
-    }
-
-    @Override
-    public void scrollToPosition(int position) {
-        mRecyclerView.scrollToPosition(position);
+    public void scrollToTop() {
+        mRecyclerView.scrollToPosition(0);
     }
 
     @Override

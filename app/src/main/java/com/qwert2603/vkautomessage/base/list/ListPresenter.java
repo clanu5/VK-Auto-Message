@@ -57,7 +57,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         if (list == null) {
             return;
         }
-        getView().scrollToPosition(position);
         if (mSelectedIds.isEmpty()) {
             getView().disableUI();
             getView().moveToDetailsForItem(list.get(position), false, -1);
@@ -68,7 +67,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public void onItemAtPositionLongClicked(int position) {
         // TODO: 29.11.2016 начинать множественное выделение на longClick (чтобы удалять сразу несколько потом)
-        getView().scrollToPosition(position);
         //askDeleteItem(position);
         toggleItemSelectionState(position);
     }
@@ -125,9 +123,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().enableUI();
     }
 
-    public void onToolbarClicked() {
-        getView().scrollToPosition(0);
-        getView().showNewItemButton();
+    public void onScrollToTopClicked() {
+        getView().scrollToTop();
     }
 
     private void askDeleteItem(int position) {

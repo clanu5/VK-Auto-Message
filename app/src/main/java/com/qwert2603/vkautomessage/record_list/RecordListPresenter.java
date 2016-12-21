@@ -13,7 +13,6 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -106,7 +105,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 RecordListView view = getView();
                                 if (view != null) {
-                                    view.notifyItemsUpdated(Collections.singletonList(recordPosition));
+                                    view.showList(model.mRecordList);
                                 }
                             }
                         },
@@ -151,11 +150,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     }
 
                     List<Record> recordList = model.mRecordList;
-                    if (recordList.isEmpty()) {
-                        view.showList(recordList);
-                    }
                     recordList.add(record);
-                    view.notifyItemInserted(recordList.size() - 1, record.getId());
+                    view.showList(recordList);
 
                     User user = model.mUser;
                     user.setRecordsCount(user.getRecordsCount() + 1);
@@ -183,14 +179,12 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         if (recordList.get(position).isEnabled()) {
             user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
         }
+        showUserNameAndRecordsCount(user, view);
         recordList.remove(position);
         if (recordList.size() > 0) {
-            showUserNameAndRecordsCount(user, view);
-            view.notifyItemRemoved(position);
+            view.showList(recordList);
         } else {
-            // TODO: 20.12.2016 update records count
-            view.notifyItemRemoved(position);
-            updateView();
+            view.showEmpty();
         }
 
         mDataManager.removeRecord(id)

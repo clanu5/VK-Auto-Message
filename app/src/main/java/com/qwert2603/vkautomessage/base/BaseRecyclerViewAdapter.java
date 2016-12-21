@@ -176,16 +176,6 @@ public abstract class BaseRecyclerViewAdapter
     }
 
     /**
-     * Добавить список объектов модели для отображения.
-     *
-     * @param modelList список объектов модели для добавления.
-     */
-    public void insertModelList(List<M> modelList) {
-        mModelList = modelList;
-        notifyItemRangeInserted(0, mModelList.size());
-    }
-
-    /**
      * Заменить список объектов модели для отображения.
      *
      * @param newList новый список объектов модели для отображения.
@@ -193,7 +183,7 @@ public abstract class BaseRecyclerViewAdapter
     public void replaceModelList(List<M> newList) {
         List<M> oldList = mModelList;
         if (newList != mModelList) {
-            mModelList = newList;
+            mModelList = new ArrayList<>(newList);
         }
 
         long b = SystemClock.elapsedRealtime();

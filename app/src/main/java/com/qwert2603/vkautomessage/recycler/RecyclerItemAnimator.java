@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.recycler;
 
 import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -9,15 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class RecyclerItemAnimator extends DefaultItemAnimator {
 
@@ -39,59 +35,53 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     private Interpolator mEnterInterpolator = new DecelerateInterpolator();
 
     private int mEnterDelayPerScreen = ENTER_EACH_ITEM_DELAY * 15;
-    private Set<Integer> mItemsToAnimateEnter = new HashSet<>();
-    private boolean mAlwaysAnimateEnter = true;
+
     private boolean mDelayEnter = false;
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
         LogUtils.d("animateAdd " + holder);
-        boolean animateEnterThisItem = mItemsToAnimateEnter.remove((int) holder.getItemId());
-        if (animateEnterThisItem || mAlwaysAnimateEnter) {
-            runEnterAnimation(holder);
-            return false;
-        }
-
-        dispatchAddFinished(holder);
+        runEnterAnimation(holder);
         return false;
     }
 
-    @Override
-    public boolean animateRemove(RecyclerView.ViewHolder holder) {
-        // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
-        runRemoveAnimation(holder);
-        return false;
-    }
+//    @Override
+//    public boolean animateRemove(RecyclerView.ViewHolder holder) {
+//        // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
+//        LogUtils.d("animateRemove " + holder);
+//        runRemoveAnimation(holder);
+//        return false;
+//    }
 
-    private int REM_DUR = 300;
+//    private int REM_DUR = 300;
+//
+//    @Override
+//    public void runPendingAnimations() {
+//        if (mRemoveAnimations.isEmpty()) {
+//            super.runPendingAnimations();
+//        } else {
+//            //new Handler(Looper.getMainLooper()).postDelayed(RecyclerItemAnimator.super::runPendingAnimations, REM_DUR);
+//        }
+//    }
 
-    @Override
-    public void runPendingAnimations() {
-        if (mRemoveAnimations.isEmpty()) {
-            super.runPendingAnimations();
-        } else {
-            //new Handler(Looper.getMainLooper()).postDelayed(RecyclerItemAnimator.super::runPendingAnimations, REM_DUR);
-        }
-    }
-
-    private void runRemoveAnimation(RecyclerView.ViewHolder viewHolder) {
-        Animator animator = AnimatorInflater.loadAnimator(viewHolder.itemView.getContext(), R.animator.item_remove_rotate);
-        animator.setTarget(viewHolder.itemView);
-        animator.setDuration(REM_DUR);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                viewHolder.itemView.setScaleX(1);
-                viewHolder.itemView.setScaleY(1);
-                viewHolder.itemView.setRotationY(0);
-                dispatchRemoveFinished(viewHolder);
-                mRemoveAnimations.remove(viewHolder);
-                runPendingAnimations();
-            }
-        });
-        mRemoveAnimations.put(viewHolder, animator);
-        animator.start();
-    }
+//    private void runRemoveAnimation(RecyclerView.ViewHolder viewHolder) {
+//        Animator animator = AnimatorInflater.loadAnimator(viewHolder.itemView.getContext(), R.animator.item_remove_rotate);
+//        animator.setTarget(viewHolder.itemView);
+//        animator.setDuration(REM_DUR);
+//        animator.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                viewHolder.itemView.setScaleX(1);
+//                viewHolder.itemView.setScaleY(1);
+//                viewHolder.itemView.setRotationY(0);
+//                dispatchRemoveFinished(viewHolder);
+//                mRemoveAnimations.remove(viewHolder);
+//                runPendingAnimations();
+//            }
+//        });
+//        mRemoveAnimations.put(viewHolder, animator);
+//        animator.start();
+//    }
 
     private void runEnterAnimation(RecyclerView.ViewHolder viewHolder) {
         LogUtils.d("runEnterAnimation " + viewHolder);
@@ -141,10 +131,12 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         }
 
         objectAnimator.setDuration(ENTER_DURATION);
+
         if (mDelayEnter) {
             LogUtils.d("setStartDelay " + Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
             objectAnimator.setStartDelay(Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
         }
+
         objectAnimator.setInterpolator(mEnterInterpolator);
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -196,34 +188,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         mEnterOrigin = enterOrigin;
     }
 
-    public boolean isAlwaysAnimateEnter() {
-        return mAlwaysAnimateEnter;
-    }
-
-    public void setAlwaysAnimateEnter(boolean alwaysAnimateEnter) {
-        mAlwaysAnimateEnter = alwaysAnimateEnter;
-    }
-
-    public boolean isDelayEnter() {
-        return mDelayEnter;
-    }
-
-    public void setDelayEnter(boolean delayEnter) {
-        mDelayEnter = delayEnter;
-    }
-
-    public void addItemToAnimateEnter(int id) {
-        mItemsToAnimateEnter.add(id);
-    }
-
-    public void removeItemToAnimateEnter(int id) {
-        mItemsToAnimateEnter.remove(id);
-    }
-
-    public void clearItemsToAnimateEnter() {
-        mItemsToAnimateEnter.clear();
-    }
-
     public int getEnterDelayPerScreen() {
         return mEnterDelayPerScreen;
     }
@@ -237,4 +201,13 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     public void setItemsPerScreen(int itemsPerScreen) {
         mEnterDelayPerScreen = itemsPerScreen * ENTER_EACH_ITEM_DELAY;
     }
+
+    public boolean isDelayEnter() {
+        return mDelayEnter;
+    }
+
+    public void setDelayEnter(boolean delayEnter) {
+        mDelayEnter = delayEnter;
+    }
+
 }

@@ -75,7 +75,9 @@ public class DataManager {
         Observable<List<Record>> records = mDatabaseHelper.getRecordsForUser(userId)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
-        return Observable.zip(records, getUserById(userId), RecordListWithUser::new);
+        return Observable.zip(records, getUserById(userId), RecordListWithUser::new)
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
     public Observable<User> getUserById(int userId) {
