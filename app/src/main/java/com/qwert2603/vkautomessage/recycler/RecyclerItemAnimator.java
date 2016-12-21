@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
@@ -18,13 +19,19 @@ import java.util.Map;
 public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public static final int ENTER_DURATION = 250;
-    public static final int ENTER_EACH_ITEM_DELAY = 50;
+    private static final int ENTER_EACH_ITEM_DELAY = 50;
 
     public enum EnterOrigin {
         BOTTOM,
         LEFT,
         RIGHT,
         LEFT_OR_RIGHT
+    }
+
+    public enum AnimateEnterMode {
+        NONE,
+        LAST,
+        ALL
     }
 
     private Map<RecyclerView.ViewHolder, Animator> mEnterAnimations = new HashMap<>();
@@ -36,18 +43,25 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     private int mEnterDelayPerScreen = ENTER_EACH_ITEM_DELAY * 15;
 
+    private AnimateEnterMode mDelayEnterMode = AnimateEnterMode.NONE;
+
     private boolean mDelayEnter = false;
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
         LogUtils.d("animateAdd " + holder);
-        runEnterAnimation(holder);
+        BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder = (BaseRecyclerViewAdapter.RecyclerViewHolder) holder;
+        if (mDelayEnterMode == AnimateEnterMode.ALL ||
+                (mDelayEnterMode == AnimateEnterMode.LAST && viewHolder.getAdapterPosition() == viewHolder.getItemsCount() - 1)) {
+            runEnterAnimation(viewHolder);
+        }
         return false;
     }
 
 //    @Override
 //    public boolean animateRemove(RecyclerView.ViewHolder holder) {
 //        // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
+    //http://blog.trsquarelab.com/2015/12/creating-custom-animation-in.html
 //        LogUtils.d("animateRemove " + holder);
 //        runRemoveAnimation(holder);
 //        return false;
@@ -83,7 +97,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 //        animator.start();
 //    }
 
-    private void runEnterAnimation(RecyclerView.ViewHolder viewHolder) {
+    private void runEnterAnimation(BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder) {
         LogUtils.d("runEnterAnimation " + viewHolder);
         int heightPixels = viewHolder.itemView.getResources().getDisplayMetrics().heightPixels;
         int widthPixels = viewHolder.itemView.getResources().getDisplayMetrics().widthPixels;
@@ -180,6 +194,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         super.endAnimations();
     }
 
+    @SuppressWarnings("unused")
     public EnterOrigin getEnterOrigin() {
         return mEnterOrigin;
     }
@@ -188,6 +203,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         mEnterOrigin = enterOrigin;
     }
 
+    @SuppressWarnings("unused")
     public int getEnterDelayPerScreen() {
         return mEnterDelayPerScreen;
     }
@@ -202,6 +218,16 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         mEnterDelayPerScreen = itemsPerScreen * ENTER_EACH_ITEM_DELAY;
     }
 
+    @SuppressWarnings("unused")
+    public AnimateEnterMode getDelayEnterMode() {
+        return mDelayEnterMode;
+    }
+
+    public void setDelayEnterMode(AnimateEnterMode delayEnterMode) {
+        mDelayEnterMode = delayEnterMode;
+    }
+
+    @SuppressWarnings("unused")
     public boolean isDelayEnter() {
         return mDelayEnter;
     }
@@ -209,5 +235,4 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     public void setDelayEnter(boolean delayEnter) {
         mDelayEnter = delayEnter;
     }
-
 }

@@ -324,6 +324,10 @@ public abstract class BaseRecyclerViewAdapter
             getPresenter().onViewNotReady();
             getPresenter().unbindView();
         }
+
+        public int getItemsCount() {
+            return BaseRecyclerViewAdapter.this.getItemCount();
+        }
     }
 
 }

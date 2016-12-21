@@ -173,6 +173,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         Fade fade = new Fade();
         fade.addTarget(CardView.class);
+        fade.addTarget(mEnableSwitch);
 
         Slide slideContent = new Slide(Gravity.END);
         slideContent.addTarget(CardView.class);
@@ -180,7 +181,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(mToolbarTitleTextView);
-        slide.addTarget(mToolbarIconImageView);
 
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(fade)

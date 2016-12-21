@@ -118,6 +118,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
 
+        // TODO: 21.12.2016 integerViews
+
         // to allow marquee scrolling.
         mUserNameTextView.setSelected(true);
         mUserNameTextView.setHorizontallyScrolling(true);
@@ -129,11 +131,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         mRecordListAdapter.setRecordEnableChangedCallback((position, enabled) -> mRecordListPresenter.onRecordEnableChanged(position, enabled));
 
         int duration = getResources().getInteger(R.integer.transition_duration);
+        // TODO: 21.12.2016 движение по кривой.
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
 
         Slide slideContent = new Slide(Gravity.START);
         slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
         slideContent.excludeTarget(android.R.id.statusBarBackground, true);
+        slideContent.excludeTarget(mToolbarIconImageView, true);
         for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
             slideContent.excludeTarget(mViewAnimator.getChildAt(i), true);
         }
@@ -144,13 +148,9 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         Slide slideRecordsCount = new Slide(Gravity.END);
         slideRecordsCount.addTarget(mRecordsCountLinearLayout);
 
-        Slide slideIcon = new Slide(Gravity.START);
-        slideIcon.addTarget(mToolbarIconImageView);
-
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideFab)
                 .addTransition(slideRecordsCount)
-                .addTransition(slideIcon)
                 .addTransition(slideContent)
                 .setDuration(duration);
 
@@ -185,11 +185,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
                 (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(record.getId());
 
         if (viewHolder != null) {
+            // TODO: 21.12.2016 disable shared element transition for this VH.
             TextView messageTextView = viewHolder.mMessageTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
-                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName())
+                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
+                    Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
             );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);

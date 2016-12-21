@@ -114,6 +114,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
         mRecyclerItemAnimator = new RecyclerItemAnimator();
         mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.getViewTreeObserver().addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
             @Override
             public void onDraw() {
@@ -208,6 +209,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                     mContentEverShown = true;
                     setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
                     mRecyclerItemAnimator.setDelayEnter(true);
+                    mRecyclerItemAnimator.setDelayEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
                     getAdapter().replaceModelList(mListToShow);
                     mListToShow = new ArrayList<>();
                 }
@@ -216,6 +218,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
         mRecyclerItemAnimator.setDelayEnter(false);
+        mRecyclerItemAnimator.setDelayEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
         getAdapter().replaceModelList(list);
     }
 
