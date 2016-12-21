@@ -68,6 +68,9 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @BindView(R.id.content_root_view)
     View mRootView;
 
+    @BindView(R.id.toolbar_title_text_view)
+    protected TextView mToolbarTitleTextView;
+
     @BindView(R.id.content_view)
     View mContentView;
 

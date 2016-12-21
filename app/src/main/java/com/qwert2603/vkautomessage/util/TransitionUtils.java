@@ -15,6 +15,7 @@ public final class TransitionUtils {
         activity.getWindow().getSharedElementReturnTransition().setDuration(duration);
     }
 
+    @SuppressWarnings("unused")
     public static class TransitionListenerCallback implements Transition.TransitionListener {
 
         @Override

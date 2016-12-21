@@ -211,7 +211,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                     getAdapter().replaceModelList(mListToShow);
                     mListToShow = new ArrayList<>();
                 }
-            }, enterDuration);
+            }, enterDuration + 50);
             return;
         }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
@@ -222,8 +222,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @Override
     public void moveToDetailsForItem(T item, boolean newItem, int newItemPosition) {
         LogUtils.d("moveToDetailsForItem" + newItemPosition + " _ " + item);
-        mRecyclerView.scrollToPosition(newItemPosition);
         if (newItem) {
+            mRecyclerView.scrollToPosition(newItemPosition);
             AndroidUtils.runOnUI(() -> {
                 RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForItemId(item.getId());
                 if (viewHolder != null) {

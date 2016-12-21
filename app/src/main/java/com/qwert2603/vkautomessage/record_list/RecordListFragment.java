@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.transition.Slide;
 import android.transition.TransitionSet;
 import android.util.Pair;
@@ -14,6 +13,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,25 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         return recordListFragment;
     }
 
+    @BindView(R.id.item_user)
+    LinearLayout mItemUserLinearLayout;
+
+    @BindView(R.id.user_name_text_view)
+    protected TextView mUserNameTextView;
+
+    @BindView(R.id.photo_image_view)
+    ImageView mUserPhotoImageView;
+
+    @BindView(R.id.records_count_layout)
+    LinearLayout mRecordsCountLinearLayout;
+
+    @BindView(R.id.records_count_text_view)
+    TextView mRecordsCountTextView;
+
+    @BindView(R.id.enabled_records_count_text_view)
+    TextView mEnabledRecordsCountTextView;
+
+
     @BindView(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;
 
@@ -68,7 +88,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected int getToolbarContentRes() {
-        return R.layout.toolbar_title;
+        return R.layout.toolbar_user;
     }
 
     @Override
@@ -94,18 +114,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
 
-        // TODO: 03.12.2016 toolbar должен состоять из отдельных:
-        // * круглая ава пользователя-получателя
-        // * кол-во записей (14/26) -- todo AnimatedIntegerView
-        // * имя друга (android:ellipsize="marquee")
-        // каждая часть должна иметь свое transitionName
-
         // TODO: 12.12.2016 фильтрация активных и неактивных записей
 
         // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
 
-        mToolbarTitleTextView.setTransitionName(getString(R.string.username_transition));
-        mToolbarTitleTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.user_name));
+        // to allow marquee scrolling.
+        mUserNameTextView.setSelected(true);
+        mUserNameTextView.setHorizontallyScrolling(true);
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
@@ -126,11 +141,15 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         Slide slideFab = new Slide(Gravity.END);
         slideFab.addTarget(mNewRecordFAB);
 
+        Slide slideRecordsCount = new Slide(Gravity.END);
+        slideRecordsCount.addTarget(mRecordsCountLinearLayout);
+
         Slide slideIcon = new Slide(Gravity.START);
         slideIcon.addTarget(mToolbarIconImageView);
 
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideFab)
+                .addTransition(slideRecordsCount)
                 .addTransition(slideIcon)
                 .addTransition(slideContent)
                 .setDuration(duration);
@@ -144,8 +163,18 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    public void showUserName(String userName) {
-        mToolbarTitleTextView.setText(userName);
+    public void showUserName(String name) {
+        mUserNameTextView.setText(name);
+    }
+
+    public ImageView getUserPhotoImageView() {
+        return mUserPhotoImageView;
+    }
+
+    @Override
+    public void showRecordsCount(int recordsCount, int enabledRecordsCount) {
+        mRecordsCountTextView.setText(String.valueOf(recordsCount));
+        mEnabledRecordsCountTextView.setText(String.valueOf(enabledRecordsCount));
     }
 
     @Override
@@ -159,7 +188,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             TextView messageTextView = viewHolder.mMessageTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
-                    Pair.create(mToolbarTitleTextView, getString(R.string.username_transition))
+                    Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
+                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName())
             );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);

@@ -1,7 +1,9 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -65,14 +67,18 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         super.onUpdateView(view);
         RecordListWithUser recordListWithUser = getModel();
         if (recordListWithUser != null) {
-            showUserNameAndRecordsCount(recordListWithUser.mUser, view);
+            User user = recordListWithUser.mUser;
+            view.showUserName(StringUtils.getUserName(user));
+            showUserRecordsCount(user, view);
+            ImageView photoImageView = view.getUserPhotoImageView();
+            if (photoImageView != null) {
+                ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
+            }
         }
     }
 
-    private void showUserNameAndRecordsCount(@NonNull User user, @NonNull RecordListView view) {
-//fixme        view.showUserName(String.format(Locale.getDefault(),
-//                "(%d/%d) %s", user.getEnabledRecordsCount(), user.getRecordsCount(), StringUtils.getUserName(user)));
-        view.showUserName(StringUtils.getUserName(user));
+    private void showUserRecordsCount(@NonNull User user, @NonNull RecordListView view) {
+        view.showRecordsCount(user.getRecordsCount(), user.getEnabledRecordsCount());
     }
 
     @Override
@@ -125,7 +131,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         int enabledRecordsCount = user.getEnabledRecordsCount();
         enabledRecordsCount += enabled ? 1 : -1;
         user.setEnabledRecordsCount(enabledRecordsCount);
-        showUserNameAndRecordsCount(user, getView());
+        showUserRecordsCount(user, getView());
     }
 
     public void onNewRecordClicked() {
@@ -155,7 +161,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     User user = model.mUser;
                     user.setRecordsCount(user.getRecordsCount() + 1);
-                    showUserNameAndRecordsCount(user, view);
+                    showUserRecordsCount(user, view);
 
                     // TODO: 13.12.2016 передавать recordWithUser для перехода к активити с подробностями
                     view.moveToDetailsForItem(record, true, recordList.size() - 1);
@@ -179,7 +185,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         if (recordList.get(position).isEnabled()) {
             user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
         }
-        showUserNameAndRecordsCount(user, view);
+        showUserRecordsCount(user, view);
         recordList.remove(position);
         if (recordList.size() > 0) {
             view.showList(recordList);

@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -39,6 +40,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     private static final int REQUEST_CHOOSE_USER = 3;
+
+    @BindView(R.id.toolbar_title_text_view)
+    protected TextView mToolbarTitleTextView;
 
     @BindView(R.id.choose_user_fab)
     FloatingActionButton mChooseUserFAB;
@@ -154,7 +158,9 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             //todo viewHolder.itemView.setPressed(withSetPressed);
 
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName())
+                    Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()),
+                    Pair.create(viewHolder.mPhotoImageView, viewHolder.mPhotoImageView.getTransitionName()),
+                    Pair.create(viewHolder.mRecordsCountLinearLayout, viewHolder.mRecordsCountLinearLayout.getTransitionName())
             );
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);

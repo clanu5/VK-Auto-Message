@@ -59,9 +59,6 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
 
     protected ImageView mToolbarIconImageView;
 
-    @BindView(R.id.toolbar_title_text_view)
-    protected TextView mToolbarTitleTextView;
-
     @BindView(R.id.coordinator)
     CoordinatorLayout mCoordinatorLayout;
 
@@ -218,6 +215,8 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         if (mActionContentRes != 0) {
             View actionModeView = startActionMode(mActionContentRes);
             mToolbarIconImageView.jumpDrawablesToCurrentState();
+            mToolbarFrameLayout.getChildAt(0).animate().cancel();
+            mToolbarFrameLayout.getChildAt(0).setAlpha(0);
             onActionModeRestored(actionModeView);
         }
 
@@ -254,7 +253,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         mToolbarFrameLayout.addView(view);
         setToolbarIconState(R.attr.state_close, false);
 
-        mToolbarFrameLayout.getChildAt(0).setVisibility(View.INVISIBLE);
+        mToolbarFrameLayout.getChildAt(0).animate().alpha(0);
         // TODO: 19.12.2016 animate color change (TransitionManager.beginDelayedTransition();)
         mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.actionMode));
         return view;
@@ -275,7 +274,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             setToolbarIconState(R.attr.state_back_arrow, false);
         }
 
-        mToolbarFrameLayout.getChildAt(0).setVisibility(View.VISIBLE);
+        mToolbarFrameLayout.getChildAt(0).animate().alpha(1);
         mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
     }
 
