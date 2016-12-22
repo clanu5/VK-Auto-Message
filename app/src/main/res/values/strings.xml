@@ -50,4 +50,8 @@
     <string name="receiver_of_message">Receiver of message</string>
     <string name="remove_selected">Remove selected</string>
     <string name="select_all">Select all</string>
+
+    <string name="choose_repeat_type">Choose repeat type</string>
+    <string name="choose_period">Choose period</string>
+    <string name="choose_days_in_week">Choose days in week</string>
 </resources>

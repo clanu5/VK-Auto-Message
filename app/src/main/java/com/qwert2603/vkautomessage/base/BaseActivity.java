@@ -31,7 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void performOnBackPressed() {
-        supportFinishAfterTransition();
+        super.onBackPressed();
     }
 
     @Override

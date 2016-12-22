@@ -9,17 +9,8 @@ public class EditRepeatTypePresenter extends BasePresenter<Integer, EditRepeatTy
     public EditRepeatTypePresenter() {
     }
 
-    public void setRepeatType(int repeatType) {
-        setModel(repeatType);
-    }
-
     @Override
     protected void onUpdateView(@NonNull EditRepeatTypeView view) {
-        Integer model = getModel();
-        if (model == null) {
-            return;
-        }
-        view.setRepeatType(model);
     }
 
     public void onRepeatTypeChanged(int repeatType) {

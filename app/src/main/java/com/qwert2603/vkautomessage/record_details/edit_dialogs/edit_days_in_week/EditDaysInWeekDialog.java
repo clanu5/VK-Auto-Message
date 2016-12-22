@@ -7,24 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> implements EditDaysInWeekView {
 
@@ -42,13 +30,6 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
     @Inject
     EditDaysInWeekPresenter mEditRepeatTypePresenter;
 
-    @BindView(R.id.linear_layout)
-    LinearLayout mLinearLayout;
-
-    private List<CheckBox> mCheckBoxList = new ArrayList<>();
-
-    private String[] mDaysOfWeek;
-
     @NonNull
     @Override
     protected EditDaysInWeekPresenter getPresenter() {
@@ -65,54 +46,25 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
         VkAutoMessageApplication.getAppComponent().inject(EditDaysInWeekDialog.this);
         mEditRepeatTypePresenter.setDaysInWeek(getArguments().getInt(daysInWeekKey));
         super.onCreate(savedInstanceState);
-        mDaysOfWeek = getResources().getStringArray(R.array.days_of_week);
     }
 
     @NonNull
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_days_in_week, null);
-
-        ButterKnife.bind(EditDaysInWeekDialog.this, view);
-
-        /**
-         * {@link Calendar#SUNDAY} == 1, поэтому добавим в начало один CheckBox, но не будем его отображать.
-         */
-        mCheckBoxList.add(new CheckBox(getActivity()));
-
-        for (String s : mDaysOfWeek) {
-            AppCompatCheckBox checkBox = new AppCompatCheckBox(getActivity());
-            checkBox.setText(s);
-            mCheckBoxList.add(checkBox);
-            mLinearLayout.addView(checkBox);
-            checkBox.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-        }
-        mLinearLayout.requestLayout();
-
-        for (int i = 1, mCheckBoxListSize = mCheckBoxList.size(); i < mCheckBoxListSize; i++) {
-            CheckBox checkBox = mCheckBoxList.get(i);
-            final int finalI = i;
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                    mEditRepeatTypePresenter.onDayInWeekEnableChanged(finalI, isChecked));
-        }
-
         return new AlertDialog.Builder(getActivity())
-                .setView(view)
+                .setTitle(R.string.choose_days_in_week)
+                .setMultiChoiceItems(R.array.days_of_week, mEditRepeatTypePresenter.getSelectedDaysInWeek(),
+                        (dialog, which, isChecked) -> mEditRepeatTypePresenter.onDayInWeekEnableChanged(which, isChecked))
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.submit, (dialog, which) -> mEditRepeatTypePresenter.onSubmitClicked())
                 .create();
     }
 
     @Override
-    public void setDayInWeekEnable(int dayInWeek, boolean enable) {
-        mCheckBoxList.get(dayInWeek).setChecked(enable);
-    }
-
-    @Override
-    public void submitDone(int repeatType) {
+    public void submitDone(int daysInWeek) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_DAYS_IN_WEEK, repeatType);
+        intent.putExtra(EXTRA_DAYS_IN_WEEK, daysInWeek);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
     }
 }

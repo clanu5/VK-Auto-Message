@@ -172,6 +172,8 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             }
         });
 
+        // TODO: 22.12.2016 open drawer on menu button click (physical button)
+
         mToolbar.setNavigationOnClickListener(v -> {
             if (mActionContentRes != 0) {
                 stopActionMode();

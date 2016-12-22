@@ -16,28 +16,34 @@ public class EditDaysInWeekPresenter extends BasePresenter<Integer, EditDaysInWe
 
     @Override
     protected void onUpdateView(@NonNull EditDaysInWeekView view) {
+    }
+
+    public boolean[] getSelectedDaysInWeek() {
         Integer model = getModel();
         if (model == null) {
-            return;
+            return null;
         }
+        boolean[] res = new boolean[Const.DAYS_PER_WEEK];
         for (int i = 1; i < Const.DAYS_PER_WEEK + 1; i++) {
-            boolean enable = (model & (1 << i)) != 0;
-            view.setDayInWeekEnable(i, enable);
+            res[i - 1] = (model & (1 << i)) != 0;
         }
+        return res;
     }
 
     public void onDayInWeekEnableChanged(int dayInWeek, boolean enable) {
+        // Because {@link Calendar#SUNDAY} == 1.
+        dayInWeek += 1;
         Integer model = getModel();
-        int daysOfWeek = model != null ? model : 0;
-        if (((daysOfWeek & (1 << dayInWeek)) != 0) == enable) {
+        int daysInWeek = model != null ? model : 0;
+        if (((daysInWeek & (1 << dayInWeek)) != 0) == enable) {
             return;
         }
         if (enable) {
-            daysOfWeek |= 1 << dayInWeek;
+            daysInWeek |= 1 << dayInWeek;
         } else {
-            daysOfWeek &= ~(1 << dayInWeek);
+            daysInWeek &= ~(1 << dayInWeek);
         }
-        setModel(daysOfWeek);
+        setModel(daysInWeek);
     }
 
     void onSubmitClicked() {

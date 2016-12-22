@@ -7,22 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatRadioButton;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RadioGroup;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 import com.qwert2603.vkautomessage.model.Record;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements EditPeriodView {
 
@@ -39,9 +30,6 @@ public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements
 
     @Inject
     EditPeriodPresenter mEditPeriodPresenter;
-
-    @BindView(R.id.period_radio_group)
-    RadioGroup mRadioGroup;
 
     @NonNull
     @Override
@@ -65,45 +53,16 @@ public class EditPeriodDialog extends BaseDialog<EditPeriodPresenter> implements
     @SuppressLint("InflateParams")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_period, null);
-
-        ButterKnife.bind(EditPeriodDialog.this, view);
-
+        String[] periods = new String[Record.PERIODS.length];
         for (int i = 0; i < Record.PERIODS.length; i++) {
-            int period = Record.PERIODS[i];
-            AppCompatRadioButton radioButton = new AppCompatRadioButton(getActivity());
-            radioButton.setText(getResources().getQuantityString(R.plurals.hours, period, period));
-            mRadioGroup.addView(radioButton);
-            radioButton.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            periods[i] = getContext().getResources().getQuantityString(R.plurals.hours, Record.PERIODS[i], Record.PERIODS[i]);
         }
-        mRadioGroup.requestLayout();
-
-        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            for (int i = 0; i < Record.PERIODS.length; i++) {
-                if (mRadioGroup.getChildAt(i).getId() == checkedId) {
-                    mEditPeriodPresenter.onPeriodChanged(Record.PERIODS[i]);
-                    break;
-                }
-            }
-        });
-
         return new AlertDialog.Builder(getActivity())
-                .setView(view)
+                .setTitle(R.string.choose_period)
+                .setSingleChoiceItems(periods, mEditPeriodPresenter.getSelectedPeriodPosition(), (dialog, which) -> mEditPeriodPresenter.onPeriodChanged(Record.PERIODS[which]))
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.submit, (dialog, which) -> mEditPeriodPresenter.onSubmitClicked())
                 .create();
-    }
-
-    @Override
-    public void setPeriod(int period) {
-        int index = Arrays.binarySearch(Record.PERIODS, period);
-        if (index < 0) {
-            return;
-        }
-        int checkedId = mRadioGroup.getChildAt(index).getId();
-        if (checkedId != mRadioGroup.getCheckedRadioButtonId()) {
-            mRadioGroup.check(checkedId);
-        }
     }
 
     @Override

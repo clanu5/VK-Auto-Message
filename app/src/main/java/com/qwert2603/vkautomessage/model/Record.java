@@ -9,8 +9,6 @@ import com.qwert2603.vkautomessage.util.StringUtils;
 
 import java.util.Calendar;
 
-// TODO: 09.12.2016 сделать Parcelable и передавать в фрагмент и диалоги
-// и User -- тоже.
 public class Record implements Identifiable, Parcelable {
 
     /**
