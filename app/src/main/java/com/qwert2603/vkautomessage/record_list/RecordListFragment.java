@@ -185,9 +185,9 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
                 (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(record.getId());
 
         if (viewHolder != null) {
-            // TODO: 21.12.2016 disable shared element transition for this VH.
             TextView messageTextView = viewHolder.mMessageTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(viewHolder.itemView, "no_transition_name"),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
                     Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),

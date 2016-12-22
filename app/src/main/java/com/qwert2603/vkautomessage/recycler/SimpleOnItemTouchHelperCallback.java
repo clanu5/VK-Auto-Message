@@ -60,6 +60,7 @@ public class SimpleOnItemTouchHelperCallback extends ItemTouchHelper.Callback {
         if (actionState == ACTION_STATE_SWIPE) {
             viewHolder.itemView.setTranslationX(dX);
 
+            // TODO: 22.12.2016 delete drawable blinks on return to prev. activity.
             int border = (viewHolder.itemView.getHeight() - mDeleteDrawable.getIntrinsicHeight()) / 2;
             if (dX < 0) {
                 c.drawRect(viewHolder.itemView.getRight() + dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom(), mPaint);
@@ -98,8 +99,9 @@ public class SimpleOnItemTouchHelperCallback extends ItemTouchHelper.Callback {
         mPaint.setColor(backColor);
     }
 
+    @SuppressWarnings("unused")
     @ColorInt
-    public int getColor() {
+    public int getBackColor() {
         return mPaint.getColor();
     }
 }
