@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.recycler;
 
 import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -43,7 +45,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     private int mEnterDelayPerScreen = ENTER_EACH_ITEM_DELAY * 15;
 
-    private AnimateEnterMode mDelayEnterMode = AnimateEnterMode.NONE;
+    private AnimateEnterMode mAnimateEnterMode = AnimateEnterMode.NONE;
 
     private boolean mDelayEnter = false;
 
@@ -51,51 +53,51 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
         LogUtils.d("animateAdd " + holder);
         BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder = (BaseRecyclerViewAdapter.RecyclerViewHolder) holder;
-        if (mDelayEnterMode == AnimateEnterMode.ALL ||
-                (mDelayEnterMode == AnimateEnterMode.LAST && viewHolder.getAdapterPosition() == viewHolder.getItemsCount() - 1)) {
+        if (mAnimateEnterMode == AnimateEnterMode.ALL ||
+                (mAnimateEnterMode == AnimateEnterMode.LAST && viewHolder.getAdapterPosition() == viewHolder.getItemsCount() - 1)) {
             runEnterAnimation(viewHolder);
         }
         return false;
     }
 
-//    @Override
-//    public boolean animateRemove(RecyclerView.ViewHolder holder) {
-//        // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
-    //http://blog.trsquarelab.com/2015/12/creating-custom-animation-in.html
-//        LogUtils.d("animateRemove " + holder);
-//        runRemoveAnimation(holder);
-//        return false;
-//    }
+    @Override
+    public boolean animateRemove(RecyclerView.ViewHolder holder) {
+        // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
+    //http:blog.trsquarelab.com/2015/12/creating-custom-animation-in.html
+        LogUtils.d("animateRemove " + holder);
+        runRemoveAnimation(holder);
+        return false;
+    }
 
-//    private int REM_DUR = 300;
-//
-//    @Override
-//    public void runPendingAnimations() {
-//        if (mRemoveAnimations.isEmpty()) {
-//            super.runPendingAnimations();
-//        } else {
-//            //new Handler(Looper.getMainLooper()).postDelayed(RecyclerItemAnimator.super::runPendingAnimations, REM_DUR);
-//        }
-//    }
+    private int REM_DUR = 300;
 
-//    private void runRemoveAnimation(RecyclerView.ViewHolder viewHolder) {
-//        Animator animator = AnimatorInflater.loadAnimator(viewHolder.itemView.getContext(), R.animator.item_remove_rotate);
-//        animator.setTarget(viewHolder.itemView);
-//        animator.setDuration(REM_DUR);
-//        animator.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                viewHolder.itemView.setScaleX(1);
-//                viewHolder.itemView.setScaleY(1);
-//                viewHolder.itemView.setRotationY(0);
-//                dispatchRemoveFinished(viewHolder);
-//                mRemoveAnimations.remove(viewHolder);
-//                runPendingAnimations();
-//            }
-//        });
-//        mRemoveAnimations.put(viewHolder, animator);
-//        animator.start();
-//    }
+    @Override
+    public void runPendingAnimations() {
+        if (mRemoveAnimations.isEmpty()) {
+            super.runPendingAnimations();
+        } else {
+            //new Handler(Looper.getMainLooper()).postDelayed(RecyclerItemAnimator.super::runPendingAnimations, REM_DUR);
+        }
+    }
+
+    private void runRemoveAnimation(RecyclerView.ViewHolder viewHolder) {
+        Animator animator = AnimatorInflater.loadAnimator(viewHolder.itemView.getContext(), R.animator.item_remove_rotate);
+        animator.setTarget(viewHolder.itemView);
+        animator.setDuration(REM_DUR);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                viewHolder.itemView.setScaleX(1);
+                viewHolder.itemView.setScaleY(1);
+                viewHolder.itemView.setRotationY(0);
+                dispatchRemoveFinished(viewHolder);
+                mRemoveAnimations.remove(viewHolder);
+                runPendingAnimations();
+            }
+        });
+        mRemoveAnimations.put(viewHolder, animator);
+        animator.start();
+    }
 
     private void runEnterAnimation(BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder) {
         LogUtils.d("runEnterAnimation " + viewHolder);
@@ -219,12 +221,12 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     }
 
     @SuppressWarnings("unused")
-    public AnimateEnterMode getDelayEnterMode() {
-        return mDelayEnterMode;
+    public AnimateEnterMode getAnimateEnterMode() {
+        return mAnimateEnterMode;
     }
 
-    public void setDelayEnterMode(AnimateEnterMode delayEnterMode) {
-        mDelayEnterMode = delayEnterMode;
+    public void setAnimateEnterMode(AnimateEnterMode animateEnterMode) {
+        mAnimateEnterMode = animateEnterMode;
     }
 
     @SuppressWarnings("unused")

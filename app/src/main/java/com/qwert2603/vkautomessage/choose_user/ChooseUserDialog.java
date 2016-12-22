@@ -25,6 +25,7 @@ import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -57,6 +58,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @BindView(R.id.search_edit_text)
     EditText mSearchEditText;
+
+    protected RecyclerItemAnimator mRecyclerItemAnimator;
 
     @Inject
     ChooseUserPresenter mChooseUserPresenter;
@@ -97,9 +100,10 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mChooseUserAdapter);
 
-        RecyclerItemAnimator recyclerItemAnimator = new RecyclerItemAnimator();
-        recyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
-        mRecyclerView.setItemAnimator(recyclerItemAnimator);
+        mRecyclerItemAnimator = new RecyclerItemAnimator();
+        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
+        mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
+        mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
 
         mChooseUserAdapter.setClickCallback(mChooseUserPresenter::onItemAtPositionClicked);
         mChooseUserAdapter.setLongClickCallback(mChooseUserPresenter::onItemAtPositionLongClicked);
@@ -205,26 +209,41 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void showNothingFound() {
+        mChooseUserAdapter.replaceModelList(new ArrayList<>());
         setViewAnimatorDisplayedChild(POSITION_NOTHING_FOUND_TEXT_VIEW);
     }
 
     @Override
     public void showLoading() {
+        mChooseUserAdapter.replaceModelList(new ArrayList<>());
         setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
 
     @Override
     public void showError() {
+        mChooseUserAdapter.replaceModelList(new ArrayList<>());
         setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
     @Override
     public void showEmpty() {
+        mChooseUserAdapter.replaceModelList(new ArrayList<>());
         setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
     }
 
+    /**
+     * Whether item list was show earlier.
+     */
+    private boolean mListEverShown = false;
+
     @Override
     public void showList(List<VkUser> list) {
+        if (!mListEverShown) {
+            mListEverShown = true;
+            mRecyclerItemAnimator.setDelayEnter(true);
+        } else {
+            mRecyclerItemAnimator.setDelayEnter(false);
+        }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
         mChooseUserAdapter.replaceModelList(list);
     }
@@ -258,7 +277,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
             mViewAnimator.setDisplayedChild(position);
         }
         mViewAnimator.setVisibility(position != POSITION_EMPTY_VIEW ? View.VISIBLE : View.INVISIBLE);
-        mRecyclerView.setVisibility((position == POSITION_EMPTY_VIEW || position == POSITION_EMPTY_TEXT_VIEW) ? View.VISIBLE : View.INVISIBLE);
+//        mRecyclerView.setVisibility((position == POSITION_EMPTY_VIEW) ? View.VISIBLE : View.INVISIBLE);
     }
 
 }

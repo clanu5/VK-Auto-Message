@@ -154,9 +154,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(user.getId());
-        if (viewHolder != null) {
-            //todo viewHolder.itemView.setPressed(withSetPressed);
 
+        if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()),
                     Pair.create(viewHolder.mPhotoImageView, viewHolder.mPhotoImageView.getTransitionName()),

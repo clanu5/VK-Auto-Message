@@ -174,11 +174,13 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void showLoading() {
+        getAdapter().replaceModelList(new ArrayList<>());
         setViewAnimatorDisplayedChild(POSITION_LOADING_TEXT_VIEW);
     }
 
     @Override
     public void showError() {
+        getAdapter().replaceModelList(new ArrayList<>());
         setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
@@ -212,7 +214,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                     mContentEverShown = true;
                     setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
                     mRecyclerItemAnimator.setDelayEnter(true);
-                    mRecyclerItemAnimator.setDelayEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
+                    mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
                     getAdapter().replaceModelList(mListToShow);
                     mListToShow = new ArrayList<>();
                 }
@@ -221,7 +223,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
         mRecyclerItemAnimator.setDelayEnter(false);
-        mRecyclerItemAnimator.setDelayEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
+        mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
         getAdapter().replaceModelList(list);
     }
 

@@ -142,6 +142,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
         mQuery = query.toLowerCase();
         doSearch(getModel());
         updateView();
+        getView().scrollToTop();
     }
 
     public void onCancelClicked() {
