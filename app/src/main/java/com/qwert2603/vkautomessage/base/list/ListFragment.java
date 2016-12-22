@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageButton;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -66,6 +67,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
 
     private boolean mUiEnabled = true;
+
+    private ImageButton mActionModeDeleteButton;
 
     @NonNull
     @Override
@@ -258,19 +261,25 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void startListSelectionMode() {
-        startActionMode(R.layout.user_list_action_mode)
-                .findViewById(R.id.delete)
-                .setOnClickListener(v -> Snackbar.make(mContentRootView, "delete", Snackbar.LENGTH_SHORT).show());
+        View actionModeView = startActionMode(R.layout.user_list_action_mode);
+        mActionModeDeleteButton = (ImageButton) actionModeView.findViewById(R.id.delete);
+        mActionModeDeleteButton.setOnClickListener(v -> Snackbar.make(mContentRootView, "delete", Snackbar.LENGTH_SHORT).show());
+        mActionModeDeleteButton.setScaleY(0.4f);
+        mActionModeDeleteButton.setAlpha(0.0f);
+        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
+        mActionModeDeleteButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
     }
 
     @Override
     protected void onActionModeRestored(View view) {
-        view.findViewById(R.id.delete)
-                .setOnClickListener(v -> Snackbar.make(mContentRootView, "delete restored", Snackbar.LENGTH_SHORT).show());
+        mActionModeDeleteButton = (ImageButton) view.findViewById(R.id.delete);
+        mActionModeDeleteButton.setOnClickListener(v -> Snackbar.make(mContentRootView, "delete restored", Snackbar.LENGTH_SHORT).show());
     }
 
     @Override
     protected void onActionModeCancelled() {
+        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
+        mActionModeDeleteButton.animate().scaleY(0.4f).alpha(0.0f).setDuration(duration);
         getPresenter().onActionModeCancelled();
     }
 

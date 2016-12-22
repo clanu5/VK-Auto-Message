@@ -11,6 +11,6 @@
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
         android:src="@drawable/ic_delete_white_24dp"
-        android:background="@drawable/bk"/>
+        android:background="@drawable/image_button_background"/>
 
 </LinearLayout>

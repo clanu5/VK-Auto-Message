@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.base.navigation;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.qwert2603.vkautomessage.ChangeColor;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -31,6 +34,7 @@ import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
 import com.qwert2603.vkautomessage.login.MainActivity;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
@@ -171,7 +175,6 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         mToolbar.setNavigationOnClickListener(v -> {
             if (mActionContentRes != 0) {
                 stopActionMode();
-                onActionModeCancelled();
                 return;
             }
             if (isNavigationButtonVisible()) {
@@ -253,29 +256,33 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         mToolbarFrameLayout.addView(view);
         setToolbarIconState(R.attr.state_close, false);
 
-        mToolbarFrameLayout.getChildAt(0).animate().alpha(0);
-        // TODO: 19.12.2016 animate color change (TransitionManager.beginDelayedTransition();)
-        mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.actionMode));
+        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
+        mToolbarFrameLayout.getChildAt(0).animate().alpha(0).setDuration(duration);
+        TransitionManager.beginDelayedTransition(mToolbar, new ChangeColor().setDuration(duration));
+        mToolbar.setBackground(new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.actionMode)));
         return view;
-    }
-
-    protected void onActionModeRestored(View view) {
-    }
-
-    protected void onActionModeCancelled() {
     }
 
     protected void stopActionMode() {
         mActionContentRes = 0;
-        mToolbarFrameLayout.removeViewAt(1);
         if (isNavigationButtonVisible()) {
             setToolbarIconState(R.attr.state_burger, false);
         } else {
             setToolbarIconState(R.attr.state_back_arrow, false);
         }
 
-        mToolbarFrameLayout.getChildAt(0).animate().alpha(1);
-        mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
+        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
+        mToolbarFrameLayout.getChildAt(0).animate().alpha(1).setDuration(duration);
+        TransitionManager.beginDelayedTransition(mToolbar, new ChangeColor().setDuration(duration));
+        mToolbar.setBackground(new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.colorPrimary)));
+        onActionModeCancelled();
+        AndroidUtils.runOnUI(() -> mToolbarFrameLayout.removeViewAt(1), duration);
+    }
+
+    protected void onActionModeRestored(View view) {
+    }
+
+    protected void onActionModeCancelled() {
     }
 
     public void onBackPressed() {
@@ -286,7 +293,6 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
 
         if (mActionContentRes != 0) {
             stopActionMode();
-            onActionModeCancelled();
             return;
         }
         performBackPressed();
