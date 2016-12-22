@@ -155,8 +155,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         ButterKnife.bind(RecordFragment.this, view);
 
-        // TODO: 29.11.2016 transition для всех диалогов
-
         mUserCardView.setOnClickListener(v -> mRecordPresenter.onUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
         mMessageCardView.setOnClickListener(v -> mRecordPresenter.onEditMessageClicked());

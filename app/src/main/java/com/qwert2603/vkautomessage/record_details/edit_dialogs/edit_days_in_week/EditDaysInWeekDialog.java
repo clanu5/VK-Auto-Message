@@ -62,6 +62,12 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // TODO: 22.12.2016 ((AlertDialog) getDialog()).getListView().jumpDrawablesToCurrentState();
+    }
+
+    @Override
     public void submitDone(int daysInWeek) {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_DAYS_IN_WEEK, daysInWeek);

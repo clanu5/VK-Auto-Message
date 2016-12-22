@@ -187,7 +187,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         if (viewHolder != null) {
             TextView messageTextView = viewHolder.mMessageTextView;
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(viewHolder.itemView, "no_transition_name"),
                     Pair.create(messageTextView, messageTextView.getTransitionName()),
                     Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
                     Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),

@@ -157,7 +157,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(viewHolder.itemView, "no_transition_name"),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()),
                     Pair.create(viewHolder.mPhotoImageView, viewHolder.mPhotoImageView.getTransitionName()),
                     Pair.create(viewHolder.mRecordsCountLinearLayout, viewHolder.mRecordsCountLinearLayout.getTransitionName())
@@ -171,6 +170,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Override
     public void showChooseUser() {
+        // TODO: 22.12.2016  animate dialog appear/disappear (circular reveal)
         ChooseUserDialog userListDialog = ChooseUserDialog.newInstance();
         userListDialog.setTargetFragment(UserListFragment.this, REQUEST_CHOOSE_USER);
         userListDialog.show(getFragmentManager(), userListDialog.getClass().getName());
