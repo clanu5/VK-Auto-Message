@@ -181,8 +181,6 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             }
         });
 
-        // TODO: 22.12.2016 open drawer on menu button click (physical button)
-
         mToolbar.setNavigationOnClickListener(v -> {
             if (mActionContentRes != 0) {
                 stopActionMode();
@@ -307,6 +305,14 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             return;
         }
         performBackPressed();
+    }
+
+    public void onMenuPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            mDrawerLayout.openDrawer(GravityCompat.START);
+        }
     }
 
     protected void performBackPressed() {

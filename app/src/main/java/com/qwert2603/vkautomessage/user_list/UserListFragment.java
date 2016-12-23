@@ -95,6 +95,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
+        // TODO: 23.12.2016 sometimes  dividerItemDecoration not drawn.
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider));
         mRecyclerView.addItemDecoration(dividerItemDecoration);
