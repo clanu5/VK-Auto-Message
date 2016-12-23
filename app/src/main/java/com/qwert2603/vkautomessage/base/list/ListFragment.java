@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -23,6 +22,7 @@ import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.delete_item.DeleteItemDialog;
 import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
+import com.qwert2603.vkautomessage.integer_view.vector_integer_view.VectorIntegerView;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
@@ -70,6 +70,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     private boolean mUiEnabled = true;
 
     private ImageButton mActionModeDeleteButton;
+    private VectorIntegerView mVectorIntegerView;
 
     @NonNull
     @Override
@@ -272,24 +273,32 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @Override
     public void startListSelectionMode() {
         View actionModeView = startActionMode(R.layout.user_list_action_mode);
+
+        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
+
         mActionModeDeleteButton = (ImageButton) actionModeView.findViewById(R.id.delete);
         mActionModeDeleteButton.setOnClickListener(v -> Snackbar.make(mContentRootView, "delete", Snackbar.LENGTH_SHORT).show());
         mActionModeDeleteButton.setScaleY(0.4f);
         mActionModeDeleteButton.setAlpha(0.0f);
-        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
         mActionModeDeleteButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
+
+        mVectorIntegerView = (VectorIntegerView) actionModeView.findViewById(R.id.integer_view);
+        mVectorIntegerView.setAlpha(0.0f);
+        mVectorIntegerView.animate().alpha(1.0f).setDuration(duration);
     }
 
     @Override
     protected void onActionModeRestored(View view) {
         mActionModeDeleteButton = (ImageButton) view.findViewById(R.id.delete);
         mActionModeDeleteButton.setOnClickListener(v -> Snackbar.make(mContentRootView, "delete restored", Snackbar.LENGTH_SHORT).show());
+        mVectorIntegerView = (VectorIntegerView) view.findViewById(R.id.integer_view);
     }
 
     @Override
-    protected void onActionModeCancelled() {
+    protected void onActionModeCancelling() {
         int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
         mActionModeDeleteButton.animate().scaleY(0.4f).alpha(0.0f).setDuration(duration);
+        mVectorIntegerView.animate().alpha(0.0f).setDuration(duration);
         getPresenter().onActionModeCancelled();
     }
 
@@ -300,8 +309,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void showSelectedItemsCount(int count) {
-        // TODO: 23.12.2016
-        Toast.makeText(getActivity(), "count ==" + count, Toast.LENGTH_SHORT).show();
+        mVectorIntegerView.setInteger(count, true);
     }
 
     @Override

@@ -30,7 +30,9 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
-                    'src/main/res-toolbar-icon'
+                    'src/main/res-toolbar-icon',
+                    'src/main/res-vector-integer-view',
+                    'src/main/res-counter-integer-view'
             ]
         }
     }

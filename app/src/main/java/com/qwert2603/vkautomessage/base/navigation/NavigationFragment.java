@@ -286,14 +286,14 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         mToolbarFrameLayout.getChildAt(0).animate().alpha(1).setDuration(duration);
         TransitionManager.beginDelayedTransition(mToolbar, new ChangeColor().setDuration(duration));
         mToolbar.setBackground(new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.colorPrimary)));
-        onActionModeCancelled();
+        onActionModeCancelling();
         AndroidUtils.runOnUI(() -> mToolbarFrameLayout.removeViewAt(1), duration);
     }
 
     protected void onActionModeRestored(View view) {
     }
 
-    protected void onActionModeCancelled() {
+    protected void onActionModeCancelling() {
     }
 
     public void onBackPressed() {

@@ -8,5 +8,5 @@ public interface UserView extends BaseView {
     void showName(String name);
     ImageView getPhotoImageView();
     void hideRecordsCount();
-    void showRecordsCount(String recordsCount, String enabledRecordsCount);
+    void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated);
 }

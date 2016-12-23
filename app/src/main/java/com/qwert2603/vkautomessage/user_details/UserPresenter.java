@@ -32,7 +32,7 @@ public class UserPresenter extends BasePresenter<User, UserView> {
         if (user.getRecordsCount() == User.NO_INFO || user.getEnabledRecordsCount() == User.NO_INFO) {
             view.hideRecordsCount();
         } else {
-            view.showRecordsCount(String.valueOf(user.getRecordsCount()), String.valueOf(user.getEnabledRecordsCount()));
+            view.showRecordsCount(user.getRecordsCount(), user.getEnabledRecordsCount(), false);
         }
     }
 

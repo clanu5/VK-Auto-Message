@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
+import com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterIntegerView;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
@@ -44,10 +45,10 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         LinearLayout mRecordsCountLinearLayout;
 
         @BindView(R.id.records_count_text_view)
-        TextView mRecordsCountTextView;
+        CounterIntegerView mRecordsCountTextView;
 
         @BindView(R.id.enabled_records_count_text_view)
-        TextView mEnabledRecordsCountTextView;
+        CounterIntegerView mEnabledRecordsCountTextView;
 
         @Inject
         UserPresenter mUserPresenter;
@@ -84,10 +85,10 @@ public class UserListAdapter extends BaseRecyclerViewAdapter<User, UserListAdapt
         }
 
         @Override
-        public void showRecordsCount(String recordsCount, String enabledRecordsCount) {
+        public void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated) {
             mRecordsCountLinearLayout.setVisibility(View.VISIBLE);
-            mRecordsCountTextView.setText(recordsCount);
-            mEnabledRecordsCountTextView.setText(enabledRecordsCount);
+            mRecordsCountTextView.setInteger(recordsCount, updated);
+            mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, updated);
         }
     }
 }

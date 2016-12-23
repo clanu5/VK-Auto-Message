@@ -24,6 +24,7 @@ import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
+import com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterIntegerView;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
@@ -60,11 +61,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     LinearLayout mRecordsCountLinearLayout;
 
     @BindView(R.id.records_count_text_view)
-    TextView mRecordsCountTextView;
+    CounterIntegerView mRecordsCountTextView;
 
     @BindView(R.id.enabled_records_count_text_view)
-    TextView mEnabledRecordsCountTextView;
-
+    CounterIntegerView mEnabledRecordsCountTextView;
 
     @BindView(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;
@@ -176,9 +176,9 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    public void showRecordsCount(int recordsCount, int enabledRecordsCount) {
-        mRecordsCountTextView.setText(String.valueOf(recordsCount));
-        mEnabledRecordsCountTextView.setText(String.valueOf(enabledRecordsCount));
+    public void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated) {
+        mRecordsCountTextView.setInteger(recordsCount, updated);
+        mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, updated);
     }
 
     @Override

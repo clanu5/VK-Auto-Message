@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/stable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="987"
+        android:textColor="@color/colorAccent"
+        android:textSize="48sp"/>
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/in"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:layout_gravity="end"
+            android:text="3543"
+            android:textColor="#0f0"
+            android:textSize="48sp"/>
+
+        <TextView
+            android:id="@+id/out"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:layout_gravity="end"
+            android:textColor="#ff0"
+            android:textSize="48sp"
+            android:text="41"/>
+
+    </FrameLayout>
+
+</merge>

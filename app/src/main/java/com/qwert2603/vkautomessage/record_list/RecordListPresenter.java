@@ -78,7 +78,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
                         RecordListView view1 = getView();
                         if (view1 != null) {
-                            showUserRecordsCount(model.mUser, view1);
+                            showUserRecordsCount(model.mUser, view1, true);
                         }
                     }
                 }, LogUtils::e);
@@ -100,7 +100,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             User user = recordListWithUser.mUser;
             view.setUser(user);
             view.showUserName(StringUtils.getUserName(user));
-            showUserRecordsCount(user, view);
+            showUserRecordsCount(user, view, false);
             ImageView photoImageView = view.getUserPhotoImageView();
             if (photoImageView != null) {
                 ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
@@ -108,8 +108,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         }
     }
 
-    private void showUserRecordsCount(@NonNull User user, @NonNull RecordListView view) {
-        view.showRecordsCount(user.getRecordsCount(), user.getEnabledRecordsCount());
+    private void showUserRecordsCount(@NonNull User user, @NonNull RecordListView view, boolean updated) {
+        view.showRecordsCount(user.getRecordsCount(), user.getEnabledRecordsCount(), updated);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 RecordListView view = getView();
                                 if (view != null) {
                                     view.notifyItemChanged(recordPosition);
-                                    showUserRecordsCount(model.mUser, view);
+                                    showUserRecordsCount(model.mUser, view, false);
                                 }
                             }
                         },
@@ -183,7 +183,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     User user = model.mUser;
                     user.setRecordsCount(user.getRecordsCount() + 1);
-                    showUserRecordsCount(user, view);
+                    showUserRecordsCount(user, view, true);
 
                     view.moveToDetailsForItem(record.getId(), true, recordList.size() - 1);
                 }, t -> {
@@ -206,7 +206,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         if (recordList.get(position).isEnabled()) {
             user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
         }
-        showUserRecordsCount(user, view);
+        showUserRecordsCount(user, view, true);
         recordList.remove(position);
         if (recordList.size() > 0) {
             view.showList(recordList);

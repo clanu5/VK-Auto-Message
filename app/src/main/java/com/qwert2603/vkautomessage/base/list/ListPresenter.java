@@ -74,6 +74,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         if (!mSelectedIds.contains(id)) {
             if (mSelectedIds.isEmpty()) {
                 getView().startListSelectionMode();
+                getView().showSelectedItemsCount(0);
             }
             mSelectedIds.add(id);
             getView().setItemSelectionState(position, true);

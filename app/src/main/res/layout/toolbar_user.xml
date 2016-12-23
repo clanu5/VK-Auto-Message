@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_user"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
@@ -19,8 +20,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_weight="1"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
@@ -38,14 +39,23 @@
         android:layout_marginEnd="4dp"
         android:transitionGroup="true">
 
-        <TextView
+
+        <com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterIntegerView
             android:id="@+id/enabled_records_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/enabled_records_count"
+            android:textSize="20sp"
+            app:counter_integer="14"/>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:text="14"
             android:textColor="@color/enabled_records_count"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -56,14 +66,22 @@
             android:textColor="@android:color/black"
             android:textSize="20sp"/>
 
-        <TextView
+        <com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterIntegerView
             android:id="@+id/records_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/records_count"
+            android:textSize="20sp"
+            app:counter_integer="26"/>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:text="26"
             android:textColor="@color/records_count"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
