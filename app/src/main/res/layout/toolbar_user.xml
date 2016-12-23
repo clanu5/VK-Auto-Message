@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="4dp"
-        android:transitionName="@string/records_count_transition">
+        android:transitionGroup="true">
 
         <TextView
             android:id="@+id/enabled_records_count_text_view"

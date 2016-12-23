@@ -158,8 +158,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(viewHolder.mUsernameTextView, viewHolder.mUsernameTextView.getTransitionName()),
-                    Pair.create(viewHolder.mPhotoImageView, viewHolder.mPhotoImageView.getTransitionName()),
-                    Pair.create(viewHolder.mRecordsCountLinearLayout, viewHolder.mRecordsCountLinearLayout.getTransitionName())
+                    Pair.create(viewHolder.mPhotoImageView, viewHolder.mPhotoImageView.getTransitionName())
             );
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);

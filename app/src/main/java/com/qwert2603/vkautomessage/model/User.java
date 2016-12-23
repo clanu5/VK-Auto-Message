@@ -35,6 +35,15 @@ public class User implements Identifiable, Parcelable {
         }
     };
 
+    public User(User user) {
+        mId = user.getId();
+        mFirstName = user.getFirstName();
+        mLastName = user.getLastName();
+        mPhoto = user.getPhoto();
+        mEnabledRecordsCount = user.getEnabledRecordsCount();
+        mRecordsCount = user.getRecordsCount();
+    }
+
     /**
      * @return пользователь с пустыми полями.
      */

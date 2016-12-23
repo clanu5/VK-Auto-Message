@@ -207,6 +207,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void showList(List<T> list) {
+        LogUtils.d("showList");
         if (!mContentEverShown) {
             long enterDuration = getActivity().getWindow().getEnterTransition().getDuration();
             mListToShow = list;
@@ -226,6 +227,12 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerItemAnimator.setDelayEnter(false);
         mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
         getAdapter().replaceModelList(list);
+    }
+
+    @Override
+    public void notifyItemChanged(int position) {
+        LogUtils.d("notifyItemChanged " + position);
+        getAdapter().notifyItemChanged(position);
     }
 
     @Override

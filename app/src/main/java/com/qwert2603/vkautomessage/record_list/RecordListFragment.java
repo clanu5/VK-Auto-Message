@@ -184,19 +184,16 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected void moveToDetailsForItem(int itemId) {
         prepareRecyclerViewForTransition();
-        ActivityOptions activityOptions = null;
-        RecordListAdapter.RecordViewHolder viewHolder =
-                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
 
-        if (viewHolder != null) {
-            TextView messageTextView = viewHolder.mMessageTextView;
-            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(messageTextView, messageTextView.getTransitionName()),
-                    Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
-                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
-                    Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
-            );
-        }
+        // not using scene transition for message TextView because if message was changed in RecordActivity than
+        // when back scene transition will be played there will be old text in message TextView in this activity (in VH)
+        // and old text will blink for a short time before text in VH will be updated.
+        ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
+                Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
+                Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
+        );
+
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, itemId);
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);

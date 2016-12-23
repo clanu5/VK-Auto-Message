@@ -108,7 +108,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                                 userList.set(userPosition, user);
                                 UserListView view = getView();
                                 if (view != null) {
-                                    view.showList(userList);
+                                    view.notifyItemChanged(userPosition);
                                 }
                             }
                         },

@@ -115,8 +115,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     @Override
     protected void doLoadList() {
         mSubscription.unsubscribe();
-        mSubscription = mDataManager.getRecordsForUser(mUserId)
-                .subscribe(
+        mSubscription = mDataManager.getRecordsForUser(mUserId).subscribe(
                         model -> RecordListPresenter.this.setModel(model),
                         throwable -> {
                             mSubscription.unsubscribe();
@@ -144,7 +143,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 RecordListView view = getView();
                                 if (view != null) {
-                                    view.showList(model.mRecordList);
+                                    view.notifyItemChanged(recordPosition);
                                     showUserRecordsCount(model.mUser, view);
                                 }
                             }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.helper.DatabaseHelper;
+import com.qwert2603.vkautomessage.helper.InMemoryCacheHelper;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
@@ -42,6 +43,12 @@ public class ModelModule {
     @Singleton
     DatabaseHelper provideDatabaseHelper(Context appContext) {
         return new DatabaseHelper(appContext);
+    }
+
+    @Provides
+    @Singleton
+    InMemoryCacheHelper mInMemoryCacheHelper() {
+        return new InMemoryCacheHelper();
     }
 
     @Provides

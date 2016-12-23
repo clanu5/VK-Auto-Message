@@ -50,8 +50,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     public void setRecordId(int recordId) {
         setModel(null);
         mSubscription.unsubscribe();
-        mSubscription = mDataManager
-                .getRecordById(recordId)
+        mSubscription = mDataManager.getRecordById(recordId)
                 .subscribe(
                         model -> RecordPresenter.this.setModel(model),
                         throwable -> {

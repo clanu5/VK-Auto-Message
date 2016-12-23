@@ -120,7 +120,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public final void onReturnFromItemDetails(int id) {
         doLoadItem(id);
-        updateView();
         getView().enableUI();
     }
 

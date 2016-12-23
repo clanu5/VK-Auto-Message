@@ -107,6 +107,17 @@ public class Record implements Identifiable, Parcelable {
         }
     };
 
+    public Record(Record record) {
+        mId = record.getId();
+        mUserId = record.getUserId();
+        mMessage = record.getMessage();
+        mEnabled = record.isEnabled();
+        mRepeatType = record.getRepeatType();
+        mRepeatInfo = record.getRepeatInfo();
+        mHour = record.getHour();
+        mMinute = record.getMinute();
+    }
+
     @Override
     public int getId() {
         return mId;

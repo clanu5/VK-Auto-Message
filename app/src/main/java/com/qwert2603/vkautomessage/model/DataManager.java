@@ -6,6 +6,7 @@ import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.helper.DatabaseHelper;
+import com.qwert2603.vkautomessage.helper.InMemoryCacheHelper;
 import com.qwert2603.vkautomessage.helper.PreferenceHelper;
 import com.qwert2603.vkautomessage.helper.SendMessageHelper;
 import com.qwert2603.vkautomessage.helper.VkApiHelper;
@@ -39,7 +40,8 @@ public class DataManager {
     @Inject
     SendMessageHelper mSendMessageHelper;
 
-    // TODO: 23.12.2016 in memory cache
+    @Inject
+    InMemoryCacheHelper mInMemoryCacheHelper;
 
     @Inject
     @Named(Const.IO_THREAD)
@@ -66,6 +68,7 @@ public class DataManager {
                 .flatMap(
                         userMyself -> mDatabaseHelper.getAllUsers()
                                 .flatMap(Observable::from)
+                                .doOnNext(user -> mInMemoryCacheHelper.putUser(user))
                                 .filter(user -> user.getId() != userMyself.getId())
                                 .toList()
                 )
@@ -74,16 +77,26 @@ public class DataManager {
     }
 
     public Observable<RecordListWithUser> getRecordsForUser(int userId) {
-        Observable<List<Record>> records = mDatabaseHelper.getRecordsForUser(userId)
+        Observable<List<Record>> recordsObservable = mDatabaseHelper.getRecordsForUser(userId)
+                .doOnNext(records -> {
+                    for (Record record : records) {
+                        mInMemoryCacheHelper.putRecord(record);
+                    }
+                })
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
-        return Observable.zip(records, getUserById(userId), RecordListWithUser::new)
+        return Observable.zip(recordsObservable, getUserById(userId), RecordListWithUser::new)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
 
     public Observable<User> getUserById(int userId) {
+        User user = mInMemoryCacheHelper.getUser(userId);
+        if (user != null) {
+            return Observable.just(user);
+        }
         return mDatabaseHelper.getUserById(userId)
+                .doOnNext(user1 -> mInMemoryCacheHelper.putUser(user1))
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
     }
@@ -96,14 +109,21 @@ public class DataManager {
     }
 
     public Observable<RecordWithUser> getRecordById(int recordId) {
-        Observable<Record> record = mDatabaseHelper.getRecordById(recordId)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler)
-                .cache();
-        Observable<User> user = record
+        Observable<Record> recordObservable;
+        Record record = mInMemoryCacheHelper.getRecord(recordId);
+        if (record != null) {
+            recordObservable = Observable.just(record);
+        } else {
+            recordObservable = mDatabaseHelper.getRecordById(recordId)
+                    .doOnNext(record1 -> mInMemoryCacheHelper.putRecord(record1))
+                    .subscribeOn(mIoScheduler)
+                    .observeOn(mUiScheduler)
+                    .cache();
+        }
+        Observable<User> userObservable = recordObservable
                 .map(Record::getUserId)
                 .flatMap(this::getUserById);
-        return Observable.zip(record, user, RecordWithUser::new);
+        return Observable.zip(recordObservable, userObservable, RecordWithUser::new);
     }
 
     public Observable<List<Record>> getAllRecords() {
@@ -227,7 +247,7 @@ public class DataManager {
         int myselfId = mPreferenceHelper.getMyselfId();
         Observable<User> observable;
         if (myselfId == PreferenceHelper.NO_MYSELF_ID) {
-            // для myself загружается photo_200.
+            // для myself загружается photo_200. // TODO: 23.12.2016 не загружается.
             observable = mVkApiHelper.getMyself()
                     .doOnNext(vkApiUserFull -> vkApiUserFull.photo_100 = vkApiUserFull.photo_200)
                     .map(User::new)
@@ -267,6 +287,7 @@ public class DataManager {
                 .doOnCompleted(() -> {
                     mPreferenceHelper.clear();
                     mDatabaseHelper.doDeleteAllRecordsAndUsers();
+                    mInMemoryCacheHelper.clear();
                 })
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler)

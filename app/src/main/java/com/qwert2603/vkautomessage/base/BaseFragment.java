@@ -5,6 +5,8 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
+import com.qwert2603.vkautomessage.util.LogUtils;
+
 /**
  * Базовый фрагмент, построенный для работы с шаблоном MVP.
  * Организует взаимодействие с презентером:
@@ -44,6 +46,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     @CallSuper
     @Override
     public void onResume() {
+        LogUtils.d(getClass() + " onResume");
         super.onResume();
         getPresenter().onViewReady();
     }
