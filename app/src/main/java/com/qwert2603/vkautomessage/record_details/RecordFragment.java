@@ -146,7 +146,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         mTimeCardView.setOnClickListener(v -> mRecordPresenter.onEditTimeClicked());
         mRepeatInfoCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatInfoClicked());
 
-        // чтобы toolbar title не моргал.
+        // чтобы toolbar title не моргал. // TODO: 23.12.2016 все равно моргает.
         mAppBarLayout.setAlpha(0);
         AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 170);
 

@@ -119,8 +119,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
 
-        // TODO: 21.12.2016 integerViews
-
         // to allow marquee scrolling.
         mUserNameTextView.setSelected(true);
         mUserNameTextView.setHorizontallyScrolling(true);

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.integer_view.IntegerView;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 public class CounterIntegerView extends LinearLayout implements IntegerView {
 
@@ -124,6 +125,7 @@ public class CounterIntegerView extends LinearLayout implements IntegerView {
             mOutTextView.setTranslationY(0);
             mOutTextView.animate().translationY(getHeight());
         }
+        AndroidUtils.runOnUI(() -> mOutTextView.setVisibility(GONE), mOutTextView.animate().getDuration());
 
     }
 
