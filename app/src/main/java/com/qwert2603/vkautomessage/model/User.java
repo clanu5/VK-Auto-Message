@@ -9,6 +9,7 @@ import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.Objects;
 
+// TODO: 23.12.2016 don't implement  Parcelable
 public class User implements Identifiable, Parcelable {
 
     public static final int NO_INFO = -1;

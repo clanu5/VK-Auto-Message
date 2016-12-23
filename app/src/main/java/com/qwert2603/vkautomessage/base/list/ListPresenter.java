@@ -59,15 +59,13 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         }
         if (mSelectedIds.isEmpty()) {
             getView().disableUI();
-            getView().moveToDetailsForItem(list.get(position), false, -1);
+            getView().moveToDetailsForItem(list.get(position).getId(), false, -1);
         } else {
             toggleItemSelectionState(position);
         }
     }
 
     public void onItemAtPositionLongClicked(int position) {
-        // TODO: 29.11.2016 начинать множественное выделение на longClick (чтобы удалять сразу несколько потом)
-        //askDeleteItem(position);
         toggleItemSelectionState(position);
     }
 
@@ -86,17 +84,20 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
                 getView().stopListSelectionMode();
             }
         }
+        getView().showSelectedItemsCount(mSelectedIds.size());
     }
 
     public void onSelectAllClicked() {
         for (T t : getList()) {
             mSelectedIds.add(t.getId());
         }
+        getView().showSelectedItemsCount(mSelectedIds.size());
         getView().selectAllItems();
     }
 
     public void onActionModeCancelled() {
         mSelectedIds.clear();
+        getView().showSelectedItemsCount(0);
         getView().unSelectAllItems();
     }
 

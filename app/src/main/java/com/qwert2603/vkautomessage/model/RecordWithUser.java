@@ -43,4 +43,12 @@ public class RecordWithUser implements Parcelable {
             return new RecordWithUser[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "RecordWithUser{" +
+                "mRecord=" + mRecord +
+                ", mUser=" + mUser +
+                '}';
+    }
 }

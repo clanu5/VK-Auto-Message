@@ -25,7 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qwert2603.vkautomessage.ChangeColor;
+import com.qwert2603.vkautomessage.transition.ChangeColor;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;

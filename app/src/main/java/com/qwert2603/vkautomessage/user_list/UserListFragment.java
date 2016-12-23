@@ -148,12 +148,12 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
-    protected void moveToDetailsForItem(User user) {
-        LogUtils.d("moveToDetailsForItem " + user);
+    protected void moveToDetailsForItem(int itemId) {
+        LogUtils.d("moveToDetailsForItem " + itemId);
         prepareRecyclerViewForTransition();
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
-                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(user.getId());
+                (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
 
         if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
@@ -163,7 +163,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             );
         }
         Intent intent = new Intent(getActivity(), RecordListActivity.class);
-        intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, user.getId());
+        intent.putExtra(RecordListActivity.EXTRA_ITEM_ID, itemId);
 
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }

@@ -19,6 +19,7 @@ public class RxBus {
     public static class Event {
         public static final int EVENT_USERS_VK_DATA_UPDATED = 1;
         public static final int EVENT_MODE_SHOW_ERRORS_CHANGED = 2;
+        public static final int EVENT_RECORD_ENABLED_CHANGED = 3;
 
         public final int mEvent;
         @Nullable public final Object mObject;

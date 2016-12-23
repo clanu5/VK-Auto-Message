@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.qwert2603.vkautomessage;
+package com.qwert2603.vkautomessage.transition;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;

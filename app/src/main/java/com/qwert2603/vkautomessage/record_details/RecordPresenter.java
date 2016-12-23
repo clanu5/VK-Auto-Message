@@ -61,8 +61,8 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
                 );
     }
 
-    public void setRecord(Record record) {
-        setModel(new RecordWithUser(record, User.createEmptyUser()));
+    public void setRecord(RecordWithUser recordWithUser) {
+        setModel(recordWithUser);
     }
 
     @Override
@@ -176,7 +176,15 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         Record record = model.mRecord;
         if (record.isEnabled() != enable) {
             record.setEnabled(enable);
+
+            int enabledRecordsCount = model.mUser.getEnabledRecordsCount();
+            enabledRecordsCount += record.isEnabled() ? 1 : -1;
+            model.mUser.setEnabledRecordsCount(enabledRecordsCount);
+
+            mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_RECORD_ENABLED_CHANGED, model));
+
             mDataManager.onRecordUpdated(record);
+            mDataManager.onUserUpdated(model.mUser);
         }
     }
 

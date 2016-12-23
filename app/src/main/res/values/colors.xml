@@ -6,7 +6,7 @@
     <color name="colorAccent">#4CAF50</color>
 
     <color name="divider">#7777</color>
-    <color name="swipe_back_user_list">#FFEB3B</color> <!--todo ??? #ff8 -->
+    <color name="swipe_back_user_list">#FFEB3B</color>
 
     <color name="dialog_delete_record_title">#111111</color>
     <color name="user_name">#5F4041</color>

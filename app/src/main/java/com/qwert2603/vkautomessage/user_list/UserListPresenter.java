@@ -158,7 +158,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             if (userList == null || view == null) {
                 return;
             }
-            getView().moveToDetailsForItem(userList.get(userPosition), true, userPosition);
+            getView().moveToDetailsForItem(userId, true, userPosition);
         } else {
             mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
@@ -180,7 +180,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                         userList.add(user);
                         view.showList(userList);
 
-                        view.moveToDetailsForItem(user, true, userList.size() - 1);
+                        view.moveToDetailsForItem(user.getId(), true, userList.size() - 1);
                     }, t -> {
                         UserListView view = getView();
                         if (view != null) {

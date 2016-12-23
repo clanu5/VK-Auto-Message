@@ -1,6 +1,5 @@
 package com.qwert2603.vkautomessage.record_list;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.RecordWithUser;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordPresenter;
 import com.qwert2603.vkautomessage.record_details.RecordView;
 import com.qwert2603.vkautomessage.util.LogUtils;
@@ -24,23 +25,9 @@ import butterknife.ButterKnife;
 
 public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordListAdapter.RecordViewHolder, RecordPresenter> {
 
-    public interface RecordEnableChangedCallback {
-        /**
-         * Запись была включена или выключена.
-         *
-         * @param position позиция измененное записи.
-         * @param enabled  true, если запись была включена.
-         */
-        void onRecordEnableChanged(int position, boolean enabled);
-    }
-
-    private RecordEnableChangedCallback mRecordEnableChangedCallback;
+    private User mUser = User.createEmptyUser();
 
     public RecordListAdapter() {
-    }
-
-    public void setRecordEnableChangedCallback(RecordEnableChangedCallback recordEnableChangedCallback) {
-        mRecordEnableChangedCallback = recordEnableChangedCallback;
     }
 
     @Override
@@ -48,6 +35,14 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         LogUtils.d("RecordListAdapter onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_record, parent, false);
         return new RecordViewHolder(view);
+    }
+
+    public User getUser() {
+        return mUser;
+    }
+
+    public void setUser(User user) {
+        mUser = user;
     }
 
     public class RecordViewHolder
@@ -73,13 +68,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
             super(itemView);
             VkAutoMessageApplication.getAppComponent().inject(RecordViewHolder.this);
             ButterKnife.bind(RecordViewHolder.this, itemView);
-            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int layoutPosition = getLayoutPosition();
-                if (mRecordEnableChangedCallback != null && layoutPosition != RecyclerView.NO_POSITION) {
-                    mRecordEnableChangedCallback.onRecordEnableChanged(layoutPosition, isChecked);
-                }
-                getPresenter().onEnableClicked(isChecked);
-            });
+            mEnableCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> getPresenter().onEnableClicked(isChecked));
         }
 
         @Override
@@ -89,7 +78,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         protected void setModel(Record record) {
-            mRecordPresenter.setRecord(record);
+            mRecordPresenter.setRecord(new RecordWithUser(record, mUser));
         }
 
         @Override
@@ -109,6 +98,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         @Override
         public void showEnabled(boolean enabled) {
             mEnableCheckBox.setChecked(enabled);
+            mEnableCheckBox.jumpDrawablesToCurrentState();
         }
 
         @Override

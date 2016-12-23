@@ -9,7 +9,6 @@ import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
 public abstract class BaseActivity extends AppCompatActivity {
 
     public static final String EXTRA_ITEM_ID = "com.qwert2603.vkautomessage.EXTRA_ITEM_ID";
-    public static final String EXTRA_ITEM = "com.qwert2603.vkautomessage.EXTRA_ITEM";
 
     protected abstract NavigationFragment createFragment();
 

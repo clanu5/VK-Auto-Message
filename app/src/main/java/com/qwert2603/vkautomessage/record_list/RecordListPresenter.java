@@ -11,6 +11,7 @@ import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.RecordListWithUser;
+import com.qwert2603.vkautomessage.model.RecordWithUser;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
@@ -26,6 +27,7 @@ import rx.subscriptions.Subscriptions;
 public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
+    private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
     @Inject
     DataManager mDataManager;
@@ -57,7 +59,35 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     }
 
     @Override
+    public void bindView(RecordListView view) {
+        super.bindView(view);
+        mRxBusSubscription = mRxBus.toObservable()
+                .filter(event -> event.mEvent == RxBus.Event.EVENT_RECORD_ENABLED_CHANGED)
+                .subscribe(event -> {
+                    if (!(event.mObject instanceof RecordWithUser)) {
+                        return;
+                    }
+                    RecordListWithUser model = getModel();
+                    if (model == null) {
+                        return;
+                    }
+                    RecordWithUser recordWithUser = (RecordWithUser) event.mObject;
+                    if (model.mUser.getId() == recordWithUser.mUser.getId()) {
+                        LogUtils.d("EVENT_RECORD_ENABLED_CHANGED " + recordWithUser);
+                        model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
+                        model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
+                        RecordListView view1 = getView();
+                        if (view1 != null) {
+                            showUserRecordsCount(model.mUser, view1);
+                        }
+                    }
+                }, LogUtils::e);
+    }
+
+    @Override
     public void unbindView() {
+        mRxBusSubscription.unsubscribe();
+        mRxBusSubscription = Subscriptions.unsubscribed();
         mSubscription.unsubscribe();
         super.unbindView();
     }
@@ -68,6 +98,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         RecordListWithUser recordListWithUser = getModel();
         if (recordListWithUser != null) {
             User user = recordListWithUser.mUser;
+            view.setUser(user);
             view.showUserName(StringUtils.getUserName(user));
             showUserRecordsCount(user, view);
             ImageView photoImageView = view.getUserPhotoImageView();
@@ -107,11 +138,14 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                             }
                             int recordPosition = getRecordPosition(recordWithUser.mRecord.getId());
                             if (recordPosition != -1) {
-                                onRecordEnableChanged(recordPosition, recordWithUser.mRecord.isEnabled());
+                                LogUtils.d("doLoadItem " + id + " %% " + recordWithUser);
+                                model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
+                                model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 RecordListView view = getView();
                                 if (view != null) {
                                     view.showList(model.mRecordList);
+                                    showUserRecordsCount(model.mUser, view);
                                 }
                             }
                         },
@@ -121,17 +155,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                             LogUtils.e(throwable);
                         }
                 );
-    }
-
-    public void onRecordEnableChanged(int position, boolean enabled) {
-        if (getModel().mRecordList.get(position).isEnabled() == enabled) {
-            return;
-        }
-        User user = getModel().mUser;
-        int enabledRecordsCount = user.getEnabledRecordsCount();
-        enabledRecordsCount += enabled ? 1 : -1;
-        user.setEnabledRecordsCount(enabledRecordsCount);
-        showUserRecordsCount(user, getView());
     }
 
     public void onNewRecordClicked() {
@@ -163,8 +186,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     user.setRecordsCount(user.getRecordsCount() + 1);
                     showUserRecordsCount(user, view);
 
-                    // TODO: 13.12.2016 передавать recordWithUser для перехода к активити с подробностями
-                    view.moveToDetailsForItem(record, true, recordList.size() - 1);
+                    view.moveToDetailsForItem(record.getId(), true, recordList.size() - 1);
                 }, t -> {
                     RecordListView view = getView();
                     if (view != null) {

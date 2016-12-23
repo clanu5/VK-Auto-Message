@@ -39,6 +39,8 @@ public class DataManager {
     @Inject
     SendMessageHelper mSendMessageHelper;
 
+    // TODO: 23.12.2016 in memory cache
+
     @Inject
     @Named(Const.IO_THREAD)
     Scheduler mIoScheduler;
@@ -137,7 +139,7 @@ public class DataManager {
         return Observable.zip(deleteRecordsObservable, deleteUserObservable, (v1, v2) -> null);
     }
 
-    public Observable<Void> updateUser(User user) {
+    private Observable<Void> updateUser(User user) {
         return mDatabaseHelper.updateUser(user)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
@@ -157,7 +159,7 @@ public class DataManager {
                 .observeOn(mUiScheduler);
     }
 
-    public Observable<Void> updateRecord(Record record) {
+    private Observable<Void> updateRecord(Record record) {
         putRecordToSendMessageService(record);
         return mDatabaseHelper.updateRecord(record)
                 .subscribeOn(mIoScheduler)
@@ -176,14 +178,26 @@ public class DataManager {
                         i -> {
                         },
                         LogUtils::e,
-                        () -> {
-                            Subscription s = mUpdateRecordSubscriptionMap.remove(record.getId());
-                            if (s != null) {
-                                s.unsubscribe();
-                            }
-                        }
+                        () -> mUpdateRecordSubscriptionMap.remove(record.getId())
                 );
         mUpdateRecordSubscriptionMap.put(record.getId(), subscription);
+    }
+
+    private Map<Integer, Subscription> mUpdateUserSubscriptionMap = new HashMap<>();
+
+    public void onUserUpdated(User user) {
+        Subscription removed = mUpdateUserSubscriptionMap.remove(user.getId());
+        if (removed != null) {
+            removed.unsubscribe();
+        }
+        Subscription subscription = updateUser(user)
+                .subscribe(
+                        i -> {
+                        },
+                        LogUtils::e,
+                        () -> mUpdateUserSubscriptionMap.remove(user.getId())
+                );
+        mUpdateUserSubscriptionMap.put(user.getId(), subscription);
     }
 
     public Observable<List<VkUser>> getAllVkFriends() {
@@ -262,7 +276,8 @@ public class DataManager {
 
     /**
      * Настроить отправку сообщений для записи record.
-     * Этот метод стоит вызывать, когда запись меняется и после включения устройства.
+     * Этот метод стоит вызывать, когда запись создается/меняется и после включения устройства.
+     * А также после каждой отправки сообщения, чтобы назначить следующую отправку.
      */
     public void putRecordToSendMessageService(Record record) {
         mSendMessageHelper.onRecordChanged(record);

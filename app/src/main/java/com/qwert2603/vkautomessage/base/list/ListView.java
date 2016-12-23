@@ -41,7 +41,7 @@ public interface ListView<T extends Identifiable> extends BaseView {
      * @param newItemPosition position of just added item if newItem==true.
      *                        if newItem==false then newItemPosition is undefined.
      */
-    void moveToDetailsForItem(T item, boolean newItem, int newItemPosition);
+    void moveToDetailsForItem(int itemId, boolean newItem, int newItemPosition);
 
     /**
      * Спросить у пользователя подтверждение удаления элемента с переданным id.
@@ -55,6 +55,7 @@ public interface ListView<T extends Identifiable> extends BaseView {
     void setItemSelectionState(int position, boolean select);
     void selectAllItems();
     void unSelectAllItems();
+    void showSelectedItemsCount(int count);
 
     void scrollToTop();
 

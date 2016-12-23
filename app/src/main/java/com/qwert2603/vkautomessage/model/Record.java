@@ -345,4 +345,18 @@ public class Record implements Identifiable, Parcelable {
         parcel.writeInt(mHour);
         parcel.writeInt(mMinute);
     }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "mId=" + mId +
+                ", mUserId=" + mUserId +
+                ", mMessage='" + mMessage + '\'' +
+                ", mEnabled=" + mEnabled +
+                ", mRepeatType=" + mRepeatType +
+                ", mRepeatInfo=" + mRepeatInfo +
+                ", mHour=" + mHour +
+                ", mMinute=" + mMinute +
+                '}';
+    }
 }

@@ -25,6 +25,7 @@ import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
 import com.qwert2603.vkautomessage.base.list.ListFragment;
 import com.qwert2603.vkautomessage.delete_record.DeleteRecordDialog;
 import com.qwert2603.vkautomessage.model.Record;
+import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
@@ -128,8 +129,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
 
-        mRecordListAdapter.setRecordEnableChangedCallback((position, enabled) -> mRecordListPresenter.onRecordEnableChanged(position, enabled));
-
         int duration = getResources().getInteger(R.integer.transition_duration);
         // TODO: 21.12.2016 движение по кривой.
         TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
@@ -163,6 +162,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    public void setUser(User user) {
+        mRecordListAdapter.setUser(user);
+    }
+
+    @Override
     public void showUserName(String name) {
         mUserNameTextView.setText(name);
     }
@@ -178,11 +182,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    protected void moveToDetailsForItem(Record record) {
+    protected void moveToDetailsForItem(int itemId) {
         prepareRecyclerViewForTransition();
         ActivityOptions activityOptions = null;
         RecordListAdapter.RecordViewHolder viewHolder =
-                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(record.getId());
+                (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
 
         if (viewHolder != null) {
             TextView messageTextView = viewHolder.mMessageTextView;
@@ -194,8 +198,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             );
         }
         Intent intent = new Intent(getActivity(), RecordActivity.class);
-        // TODO: 16.12.2016 ??? intent.putExtra(RecordActivity.EXTRA_ITEM, record);
-        intent.putExtra(RecordActivity.EXTRA_ITEM_ID, record.getId());
+        intent.putExtra(RecordActivity.EXTRA_ITEM_ID, itemId);
         startActivityForResult(intent, REQUEST_DETAILS_FOT_ITEM, activityOptions != null ? activityOptions.toBundle() : null);
     }
 

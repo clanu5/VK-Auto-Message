@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.qwert2603.vkautomessage.R;
@@ -228,23 +229,23 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     }
 
     @Override
-    public void moveToDetailsForItem(T item, boolean newItem, int newItemPosition) {
-        LogUtils.d("moveToDetailsForItem" + newItemPosition + " _ " + item);
+    public void moveToDetailsForItem(int itemId, boolean newItem, int newItemPosition) {
+        LogUtils.d("moveToDetailsForItem" + newItemPosition + " _ " + itemId);
         if (newItem) {
             mRecyclerView.scrollToPosition(newItemPosition);
             AndroidUtils.runOnUI(() -> {
-                RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForItemId(item.getId());
+                RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForItemId(itemId);
                 if (viewHolder != null) {
                     viewHolder.itemView.setPressed(true);
                 }
-                moveToDetailsForItem(item);
+                moveToDetailsForItem(itemId);
             }, RecyclerItemAnimator.ENTER_DURATION + 80);
         } else {
-            moveToDetailsForItem(item);
+            moveToDetailsForItem(itemId);
         }
     }
 
-    protected abstract void moveToDetailsForItem(T item);
+    protected abstract void moveToDetailsForItem(int itemId);
 
     @Override
     public void setItemSelectionState(int position, boolean select) {
@@ -288,6 +289,12 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @Override
     public void stopListSelectionMode() {
         stopActionMode();
+    }
+
+    @Override
+    public void showSelectedItemsCount(int count) {
+        // TODO: 23.12.2016
+        Toast.makeText(getActivity(), "count ==" + count, Toast.LENGTH_SHORT).show();
     }
 
     @Override

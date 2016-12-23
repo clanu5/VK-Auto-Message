@@ -6,8 +6,6 @@ import android.support.v4.app.Fragment;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
-import com.qwert2603.vkautomessage.model.Record;
-import com.qwert2603.vkautomessage.util.LogUtils;
 
 public class RecordActivity extends BaseActivity {
 
@@ -27,13 +25,6 @@ public class RecordActivity extends BaseActivity {
     }
 
     private RecordFragment createRecordFragmentForIntent(Intent intent) {
-        LogUtils.d("createRecordFragmentForIntent " + intent.hasExtra(EXTRA_ITEM));
-        if (intent.getParcelableExtra(EXTRA_ITEM) != null) {
-            Record record = intent.getParcelableExtra(EXTRA_ITEM);
-            return RecordFragment.newInstance(record);
-        } else {
-            int recordId = intent.getIntExtra(EXTRA_ITEM_ID, -1);
-            return RecordFragment.newInstance(recordId);
-        }
+        return RecordFragment.newInstance(intent.getIntExtra(EXTRA_ITEM_ID, -1));
     }
 }

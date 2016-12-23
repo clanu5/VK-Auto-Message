@@ -174,17 +174,17 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void setItemSelectionState(int position, boolean select) {
-        mChooseUserAdapter.setItemSelectionState(position, select);
+        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override
     public void selectAllItems() {
-        mChooseUserAdapter.selectAllItems();
+        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override
     public void unSelectAllItems() {
-        mChooseUserAdapter.unSelectAllItems();
+        LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
     @Override
@@ -194,6 +194,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
 
     @Override
     public void stopListSelectionMode() {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
+    public void showSelectedItemsCount(int count) {
         LogUtils.e(new RuntimeException("Should not be called!"));
     }
 
@@ -249,7 +254,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void moveToDetailsForItem(VkUser item, boolean newItem, int newItemPosition) {
+    public void moveToDetailsForItem(int itemId, boolean newItem, int newItemPosition) {
     }
 
     @Override

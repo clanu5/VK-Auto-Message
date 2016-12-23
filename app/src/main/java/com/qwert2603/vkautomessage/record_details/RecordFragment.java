@@ -21,7 +21,6 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
-import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.EditMessageDialog;
@@ -40,7 +39,6 @@ import butterknife.ButterKnife;
 public class RecordFragment extends NavigationFragment<RecordPresenter> implements RecordView {
 
     private static final String recordIdKey = "recordId";
-    private static final String recordKey = "recordId";
 
     private static final int REQUEST_EDIT_MESSAGE = 1;
     private static final int REQUEST_EDIT_TIME = 2;
@@ -53,14 +51,6 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         RecordFragment recordFragment = new RecordFragment();
         Bundle args = new Bundle();
         args.putInt(recordIdKey, recordId);
-        recordFragment.setArguments(args);
-        return recordFragment;
-    }
-
-    public static RecordFragment newInstance(Record record) {
-        RecordFragment recordFragment = new RecordFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(recordKey, record);
         recordFragment.setArguments(args);
         return recordFragment;
     }
@@ -137,14 +127,8 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(RecordFragment.this);
-
-        if (getArguments().getParcelable(recordKey) != null) {
-            LogUtils.d("getArguments().getParcelable(recordKey) != null" + getArguments().getParcelable(recordKey));
-            mRecordPresenter.setRecord(getArguments().getParcelable(recordKey));
-        } else {
-            LogUtils.d("getArguments().getInt(recordIdKey) == " + getArguments().getInt(recordIdKey));
-            mRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
-        }
+        LogUtils.d("getArguments().getInt(recordIdKey) == " + getArguments().getInt(recordIdKey));
+        mRecordPresenter.setRecordId(getArguments().getInt(recordIdKey));
         super.onCreate(savedInstanceState);
     }
 
@@ -326,12 +310,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @Override
     protected void performBackPressed() {
         Intent intent = new Intent();
-        Record record = getArguments().getParcelable(recordKey);
-        if (record != null) {
-            intent.putExtra(BaseActivity.EXTRA_ITEM_ID, record.getId());
-        } else {
-            intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
-        }
+        intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
         getActivity().setResult(Activity.RESULT_OK, intent);
 
         // чтобы toolbar title не моргал.
