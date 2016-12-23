@@ -34,6 +34,7 @@
 
     <string name="username_transition" translatable="false">username_transition</string>
     <string name="user_photo_transition" translatable="false">user_photo_transition</string>
+    <string name="toolbar_icon_transition" translatable="false">toolbar_icon_transition</string>
 
     <string name="toast_dont_write_to_developer">I do not recommend you to do that!</string>
     <string name="toast_great_choice">Great choice!</string>

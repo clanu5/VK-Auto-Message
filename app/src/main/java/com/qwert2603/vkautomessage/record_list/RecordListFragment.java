@@ -185,12 +185,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     protected void moveToDetailsForItem(int itemId) {
         prepareRecyclerViewForTransition();
 
+        // TODO: 23.12.2016 is it possible to update message text view before back transition starts???
         // not using scene transition for message TextView because if message was changed in RecordActivity than
         // when back scene transition will be played there will be old text in message TextView in this activity (in VH)
         // and old text will blink for a short time before text in VH will be updated.
         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                 Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
                 Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
+                // TODO: 23.12.2016 animate icon image and make ripple effect
                 Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
         );
 

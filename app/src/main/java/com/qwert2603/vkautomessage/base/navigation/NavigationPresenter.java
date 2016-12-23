@@ -77,7 +77,7 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
         mSubscription = mInjectionsHolder.mDataManager
                 .getUserMyself()
                 .subscribe(
-                        NavigationPresenter.this::setModel,
+                        model -> NavigationPresenter.this.setModel(model),
                         throwable -> {
                             mSubscription.unsubscribe();
                             updateView();

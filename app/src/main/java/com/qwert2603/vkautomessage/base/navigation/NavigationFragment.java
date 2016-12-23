@@ -107,6 +107,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         super.onCreate(savedInstanceState);
 
         mInjectionsHolder = new InjectionsHolder();
+        mInjectionsHolder.mNavigationPresenter.bindView(NavigationFragment.this);
 
         mRxBusSubscription = mInjectionsHolder.mRxBus.toObservable()
                 .filter(event -> event.mEvent == RxBus.Event.EVENT_MODE_SHOW_ERRORS_CHANGED)
@@ -121,12 +122,14 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     @Override
     public void onDestroy() {
         mRxBusSubscription.unsubscribe();
+        mInjectionsHolder.mNavigationPresenter.unbindView();
         super.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mInjectionsHolder.mNavigationPresenter.onViewReady();
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -137,6 +140,12 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
                 }
             });
         }
+    }
+
+    @Override
+    public void onPause() {
+        mInjectionsHolder.mNavigationPresenter.onViewNotReady();
+        super.onPause();
     }
 
     @SuppressLint("InflateParams")
@@ -204,7 +213,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
                     ImageButton btn = (ImageButton) child;
                     if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
                         mToolbarIconImageView = btn;
-                        mToolbarIconImageView.setTransitionName("mToolbarIconImageView");
+                        mToolbarIconImageView.setTransitionName(getString(R.string.toolbar_icon_transition));
                         break;
                     }
                 }
