@@ -16,6 +16,6 @@ public interface RecordListView extends ListView<Record> {
 
     void showUserName(String name);
     ImageView getUserPhotoImageView();
-    void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated);
+    void showRecordsCount(int recordsCount, int enabledRecordsCount);
     void showDontWriteToDeveloper();
 }

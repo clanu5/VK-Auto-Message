@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +12,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ViewAnimator;
 
@@ -82,7 +80,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
-                //return super.getExtraLayoutSpace(state);
                 return 400;
             }
         });
@@ -120,19 +117,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerItemAnimator = new RecyclerItemAnimator();
         mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.getViewTreeObserver().addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-            @Override
-            public void onDraw() {
-                mRecyclerView.getViewTreeObserver().removeOnDrawListener(this);
-
-                // тут считается, что высота элемента всегда равна высоте элемента-пользователя.
-                // высота элемента-записи отличается несильно, так что этим можно пренебречь.
-                float childHeight = getResources().getDimension(R.dimen.item_user_height);
-                int itemsPerScreen = 1 + (int) (mRecyclerView.getHeight() / childHeight);
-                LogUtils.d("itemsPerScreen == " + itemsPerScreen);
-                mRecyclerItemAnimator.setItemsPerScreen(itemsPerScreen);
-            }
-        });
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
 
@@ -277,7 +261,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
 
         mActionModeDeleteButton = (ImageButton) actionModeView.findViewById(R.id.delete);
-        mActionModeDeleteButton.setOnClickListener(v -> Snackbar.make(mContentRootView, "delete", Snackbar.LENGTH_SHORT).show());
+        mActionModeDeleteButton.setOnClickListener(v -> getPresenter().onDeleteSelectedClicked());
         mActionModeDeleteButton.setScaleY(0.4f);
         mActionModeDeleteButton.setAlpha(0.0f);
         mActionModeDeleteButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
@@ -290,7 +274,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @Override
     protected void onActionModeRestored(View view) {
         mActionModeDeleteButton = (ImageButton) view.findViewById(R.id.delete);
-        mActionModeDeleteButton.setOnClickListener(v -> Snackbar.make(mContentRootView, "delete restored", Snackbar.LENGTH_SHORT).show());
+        mActionModeDeleteButton.setOnClickListener(v -> getPresenter().onDeleteSelectedClicked());
         mVectorIntegerView = (VectorIntegerView) view.findViewById(R.id.integer_view);
     }
 

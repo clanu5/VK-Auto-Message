@@ -3,9 +3,13 @@ package com.qwert2603.vkautomessage.record_list;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
@@ -119,49 +123,51 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         // TODO: 12.12.2016 фильтрация активных и неактивных записей
 
-        // TODO: 13.12.2016 в альбомной ориентации -- 2 столбца
-
         // to allow marquee scrolling.
         mUserNameTextView.setSelected(true);
         mUserNameTextView.setHorizontallyScrolling(true);
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
-        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        } else {
+            mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2) {
+                @Override
+                protected int getExtraLayoutSpace(RecyclerView.State state) {
+                    return 300;
+                }
+            });
+        }
 
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
-        Slide slideContent = new Slide(Gravity.START);
-        slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
-        slideContent.excludeTarget(android.R.id.statusBarBackground, true);
-        slideContent.excludeTarget(mToolbarIconImageView, true);
-        for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
-            slideContent.excludeTarget(mViewAnimator.getChildAt(i), true);
+        Transition transitionContent;
+        Slide slideFab = null;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            transitionContent = new Slide(Gravity.START);
+            slideFab = new Slide(Gravity.END);
+            slideFab.addTarget(mNewRecordFAB);
+        } else {
+            transitionContent = new Explode();
         }
-
-        Slide slideFab = new Slide(Gravity.END);
-        slideFab.addTarget(mNewRecordFAB);
+        transitionContent.excludeTarget(android.R.id.navigationBarBackground, true);
+        transitionContent.excludeTarget(android.R.id.statusBarBackground, true);
+        transitionContent.excludeTarget(mToolbarIconImageView, true);
+        transitionContent.excludeTarget(mRecordsCountLinearLayout, true);
+        for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
+            transitionContent.excludeTarget(mViewAnimator.getChildAt(i), true);
+        }
 
         Slide slideRecordsCount = new Slide(Gravity.END);
         slideRecordsCount.addTarget(mRecordsCountLinearLayout);
-
-        slideRecordsCount.addListener(new TransitionUtils.TransitionListenerCallback() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                LogUtils.d("onTransitionStart");
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-                LogUtils.d("onTransitionEnd");
-            }
-        });
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideFab)
                 .addTransition(slideRecordsCount)
-                .addTransition(slideContent)
+                .addTransition(transitionContent)
                 .setDuration(duration);
 
         getActivity().getWindow().setExitTransition(transitionSet);
@@ -207,10 +213,15 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         return mUserPhotoImageView;
     }
 
+    private boolean mRecordsCountEverShown = false;
+
     @Override
-    public void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated) {
-        mRecordsCountTextView.setInteger(recordsCount, updated);
-        mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, updated);
+    public void showRecordsCount(int recordsCount, int enabledRecordsCount) {
+        mRecordsCountTextView.setInteger(recordsCount, mRecordsCountEverShown);
+        mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, mRecordsCountEverShown);
+        if (!mRecordsCountEverShown) {
+            mRecordsCountEverShown = true;
+        }
     }
 
     @Override

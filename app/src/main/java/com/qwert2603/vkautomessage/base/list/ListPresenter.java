@@ -6,6 +6,7 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.Identifiable;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ import java.util.Set;
  */
 public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends BasePresenter<M, V> {
 
-    private Set<Integer> mSelectedIds = new HashSet<>();
+    protected Set<Integer> mSelectedIds = new HashSet<>();
 
     protected abstract List<T> getList();
 
@@ -102,8 +103,26 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().unSelectAllItems();
     }
 
+    public void onDeleteSelectedClicked() {
+        Iterator<T> each = getList().iterator();
+        while (each.hasNext()) {
+            if (mSelectedIds.contains(each.next().getId())) {
+                each.remove();
+            }
+        }
+        mSelectedIds.clear();
+        updateView();
+        getView().stopListSelectionMode();
+    }
+
     public void onItemDismissed(int position) {
-        askDeleteItem(position);
+//        askDeleteItem(position);
+        if (mSelectedIds.contains(getList().get(position).getId())) {
+            toggleItemSelectionState(position);
+        }
+
+        getList().remove(position);
+        updateView();
     }
 
     public void onItemDeleteSubmitted(int id) {

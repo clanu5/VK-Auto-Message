@@ -8,5 +8,5 @@ public interface UserView extends BaseView {
     void showName(String name);
     ImageView getPhotoImageView();
     void hideRecordsCount();
-    void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated);
+    void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated);// TODO: 24.12.2016 remove updated param
 }

@@ -43,8 +43,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     private Interpolator mEnterInterpolator = new DecelerateInterpolator();
 
-    private int mEnterDelayPerScreen = ENTER_EACH_ITEM_DELAY * 15;
-
     private AnimateEnterMode mAnimateEnterMode = AnimateEnterMode.NONE;
 
     private boolean mDelayEnter = false;
@@ -64,6 +62,8 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     public boolean animateRemove(RecyclerView.ViewHolder holder) {
         // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
     //http:blog.trsquarelab.com/2015/12/creating-custom-animation-in.html
+
+        // TODO: 24.12.2016 don't animate if item was swiped
         LogUtils.d("animateRemove " + holder);
         runRemoveAnimation(holder);
         return false;
@@ -149,8 +149,8 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         objectAnimator.setDuration(ENTER_DURATION);
 
         if (mDelayEnter) {
-            LogUtils.d("setStartDelay " + Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
-            objectAnimator.setStartDelay(Math.min(mEnterDelayPerScreen * 2, viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
+            LogUtils.d("setStartDelay " + viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
+            objectAnimator.setStartDelay(viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
         }
 
         objectAnimator.setInterpolator(mEnterInterpolator);
@@ -203,21 +203,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public void setEnterOrigin(EnterOrigin enterOrigin) {
         mEnterOrigin = enterOrigin;
-    }
-
-    @SuppressWarnings("unused")
-    public int getEnterDelayPerScreen() {
-        return mEnterDelayPerScreen;
-    }
-
-    /**
-     * Установить кол-во элементов, которые видны на экране в любой момент времени.
-     * Чтобы анимировалось появление только первых itemsPerScreen элементов.
-     *
-     * @param itemsPerScreen кол-во элементов, которые видны на экране в любой момент времени.
-     */
-    public void setItemsPerScreen(int itemsPerScreen) {
-        mEnterDelayPerScreen = itemsPerScreen * ENTER_EACH_ITEM_DELAY;
     }
 
     @SuppressWarnings("unused")

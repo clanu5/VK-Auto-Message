@@ -78,7 +78,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
                         RecordListView view1 = getView();
                         if (view1 != null) {
-                            showUserRecordsCount(model.mUser, view1, true);
+                            showUserRecordsCount(model.mUser, view1);
                         }
                     }
                 }, LogUtils::e);
@@ -100,7 +100,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             User user = recordListWithUser.mUser;
             view.setUser(user);
             view.showUserName(StringUtils.getUserName(user));
-            showUserRecordsCount(user, view, false);
+            showUserRecordsCount(user, view);
             ImageView photoImageView = view.getUserPhotoImageView();
             if (photoImageView != null) {
                 ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
@@ -108,21 +108,21 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         }
     }
 
-    private void showUserRecordsCount(@NonNull User user, @NonNull RecordListView view, boolean updated) {
-        view.showRecordsCount(user.getRecordsCount(), user.getEnabledRecordsCount(), updated);
+    private void showUserRecordsCount(@NonNull User user, @NonNull RecordListView view) {
+        view.showRecordsCount(user.getRecordsCount(), user.getEnabledRecordsCount());
     }
 
     @Override
     protected void doLoadList() {
         mSubscription.unsubscribe();
         mSubscription = mDataManager.getRecordsForUser(mUserId).subscribe(
-                        model -> RecordListPresenter.this.setModel(model),
-                        throwable -> {
-                            mSubscription.unsubscribe();
-                            updateView();
-                            LogUtils.e(throwable);
-                        }
-                );
+                model -> RecordListPresenter.this.setModel(model),
+                throwable -> {
+                    mSubscription.unsubscribe();
+                    updateView();
+                    LogUtils.e(throwable);
+                }
+        );
     }
 
     @Override
@@ -143,7 +143,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 if (canUpdateView()) {
                                     getView().notifyItemChanged(recordPosition);
-                                    showUserRecordsCount(model.mUser, getView(), false);
+                                    showUserRecordsCount(model.mUser, getView());
                                 }
                             }
                         },
@@ -182,7 +182,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     User user = model.mUser;
                     user.setRecordsCount(user.getRecordsCount() + 1);
-                    showUserRecordsCount(user, view, true);
+                    showUserRecordsCount(user, view);
 
                     view.moveToDetailsForItem(record.getId(), true, recordList.size() - 1);
                 }, t -> {
@@ -192,6 +192,42 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     }
                     LogUtils.e(t);
                 });
+    }
+
+    @Override
+    public void onDeleteSelectedClicked() {
+        for (Integer id : mSelectedIds) {
+            mDataManager.removeRecord(id)
+                    .subscribe(aLong -> {
+                    }, LogUtils::e);
+        }
+
+        User user = getModel().mUser;
+        for (Record record : getModel().mRecordList) {
+            if (mSelectedIds.contains(record.getId())) {
+                user.setRecordsCount(user.getRecordsCount() - 1);
+                if (record.isEnabled()) {
+                    user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
+                }
+            }
+        }
+        super.onDeleteSelectedClicked();
+    }
+
+    @Override
+    public void onItemDismissed(int position) {
+        Record record = getList().get(position);
+        LogUtils.d("onItemDismissed " + position + " " + record);
+        mDataManager.removeRecord(record.getId())
+                .subscribe(aLong -> {
+                }, LogUtils::e);
+
+        User user = getModel().mUser;
+        user.setRecordsCount(user.getRecordsCount() - 1);
+        if (record.isEnabled()) {
+            user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
+        }
+        super.onItemDismissed(position);
     }
 
     public void onItemDeleteSubmitted(int id) {
@@ -205,7 +241,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         if (recordList.get(position).isEnabled()) {
             user.setEnabledRecordsCount(user.getEnabledRecordsCount() - 1);
         }
-        showUserRecordsCount(user, view, true);
+        showUserRecordsCount(user, view);
         recordList.remove(position);
         if (recordList.size() > 0) {
             view.showList(recordList);

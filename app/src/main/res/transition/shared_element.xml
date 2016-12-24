@@ -8,7 +8,7 @@
     <changeImageTransform/>
     <arcMotion
         android:maximumAngle="90"
-        android:minimumHorizontalAngle="30"
+        android:minimumHorizontalAngle="20"
         android:minimumVerticalAngle="0"/>
 
 </transitionSet>
