@@ -53,4 +53,6 @@
     <string name="choose_repeat_type">Choose repeat type</string>
     <string name="choose_period">Choose period</string>
     <string name="choose_days_in_week">Choose days in week</string>
+    <string name="undo">Undo</string>
+    <string name="items_deleted_format">%d items deleted</string>
 </resources>

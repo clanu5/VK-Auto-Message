@@ -203,6 +203,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
+    public void showItemsDeleted(int count) {
+        LogUtils.e(new RuntimeException("Should not be called!"));
+    }
+
+    @Override
     public void showDontWriteToDeveloper() {
         Toast.makeText(getActivity(), R.string.toast_dont_write_to_developer, Toast.LENGTH_SHORT).show();
     }

@@ -30,6 +30,9 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
+    private int mPrevRecordsCount = -1;
+    private int mPrevEnabledRecordsCount = -1;
+
     @Inject
     DataManager mDataManager;
 
@@ -203,8 +206,11 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     @Override
     public void onDeleteSelectedClicked() {
+        // TODO: 24.12.2016 disable records (& enable if undo)
         LogUtils.d("onDeleteSelectedClicked " + mSelectedIds);
         User user = getModel().mUser;
+        mPrevRecordsCount = user.getRecordsCount();
+        mPrevEnabledRecordsCount = user.getEnabledRecordsCount();
         for (Record record : getModel().mRecordList) {
             if (mSelectedIds.contains(record.getId())) {
                 user.setRecordsCount(user.getRecordsCount() - 1);
@@ -214,6 +220,17 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             }
         }
         super.onDeleteSelectedClicked();
+    }
+
+    @Override
+    public void onUndoDeletionClicked() {
+        if (mPrevRecordsCount != -1) {
+            getModel().mUser.setRecordsCount(mPrevRecordsCount);
+            getModel().mUser.setEnabledRecordsCount(mPrevEnabledRecordsCount);
+            mPrevRecordsCount = -1;
+            mPrevEnabledRecordsCount = -1;
+        }
+        super.onUndoDeletionClicked();
     }
 
     @Override

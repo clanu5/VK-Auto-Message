@@ -1,11 +1,13 @@
 package com.qwert2603.vkautomessage.base.list;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +25,9 @@ import rx.Observable;
 public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends BasePresenter<M, V> {
 
     protected Set<Integer> mSelectedIds = new HashSet<>();
+
+    @Nullable
+    private List<T> mPrevList = null;
 
     protected abstract List<T> getList();
 
@@ -109,8 +114,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     public void onDeleteSelectedClicked() {
-        // TODO: 24.12.2016 undo deleting
-
+        mPrevList = new ArrayList<>(getList());
         Iterator<T> each = getList().iterator();
         while (each.hasNext()) {
             int id = each.next().getId();
@@ -121,9 +125,19 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
                         }, LogUtils::e);
             }
         }
+        getView().showItemsDeleted(mSelectedIds.size());
         mSelectedIds.clear();
         updateView();
         getView().stopListSelectionMode();
+    }
+
+    public void onUndoDeletionClicked() {
+        if (mPrevList != null) {
+            getList().clear();
+            getList().addAll(mPrevList);
+            mPrevList = null;
+            updateView();
+        }
     }
 
     public void onItemDismissed(int position) {

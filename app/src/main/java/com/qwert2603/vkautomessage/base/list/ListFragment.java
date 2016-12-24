@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -295,6 +296,13 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @Override
     public void showSelectedItemsCount(int count) {
         mVectorIntegerView.setInteger(count, true);
+    }
+
+    @Override
+    public void showItemsDeleted(int count) {
+        Snackbar.make(mContentRootView, getString(R.string.items_deleted_format, count), Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, v -> getPresenter().onUndoDeletionClicked())
+                .show();
     }
 
     @Override

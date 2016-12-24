@@ -59,6 +59,8 @@ public interface ListView<T extends Identifiable> extends BaseView {
     void unSelectAllItems();
     void showSelectedItemsCount(int count);
 
+    void showItemsDeleted(int count);
+
     void scrollToTop();
 
     /**
