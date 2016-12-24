@@ -74,11 +74,12 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     RecordWithUser recordWithUser = (RecordWithUser) event.mObject;
                     if (model.mUser.getId() == recordWithUser.mUser.getId()) {
                         LogUtils.d("EVENT_RECORD_ENABLED_CHANGED " + recordWithUser);
+                        int recordPosition = getRecordPosition(recordWithUser.mRecord.getId());
+                        model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                         model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
-                        RecordListView view1 = getView();
-                        if (view1 != null) {
-                            showUserRecordsCount(model.mUser, view1);
+                        if (canUpdateView()) {
+                            showUserRecordsCount(model.mUser, getView());
                         }
                     }
                 }, LogUtils::e);
