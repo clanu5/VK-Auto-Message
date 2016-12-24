@@ -103,8 +103,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
         mSimpleOnItemTouchHelperCallback.setBackColor(getResources().getColor(R.color.swipe_back_user_list));
 
-        int duration = getResources().getInteger(R.integer.transition_duration);
-        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
+        TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
         Slide slideContent = new Slide(Gravity.BOTTOM);
         slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
@@ -119,6 +118,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         slideToolbar.addTarget(mToolbarIconImageView);
         slideToolbar.addTarget(mToolbarTitleTextView);
 
+        int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideToolbar)
                 .addTransition(slideContent)
