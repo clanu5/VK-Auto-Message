@@ -146,6 +146,7 @@ public class DataManager {
      * Запланированные отправки будут отменены.
      */
     public Observable<Void> removeUser(int userId) {
+        // TODO: 24.12.2016 put Schedulers to right places (in all methods here)
         Observable<Void> deleteRecordsObservable = getRecordsForUser(userId)
                 .observeOn(mIoScheduler)
                 .map(recordListWithUser -> recordListWithUser.mRecordList)
