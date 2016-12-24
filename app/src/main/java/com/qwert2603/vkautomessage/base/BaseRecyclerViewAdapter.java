@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.base;
 
 import android.os.SystemClock;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -214,6 +215,27 @@ public abstract class BaseRecyclerViewAdapter
             LogUtils.e("DiffUtil.calculateDiff is too long: " + time + " ms");
         }
         LogUtils.printCurrentStack();
+        diffResult.dispatchUpdatesTo(new ListUpdateCallback() {
+            @Override
+            public void onInserted(int position, int count) {
+                LogUtils.d("onInserted " + position + " " + count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                LogUtils.d("onRemoved " + position + " " + count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                LogUtils.d("onInserted " + fromPosition + " " + toPosition);
+            }
+
+            @Override
+            public void onChanged(int position, int count, Object payload) {
+                LogUtils.d("onChanged " + position + " " + count);
+            }
+        });
         diffResult.dispatchUpdatesTo(this);
     }
 

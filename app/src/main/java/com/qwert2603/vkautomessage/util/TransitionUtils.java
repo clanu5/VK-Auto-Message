@@ -1,18 +1,21 @@
 package com.qwert2603.vkautomessage.util;
 
 import android.app.Activity;
+import android.support.annotation.TransitionRes;
 import android.transition.Transition;
+import android.transition.TransitionInflater;
 
 public final class TransitionUtils {
 
     /**
-     * Set given duration to all "SharedElement***Transition" of given activity.
+     * Set given transition to all "SharedElement***Transition" methods of given activity.
      */
-    public static void setSharedElementTransitionsDuration(Activity activity, int duration) {
-        activity.getWindow().getSharedElementEnterTransition().setDuration(duration);
-        activity.getWindow().getSharedElementExitTransition().setDuration(duration);
-        activity.getWindow().getSharedElementReenterTransition().setDuration(duration);
-        activity.getWindow().getSharedElementReturnTransition().setDuration(duration);
+    public static void setSharedElementTransitions(Activity activity, @TransitionRes int transitionRes) {
+        Transition transition = TransitionInflater.from(activity).inflateTransition(transitionRes);
+        activity.getWindow().setSharedElementReenterTransition(transition);
+        activity.getWindow().setSharedElementEnterTransition(transition);
+        activity.getWindow().setSharedElementExitTransition(transition);
+        activity.getWindow().setSharedElementReturnTransition(transition);
     }
 
     @SuppressWarnings("unused")

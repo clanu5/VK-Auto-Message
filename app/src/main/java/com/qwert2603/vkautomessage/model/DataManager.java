@@ -247,7 +247,13 @@ public class DataManager {
         int myselfId = mPreferenceHelper.getMyselfId();
         Observable<User> observable;
         if (myselfId == PreferenceHelper.NO_MYSELF_ID) {
-            // для myself загружается photo_200. // TODO: 23.12.2016 не загружается.
+            // для myself загружается photo_200.
+            /* // TODO: 23.12.2016 не загружается. try this:
+            .map(vkApiUserFull -> {
+                        vkApiUserFull.photo_100 = vkApiUserFull.photo_200;
+                        return vkApiUserFull;
+                    })
+                    */
             observable = mVkApiHelper.getMyself()
                     .doOnNext(vkApiUserFull -> vkApiUserFull.photo_100 = vkApiUserFull.photo_200)
                     .map(User::new)

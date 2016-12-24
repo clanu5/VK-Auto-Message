@@ -150,8 +150,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         mAppBarLayout.setAlpha(0);
         AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 170);
 
-        int duration = getResources().getInteger(R.integer.transition_duration);
-        TransitionUtils.setSharedElementTransitionsDuration(getActivity(), duration);
+        TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
         Fade fade = new Fade();
         fade.addTarget(CardView.class);
@@ -164,6 +163,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(mToolbarTitleTextView);
 
+        int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(fade)
                 .addTransition(slide)
