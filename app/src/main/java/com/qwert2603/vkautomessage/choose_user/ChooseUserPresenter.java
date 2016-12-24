@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -66,6 +67,11 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     @Override
     protected void doLoadItem(int id) {
         onReloadList();
+    }
+
+    @Override
+    protected Observable<Void> removeItem(int id) {
+        return Observable.error(new RuntimeException("Should not be called!"));
     }
 
     @Override

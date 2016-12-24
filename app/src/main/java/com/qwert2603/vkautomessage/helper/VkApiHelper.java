@@ -160,15 +160,14 @@ public class VkApiHelper {
      * @return пользователь, который использует приложение.
      */
     public Observable<VKApiUserFull> getMyself() {
-        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_200");
+        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_big");
         return getUsers(vkParameters)
                 .flatMap(Observable::from)
                 .first();
     }
 
     private Observable<List<VKApiUserFull>> getUsers(VKParameters vkParameters) {
-        return Observable
-                .<List<VKApiUserFull>>create(subscriber -> {
+        return Observable.<List<VKApiUserFull>>create(subscriber -> {
                     VKRequest request = VKApi.users().get(vkParameters);
                     request.setUseLooperForCallListener(false);
                     sendRequest(request, new VKRequest.VKRequestListener() {

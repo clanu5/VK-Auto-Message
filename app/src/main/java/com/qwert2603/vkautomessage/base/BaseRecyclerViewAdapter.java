@@ -295,19 +295,16 @@ public abstract class BaseRecyclerViewAdapter
      * и хранящий ссылки на отображаемые View (TextView, например).
      */
     public abstract class RecyclerViewHolder extends RecyclerView.ViewHolder implements BaseView {
-        public View mItemView;
-
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-            mItemView = itemView;
             // назначаем callback'и для клика и долгого клика по элементу.
-            mItemView.setOnClickListener(v -> {
+            itemView.setOnClickListener(v -> {
                 int layoutPosition = getLayoutPosition();
                 if (mClickCallback != null && layoutPosition != RecyclerView.NO_POSITION) {
                     mClickCallback.onItemClicked(layoutPosition);
                 }
             });
-            mItemView.setOnLongClickListener(v -> {
+            itemView.setOnLongClickListener(v -> {
                 int layoutPosition = getLayoutPosition();
                 if (mLongClickCallback != null && layoutPosition != RecyclerView.NO_POSITION) {
                     mLongClickCallback.onItemLongClicked(layoutPosition);

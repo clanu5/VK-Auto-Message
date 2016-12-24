@@ -4,11 +4,14 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.Identifiable;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import rx.Observable;
 
 /**
  * Презентер для view списка.
@@ -28,6 +31,8 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     protected abstract void doLoadList();
 
     protected abstract void doLoadItem(int id);
+
+    protected abstract Observable<Void> removeItem(int id);
 
     @Override
     public void onViewReady() {
@@ -105,10 +110,15 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public void onDeleteSelectedClicked() {
         // TODO: 24.12.2016 undo deleting
+
         Iterator<T> each = getList().iterator();
         while (each.hasNext()) {
-            if (mSelectedIds.contains(each.next().getId())) {
+            int id = each.next().getId();
+            if (mSelectedIds.contains(id)) {
                 each.remove();
+                removeItem(id)
+                        .subscribe(aLong -> {
+                        }, LogUtils::e);
             }
         }
         mSelectedIds.clear();
@@ -118,6 +128,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public void onItemDismissed(int position) {
 //        askDeleteItem(position);
+
+        removeItem(getList().get(position).getId())
+                .subscribe(aLong -> {
+                }, LogUtils::e);
+
         if (mSelectedIds.contains(getList().get(position).getId())) {
             toggleItemSelectionState(position);
         }

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -327,7 +328,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Void doDeleteRecord(int recordId) {
+        LogUtils.d("DatabaseHelper doDeleteRecord " + recordId);
         getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_ID + " = ?", new String[]{String.valueOf(recordId)});
+        return null;
+    }
+
+    public Void doDeleteRecordsForUser(int userId) {
+        LogUtils.d("DatabaseHelper doDeleteRecordsForUser userId == " + userId);
+        int count = getWritableDatabase().delete(TABLE_RECORD, COLUMN_RECORD_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        LogUtils.d("DatabaseHelper doDeleteRecordsForUser count == " + count);
         return null;
     }
 

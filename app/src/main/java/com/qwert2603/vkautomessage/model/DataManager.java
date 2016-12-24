@@ -83,8 +83,8 @@ public class DataManager {
                         mInMemoryCacheHelper.putRecord(record);
                     }
                 })
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .subscribeOn(mIoScheduler);
+//                .observeOn(mUiScheduler);
         return Observable.zip(recordsObservable, getUserById(userId), RecordListWithUser::new)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
@@ -147,16 +147,21 @@ public class DataManager {
      */
     public Observable<Void> removeUser(int userId) {
         Observable<Void> deleteRecordsObservable = getRecordsForUser(userId)
+                .observeOn(mIoScheduler)
                 .map(recordListWithUser -> recordListWithUser.mRecordList)
                 .flatMap(Observable::from)
                 .doOnNext(record -> mSendMessageHelper.onRecordRemoved(record.getId()))
-                .doOnNext(record -> mDatabaseHelper.doDeleteRecord(record.getId()))
+                .doOnCompleted(() -> mDatabaseHelper.doDeleteRecordsForUser(userId))
                 .toList()
-                .map(l -> null);
+                .map(l -> (Void) null)
+                .subscribeOn(mIoScheduler);
+//                .observeOn(mUiScheduler);
         Observable<Void> deleteUserObservable = mDatabaseHelper.deleteUser(userId)
+                .subscribeOn(mIoScheduler);
+//                .observeOn(mUiScheduler);
+        return Observable.zip(deleteRecordsObservable, deleteUserObservable, (v1, v2) -> (Void) null)
                 .subscribeOn(mIoScheduler)
                 .observeOn(mUiScheduler);
-        return Observable.zip(deleteRecordsObservable, deleteUserObservable, (v1, v2) -> null);
     }
 
     private Observable<Void> updateUser(User user) {
@@ -247,15 +252,12 @@ public class DataManager {
         int myselfId = mPreferenceHelper.getMyselfId();
         Observable<User> observable;
         if (myselfId == PreferenceHelper.NO_MYSELF_ID) {
-            // для myself загружается photo_200.
-            /* // TODO: 23.12.2016 не загружается. try this:
-            .map(vkApiUserFull -> {
-                        vkApiUserFull.photo_100 = vkApiUserFull.photo_200;
+            // big photo for myself.
+            observable = mVkApiHelper.getMyself()
+                    .map(vkApiUserFull -> {
+                        vkApiUserFull.photo_100 = vkApiUserFull.photo_big;
                         return vkApiUserFull;
                     })
-                    */
-            observable = mVkApiHelper.getMyself()
-                    .doOnNext(vkApiUserFull -> vkApiUserFull.photo_100 = vkApiUserFull.photo_200)
                     .map(User::new)
                     .doOnNext(user -> mPreferenceHelper.setMyselfId(user.getId()))
                     .doOnNext(mDatabaseHelper::doInsertUser);

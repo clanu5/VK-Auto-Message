@@ -21,6 +21,7 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -156,6 +157,11 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                 );
     }
 
+    @Override
+    protected Observable<Void> removeItem(int id) {
+        return mDataManager.removeRecord(id);
+    }
+
     public void onNewRecordClicked() {
         RecordListWithUser recordListWithUser = getModel();
         if (recordListWithUser == null) {
@@ -197,12 +203,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     @Override
     public void onDeleteSelectedClicked() {
-        for (Integer id : mSelectedIds) {
-            mDataManager.removeRecord(id)
-                    .subscribe(aLong -> {
-                    }, LogUtils::e);
-        }
-
+        LogUtils.d("onDeleteSelectedClicked " + mSelectedIds);
         User user = getModel().mUser;
         for (Record record : getModel().mRecordList) {
             if (mSelectedIds.contains(record.getId())) {
@@ -219,9 +220,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     public void onItemDismissed(int position) {
         Record record = getList().get(position);
         LogUtils.d("onItemDismissed " + position + " " + record);
-        mDataManager.removeRecord(record.getId())
-                .subscribe(aLong -> {
-                }, LogUtils::e);
 
         User user = getModel().mUser;
         user.setRecordsCount(user.getRecordsCount() - 1);
