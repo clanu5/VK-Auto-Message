@@ -97,9 +97,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         // TODO: 23.12.2016 sometimes  dividerItemDecoration not drawn.
 
-        // TODO: 24.12.2016 gray background while item deleting
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
-        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider));
+        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.user_list_divider));
         mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);

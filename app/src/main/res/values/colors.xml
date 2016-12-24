@@ -18,11 +18,11 @@
     <color name="repeat_info">#6F9081</color>
     <color name="error">#E00</color>
     <color name="no_items">#008</color>
-    <color name="selected_item">#E4E4E4</color>
     <color name="header_view_background">#F6F6F6</color>
+    <color name="navigation_view_background">#FFF</color>
 
-    <color name="white">#FFFF</color>
-    <color name="transparent">#0000</color>
+    <color name="selected_item">#E4E4E4</color>
+    <color name="item_background">#FFFF</color>
     <color name="colorControlHighlight">#42838383</color>
 
     <color name="actionMode">#D90000</color>

@@ -9,7 +9,7 @@
                 android:drawable="@color/selected_item"
                 android:state_selected="true"/>
 
-            <item android:drawable="@color/white"/>
+            <item android:drawable="@color/item_background"/>
         </selector>
     </item>
 

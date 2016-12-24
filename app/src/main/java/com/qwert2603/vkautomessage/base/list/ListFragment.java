@@ -101,6 +101,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         });
         getAdapter().setItemSwipeDismissCallback(position -> {
             // чтобы элемент вернулся в свое исходное положение после swipe.
+            // TODO: 24.12.2016 undo button
             getAdapter().notifyItemChanged(position);
 
             if (mUiEnabled) {

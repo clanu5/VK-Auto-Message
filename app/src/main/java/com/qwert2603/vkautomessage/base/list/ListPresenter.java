@@ -104,6 +104,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     public void onDeleteSelectedClicked() {
+        // TODO: 24.12.2016 undo deleting
         Iterator<T> each = getList().iterator();
         while (each.hasNext()) {
             if (mSelectedIds.contains(each.next().getId())) {

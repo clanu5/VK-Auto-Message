@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/white"
+        android:background="@color/navigation_view_background"
         android:fitsSystemWindows="true"
         app:menu="@menu/navigation_view"/>
 
