@@ -65,6 +65,7 @@ public class DataManager {
     public Observable<List<User>> getAllUsers() {
         // убираем из списка пользователей пользователя приложения.
         return getUserMyself()
+                .observeOn(mIoScheduler)
                 .flatMap(
                         userMyself -> mDatabaseHelper.getAllUsers()
                                 .flatMap(Observable::from)
@@ -72,8 +73,7 @@ public class DataManager {
                                 .filter(user -> user.getId() != userMyself.getId())
                                 .toList()
                 )
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     public Observable<RecordListWithUser> getRecordsForUser(int userId) {
@@ -83,11 +83,9 @@ public class DataManager {
                         mInMemoryCacheHelper.putRecord(record);
                     }
                 })
-                .subscribeOn(mIoScheduler);
-//                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
         return Observable.zip(recordsObservable, getUserById(userId), RecordListWithUser::new)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     public Observable<User> getUserById(int userId) {
@@ -97,15 +95,13 @@ public class DataManager {
         }
         return mDatabaseHelper.getUserById(userId)
                 .doOnNext(user1 -> mInMemoryCacheHelper.putUser(user1))
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     public Observable<VkUser> getVkUserById(int userId, boolean allowFromCache) {
         return mVkApiHelper.getUserById(userId, allowFromCache)
                 .map(VkUser::new)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     public Observable<RecordWithUser> getRecordById(int recordId) {
@@ -113,32 +109,41 @@ public class DataManager {
         Record record = mInMemoryCacheHelper.getRecord(recordId);
         if (record != null) {
             recordObservable = Observable.just(record);
+            User user = mInMemoryCacheHelper.getUser(record.getUserId());
+            if (user != null) {
+                LogUtils.d("return Observable.just(new RecordWithUser(record, user));");
+                return Observable.just(new RecordWithUser(record, user));
+            }
         } else {
             recordObservable = mDatabaseHelper.getRecordById(recordId)
                     .doOnNext(record1 -> mInMemoryCacheHelper.putRecord(record1))
-                    .subscribeOn(mIoScheduler)
-                    .observeOn(mUiScheduler)
-                    .cache();
+                    .cache()
+                    .compose(applySchedulers());
         }
         Observable<User> userObservable = recordObservable
+                .observeOn(mIoScheduler)
                 .map(Record::getUserId)
                 .flatMap(this::getUserById);
-        return Observable.zip(recordObservable, userObservable, RecordWithUser::new);
+        return Observable.zip(recordObservable, userObservable, RecordWithUser::new)
+                .compose(applySchedulers());
     }
 
     public Observable<List<Record>> getAllRecords() {
         return getAllUsers()
+                .observeOn(mIoScheduler)
                 .flatMap(Observable::from)
                 .flatMap(user -> getRecordsForUser(user.getId()))
+                .observeOn(mIoScheduler)
                 .map(recordListWithUser -> recordListWithUser.mRecordList)
                 .flatMap(Observable::from)
-                .toList();
+                .toList()
+                .compose(applySchedulers());
     }
 
     public Observable<User> addUser(User user) {
         return mDatabaseHelper.insertUser(user)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .doOnNext(user1 -> mInMemoryCacheHelper.putUser(user1))
+                .compose(applySchedulers());
     }
 
     /**
@@ -146,7 +151,6 @@ public class DataManager {
      * Запланированные отправки будут отменены.
      */
     public Observable<Void> removeUser(int userId) {
-        // TODO: 24.12.2016 put Schedulers to right places (in all methods here)
         Observable<Void> deleteRecordsObservable = getRecordsForUser(userId)
                 .observeOn(mIoScheduler)
                 .map(recordListWithUser -> recordListWithUser.mRecordList)
@@ -155,41 +159,37 @@ public class DataManager {
                 .doOnCompleted(() -> mDatabaseHelper.doDeleteRecordsForUser(userId))
                 .toList()
                 .map(l -> (Void) null)
-                .subscribeOn(mIoScheduler);
-//                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
         Observable<Void> deleteUserObservable = mDatabaseHelper.deleteUser(userId)
-                .subscribeOn(mIoScheduler);
-//                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
         return Observable.zip(deleteRecordsObservable, deleteUserObservable, (v1, v2) -> (Void) null)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     private Observable<Void> updateUser(User user) {
         return mDatabaseHelper.updateUser(user)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .doOnNext(user1 -> mInMemoryCacheHelper.putUser(user))
+                .compose(applySchedulers());
     }
 
     public Observable<Void> addRecord(Record record) {
         putRecordToSendMessageService(record);
         return mDatabaseHelper.insertRecord(record)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .doOnNext(aVoid -> mInMemoryCacheHelper.putRecord(record))
+                .compose(applySchedulers());
     }
 
     public Observable<Void> removeRecord(int recordId) {
         mSendMessageHelper.onRecordRemoved(recordId);
         return mDatabaseHelper.deleteRecord(recordId)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     private Observable<Void> updateRecord(Record record) {
         putRecordToSendMessageService(record);
         return mDatabaseHelper.updateRecord(record)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .doOnNext(aVoid -> mInMemoryCacheHelper.putRecord(record))
+                .compose(applySchedulers());
     }
 
     private Map<Integer, Subscription> mUpdateRecordSubscriptionMap = new HashMap<>();
@@ -231,10 +231,11 @@ public class DataManager {
                 .flatMap(Observable::from)
                 .map(VkUser::new)
                 .toList()
-                .cache();
+                .cache()
+                .compose(applySchedulers());
         updateUsersInDatabase(friends);
         Observable<Map<Integer, DatabaseHelper.RecordsCountInfo>> recordsCountForUsers = mDatabaseHelper.getRecordsCountForUsers();
-        return Observable.zip(friends, recordsCountForUsers,
+        return Observable.zip(friends.observeOn(mIoScheduler), recordsCountForUsers.observeOn(mIoScheduler),
                 (users, recordsCountMap) -> {
                     for (VkUser user : users) {
                         if (recordsCountMap.containsKey(user.getId())) {
@@ -245,35 +246,33 @@ public class DataManager {
                     }
                     return users;
                 })
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     public Observable<User> getUserMyself() {
         int myselfId = mPreferenceHelper.getMyselfId();
         Observable<User> observable;
         if (myselfId == PreferenceHelper.NO_MYSELF_ID) {
-            // big photo for myself.
             observable = mVkApiHelper.getMyself()
-                    .map(vkApiUserFull -> {
-                        vkApiUserFull.photo_100 = vkApiUserFull.photo_big;
-                        return vkApiUserFull;
-                    })
                     .map(User::new)
                     .doOnNext(user -> mPreferenceHelper.setMyselfId(user.getId()))
                     .doOnNext(mDatabaseHelper::doInsertUser);
         } else {
-            observable = mDatabaseHelper.getUserById(myselfId);
+            User user = mInMemoryCacheHelper.getUser(myselfId);
+            if (user != null) {
+                return Observable.just(user);
+            } else {
+                observable = mDatabaseHelper.getUserById(myselfId);
+            }
         }
         return observable
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .doOnNext(user1 -> mInMemoryCacheHelper.putUser(user1))
+                .compose(applySchedulers());
     }
 
     public Observable<Object> sendVkMessage(int userId, String message, Object token) {
         return mVkApiHelper.sendMessage(userId, message, token)
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler);
+                .compose(applySchedulers());
     }
 
     public int getLastNotificationId() {
@@ -287,6 +286,7 @@ public class DataManager {
     public void logOutVk() {
         mVkApiHelper.logOut();
         getAllRecords()
+                .observeOn(mIoScheduler)
                 .flatMap(Observable::from)
                 .doOnNext(record -> {
                     if (record.isEnabled()) {
@@ -298,8 +298,7 @@ public class DataManager {
                     mDatabaseHelper.doDeleteAllRecordsAndUsers();
                     mInMemoryCacheHelper.clear();
                 })
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler)
+                .compose(applySchedulers())
                 .subscribe(aVoid -> {
                 }, LogUtils::e);
     }
@@ -321,7 +320,8 @@ public class DataManager {
                 .flatMap(mVkApiHelper::getUsersById)
                 .flatMap(Observable::from)
                 .map(User::new)
-                .toList();
+                .toList()
+                .compose(applySchedulers());
         updateUsersInDatabase(observable);
     }
 
@@ -335,17 +335,23 @@ public class DataManager {
                 .flatMap(Observable::from)
                 .toMap(User::getId, user -> user, HashMap::new)
                 .flatMap(dbUsers -> userObservable
+                        .observeOn(mIoScheduler)
                         .flatMap(Observable::from)
                         .filter(vkUser -> dbUsers.containsKey(vkUser.getId()))
                         .filter(vkUser -> !dbUsers.get(vkUser.getId()).equalsVkData(vkUser))
                         .doOnNext(vkUser -> mDatabaseHelper.doUpdateUser(vkUser))
                         .toMap(User::getId, user -> user, HashMap::new))
-                .subscribeOn(mIoScheduler)
-                .observeOn(mUiScheduler)
+                .compose(applySchedulers())
                 .subscribe(
                         updatedUsers -> mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_USERS_VK_DATA_UPDATED, updatedUsers)),
                         LogUtils::e
                 );
+    }
+
+    private <T> Observable.Transformer<T, T> applySchedulers() {
+        return observable -> observable
+                .subscribeOn(mIoScheduler)
+                .observeOn(mUiScheduler);
     }
 
 }

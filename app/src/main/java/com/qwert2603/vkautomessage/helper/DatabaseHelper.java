@@ -175,6 +175,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private List<User> doGetAllUsers() {
+        LogUtils.d("DatabaseHelper doGetAllUsers");
         UserCursor userCursor = new UserCursor(getReadableDatabase()
                 .query(TABLE_USER, null, null, null, null, null, COLUMN_USER_ADDING_TIME));
         userCursor.moveToFirst();
@@ -273,6 +274,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             user.setRecordsCount(getRecordsCountForUser(userId));
             user.setEnabledRecordsCount(getEnabledRecordsCountForUser(userId));
         }
+        LogUtils.d("DatabaseHelper doGetUserById " + userId + " " + user);
+        LogUtils.printCurrentStack();
         userCursor.close();
         return user;
     }
@@ -298,6 +301,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public User doInsertUser(User user) {
+        LogUtils.d("DatabaseHelper doInsertUser " + user);
+        LogUtils.printCurrentStack();
         ContentValues contentValues = getContentValuesForUser(user);
         contentValues.put(COLUMN_USER_ADDING_TIME, System.currentTimeMillis());
         getWritableDatabase().insert(TABLE_USER, null, contentValues);

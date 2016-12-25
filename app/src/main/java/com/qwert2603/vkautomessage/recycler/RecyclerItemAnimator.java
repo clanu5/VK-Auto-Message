@@ -55,6 +55,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
                 (mAnimateEnterMode == AnimateEnterMode.LAST && viewHolder.getAdapterPosition() == viewHolder.getItemsCount() - 1)) {
             runEnterAnimation(viewHolder);
         }
+        dispatchAddFinished(holder);
         return false;
     }
 

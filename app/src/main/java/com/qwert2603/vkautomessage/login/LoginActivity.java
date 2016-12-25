@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         VKSdk.login(this, LOGIN_SCOPE);
+        // TODO: 25.12.2016 icon in vk login activity.
     }
 
     @Override

@@ -74,8 +74,7 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
 
     private void loadMyselfUser() {
         mSubscription.unsubscribe();
-        mSubscription = mInjectionsHolder.mDataManager
-                .getUserMyself()
+        mSubscription = mInjectionsHolder.mDataManager.getUserMyself()
                 .subscribe(
                         model -> NavigationPresenter.this.setModel(model),
                         throwable -> {

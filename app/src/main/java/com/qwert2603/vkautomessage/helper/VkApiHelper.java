@@ -93,10 +93,9 @@ public class VkApiHelper {
     }
 
     private Observable<List<VKApiUserFull>> getFriends(int count, int offset) {
-        return Observable
-                .<List<VKApiUserFull>>create(subscriber -> {
+        return Observable.<List<VKApiUserFull>>create(subscriber -> {
                     VKParameters vkParameters = VKParameters.from(
-                            VKApiConst.FIELDS, "photo_100, can_write_private_message",
+                            VKApiConst.FIELDS, "photo_200, can_write_private_message",
                             "order", "hints",
                             VKApiConst.COUNT, String.valueOf(count),
                             VKApiConst.OFFSET, String.valueOf(offset)
@@ -150,7 +149,7 @@ public class VkApiHelper {
                     }
                     return stringBuilder.toString();
                 })
-                .map(idsString -> VKParameters.from(VKApiConst.USER_IDS, idsString, VKApiConst.FIELDS, "photo_100"))
+                .map(idsString -> VKParameters.from(VKApiConst.USER_IDS, idsString, VKApiConst.FIELDS, "photo_200"))
                 .flatMap(this::getUsers)
                 .flatMap(Observable::from)
                 .toList();
@@ -160,7 +159,7 @@ public class VkApiHelper {
      * @return пользователь, который использует приложение.
      */
     public Observable<VKApiUserFull> getMyself() {
-        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_big");
+        VKParameters vkParameters = VKParameters.from(VKApiConst.FIELDS, "photo_200");
         return getUsers(vkParameters)
                 .flatMap(Observable::from)
                 .first();

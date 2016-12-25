@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.model;
 
 import android.support.annotation.NonNull;
 
-import com.qwert2603.vkautomessage.util.StringUtils;
 import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.Objects;
@@ -32,7 +31,7 @@ public class User implements Identifiable {
         mId = vkApiUser.id;
         mFirstName = vkApiUser.first_name;
         mLastName = vkApiUser.last_name;
-        mPhoto = vkApiUser.photo_100;
+        mPhoto = vkApiUser.photo_200;
         mEnabledRecordsCount = NO_INFO;
         mRecordsCount = NO_INFO;
     }
@@ -100,7 +99,14 @@ public class User implements Identifiable {
 
     @Override
     public String toString() {
-        return mId + " " + StringUtils.getUserName(User.this) + " " + mPhoto;
+        return "User{" +
+                "mId=" + mId +
+                ", mFirstName='" + mFirstName + '\'' +
+                ", mLastName='" + mLastName + '\'' +
+                ", mPhoto='" + mPhoto + '\'' +
+                ", mEnabledRecordsCount=" + mEnabledRecordsCount +
+                ", mRecordsCount=" + mRecordsCount +
+                '}';
     }
 
     public boolean equalsVkData(User user) {
