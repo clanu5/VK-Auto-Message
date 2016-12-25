@@ -137,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private static class RecordCursor extends CursorWrapper {
-        public RecordCursor(Cursor cursor) {
+        RecordCursor(Cursor cursor) {
             super(cursor);
         }
 
@@ -158,7 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private static class UserCursor extends CursorWrapper {
-        public UserCursor(Cursor cursor) {
+        UserCursor(Cursor cursor) {
             super(cursor);
         }
 
@@ -175,6 +175,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private List<User> doGetAllUsers() {
+        // TODO: 25.12.2016 check non-UI thread via aspects
         LogUtils.d("DatabaseHelper doGetAllUsers");
         UserCursor userCursor = new UserCursor(getReadableDatabase()
                 .query(TABLE_USER, null, null, null, null, null, COLUMN_USER_ADDING_TIME));

@@ -39,6 +39,7 @@ public class VkAutoMessageApplication extends Application {
         // TODO: 03.12.2016 круглые авы
         // http://frogermcs.github.io/InstaMaterial-concept-part-6-user-profile/
         // Circular user photo
+        // https://medium.com/@muthuraj57/avatarview-custom-implementation-of-imageview-4bcf0714d09d#.76lla9czn
         
         File cacheDir = new File(VkAutoMessageApplication.this.getFilesDir(), "images");
         DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()

@@ -139,6 +139,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
                     return 300;
                 }
             });
+            ((GridLayoutManager) mRecyclerView.getLayoutManager()).setInitialPrefetchItemCount(8);
         }
 
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);

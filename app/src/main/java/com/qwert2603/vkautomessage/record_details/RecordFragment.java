@@ -253,6 +253,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
     @Override
     public void showLoading() {
+        LogUtils.d("RecordFragment showLoading");
         mPhotoImageView.setImageBitmap(null);
         mUsernameTextView.setText(R.string.loading);
         mMessageTextView.setText(R.string.loading);

@@ -4,7 +4,6 @@ import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
-import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -168,11 +167,11 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         } else {
             mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
-                    .doOnNext(user -> {
-                        for (int i = 0; i < 300; i++) {
-                            mDataManager.addRecord(new Record(userId)).subscribe();
-                        }
-                    })
+//                    .doOnNext(user -> {
+//                        for (int i = 0; i < 300; i++) {
+//                            mDataManager.addRecord(new Record(userId)).subscribe();
+//                        }
+//                    })
                     .subscribe(user -> {
                         List<User> userList = getModel();
                         UserListView view = getView();

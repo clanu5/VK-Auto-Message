@@ -44,7 +44,11 @@ public class SimpleOnItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager && ((GridLayoutManager) layoutManager).getSpanCount() == 2) {
-            return makeMovementFlags(0, viewHolder.getAdapterPosition() % 2 == 0 ? START : END);
+            int adapterPosition = viewHolder.getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                return makeMovementFlags(0, 0);
+            }
+            return makeMovementFlags(0, adapterPosition % 2 == 0 ? START : END);
         }
         return makeMovementFlags(0, START | END);
     }

@@ -84,6 +84,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                 return 400;
             }
         });
+        ((LinearLayoutManager) mRecyclerView.getLayoutManager()).setInitialPrefetchItemCount(6);
         mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 10);
         mRecyclerView.setAdapter(getAdapter());
 
