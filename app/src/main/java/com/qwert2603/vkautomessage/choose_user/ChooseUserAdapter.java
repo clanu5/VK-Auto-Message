@@ -70,6 +70,12 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
         }
 
         @Override
+        public void bindPresenter() {
+            super.bindPresenter();
+            mRecordsCountEverShown = false;
+        }
+
+        @Override
         public void showName(String name) {
             mUsernameTextView.setText(name);
         }
@@ -84,11 +90,16 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
             mRecordsCountLinearLayout.setVisibility(View.GONE);
         }
 
+        private boolean mRecordsCountEverShown = false;
+
         @Override
-        public void showRecordsCount(int recordsCount, int enabledRecordsCount, boolean updated) {
+        public void showRecordsCount(int recordsCount, int enabledRecordsCount) {
             mRecordsCountLinearLayout.setVisibility(View.VISIBLE);
-            mRecordsCountTextView.setInteger(recordsCount, updated);
-            mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, updated);
+            mRecordsCountTextView.setInteger(recordsCount, mRecordsCountEverShown);
+            mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, mRecordsCountEverShown);
+            if (!mRecordsCountEverShown) {
+                mRecordsCountEverShown = true;
+            }
         }
     }
 }

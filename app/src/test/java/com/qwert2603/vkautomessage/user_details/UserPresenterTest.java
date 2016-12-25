@@ -59,7 +59,7 @@ public class UserPresenterTest extends BaseTest {
 
         Mockito.verify(mUserViewMock, Mockito.times(1)).getPhotoImageView();
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
-        Mockito.verify(mUserViewMock, Mockito.times(1)).showRecordsCount(7, 4, false);
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showRecordsCount(7, 4);
     }
 
     @Test
