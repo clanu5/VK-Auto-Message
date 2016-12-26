@@ -34,7 +34,7 @@ public interface ListView<T extends Identifiable> extends BaseView {
      */
     void showList(List<T> list);
 
-    void notifyItemChanged(int position);
+    void updateItem(int position);
 
     /**
      * Move to details for given item. (Launch Activity with details, for example).

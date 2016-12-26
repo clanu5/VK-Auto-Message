@@ -1,6 +1,7 @@
 package com.qwert2603.vkautomessage.base;
 
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
@@ -211,7 +212,7 @@ public abstract class BaseRecyclerViewAdapter
         });
         long time = SystemClock.elapsedRealtime() - b;
         LogUtils.d("DiffUtil.calculateDiff " + time + " ms");
-        if (time > 20) {
+        if (time > 10) {
             LogUtils.e("DiffUtil.calculateDiff is too long: " + time + " ms");
         }
         LogUtils.printCurrentStack();
@@ -237,6 +238,16 @@ public abstract class BaseRecyclerViewAdapter
             }
         });
         diffResult.dispatchUpdatesTo(this);
+    }
+
+    /**
+     * Update item view without recycling VH.
+     *
+     * @param holder VH containing view for item
+     */
+    public void updateItem(@NonNull RecyclerViewHolder holder) {
+        holder.unbindPresenter();
+        holder.bindPresenter();
     }
 
     /**

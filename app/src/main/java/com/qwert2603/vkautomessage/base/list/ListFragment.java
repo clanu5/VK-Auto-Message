@@ -218,9 +218,13 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     }
 
     @Override
-    public void notifyItemChanged(int position) {
-        LogUtils.d("notifyItemChanged " + position);
-        getAdapter().notifyItemChanged(position);
+    @SuppressWarnings("unchecked")
+    public void updateItem(int position) {
+        LogUtils.d("updateItem " + position);
+        BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder = (BaseRecyclerViewAdapter.RecyclerViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position);
+        if (viewHolder != null) {
+            getAdapter().updateItem(viewHolder);
+        }
     }
 
     @Override

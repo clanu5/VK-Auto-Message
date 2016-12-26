@@ -216,10 +216,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // not using scene transition for message TextView because if message was changed in RecordActivity than
         // when back scene transition will be played there will be old text in message TextView in this activity (in VH)
         // and old text will blink for a short time before text in VH will be updated.
+
+        RecordListAdapter.RecordViewHolder viewHolder = (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
+
         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                 Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
+                Pair.create(viewHolder.mMessageTextView, viewHolder.mMessageTextView.getTransitionName())
                 // TODO: 23.12.2016 animate icon image and make ripple effect
-                Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
+                //Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
         );
 
         Intent intent = new Intent(getActivity(), RecordActivity.class);

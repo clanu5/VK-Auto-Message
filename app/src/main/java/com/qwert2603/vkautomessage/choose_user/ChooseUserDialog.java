@@ -259,7 +259,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void notifyItemChanged(int position) {
+    public void updateItem(int position) {
         mChooseUserAdapter.notifyItemChanged(position);
     }
 

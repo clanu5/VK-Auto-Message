@@ -51,8 +51,8 @@
                         android:id="@+id/user_name_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_margin="6dp"
                         android:text="Alex Zhdanovg"
                         android:textColor="@color/user_name"
                         android:textSize="@dimen/user_name_text_size"/>
@@ -92,7 +92,8 @@
                 android:gravity="top"
                 android:text="enter_your_message"
                 android:textColor="@color/message"
-                android:textSize="@dimen/message_text_size"/>
+                android:textSize="@dimen/message_text_size"
+                android:transitionName="@string/message_transition"/>
 
         </android.support.v7.widget.CardView>
 

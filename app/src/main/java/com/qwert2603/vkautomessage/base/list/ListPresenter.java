@@ -49,7 +49,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         if (!mIdsToUpdate.isEmpty()) {
             for (int i = 0; i < getList().size(); i++) {
                 if (mIdsToUpdate.contains(getList().get(i).getId())) {
-                    getView().notifyItemChanged(i);
+                    getView().updateItem(i);
                     mIdsToUpdate.remove(getList().get(i).getId());
                     if (mIdsToUpdate.isEmpty()) {
                         break;
@@ -191,9 +191,9 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().scrollToTop();
     }
 
-    protected final void notifyItemChanged(int position) {
+    protected final void updateItem(int position) {
         if (canUpdateView()) {
-            getView().notifyItemChanged(position);
+            getView().updateItem(position);
         } else {
             mIdsToUpdate.add(getList().get(position).getId());
         }

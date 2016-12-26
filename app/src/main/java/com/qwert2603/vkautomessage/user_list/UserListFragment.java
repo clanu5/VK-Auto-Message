@@ -116,7 +116,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         }
 
         Slide slideToolbar = new Slide(Gravity.TOP);
-        slideToolbar.addTarget(mToolbarIconImageView);
+//        slideToolbar.addTarget(mToolbarIconImageView);
         slideToolbar.addTarget(mToolbarTitleTextView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
