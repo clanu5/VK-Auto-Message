@@ -24,10 +24,12 @@ import rx.Observable;
  */
 public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends BasePresenter<M, V> {
 
-    protected Set<Integer> mSelectedIds = new HashSet<>();
+    protected final Set<Integer> mSelectedIds = new HashSet<>();
 
     @Nullable
     private List<T> mPrevList = null;
+
+    private final Set<Integer> mIdsToUpdate = new HashSet<>();
 
     protected abstract List<T> getList();
 
@@ -43,6 +45,18 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     public void onViewReady() {
         super.onViewReady();
         getView().enableUI();
+        LogUtils.d("ListPresenter onViewReady mIdsToUpdate == " + mIdsToUpdate);
+        if (!mIdsToUpdate.isEmpty()) {
+            for (int i = 0; i < getList().size(); i++) {
+                if (mIdsToUpdate.contains(getList().get(i).getId())) {
+                    getView().notifyItemChanged(i);
+                    mIdsToUpdate.remove(getList().get(i).getId());
+                    if (mIdsToUpdate.isEmpty()) {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -175,6 +189,14 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public void onScrollToTopClicked() {
         getView().scrollToTop();
+    }
+
+    protected final void notifyItemChanged(int position) {
+        if (canUpdateView()) {
+            getView().notifyItemChanged(position);
+        } else {
+            mIdsToUpdate.add(getList().get(position).getId());
+        }
     }
 
     private void askDeleteItem(int position) {

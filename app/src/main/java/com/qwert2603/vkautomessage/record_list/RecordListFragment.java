@@ -34,7 +34,6 @@ import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import javax.inject.Inject;
@@ -157,18 +156,22 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         transitionContent.excludeTarget(android.R.id.statusBarBackground, true);
         transitionContent.excludeTarget(mToolbarIconImageView, true);
         transitionContent.excludeTarget(mRecordsCountLinearLayout, true);
+        transitionContent.excludeTarget(mUserNameTextView, true);
         for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
             transitionContent.excludeTarget(mViewAnimator.getChildAt(i), true);
         }
 
         Slide slideRecordsCount = new Slide(Gravity.END);
         slideRecordsCount.addTarget(mRecordsCountLinearLayout);
-        slideRecordsCount.addTarget(mUserNameTextView);
+
+        Slide slideUserName = new Slide(Gravity.END);
+        slideUserName.addTarget(mUserNameTextView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideFab)
                 .addTransition(slideRecordsCount)
+                .addTransition(slideUserName)
                 .addTransition(transitionContent)
                 .setDuration(duration);
 
@@ -178,27 +181,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         getActivity().getWindow().setReturnTransition(transitionSet);
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        LogUtils.d("onResume");
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case REQUEST_DETAILS_FOT_ITEM:
-                if (data == null || resultCode != Activity.RESULT_OK) {
-                    break;
-                }
-                int id = data.getIntExtra(BaseActivity.EXTRA_ITEM_ID, -1);
-                getActivity().getWindow().getExitTransition().excludeTarget(mRecyclerView.findViewHolderForItemId(id).itemView, false);
-                break;
-        }
     }
 
     @Override
@@ -229,8 +211,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     protected void moveToDetailsForItem(int itemId) {
         prepareRecyclerViewForTransition();
-
-        getActivity().getWindow().getExitTransition().excludeTarget(mRecyclerView.findViewHolderForItemId(itemId).itemView, true);
 
         // TODO: 23.12.2016 is it possible to update message text view before back transition starts???
         // not using scene transition for message TextView because if message was changed in RecordActivity than

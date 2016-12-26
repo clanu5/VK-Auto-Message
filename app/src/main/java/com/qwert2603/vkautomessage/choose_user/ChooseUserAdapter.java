@@ -57,6 +57,7 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
             super(itemView);
             VkAutoMessageApplication.getAppComponent().inject(UserViewHolder.this);
             ButterKnife.bind(UserViewHolder.this, itemView);
+            // items in ChooseUserList are smaller than items in UserList
             mPhotoImageView.getLayoutParams().height = (int) itemView.getResources().getDimension(R.dimen.item_choose_user_photo_size);
             mPhotoImageView.getLayoutParams().width = (int) itemView.getResources().getDimension(R.dimen.item_choose_user_photo_size);
             itemView.getLayoutParams().height = (int) itemView.getResources().getDimension(R.dimen.item_choose_user_height);
