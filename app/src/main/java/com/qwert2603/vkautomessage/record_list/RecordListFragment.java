@@ -3,13 +3,13 @@ package com.qwert2603.vkautomessage.record_list;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
@@ -34,6 +34,10 @@ import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_details.RecordActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.transition.EpicenterExplode;
+import com.qwert2603.vkautomessage.transition.EpicenterSlide;
+import com.qwert2603.vkautomessage.transition.EpicenterTransition;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import javax.inject.Inject;
@@ -79,6 +83,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Inject
     RecordListAdapter mRecordListAdapter;
+
+    private EpicenterTransition mTransitionContent;
 
     @NonNull
     @Override
@@ -128,7 +134,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         mNewRecordFAB.setOnClickListener(v -> mRecordListPresenter.onNewRecordClicked());
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (AndroidUtils.isPortraitOrientation(getActivity())) {
             mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
         } else {
             mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT_OR_RIGHT);
@@ -145,12 +151,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         Transition transitionContent;
         Slide slideFab = null;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            transitionContent = new Slide(Gravity.START);
+        if (AndroidUtils.isPortraitOrientation(getActivity())) {
+            transitionContent = new EpicenterSlide(Gravity.START);
             slideFab = new Slide(Gravity.END);
             slideFab.addTarget(mNewRecordFAB);
         } else {
-            transitionContent = new Explode();
+            transitionContent = new EpicenterExplode();
         }
         transitionContent.excludeTarget(android.R.id.navigationBarBackground, true);
         transitionContent.excludeTarget(android.R.id.statusBarBackground, true);
@@ -160,6 +166,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
             transitionContent.excludeTarget(mViewAnimator.getChildAt(i), true);
         }
+        mTransitionContent = (EpicenterTransition) transitionContent;
 
         Slide slideRecordsCount = new Slide(Gravity.END);
         slideRecordsCount.addTarget(mRecordsCountLinearLayout);
@@ -218,6 +225,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // and old text will blink for a short time before text in VH will be updated.
 
         RecordListAdapter.RecordViewHolder viewHolder = (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
+        Rect rect = new Rect();
+        if (AndroidUtils.isPortraitOrientation(getActivity())) {
+            viewHolder.itemView.getGlobalVisibleRect(rect);
+        } else {
+            int widthPixels = Resources.getSystem().getDisplayMetrics().widthPixels;
+            rect.set(widthPixels / 2, 0, widthPixels / 2, 0);
+        }
+        mTransitionContent.setEpicenterRect(rect);
 
         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                 Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
@@ -245,6 +260,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     protected void performBackPressed() {
+        int widthPixels = Resources.getSystem().getDisplayMetrics().widthPixels;
+        mTransitionContent.setEpicenterRect(new Rect(widthPixels / 2, 0, widthPixels / 2, 0));
         prepareRecyclerViewForTransition();
         Intent intent = new Intent();
         intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));
