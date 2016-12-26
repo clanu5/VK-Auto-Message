@@ -28,8 +28,7 @@
         android:maxLines="1"
         android:text="Alex Zhdanov toolbar_transition toolbar_transition"
         android:textColor="@color/user_name"
-        android:textSize="@dimen/user_name_text_size"
-        android:transitionName="@string/username_transition"/>
+        android:textSize="@dimen/user_name_text_size"/>
 
     <LinearLayout
         android:id="@+id/records_count_layout"

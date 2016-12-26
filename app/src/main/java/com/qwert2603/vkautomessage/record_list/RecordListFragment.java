@@ -163,6 +163,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         Slide slideRecordsCount = new Slide(Gravity.END);
         slideRecordsCount.addTarget(mRecordsCountLinearLayout);
+        slideRecordsCount.addTarget(mUserNameTextView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
@@ -236,7 +237,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         // when back scene transition will be played there will be old text in message TextView in this activity (in VH)
         // and old text will blink for a short time before text in VH will be updated.
         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                Pair.create(mUserNameTextView, mUserNameTextView.getTransitionName()),
                 Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
                 // TODO: 23.12.2016 animate icon image and make ripple effect
                 Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())

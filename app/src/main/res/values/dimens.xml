@@ -5,12 +5,15 @@
     <dimen name="user_name_text_size">20sp</dimen>
     <dimen name="message_text_size">18sp</dimen>
 
-    <dimen name="item_user_height">56dp</dimen>
+    <dimen name="item_user_height">72dp</dimen>
     <dimen name="item_user_padding">4dp</dimen>
-    <dimen name="item_user_photo_size">48dp</dimen>
+    <dimen name="item_user_photo_size">64dp</dimen>
+
+    <dimen name="item_choose_user_height">56dp</dimen>
+    <dimen name="item_choose_user_photo_size">48dp</dimen>
 
     <dimen name="divider_height">1dp</dimen>
-    <dimen name="divider_left_margin">56dp</dimen>
+    <dimen name="divider_left_margin">72dp</dimen>
     <dimen name="divider_right_margin">28dp</dimen>
 
     <dimen name="cardCornerRadius">4dp</dimen>

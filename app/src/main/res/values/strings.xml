@@ -32,7 +32,6 @@
         <item>Day in year</item>
     </string-array>
 
-    <string name="username_transition" translatable="false">username_transition</string>
     <string name="user_photo_transition" translatable="false">user_photo_transition</string>
     <string name="toolbar_icon_transition" translatable="false">toolbar_icon_transition</string>
 
