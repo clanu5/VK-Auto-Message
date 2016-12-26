@@ -7,6 +7,10 @@ import android.transition.Slide;
 import android.transition.Transition;
 import android.util.AttributeSet;
 
+/**
+ * Because epicenter for activity transition calculated via framework's internal tools,
+ * so we just hardcode epicenter Rect here.
+ */
 public class EpicenterSlide extends Slide implements EpicenterTransition {
 
     @Nullable

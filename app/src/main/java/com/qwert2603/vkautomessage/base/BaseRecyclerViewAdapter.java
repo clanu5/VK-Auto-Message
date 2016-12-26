@@ -134,6 +134,8 @@ public abstract class BaseRecyclerViewAdapter
         holder.bindPresenter();
         // отображаем выделен элемент или нет.
         mRecyclerViewSelector.showWhetherItemSelected(holder);
+        // clear info about previous removes.
+        holder.setSwiped(false);
     }
 
     @Override
@@ -171,10 +173,12 @@ public abstract class BaseRecyclerViewAdapter
         return mModelList.get(position).getId();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onItemDismiss(RecyclerView.ViewHolder viewHolder) {
         LogUtils.d("BaseRecyclerViewAdapter onItemDismiss" + viewHolder);
         mItemSwipeDismissCallback.onItemDismiss(viewHolder.getAdapterPosition());
+        ((RecyclerViewHolder) viewHolder).setSwiped(true);
     }
 
     /**
@@ -306,6 +310,12 @@ public abstract class BaseRecyclerViewAdapter
      * и хранящий ссылки на отображаемые View (TextView, например).
      */
     public abstract class RecyclerViewHolder extends RecyclerView.ViewHolder implements BaseView {
+
+        /**
+         * Whether item was deleted by swipe.
+         */
+        private boolean mIsSwiped = false;
+
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             // назначаем callback'и для клика и долгого клика по элементу.
@@ -357,6 +367,14 @@ public abstract class BaseRecyclerViewAdapter
 
         public int getItemsCount() {
             return BaseRecyclerViewAdapter.this.getItemCount();
+        }
+
+        public boolean isSwiped() {
+            return mIsSwiped;
+        }
+
+        public void setSwiped(boolean swiped) {
+            mIsSwiped = swiped;
         }
     }
 

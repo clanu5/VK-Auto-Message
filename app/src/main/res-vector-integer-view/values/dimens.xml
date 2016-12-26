@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="digit_size">24sp</dimen>
-    <dimen name="digit_density">-4dp</dimen>
+    <dimen name="digit_density">-3dp</dimen>
     <item name="digit_translateX" format="float" type="dimen">-0.06</item>
-    <item name="digit_translateY" format="float" type="dimen">-0.01</item>
-    <item name="digit_strokewidth" format="float" type="dimen">0.06</item>
+    <item name="digit_translateY" format="float" type="dimen">-0.06</item>
+    <item name="digit_strokewidth" format="float" type="dimen">0.08</item>
 </resources>

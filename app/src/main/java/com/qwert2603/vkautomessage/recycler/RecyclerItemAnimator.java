@@ -62,10 +62,16 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     @Override
     public boolean animateRemove(RecyclerView.ViewHolder holder) {
         // TODO: 29.11.2016 сделать нормальную анимацию и одновременном удалении нескольких элементов
-    //http:blog.trsquarelab.com/2015/12/creating-custom-animation-in.html
+        //http:blog.trsquarelab.com/2015/12/creating-custom-animation-in.html
 
-        // TODO: 24.12.2016 don't animate if item was swiped
-        LogUtils.d("animateRemove " + holder);
+        LogUtils.d("animateRemove " + holder + " isSwiped() == " + ((BaseRecyclerViewAdapter.RecyclerViewHolder) holder).isSwiped());
+
+        if (((BaseRecyclerViewAdapter.RecyclerViewHolder) holder).isSwiped()) {
+            dispatchRemoveFinished(holder);
+            holder.itemView.setTranslationX(0);
+            return false;
+        }
+
         runRemoveAnimation(holder);
         return false;
     }

@@ -69,6 +69,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     private boolean mUiEnabled = true;
 
     private ImageButton mActionModeDeleteButton;
+    private ImageButton mActionModeSelectAllButton;
     private VectorIntegerView mVectorIntegerView;
 
     @NonNull
@@ -102,9 +103,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             }
         });
         getAdapter().setItemSwipeDismissCallback(position -> {
-            // чтобы элемент вернулся в свое исходное положение после swipe.
             // TODO: 24.12.2016 undo button
-            getAdapter().notifyItemChanged(position);
 
             if (mUiEnabled) {
                 getPresenter().onItemDismissed(position);
@@ -273,6 +272,12 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mActionModeDeleteButton.setAlpha(0.0f);
         mActionModeDeleteButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
 
+        mActionModeSelectAllButton = (ImageButton) actionModeView.findViewById(R.id.select_all);
+        mActionModeSelectAllButton.setOnClickListener(v -> getPresenter().onSelectAllClicked());
+        mActionModeSelectAllButton.setScaleY(0.4f);
+        mActionModeSelectAllButton.setAlpha(0.0f);
+        mActionModeSelectAllButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
+
         mVectorIntegerView = (VectorIntegerView) actionModeView.findViewById(R.id.integer_view);
         mVectorIntegerView.setAlpha(0.0f);
         mVectorIntegerView.animate().alpha(1.0f).setDuration(duration);
@@ -282,6 +287,10 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     protected void onActionModeRestored(View view) {
         mActionModeDeleteButton = (ImageButton) view.findViewById(R.id.delete);
         mActionModeDeleteButton.setOnClickListener(v -> getPresenter().onDeleteSelectedClicked());
+
+        mActionModeSelectAllButton = (ImageButton) view.findViewById(R.id.select_all);
+        mActionModeSelectAllButton.setOnClickListener(v -> getPresenter().onSelectAllClicked());
+
         mVectorIntegerView = (VectorIntegerView) view.findViewById(R.id.integer_view);
     }
 
@@ -289,6 +298,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     protected void onActionModeCancelling() {
         int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
         mActionModeDeleteButton.animate().scaleY(0.4f).alpha(0.0f).setDuration(duration);
+        mActionModeSelectAllButton.animate().scaleY(0.4f).alpha(0.0f).setDuration(duration);
         mVectorIntegerView.animate().alpha(0.0f).setDuration(duration);
         getPresenter().onActionModeCancelled();
     }

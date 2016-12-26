@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
@@ -127,6 +128,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         ButterKnife.bind(RecordListFragment.this, view);
 
         // TODO: 12.12.2016 фильтрация активных и неактивных записей
+        // TODO: 26.12.2016 filter records by repeat type
 
         // to allow marquee scrolling.
         mUserNameTextView.setSelected(true);
@@ -150,19 +152,22 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
         Transition transitionContent;
-        Slide slideFab = null;
+        Transition transitionFab;
         if (AndroidUtils.isPortraitOrientation(getActivity())) {
             transitionContent = new EpicenterSlide(Gravity.START);
-            slideFab = new Slide(Gravity.END);
-            slideFab.addTarget(mNewRecordFAB);
+            transitionFab = new Slide(Gravity.END);
+            transitionFab.addTarget(mNewRecordFAB);
         } else {
             transitionContent = new EpicenterExplode();
+            transitionFab = new Explode();
+            transitionFab.addTarget(mNewRecordFAB);
         }
         transitionContent.excludeTarget(android.R.id.navigationBarBackground, true);
         transitionContent.excludeTarget(android.R.id.statusBarBackground, true);
         transitionContent.excludeTarget(mToolbarIconImageView, true);
         transitionContent.excludeTarget(mRecordsCountLinearLayout, true);
         transitionContent.excludeTarget(mUserNameTextView, true);
+        transitionContent.excludeTarget(mNewRecordFAB, true);
         for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
             transitionContent.excludeTarget(mViewAnimator.getChildAt(i), true);
         }
@@ -176,7 +181,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
-                .addTransition(slideFab)
+                .addTransition(transitionFab)
                 .addTransition(slideRecordsCount)
                 .addTransition(slideUserName)
                 .addTransition(transitionContent)

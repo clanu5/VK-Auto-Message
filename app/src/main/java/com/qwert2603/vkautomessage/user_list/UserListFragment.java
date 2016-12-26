@@ -97,6 +97,15 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         // TODO: 23.12.2016 sometimes  dividerItemDecoration not drawn.
 
+        // TODO: 26.12.2016 sort users by:
+        // default
+        // first name
+        // last name
+        // records count
+        // enabled records count
+
+        // TODO: 26.12.2016 in action mode ask user delete users and records or records only
+
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.user_list_divider));
         mRecyclerView.addItemDecoration(dividerItemDecoration);
