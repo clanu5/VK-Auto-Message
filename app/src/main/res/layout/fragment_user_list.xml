@@ -14,6 +14,29 @@
         android:scrollbars="vertical"
         android:transitionGroup="false"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/choose_user_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/add_user"
+        app:layout_behavior="com.qwert2603.vkautomessage.behavior.BottomFabHideBehavior"/>
+
+    <com.qwert2603.vkautomessage.floating_action_mode.FloatingActionMode
+        android:id="@+id/floating_action_mode"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_margin="@dimen/action_mode_margin"
+        android:background="@drawable/action_mode_background"
+        app:can_dismiss="true"
+        app:can_drag="true"
+        app:dismiss_threshold="0.35"
+        app:drag_icon="@drawable/ic_drag_white_24dp"
+        app:animation_duration="@integer/action_mode_animation_duration"
+        app:hide_direction="nearest"
+        android:translationZ="6dp"/>
+
     <ViewAnimator
         android:id="@+id/view_animator"
         android:layout_width="match_parent"
@@ -51,14 +74,5 @@
             android:textSize="@dimen/loading_error_empty_text_size"/>
 
     </ViewAnimator>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/choose_user_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/add_user"
-        app:layout_behavior="com.qwert2603.vkautomessage.behavior.BottomFabHideBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

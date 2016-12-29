@@ -121,7 +121,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         getView().selectAllItems();
     }
 
-    public void onActionModeCancelled() {
+    public void onSelectionModeCancelled() {
         mSelectedIds.clear();
         getView().showSelectedItemsCount(0);
         getView().unSelectAllItems();

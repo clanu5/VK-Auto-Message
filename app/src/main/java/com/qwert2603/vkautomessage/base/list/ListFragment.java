@@ -70,6 +70,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     private ImageButton mActionModeDeleteButton;
     private ImageButton mActionModeSelectAllButton;
+    private ImageButton mActionModeEnableAllButton;
     private VectorIntegerView mVectorIntegerView;
 
     @NonNull
@@ -122,12 +123,20 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
 
+        if (mFloatingActionMode.isStarted()) {
+            initActionModeViews();
+        }
+
         return view;
     }
 
     @Override
     public void onDestroyView() {
         mRecyclerView.setAdapter(null);
+        mActionModeSelectAllButton = null;
+        mActionModeDeleteButton = null;
+        mActionModeEnableAllButton = null;
+        mVectorIntegerView = null;
         super.onDestroyView();
     }
 
@@ -262,50 +271,31 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void startListSelectionMode() {
-        View actionModeView = startActionMode(R.layout.user_list_action_mode);
-
-        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
-
-        mActionModeDeleteButton = (ImageButton) actionModeView.findViewById(R.id.delete);
-        mActionModeDeleteButton.setOnClickListener(v -> getPresenter().onDeleteSelectedClicked());
-        mActionModeDeleteButton.setScaleY(0.4f);
-        mActionModeDeleteButton.setAlpha(0.0f);
-        mActionModeDeleteButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
-
-        mActionModeSelectAllButton = (ImageButton) actionModeView.findViewById(R.id.select_all);
-        mActionModeSelectAllButton.setOnClickListener(v -> getPresenter().onSelectAllClicked());
-        mActionModeSelectAllButton.setScaleY(0.4f);
-        mActionModeSelectAllButton.setAlpha(0.0f);
-        mActionModeSelectAllButton.animate().scaleY(1.0f).alpha(1.0f).setDuration(duration);
-
-        mVectorIntegerView = (VectorIntegerView) actionModeView.findViewById(R.id.integer_view);
-        mVectorIntegerView.setAlpha(0.0f);
-        mVectorIntegerView.animate().alpha(1.0f).setDuration(duration);
-    }
-
-    @Override
-    protected void onActionModeRestored(View view) {
-        mActionModeDeleteButton = (ImageButton) view.findViewById(R.id.delete);
-        mActionModeDeleteButton.setOnClickListener(v -> getPresenter().onDeleteSelectedClicked());
-
-        mActionModeSelectAllButton = (ImageButton) view.findViewById(R.id.select_all);
-        mActionModeSelectAllButton.setOnClickListener(v -> getPresenter().onSelectAllClicked());
-
-        mVectorIntegerView = (VectorIntegerView) view.findViewById(R.id.integer_view);
+        startActionMode(R.layout.user_list_action_mode);
+        initActionModeViews();
     }
 
     @Override
     protected void onActionModeCancelling() {
-        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
-        mActionModeDeleteButton.animate().scaleY(0.4f).alpha(0.0f).setDuration(duration);
-        mActionModeSelectAllButton.animate().scaleY(0.4f).alpha(0.0f).setDuration(duration);
-        mVectorIntegerView.animate().alpha(0.0f).setDuration(duration);
-        getPresenter().onActionModeCancelled();
+        getPresenter().onSelectionModeCancelled();
     }
 
     @Override
     public void stopListSelectionMode() {
         stopActionMode();
+    }
+
+    private void initActionModeViews() {
+        mActionModeDeleteButton = (ImageButton) mFloatingActionMode.findViewById(R.id.delete);
+        mActionModeDeleteButton.setOnClickListener(v -> getPresenter().onDeleteSelectedClicked());
+
+        mActionModeSelectAllButton = (ImageButton) mFloatingActionMode.findViewById(R.id.select_all);
+        mActionModeSelectAllButton.setOnClickListener(v -> getPresenter().onSelectAllClicked());
+
+        mActionModeEnableAllButton = (ImageButton) mFloatingActionMode.findViewById(R.id.enable_all);
+        mActionModeEnableAllButton.setOnClickListener(v -> getPresenter().onSelectAllClicked());
+
+        mVectorIntegerView = (VectorIntegerView) mFloatingActionMode.findViewById(R.id.integer_view);
     }
 
     @Override

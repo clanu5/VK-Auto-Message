@@ -2,30 +2,25 @@ package com.qwert2603.vkautomessage.base.navigation;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qwert2603.vkautomessage.transition.ChangeColor;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -33,8 +28,8 @@ import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
+import com.qwert2603.vkautomessage.floating_action_mode.FloatingActionMode;
 import com.qwert2603.vkautomessage.login.MainActivity;
-import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
@@ -58,9 +53,6 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     @BindView(R.id.app_bar_layout)
     protected AppBarLayout mAppBarLayout;
 
-    @BindView(R.id.toolbar_frame_layout)
-    FrameLayout mToolbarFrameLayout;
-
     protected ImageView mToolbarIconImageView;
 
     @BindView(R.id.coordinator)
@@ -69,8 +61,8 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     private ImageView mMyselfPhotoImageView;
     private TextView mMyselfNameTextView;
 
-    @LayoutRes
-    private int mActionContentRes = 0;
+    @BindView(R.id.floating_action_mode)
+    protected FloatingActionMode mFloatingActionMode;
 
     @ToolbarIconState
     private int mIconState;
@@ -154,7 +146,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
 
-        inflater.inflate(getToolbarContentRes(), (ViewGroup) view.findViewById(R.id.toolbar_frame_layout), true);
+        inflater.inflate(getToolbarContentRes(), (ViewGroup) view.findViewById(R.id.toolbar), true);
         inflater.inflate(getScreenContentRes(), (ViewGroup) view.findViewById(R.id.coordinator), true);
 
         ButterKnife.bind(NavigationFragment.this, view);
@@ -182,7 +174,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         });
 
         mToolbar.setNavigationOnClickListener(v -> {
-            if (mActionContentRes != 0) {
+            if (mFloatingActionMode.isStarted()) {
                 stopActionMode();
                 return;
             }
@@ -224,13 +216,10 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             }
         }
 
-        if (mActionContentRes != 0) {
-            View actionModeView = startActionMode(mActionContentRes);
-            mToolbarIconImageView.jumpDrawablesToCurrentState();
-            mToolbarFrameLayout.getChildAt(0).animate().cancel();
-            mToolbarFrameLayout.getChildAt(0).setAlpha(0);
-            onActionModeRestored(actionModeView);
+        if (mFloatingActionMode.isStarted()) {
+            setToolbarIconState(R.attr.state_close, true);
         }
+        mFloatingActionMode.setOnActionModeDismissListener(this::stopActionMode);
 
         return view;
     }
@@ -259,38 +248,26 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         mMyselfPhotoImageView.setImageBitmap(null);
     }
 
-    protected View startActionMode(@LayoutRes int actionContentRes) {
-        mActionContentRes = actionContentRes;
-        View view = getActivity().getLayoutInflater().inflate(actionContentRes, null);
-        mToolbarFrameLayout.addView(view);
+    protected void startActionMode(@LayoutRes int actionContentRes) {
+        mFloatingActionMode.start(actionContentRes);
         setToolbarIconState(R.attr.state_close, false);
-
-        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
-        mToolbarFrameLayout.getChildAt(0).animate().alpha(0).setDuration(duration);
-        TransitionManager.beginDelayedTransition(mToolbar, new ChangeColor().setDuration(duration));
-        mToolbar.setBackground(new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.actionMode)));
-        return view;
     }
 
     protected void stopActionMode() {
-        mActionContentRes = 0;
+        mFloatingActionMode.stop();
         if (isNavigationButtonVisible()) {
             setToolbarIconState(R.attr.state_burger, false);
         } else {
             setToolbarIconState(R.attr.state_back_arrow, false);
         }
 
-        int duration = getResources().getInteger(R.integer.action_mode_animation_duration);
-        mToolbarFrameLayout.getChildAt(0).animate().alpha(1).setDuration(duration);
-        TransitionManager.beginDelayedTransition(mToolbar, new ChangeColor().setDuration(duration));
-        mToolbar.setBackground(new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.colorPrimary)));
         onActionModeCancelling();
-        AndroidUtils.runOnUI(() -> mToolbarFrameLayout.removeViewAt(1), duration);
     }
 
-    protected void onActionModeRestored(View view) {
-    }
-
+    /**
+     * Method-callback for derived classes.
+     * Will be called, when action mode is stopping.
+     */
     protected void onActionModeCancelling() {
     }
 
@@ -300,7 +277,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             return;
         }
 
-        if (mActionContentRes != 0) {
+        if (mFloatingActionMode.isStarted()) {
             stopActionMode();
             return;
         }

@@ -17,4 +17,7 @@
     <dimen name="divider_right_margin">28dp</dimen>
 
     <dimen name="cardCornerRadius">4dp</dimen>
+
+    <dimen name="action_mode_margin">16dp</dimen>
+    <dimen name="action_mode_corner_radius">8dp</dimen>
 </resources>
