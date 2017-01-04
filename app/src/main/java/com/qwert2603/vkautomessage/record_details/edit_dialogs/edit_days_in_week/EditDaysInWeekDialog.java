@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.view.ViewGroup;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 
 import javax.inject.Inject;
 
@@ -64,7 +66,12 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
     @Override
     public void onResume() {
         super.onResume();
-        // TODO: 22.12.2016 ((AlertDialog) getDialog()).getListView().jumpDrawablesToCurrentState();
+        AndroidUtils.runOnUI(() -> {
+            ViewGroup viewGroup = (ViewGroup) getDialog().findViewById(android.support.design.R.id.select_dialog_listview);
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                viewGroup.getChildAt(i).jumpDrawablesToCurrentState();
+            }
+        }, 0);
     }
 
     @Override
