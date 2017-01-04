@@ -10,11 +10,17 @@ import android.view.ViewGroup;
 
 public final class AndroidUtils {
 
+    private static final Handler sMainLooperHandler;
+
+    static {
+        sMainLooperHandler = new Handler(Looper.getMainLooper());
+    }
+
     /**
      * Post runnable to execute on main thread with given delay.
      */
     public static void runOnUI(Runnable runnable, long delay) {
-        new Handler(Looper.getMainLooper()).postDelayed(runnable, delay);
+        sMainLooperHandler.postDelayed(runnable, delay);
     }
 
     /**
@@ -26,6 +32,7 @@ public final class AndroidUtils {
 
     /**
      * Resolve value of given attribute.
+     *
      * @return value of attribute in pixels
      */
     @SuppressWarnings("unused")

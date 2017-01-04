@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
+import com.qwert2603.vkautomessage.util.LogUtils;
 
 import javax.inject.Inject;
 
@@ -67,9 +69,14 @@ public class EditDaysInWeekDialog extends BaseDialog<EditDaysInWeekPresenter> im
     public void onResume() {
         super.onResume();
         AndroidUtils.runOnUI(() -> {
-            ViewGroup viewGroup = (ViewGroup) getDialog().findViewById(android.support.design.R.id.select_dialog_listview);
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                viewGroup.getChildAt(i).jumpDrawablesToCurrentState();
+            View view = getDialog().findViewById(android.support.design.R.id.select_dialog_listview);
+            if (view instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) view;
+                for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                    viewGroup.getChildAt(i).jumpDrawablesToCurrentState();
+                }
+            } else {
+                LogUtils.e("Can't jumpDrawablesToCurrentState in com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog");
             }
         }, 0);
     }
