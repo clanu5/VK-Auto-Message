@@ -113,7 +113,6 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
         ObjectAnimator objectAnimator;
 
-        // TODO: 29.12.2016 make it by view#animate
         if (mEnterOrigin == EnterOrigin.BOTTOM) {
             viewHolder.itemView.setTranslationY(heightPixels);
             objectAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "translationY", 0);

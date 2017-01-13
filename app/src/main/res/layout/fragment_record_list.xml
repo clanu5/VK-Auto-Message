@@ -61,16 +61,4 @@
         android:src="@drawable/plus"
         app:layout_behavior="com.qwert2603.vkautomessage.behavior.RightFabHideBehavior"/>
 
-    <com.qwert2603.vkautomessage.floating_action_mode.FloatingActionMode
-        android:id="@+id/floating_action_mode"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_margin="@dimen/action_mode_margin"
-        android:background="@drawable/action_mode_background"
-        app:can_dismiss="true"
-        app:can_drag="true"
-        app:dismiss_threshold="0.35"
-        app:drag_icon="@drawable/ic_drag_white_24dp"
-        app:animation_duration="@integer/action_mode_animation_duration"/>
-
 </android.support.design.widget.CoordinatorLayout>

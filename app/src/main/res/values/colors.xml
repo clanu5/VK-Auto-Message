@@ -21,7 +21,7 @@
     <color name="header_view_background">#F6F6F6</color>
     <color name="navigation_view_background">#FFF</color>
 
-    <color name="selected_item">#E4E4E4</color>
+    <color name="selected_item">#E0E0E0</color>
     <color name="item_background">#FFFF</color>
     <color name="colorControlHighlight">#42838383</color>
 

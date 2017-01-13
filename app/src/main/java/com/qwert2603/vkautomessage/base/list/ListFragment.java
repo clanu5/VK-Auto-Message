@@ -123,7 +123,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
         mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
 
-        if (mFloatingActionMode.isStarted()) {
+        if (mFloatingActionMode.getOpened()) {
             initActionModeViews();
         }
 
@@ -271,7 +271,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void startListSelectionMode() {
-        startActionMode(R.layout.user_list_action_mode);
+        startActionMode(R.layout.action_mode_user_list);
         initActionModeViews();
     }
 

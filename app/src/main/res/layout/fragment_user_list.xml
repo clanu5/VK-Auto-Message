@@ -2,10 +2,12 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.qwert2603.vkautomessage.user_list.UserListActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -22,20 +24,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/add_user"
         app:layout_behavior="com.qwert2603.vkautomessage.behavior.BottomFabHideBehavior"/>
-
-    <com.qwert2603.vkautomessage.floating_action_mode.FloatingActionMode
-        android:id="@+id/floating_action_mode"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_margin="@dimen/action_mode_margin"
-        android:background="@drawable/action_mode_background"
-        app:can_dismiss="true"
-        app:can_drag="true"
-        app:dismiss_threshold="0.35"
-        app:drag_icon="@drawable/ic_drag_white_24dp"
-        app:animation_duration="@integer/action_mode_animation_duration"
-        app:hide_direction="nearest"
-        android:translationZ="6dp"/>
 
     <ViewAnimator
         android:id="@+id/view_animator"

@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.qwert2603.floating_action_mode.FloatingActionMode;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -28,7 +29,6 @@ import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.BaseFragment;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
-import com.qwert2603.vkautomessage.floating_action_mode.FloatingActionMode;
 import com.qwert2603.vkautomessage.login.MainActivity;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
@@ -174,7 +174,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         });
 
         mToolbar.setNavigationOnClickListener(v -> {
-            if (mFloatingActionMode.isStarted()) {
+            if (mFloatingActionMode.getOpened()) {
                 stopActionMode();
                 return;
             }
@@ -216,10 +216,9 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             }
         }
 
-        if (mFloatingActionMode.isStarted()) {
+        if (mFloatingActionMode.getOpened()) {
             setToolbarIconState(R.attr.state_close, true);
         }
-        mFloatingActionMode.setOnActionModeDismissListener(this::stopActionMode);
 
         return view;
     }
@@ -249,12 +248,12 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     }
 
     protected void startActionMode(@LayoutRes int actionContentRes) {
-        mFloatingActionMode.start(actionContentRes);
+        mFloatingActionMode.open();
         setToolbarIconState(R.attr.state_close, false);
     }
 
     protected void stopActionMode() {
-        mFloatingActionMode.stop();
+        mFloatingActionMode.close();
         if (isNavigationButtonVisible()) {
             setToolbarIconState(R.attr.state_burger, false);
         } else {
@@ -277,7 +276,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
             return;
         }
 
-        if (mFloatingActionMode.isStarted()) {
+        if (mFloatingActionMode.getOpened()) {
             stopActionMode();
             return;
         }
