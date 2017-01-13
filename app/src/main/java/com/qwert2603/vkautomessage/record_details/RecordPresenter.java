@@ -205,6 +205,9 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         if (!record.getMessage().equals(message)) {
             record.setMessage(message);
             getView().showMessage(message);
+
+            mRxBus.send(new RxBus.Event(RxBus.Event.EVENT_RECORD_ENABLED_CHANGED, model));
+
             mDataManager.onRecordUpdated(record);
         }
     }

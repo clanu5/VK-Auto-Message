@@ -82,6 +82,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                         model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
+                        updateItem(recordPosition);
                         if (canUpdateView()) {
                             showUserRecordsCount(model.mUser, getView());
                         }

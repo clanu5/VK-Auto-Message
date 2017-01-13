@@ -3,9 +3,9 @@ package com.qwert2603.vkautomessage.base;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
-import com.qwert2603.vkautomessage.util.LogUtils;
+import android.view.View;
 
 /**
  * Базовый фрагмент, построенный для работы с шаблоном MVP.
@@ -45,17 +45,16 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     @CallSuper
     @Override
-    public void onResume() {
-        LogUtils.d(getClass() + " onResume");
-        super.onResume();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         getPresenter().onViewReady();
     }
 
     @CallSuper
     @Override
-    public void onPause() {
+    public void onDestroyView() {
         getPresenter().onViewNotReady();
-        super.onPause();
+        super.onDestroyView();
     }
 
 }
