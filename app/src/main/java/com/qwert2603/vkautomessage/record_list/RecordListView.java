@@ -10,7 +10,7 @@ public interface RecordListView extends ListView<Record> {
 
     /**
      * For adapter items.
-     * @param user user-receiver of records in record list.
+     * @param user user-receiver of records in record listFromModel.
      */
     void setUser(User user);
 

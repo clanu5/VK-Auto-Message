@@ -34,7 +34,7 @@ public class SendMessageHelper {
         PendingIntent pendingIntent = PendingIntent.getService(mContext, record.getId(), intent, 0);
         if (record.isEnabled()) {
             long nextSendingInMillis = getNextSendingInMillis(record, System.currentTimeMillis());
-            LogUtils.d(String.valueOf(new Date(nextSendingInMillis)));
+            LogUtils.d("onRecordChanged nextSendingInMillis == " + String.valueOf(new Date(nextSendingInMillis)));
             // TODO: 14.01.2017 use correct method on api >= 23
             mAlarmManager.setExact(
                     AlarmManager.RTC_WAKEUP,

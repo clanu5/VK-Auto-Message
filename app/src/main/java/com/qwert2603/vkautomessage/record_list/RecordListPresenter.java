@@ -16,6 +16,7 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +27,15 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 public class RecordListPresenter extends ListPresenter<Record, RecordListWithUser, RecordListView> {
+
+    public static final int FILTER_ENABLED = 1 << 1;
+    public static final int FILTER_DISABLED = 1 << 2;
+
+    public static final int FILTER_PERIODICALLY_BY_HOURS = 1 << 3;
+    public static final int FILTER_DAYS_IN_WEEK = 1 << 4;
+    public static final int FILTER_DAY_IN_YEAR = 1 << 5;
+
+    public static final int NO_FILTER = FILTER_ENABLED | FILTER_DISABLED | FILTER_PERIODICALLY_BY_HOURS | FILTER_DAYS_IN_WEEK | FILTER_DAY_IN_YEAR;
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
@@ -41,9 +51,39 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     @Inject
     RxBus mRxBus;
 
+    private int mFilterState = NO_FILTER;
+
     @Override
-    protected List<Record> getList() {
-        return getModel() == null ? null : getModel().mRecordList;
+    protected Transformer<RecordListWithUser, List<Record>> listFromModel() {
+        return recordListWithUser -> recordListWithUser == null ? null : recordListWithUser.mRecordList;
+    }
+
+    @Override
+    protected Transformer<RecordListWithUser, List<Record>> showingListFromModel() {
+        // TODO: 14.01.2017
+        return recordListWithUser -> {
+            if (recordListWithUser == null) {
+                return null;
+            }
+            if (mFilterState == NO_FILTER) {
+                return recordListWithUser.mRecordList;
+            }
+            List<Record> showingList = new ArrayList<>();
+            for (Record record : recordListWithUser.mRecordList) {
+                if (record.isEnabled() && (mFilterState & FILTER_ENABLED) == 0)
+                    continue;
+                if (!record.isEnabled() && (mFilterState & FILTER_DISABLED) == 0)
+                    continue;
+                if (record.getRepeatType() == Record.REPEAT_TYPE_HOURS_IN_DAY && (mFilterState & FILTER_PERIODICALLY_BY_HOURS) == 0)
+                    continue;
+                if (record.getRepeatType() == Record.REPEAT_TYPE_DAYS_IN_WEEK && (mFilterState & FILTER_DAYS_IN_WEEK) == 0)
+                    continue;
+                if (record.getRepeatType() == Record.REPEAT_TYPE_DAY_IN_YEAR && (mFilterState & FILTER_DAY_IN_YEAR) == 0)
+                    continue;
+                showingList.add(record);
+            }
+            return showingList;
+        };
     }
 
     @Override
@@ -189,7 +229,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
                     List<Record> recordList = model.mRecordList;
                     recordList.add(record);
-                    view.showList(recordList);
+                    updateShowingList();
 
                     User user = model.mUser;
                     user.setRecordsCount(user.getRecordsCount() + 1);
@@ -230,7 +270,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     @Override
     public void onItemDismissed(int position) {
-        Record record = getList().get(position);
+        Record record = getShowingList().get(position);
         LogUtils.d("onItemDismissed " + position + " " + record);
 
         User user = getModel().mUser;
@@ -254,15 +294,35 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
         }
         showUserRecordsCount(user, view);
         recordList.remove(position);
-        if (recordList.size() > 0) {
-            view.showList(recordList);
-        } else {
-            view.showEmpty();
-        }
+        updateShowingList();
 
         mDataManager.removeRecord(id)
                 .subscribe(aLong -> {
                 }, LogUtils::e);
+    }
+
+    public void onResetFilterClicked() {
+        if (mFilterState == NO_FILTER) return;
+        mFilterState = NO_FILTER;
+        updateShowingList();
+        getView().scrollToTop();
+    }
+
+    public void onFilterStateChanged(int filterParam, boolean enabled) {
+        int newFilterState = mFilterState;
+        if (enabled) {
+            newFilterState |= filterParam;
+        } else {
+            newFilterState &= ~(filterParam);
+        }
+        if (newFilterState == mFilterState) return;
+        mFilterState = newFilterState;
+        updateShowingList();
+        getView().scrollToTop();
+    }
+
+    public int getFilterState() {
+        return mFilterState;
     }
 
     private int getRecordPosition(int recordId) {

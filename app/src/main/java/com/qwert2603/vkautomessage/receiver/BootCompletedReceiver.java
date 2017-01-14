@@ -26,6 +26,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        LogUtils.d("BootCompletedReceiver#onReceive");
         mDataManager
                 .getAllRecords()
                 .flatMap(Observable::from)

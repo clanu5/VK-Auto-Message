@@ -24,7 +24,6 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     private boolean mIsLoading;
 
     private String mQuery;
-    private List<VkUser> mShowingUserList;
 
     @Inject
     DataManager mDataManager;
@@ -34,8 +33,29 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     }
 
     @Override
-    protected List<VkUser> getList() {
-        return mShowingUserList;
+    protected Transformer<List<VkUser>, List<VkUser>> listFromModel() {
+        return vkUsers -> vkUsers;
+    }
+
+    @Override
+    protected Transformer<List<VkUser>, List<VkUser>> showingListFromModel() {
+        return vkUsers -> {
+            if (vkUsers == null) {
+                return null;
+            }
+            List<VkUser> showingList = null;
+            if (mQuery == null || mQuery.isEmpty()) {
+                showingList = vkUsers;
+            } else {
+                showingList = new ArrayList<>();
+                for (VkUser user : vkUsers) {
+                    if (user.getFirstName().toLowerCase().startsWith(mQuery) || user.getLastName().toLowerCase().startsWith(mQuery)) {
+                        showingList.add(user);
+                    }
+                }
+            }
+            return showingList;
+        };
     }
 
     @Override
@@ -85,11 +105,11 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     @Override
     protected void onUpdateView(@NonNull ChooseUserView view) {
         super.onUpdateView(view);
-        if (mShowingUserList == null) {
+        if (getShowingList() == null) {
             view.setRefreshingConfig(false, false);
         } else {
             view.setRefreshingConfig(true, mIsLoading);
-            if (mShowingUserList.isEmpty()) {
+            if (getShowingList().isEmpty()) {
                 if (mQuery != null && !mQuery.isEmpty()) {
                     view.showNothingFound();
                 }
@@ -111,19 +131,13 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
         super.onReloadList();
     }
 
-    @Override
-    protected void setModel(List<VkUser> userList) {
-        doSearch(userList);
-        super.setModel(userList);
-    }
-
     public String getCurrentQuery() {
         return mQuery;
     }
 
     @Override
     public void onItemAtPositionClicked(int position) {
-        VkUser user = mShowingUserList.get(position);
+        VkUser user = getShowingList().get(position);
         if (user.isCanWrite()) {
             switch (user.getId()) {
                 case Const.DEVELOPER_VK_ID:
@@ -133,7 +147,7 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
                     getView().showGreatChoice();
                     break;
             }
-            getView().submitDode(mShowingUserList.get(position).getId());
+            getView().submitDode(getShowingList().get(position).getId());
         } else {
             getView().showCantWrite();
         }
@@ -146,29 +160,12 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
 
     public void onSearchQueryChanged(String query) {
         mQuery = query.toLowerCase();
-        doSearch(getModel());
-        updateView();
+        updateShowingList();
         getView().scrollToTop();
     }
 
     public void onCancelClicked() {
         getView().submitCancel();
-    }
-
-    private void doSearch(List<VkUser> userList) {
-        mShowingUserList = null;
-        if (userList != null) {
-            if (mQuery == null || mQuery.isEmpty()) {
-                mShowingUserList = userList;
-            } else {
-                mShowingUserList = new ArrayList<>();
-                for (VkUser user : userList) {
-                    if (user.getFirstName().toLowerCase().startsWith(mQuery) || user.getLastName().toLowerCase().startsWith(mQuery)) {
-                        mShowingUserList.add(user);
-                    }
-                }
-            }
-        }
     }
 
 }

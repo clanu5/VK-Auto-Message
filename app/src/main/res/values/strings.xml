@@ -70,4 +70,5 @@
     <string name="day_in_year">Day in year</string>
     <string name="filter_by_enabled_state">Filter by enabled state:</string>
     <string name="filter_repeat_period">Filter repeat period:</string>
+    <string name="reset">Reset</string>
 </resources>

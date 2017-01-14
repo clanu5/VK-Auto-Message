@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -133,9 +134,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
 
-        // TODO: 12.12.2016 фильтрация активных и неактивных записей
-        // TODO: 26.12.2016 filter records by repeat type
-
         // to allow marquee scrolling.
         mUserNameTextView.setSelected(true);
         mUserNameTextView.setHorizontallyScrolling(true);
@@ -234,8 +232,40 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         View actionView = menu.findItem(R.id.filter).getActionView();
         actionView.setOnClickListener(v -> {
-            PopupWindow popupWindow = new PopupWindow(getActivity().getLayoutInflater().inflate(R.layout.dialog_filter_record_list, null),
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_filter_record_list, null);
+
+            int filterState = mRecordListPresenter.getFilterState();
+
+            CheckBox filter_enabled = (CheckBox) view.findViewById(R.id.filter_enabled);
+            filter_enabled.setChecked((filterState & RecordListPresenter.FILTER_ENABLED) != 0);
+            filter_enabled.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordListPresenter.onFilterStateChanged(RecordListPresenter.FILTER_ENABLED, isChecked));
+
+            CheckBox filter_disabled = (CheckBox) view.findViewById(R.id.filter_disabled);
+            filter_disabled.setChecked((filterState & RecordListPresenter.FILTER_DISABLED) != 0);
+            filter_disabled.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordListPresenter.onFilterStateChanged(RecordListPresenter.FILTER_DISABLED, isChecked));
+
+            CheckBox filter_periodically_by_hours = (CheckBox) view.findViewById(R.id.filter_periodically_by_hours);
+            filter_periodically_by_hours.setChecked((filterState & RecordListPresenter.FILTER_PERIODICALLY_BY_HOURS) != 0);
+            filter_periodically_by_hours.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordListPresenter.onFilterStateChanged(RecordListPresenter.FILTER_PERIODICALLY_BY_HOURS, isChecked));
+
+            CheckBox filter_days_in_week = (CheckBox) view.findViewById(R.id.filter_days_in_week);
+            filter_days_in_week.setChecked((filterState & RecordListPresenter.FILTER_DAYS_IN_WEEK) != 0);
+            filter_days_in_week.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordListPresenter.onFilterStateChanged(RecordListPresenter.FILTER_DAYS_IN_WEEK, isChecked));
+
+            CheckBox filter_day_in_year = (CheckBox) view.findViewById(R.id.filter_day_in_year);
+            filter_day_in_year.setChecked((filterState & RecordListPresenter.FILTER_DAY_IN_YEAR) != 0);
+            filter_day_in_year.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordListPresenter.onFilterStateChanged(RecordListPresenter.FILTER_DAY_IN_YEAR, isChecked));
+
+            view.findViewById(R.id.reset_filter).setOnClickListener(v1 -> {
+                filter_enabled.setChecked(true);
+                filter_disabled.setChecked(true);
+                filter_periodically_by_hours.setChecked(true);
+                filter_days_in_week.setChecked(true);
+                filter_day_in_year.setChecked(true);
+                mRecordListPresenter.onResetFilterClicked();
+            });
+
+            PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setOutsideTouchable(true);
             popupWindow.setFocusable(true);
             popupWindow.setElevation(8.0f);

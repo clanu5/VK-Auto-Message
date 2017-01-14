@@ -1,15 +1,14 @@
 package com.qwert2603.vkautomessage.base.list;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.Identifiable;
+import com.qwert2603.vkautomessage.util.CollectionUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,12 +23,17 @@ import rx.Observable;
  */
 public abstract class ListPresenter<T extends Identifiable, M, V extends ListView<T>> extends BasePresenter<M, V> {
 
+    protected interface Transformer<T, U> {
+        U transform(T t);
+    }
+
     protected final Set<Integer> mSelectedIds = new HashSet<>();
 
-    @Nullable
     private List<T> mPrevList = null;
 
-    protected abstract List<T> getList();
+    private List<T> mShowingList = null;
+
+    private List<T> mPrevShowingList = null;
 
     protected abstract boolean isError();
 
@@ -38,6 +42,25 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     protected abstract void doLoadItem(int id);
 
     protected abstract Observable<Void> removeItem(int id);
+
+    protected abstract Transformer<M, List<T>> listFromModel();
+
+    protected abstract Transformer<M, List<T>> showingListFromModel();
+
+    protected final void updateShowingList() {
+        mShowingList = showingListFromModel().transform(getModel());
+        updateView();
+    }
+
+    protected final List<T> getShowingList() {
+        return mShowingList;
+    }
+
+    @Override
+    protected void setModel(M model) {
+        mShowingList = showingListFromModel().transform(model);
+        super.setModel(model);
+    }
 
     @Override
     protected void onUpdateView(@NonNull V view) {
@@ -48,22 +71,17 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
                 view.showLoading();
             }
         } else {
-            List<T> list = getList();
-            if (list == null || list.isEmpty()) {
+            if (mShowingList == null || mShowingList.isEmpty()) {
                 view.showEmpty();
             } else {
-                view.showList(list);
+                view.showList(mShowingList);
             }
         }
     }
 
     public void onItemAtPositionClicked(int position) {
-        List<T> list = getList();
-        if (list == null) {
-            return;
-        }
         if (mSelectedIds.isEmpty()) {
-            getView().moveToDetailsForItem(list.get(position).getId(), false, -1);
+            getView().moveToDetailsForItem(mShowingList.get(position).getId(), false, position);
         } else {
             toggleItemSelectionState(position);
         }
@@ -74,7 +92,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     private void toggleItemSelectionState(int position) {
-        int id = getList().get(position).getId();
+        int id = mShowingList.get(position).getId();
         if (!mSelectedIds.contains(id)) {
             if (mSelectedIds.isEmpty()) {
                 getView().startListSelectionMode();
@@ -93,7 +111,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     public void onSelectAllClicked() {
-        for (T t : getList()) {
+        for (T t : mShowingList) {
             mSelectedIds.add(t.getId());
         }
         getView().showSelectedItemsCount(mSelectedIds.size());
@@ -107,17 +125,19 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     public void onDeleteSelectedClicked() {
-        mPrevList = new ArrayList<>(getList());
-        Iterator<T> each = getList().iterator();
-        while (each.hasNext()) {
-            int id = each.next().getId();
-            if (mSelectedIds.contains(id)) {
-                each.remove();
-                removeItem(id)
-                        .subscribe(aLong -> {
-                        }, LogUtils::e);
-            }
+        List<T> list = listFromModel().transform(getModel());
+        mPrevList = new ArrayList<>(list);
+        CollectionUtils.removeIf(list, t -> mSelectedIds.contains(t.getId()));
+
+        mPrevShowingList = new ArrayList<>(mShowingList);
+        CollectionUtils.removeIf(mShowingList, t -> mSelectedIds.contains(t.getId()));
+
+        for (Integer id : mSelectedIds) {
+            removeItem(id)
+                    .subscribe(aLong -> {
+                    }, LogUtils::e);
         }
+
         getView().showItemsDeleted(mSelectedIds.size());
         mSelectedIds.clear();
         updateView();
@@ -126,9 +146,15 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public void onUndoDeletionClicked() {
         if (mPrevList != null) {
-            getList().clear();
-            getList().addAll(mPrevList);
+            List<T> list = listFromModel().transform(getModel());
+            list.clear();
+            list.addAll(mPrevList);
             mPrevList = null;
+
+            mShowingList.clear();
+            mShowingList.addAll(mPrevShowingList);
+            mPrevShowingList = null;
+
             updateView();
         }
     }
@@ -136,15 +162,15 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     public void onItemDismissed(int position) {
 //        askDeleteItem(position);
 
-        removeItem(getList().get(position).getId())
+        removeItem(mShowingList.get(position).getId())
                 .subscribe(aLong -> {
                 }, LogUtils::e);
 
-        if (mSelectedIds.contains(getList().get(position).getId())) {
+        if (mSelectedIds.contains(mShowingList.get(position).getId())) {
             toggleItemSelectionState(position);
         }
 
-        getList().remove(position);
+        mShowingList.remove(position);
         updateView();
     }
 
@@ -170,11 +196,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     private void askDeleteItem(int position) {
-        List<T> list = getList();
-        if (list == null) {
-            return;
-        }
-        getView().askDeleteItem(list.get(position).getId());
+        getView().askDeleteItem(mShowingList.get(position).getId());
         getView().setItemSelectionState(position, true);
     }
 

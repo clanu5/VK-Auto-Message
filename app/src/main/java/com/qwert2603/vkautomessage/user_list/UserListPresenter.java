@@ -38,15 +38,42 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
     RxBus mRxBus;
 
     private SortState mSortState = SortState.DEFAULT;
-    private List<User> mShowingList;
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
     }
 
     @Override
-    protected List<User> getList() {
-        return getModel();
+    protected Transformer<List<User>, List<User>> listFromModel() {
+        return users -> users;
+    }
+
+    @Override
+    protected Transformer<List<User>, List<User>> showingListFromModel() {
+        return users -> {
+            if (users == null) {
+                return null;
+            }
+            if (mSortState == SortState.DEFAULT) {
+                return users;
+            }
+            List<User> showingList = new ArrayList<>(users);
+            switch (mSortState) {
+                case FIRST_NAME:
+                    Collections.sort(showingList, (o1, o2) -> o1.getFirstName().compareTo(o2.getFirstName()));
+                    break;
+                case LAST_NAME:
+                    Collections.sort(showingList, (o1, o2) -> o1.getLastName().compareTo(o2.getLastName()));
+                    break;
+                case RECORDS_COUNT:
+                    Collections.sort(showingList, (o1, o2) -> Integer.compare(o1.getRecordsCount(), o2.getRecordsCount()));
+                    break;
+                case ENABLED_RECORDS_COUNT:
+                    Collections.sort(showingList, (o1, o2) -> Integer.compare(o1.getEnabledRecordsCount(), o2.getEnabledRecordsCount()));
+                    break;
+            }
+            return showingList;
+        };
     }
 
     @Override
@@ -80,7 +107,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                     if (view1 == null || updatedPositions.isEmpty()) {
                         return;
                     }
-                    view1.showList(userList);
+                    updateShowingList();
                 }, LogUtils::e);
     }
 
@@ -116,12 +143,13 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                             if (userList == null) {
                                 return;
                             }
-                            int userPosition = getUserPosition(user.getId());
+                            int userPosition = getUserPosition(getModel(), user.getId());
                             if (userPosition != -1) {
                                 userList.set(userPosition, user);
                                 if (canUpdateView()) {
-                                    getView().updateItem(userPosition);
+                                    getView().updateItem(getUserPosition(getShowingList(), user.getId()));
                                 }
+                                updateShowingList();
                             }
                         },
                         throwable -> {
@@ -139,15 +167,10 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     public void onItemDeleteSubmitted(int id) {
         super.onItemDeleteSubmitted(id);
-        int position = getUserPosition(id);
+        int position = getUserPosition(getModel(), id);
         List<User> userList = getModel();
-        UserListView view = getView();
         userList.remove(position);
-        if (userList.size() > 0) {
-            view.showList(userList);
-        } else {
-            view.showEmpty();
-        }
+        updateShowingList();
 
         mDataManager.removeUser(id)
                 .subscribe(aVoid -> {
@@ -166,14 +189,14 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         if (userId < 0) {
             return;
         }
-        int userPosition = getUserPosition(userId);
+        int userPosition = getUserPosition(getModel(), userId);
         if (userPosition >= 0) {
             List<User> userList = getModel();
             UserListView view = getView();
             if (userList == null || view == null) {
                 return;
             }
-            getView().moveToDetailsForItem(userId, true, userPosition);
+            getView().moveToDetailsForItem(userId, true, getUserPosition(getShowingList(), userId));
         } else {
             mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
@@ -193,7 +216,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                         user.setEnabledRecordsCount(0);
 
                         userList.add(user);
-                        view.showList(userList);
+                        updateShowingList();
 
                         view.moveToDetailsForItem(user.getId(), true, userList.size() - 1);
                     }, LogUtils::e);
@@ -201,44 +224,17 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
     }
 
     public void onSortStateChanged(SortState sortState) {
-        if (true) {
-            return;
-        }
-
         if (sortState == mSortState) return;
-
         mSortState = sortState;
-        List<User> userList = getModel();
-        if (userList == null) {
-            return;
-        }
-
-        switch (mSortState) {
-            case DEFAULT:
-                mShowingList = userList;
-                break;
-            case FIRST_NAME:
-                mShowingList = new ArrayList<>(userList);
-                Collections.sort(userList, (o1, o2) -> o1.getFirstName().compareTo(o2.getFirstName()));
-                break;
-            case LAST_NAME:
-                mShowingList = new ArrayList<>(userList);
-                Collections.sort(userList, (o1, o2) -> o1.getLastName().compareTo(o2.getLastName()));
-                break;
-            case RECORDS_COUNT:
-                mShowingList = new ArrayList<>(userList);
-                Collections.sort(userList, (o1, o2) -> Integer.compare(o1.getRecordsCount(), o2.getRecordsCount()));
-                break;
-            case ENABLED_RECORDS_COUNT:
-                mShowingList = new ArrayList<>(userList);
-                Collections.sort(userList, (o1, o2) -> Integer.compare(o1.getEnabledRecordsCount(), o2.getEnabledRecordsCount()));
-                break;
-        }
-        updateView();
+        updateShowingList();
+        getView().scrollToTop();
     }
 
-    private int getUserPosition(int userId) {
-        List<User> userList = getModel();
+    public SortState getSortState() {
+        return mSortState;
+    }
+
+    private int getUserPosition(List<User> userList, int userId) {
         for (int i = 0, size = (userList == null ? 0 : userList.size()); i < size; ++i) {
             if (userList.get(i).getId() == userId) {
                 return i;

@@ -179,13 +179,13 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     }
 
     /**
-     * Whether item list or emptyTextView were show earlier.
+     * Whether item listFromModel or emptyTextView were show earlier.
      */
     private boolean mContentEverShown = false;
 
     /**
      * List of items to show.
-     * Used to show list after enter transition finish.
+     * Used to show listFromModel after enter transition finish.
      */
     private List<T> mListToShow = new ArrayList<>();
 
@@ -233,10 +233,10 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     }
 
     @Override
-    public void moveToDetailsForItem(int itemId, boolean newItem, int newItemPosition) {
-        LogUtils.d("moveToDetailsForItem" + newItemPosition + " _ " + itemId);
+    public void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition) {
+        LogUtils.d("moveToDetailsForItem" + itemPosition + " _ " + itemId);
+        mRecyclerView.scrollToPosition(itemPosition);
         if (newItem) {
-            mRecyclerView.scrollToPosition(newItemPosition);
             AndroidUtils.runOnUI(() -> {
                 RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForItemId(itemId);
                 if (viewHolder != null) {

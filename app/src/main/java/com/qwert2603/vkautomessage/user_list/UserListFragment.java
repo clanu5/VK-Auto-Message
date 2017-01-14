@@ -104,13 +104,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         // TODO: 23.12.2016 sometimes  dividerItemDecoration not drawn.
 
-        // TODO: 26.12.2016 sort users by:
-        // default
-        // first name
-        // last name
-        // records count
-        // enabled records count
-
         // TODO: 26.12.2016 in action mode ask user delete users and records or records only
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
@@ -194,6 +187,24 @@ public class UserListFragment extends ListFragment<User> implements UserListView
                         break;
                 }
             });
+            UserListPresenter.SortState sortState = mUserListPresenter.getSortState();
+            switch (sortState) {
+                case DEFAULT:
+                    radioGroup.check(R.id.sort_default);
+                    break;
+                case FIRST_NAME:
+                    radioGroup.check(R.id.sort_first_name);
+                    break;
+                case LAST_NAME:
+                    radioGroup.check(R.id.sort_last_name);
+                    break;
+                case RECORDS_COUNT:
+                    radioGroup.check(R.id.sort_records_count);
+                    break;
+                case ENABLED_RECORDS_COUNT:
+                    radioGroup.check(R.id.sort_enabled_records_count);
+                    break;
+            }
             PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setOutsideTouchable(true);
             popupWindow.setFocusable(true);

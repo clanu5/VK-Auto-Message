@@ -242,7 +242,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     /**
-     * Whether item list was show earlier.
+     * Whether item listFromModel was show earlier.
      */
     private boolean mListEverShown = false;
 
@@ -264,7 +264,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     }
 
     @Override
-    public void moveToDetailsForItem(int itemId, boolean newItem, int newItemPosition) {
+    public void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition) {
     }
 
     @Override
