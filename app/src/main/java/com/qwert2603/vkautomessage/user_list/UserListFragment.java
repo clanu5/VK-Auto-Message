@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
@@ -172,8 +173,28 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         View actionView = menu.findItem(R.id.sort).getActionView();
         actionView.setOnClickListener(v -> {
-            PopupWindow popupWindow = new PopupWindow(getActivity().getLayoutInflater().inflate(R.layout.dialog_sort_user_list, null),
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_sort_user_list, null);
+            RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.sort_radio_group);
+            radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                switch (checkedId) {
+                    case R.id.sort_default:
+                        mUserListPresenter.onSortStateChanged(UserListPresenter.SortState.DEFAULT);
+                        break;
+                    case R.id.sort_first_name:
+                        mUserListPresenter.onSortStateChanged(UserListPresenter.SortState.FIRST_NAME);
+                        break;
+                    case R.id.sort_last_name:
+                        mUserListPresenter.onSortStateChanged(UserListPresenter.SortState.LAST_NAME);
+                        break;
+                    case R.id.sort_records_count:
+                        mUserListPresenter.onSortStateChanged(UserListPresenter.SortState.RECORDS_COUNT);
+                        break;
+                    case R.id.sort_enabled_records_count:
+                        mUserListPresenter.onSortStateChanged(UserListPresenter.SortState.ENABLED_RECORDS_COUNT);
+                        break;
+                }
+            });
+            PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             popupWindow.setOutsideTouchable(true);
             popupWindow.setFocusable(true);
             popupWindow.setElevation(8.0f);
@@ -220,17 +241,5 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     public void scrollToTop() {
         super.scrollToTop();
         mChooseUserFAB.animate().translationY(0);
-    }
-
-    @Override
-    public void enableUI() {
-        super.enableUI();
-        mChooseUserFAB.setEnabled(true);
-    }
-
-    @Override
-    public void disableUI() {
-        super.disableUI();
-        mChooseUserFAB.setEnabled(false);
     }
 }

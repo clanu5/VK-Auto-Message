@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -50,6 +51,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     protected static final int REQUEST_DELETE_ITEM = 1;
     protected static final int REQUEST_DETAILS_FOT_ITEM = 2;
 
+    private static final long DEFAULT_DISABLE_UI_DURATION = 500;
+
     @BindView(R.id.content_root_view)
     protected View mContentRootView;
 
@@ -65,8 +68,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @NonNull
     protected abstract BaseRecyclerViewAdapter<T, ?, ?> getAdapter();
-
-    private boolean mUiEnabled = true;
 
     private ImageButton mActionModeDeleteButton;
     private ImageButton mActionModeSelectAllButton;
@@ -91,24 +92,17 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.setAdapter(getAdapter());
 
 
-        getAdapter().setClickCallback(position1 -> {
-            if (mUiEnabled) {
-                mRecyclerView.scrollToPosition(position1);
-                getPresenter().onItemAtPositionClicked(position1);
-            }
+        getAdapter().setClickCallback(position -> {
+            mRecyclerView.scrollToPosition(position);
+            getPresenter().onItemAtPositionClicked(position);
         });
-        getAdapter().setLongClickCallback(position1 -> {
-            if (mUiEnabled) {
-                mRecyclerView.scrollToPosition(position1);
-                getPresenter().onItemAtPositionLongClicked(position1);
-            }
+        getAdapter().setLongClickCallback(position -> {
+            mRecyclerView.scrollToPosition(position);
+            getPresenter().onItemAtPositionLongClicked(position);
         });
         getAdapter().setItemSwipeDismissCallback(position -> {
             // TODO: 24.12.2016 undo button
-
-            if (mUiEnabled) {
-                getPresenter().onItemDismissed(position);
-            }
+            getPresenter().onItemDismissed(position);
         });
 
         mToolbar.setOnClickListener(v -> getPresenter().onScrollToTopClicked());
@@ -121,7 +115,10 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
         mRecyclerView.setHasFixedSize(true);
 
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> {
+            getPresenter().onReloadList();
+//            disableUI(DEFAULT_DISABLE_UI_DURATION);
+        });
 
         if (mFloatingActionMode.getOpened()) {
             initActionModeViews();
@@ -315,20 +312,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.scrollToPosition(0);
     }
 
-    @Override
-    public void enableUI() {
-        LogUtils.d(getClass() + " enableUI");
-        mUiEnabled = true;
-        mRecyclerView.setOnTouchListener(null);
-    }
-
-    @Override
-    public void disableUI() {
-        LogUtils.d(getClass() + " disableUI");
-        mUiEnabled = false;
-        mRecyclerView.setOnTouchListener((v, event) -> true);
-    }
-
     private void setViewAnimatorDisplayedChild(int position) {
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
@@ -336,6 +319,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mViewAnimator.setVisibility(position != POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
     }
 
+    @CallSuper
     protected void prepareRecyclerViewForTransition() {
         mRecyclerView.stopScroll();
         mRecyclerItemAnimator.endAnimations();

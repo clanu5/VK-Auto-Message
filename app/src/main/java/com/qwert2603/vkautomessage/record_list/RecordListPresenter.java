@@ -82,9 +82,9 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                         model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
-                        updateItem(recordPosition);
                         if (canUpdateView()) {
                             showUserRecordsCount(model.mUser, getView());
+                            getView().updateItem(recordPosition);
                         }
                     }
                 }, LogUtils::e);
@@ -148,8 +148,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 LogUtils.d("doLoadItem canUpdateView() ==" + canUpdateView());
-                                updateItem(recordPosition);
                                 if (canUpdateView()) {
+                                    getView().updateItem(recordPosition);
                                     showUserRecordsCount(model.mUser, getView());
                                 }
                             }
@@ -178,7 +178,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                 return;
             }
         }
-        getView().disableUI();
         Record record = new Record(recordListWithUser.mUser.getId());
         mDataManager.addRecord(record)
                 .subscribe(aVoid -> {
@@ -197,13 +196,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     showUserRecordsCount(user, view);
 
                     view.moveToDetailsForItem(record.getId(), true, recordList.size() - 1);
-                }, t -> {
-                    RecordListView view = getView();
-                    if (view != null) {
-                        view.enableUI();
-                    }
-                    LogUtils.e(t);
-                });
+                }, LogUtils::e);
     }
 
     @Override

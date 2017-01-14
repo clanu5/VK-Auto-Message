@@ -29,8 +29,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     @Nullable
     private List<T> mPrevList = null;
 
-    private final Set<Integer> mIdsToUpdate = new HashSet<>();
-
     protected abstract List<T> getList();
 
     protected abstract boolean isError();
@@ -40,24 +38,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     protected abstract void doLoadItem(int id);
 
     protected abstract Observable<Void> removeItem(int id);
-
-    @Override
-    public void onViewReady() {
-        super.onViewReady();
-        getView().enableUI();
-        LogUtils.d("ListPresenter onViewReady mIdsToUpdate == " + mIdsToUpdate);
-        if (!mIdsToUpdate.isEmpty()) {
-            for (int i = 0; i < getList().size(); i++) {
-                if (mIdsToUpdate.contains(getList().get(i).getId())) {
-                    getView().updateItem(i);
-                    mIdsToUpdate.remove(getList().get(i).getId());
-                    if (mIdsToUpdate.isEmpty()) {
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     @Override
     protected void onUpdateView(@NonNull V view) {
@@ -83,7 +63,6 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
             return;
         }
         if (mSelectedIds.isEmpty()) {
-            getView().disableUI();
             getView().moveToDetailsForItem(list.get(position).getId(), false, -1);
         } else {
             toggleItemSelectionState(position);
@@ -184,19 +163,10 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
 
     public final void onReturnFromItemDetails(int id) {
         doLoadItem(id);
-        getView().enableUI();
     }
 
     public void onScrollToTopClicked() {
         getView().scrollToTop();
-    }
-
-    protected final void updateItem(int position) {
-        if (canUpdateView()) {
-            getView().updateItem(position);
-        } else {
-            mIdsToUpdate.add(getList().get(position).getId());
-        }
     }
 
     private void askDeleteItem(int position) {

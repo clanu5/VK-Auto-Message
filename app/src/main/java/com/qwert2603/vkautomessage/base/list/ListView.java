@@ -62,15 +62,4 @@ public interface ListView<T extends Identifiable> extends BaseView {
     void showItemsDeleted(int count);
 
     void scrollToTop();
-
-    /**
-     * Enable clicking in list items and buttons.
-     * UI should be enabled by default.
-     */
-    void enableUI();
-
-    /**
-     * Disable clicking in list items and buttons.
-     */
-    void disableUI();
 }

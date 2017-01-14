@@ -8,6 +8,7 @@ import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,14 @@ import rx.subscriptions.Subscriptions;
 
 public class UserListPresenter extends ListPresenter<User, List<User>, UserListView> {
 
+    public enum SortState {
+        DEFAULT,
+        FIRST_NAME,
+        LAST_NAME,
+        RECORDS_COUNT,
+        ENABLED_RECORDS_COUNT
+    }
+
     private Subscription mSubscription = Subscriptions.unsubscribed();
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
 
@@ -27,6 +36,9 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     @Inject
     RxBus mRxBus;
+
+    private SortState mSortState = SortState.DEFAULT;
+    private List<User> mShowingList;
 
     public UserListPresenter() {
         VkAutoMessageApplication.getAppComponent().inject(UserListPresenter.this);
@@ -107,7 +119,9 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                             int userPosition = getUserPosition(user.getId());
                             if (userPosition != -1) {
                                 userList.set(userPosition, user);
-                                updateItem(userPosition);
+                                if (canUpdateView()) {
+                                    getView().updateItem(userPosition);
+                                }
                             }
                         },
                         throwable -> {
@@ -141,7 +155,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
     }
 
     public void onChooseUserClicked() {
-        getView().disableUI();
         getView().showChooseUser();
     }
 
@@ -151,7 +164,6 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
      */
     public void onUserChosen(int userId) {
         if (userId < 0) {
-            getView().enableUI();
             return;
         }
         int userPosition = getUserPosition(userId);
@@ -184,14 +196,45 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                         view.showList(userList);
 
                         view.moveToDetailsForItem(user.getId(), true, userList.size() - 1);
-                    }, t -> {
-                        UserListView view = getView();
-                        if (view != null) {
-                            view.enableUI();
-                        }
-                        LogUtils.e(t);
-                    });
+                    }, LogUtils::e);
         }
+    }
+
+    public void onSortStateChanged(SortState sortState) {
+        if (true) {
+            return;
+        }
+
+        if (sortState == mSortState) return;
+
+        mSortState = sortState;
+        List<User> userList = getModel();
+        if (userList == null) {
+            return;
+        }
+
+        switch (mSortState) {
+            case DEFAULT:
+                mShowingList = userList;
+                break;
+            case FIRST_NAME:
+                mShowingList = new ArrayList<>(userList);
+                Collections.sort(userList, (o1, o2) -> o1.getFirstName().compareTo(o2.getFirstName()));
+                break;
+            case LAST_NAME:
+                mShowingList = new ArrayList<>(userList);
+                Collections.sort(userList, (o1, o2) -> o1.getLastName().compareTo(o2.getLastName()));
+                break;
+            case RECORDS_COUNT:
+                mShowingList = new ArrayList<>(userList);
+                Collections.sort(userList, (o1, o2) -> Integer.compare(o1.getRecordsCount(), o2.getRecordsCount()));
+                break;
+            case ENABLED_RECORDS_COUNT:
+                mShowingList = new ArrayList<>(userList);
+                Collections.sort(userList, (o1, o2) -> Integer.compare(o1.getEnabledRecordsCount(), o2.getEnabledRecordsCount()));
+                break;
+        }
+        updateView();
     }
 
     private int getUserPosition(int userId) {

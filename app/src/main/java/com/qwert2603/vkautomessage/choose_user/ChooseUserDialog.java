@@ -277,16 +277,6 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         mRecyclerView.scrollToPosition(0);
     }
 
-    @Override
-    public void enableUI() {
-        mRecyclerView.setOnTouchListener(null);
-    }
-
-    @Override
-    public void disableUI() {
-        mRecyclerView.setOnTouchListener((v, event) -> true);
-    }
-
     private void setViewAnimatorDisplayedChild(int position) {
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
