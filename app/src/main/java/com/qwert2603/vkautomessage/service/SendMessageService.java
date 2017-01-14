@@ -89,6 +89,8 @@ public class SendMessageService extends IntentService {
                 .setAutoCancel(true)
                 .build();
 
+        // TODO: 14.01.2017 group notification in api >=24
+
         int lastNotificationId = mDataManager.getLastNotificationId();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(++lastNotificationId, notification);

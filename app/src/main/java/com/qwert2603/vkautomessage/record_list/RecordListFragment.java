@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -17,10 +19,13 @@ import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -119,6 +124,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         VkAutoMessageApplication.getAppComponent().inject(RecordListFragment.this);
         mRecordListPresenter.setUserId(getArguments().getInt(userIdKey));
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @NonNull
@@ -221,13 +227,27 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.record_list, menu);
+        menu.findItem(R.id.filter).setActionView(R.layout.menu_item_filter);
+
+        View actionView = menu.findItem(R.id.filter).getActionView();
+        actionView.setOnClickListener(v -> {
+            PopupWindow popupWindow = new PopupWindow(getActivity().getLayoutInflater().inflate(R.layout.dialog_filter_record_list, null),
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            popupWindow.setOutsideTouchable(true);
+            popupWindow.setFocusable(true);
+            popupWindow.setElevation(8.0f);
+            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            popupWindow.showAsDropDown(actionView);
+        });
+
+    }
+
+    @Override
     protected void moveToDetailsForItem(int itemId) {
         prepareRecyclerViewForTransition();
-
-        // TODO: 23.12.2016 is it possible to update message text view before back transition starts???
-        // not using scene transition for message TextView because if message was changed in RecordActivity than
-        // when back scene transition will be played there will be old text in message TextView in this activity (in VH)
-        // and old text will blink for a short time before text in VH will be updated.
 
         RecordListAdapter.RecordViewHolder viewHolder = (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
         Rect rect = new Rect();

@@ -3,6 +3,8 @@ package com.qwert2603.vkautomessage.user_list;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -12,8 +14,11 @@ import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.qwert2603.vkautomessage.R;
@@ -84,6 +89,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(UserListFragment.this);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @SuppressWarnings("deprecation")
@@ -156,6 +162,24 @@ public class UserListFragment extends ListFragment<User> implements UserListView
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.user_list, menu);
+        menu.findItem(R.id.sort).setActionView(R.layout.menu_item_sort);
+
+        View actionView = menu.findItem(R.id.sort).getActionView();
+        actionView.setOnClickListener(v -> {
+            PopupWindow popupWindow = new PopupWindow(getActivity().getLayoutInflater().inflate(R.layout.dialog_sort_user_list, null),
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            popupWindow.setOutsideTouchable(true);
+            popupWindow.setFocusable(true);
+            popupWindow.setElevation(8.0f);
+            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            popupWindow.showAsDropDown(actionView);
+        });
     }
 
     @Override

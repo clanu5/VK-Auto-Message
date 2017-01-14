@@ -27,9 +27,9 @@
     <string name="all_except">All except %s</string>
 
     <string-array name="repeat_types">
-        <item>Periodically by hours</item>
-        <item>Days in week</item>
-        <item>Day in year</item>
+        <item>@string/periodically_by_hours</item>
+        <item>@string/days_in_week</item>
+        <item>@string/day_in_year</item>
     </string-array>
 
     <string name="user_photo_transition" translatable="false">user_photo_transition</string>
@@ -55,4 +55,19 @@
     <string name="choose_days_in_week">Choose days in week</string>
     <string name="undo">Undo</string>
     <string name="items_deleted_format">%d items deleted</string>
+    <string name="sort">Sort</string>
+    <string name="_default">Default</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="records_count">Records count</string>
+    <string name="enabled_records_count">Enabled records count</string>
+    <string name="sort_by">Sort by:</string>
+    <string name="filter">Filter</string>
+    <string name="disabled">Disabled</string>
+    <string name="enabled">Enabled</string>
+    <string name="periodically_by_hours">Periodically by hours</string>
+    <string name="days_in_week">Days in week</string>
+    <string name="day_in_year">Day in year</string>
+    <string name="filter_by_enabled_state">Filter by enabled state:</string>
+    <string name="filter_repeat_period">Filter repeat period:</string>
 </resources>
