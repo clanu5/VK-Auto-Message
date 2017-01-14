@@ -276,12 +276,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void moveToDetailsForItem(int itemId) {
         prepareRecyclerViewForTransition();
 
         RecordListAdapter.RecordViewHolder viewHolder = (RecordListAdapter.RecordViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
         Rect rect = new Rect();
-        if (AndroidUtils.isPortraitOrientation(getActivity())) {
+        if (viewHolder != null && AndroidUtils.isPortraitOrientation(getActivity())) {
             viewHolder.itemView.getGlobalVisibleRect(rect);
         } else {
             int widthPixels = Resources.getSystem().getDisplayMetrics().widthPixels;
@@ -289,12 +290,20 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         }
         mTransitionContent.setEpicenterRect(rect);
 
-        ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
-                Pair.create(viewHolder.mMessageTextView, viewHolder.mMessageTextView.getTransitionName())
-                // TODO: 23.12.2016 animate icon image and make ripple effect
-                //Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
-        );
+        ActivityOptions activityOptions;
+
+        if (viewHolder != null) {
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
+                    Pair.create(viewHolder.mMessageTextView, viewHolder.mMessageTextView.getTransitionName())
+                    // TODO: 23.12.2016 animate icon image and make ripple effect
+                    //Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
+            );
+        } else {
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName())
+            );
+        }
 
         Intent intent = new Intent(getActivity(), RecordActivity.class);
         intent.putExtra(RecordActivity.EXTRA_ITEM_ID, itemId);

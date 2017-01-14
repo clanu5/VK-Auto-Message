@@ -218,6 +218,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     protected void moveToDetailsForItem(int itemId) {
         LogUtils.d("moveToDetailsForItem " + itemId);
         prepareRecyclerViewForTransition();
+
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =
                 (UserListAdapter.UserViewHolder) mRecyclerView.findViewHolderForItemId(itemId);
