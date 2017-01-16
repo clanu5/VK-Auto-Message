@@ -21,6 +21,7 @@ import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
 import com.qwert2603.vkautomessage.base.navigation.NavigationFragment;
+import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_day_in_year.EditDayInYearDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_days_in_week.EditDaysInWeekDialog;
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_message.EditMessageDialog;
@@ -196,7 +197,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
                 mRecordPresenter.onTimeEdited(hour, minute);
                 break;
             case REQUEST_EDIT_REPEAT_TYPE:
-                int repeatType = data.getIntExtra(EditRepeatTypeDialog.EXTRA_REPEAT_TYPE, 0);
+                @Record.RepeatType int repeatType = data.getIntExtra(EditRepeatTypeDialog.EXTRA_REPEAT_TYPE, Record.REPEAT_TYPE_HOURS_IN_DAY);
                 mRecordPresenter.onRepeatTypeEdited(repeatType);
                 break;
             case REQUEST_EDIT_PERIOD:
@@ -276,7 +277,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     }
 
     @Override
-    public void showEditRepeatType(int repeatType) {
+    public void showEditRepeatType(@Record.RepeatType int repeatType) {
         EditRepeatTypeDialog editRepeatTypeDialog = EditRepeatTypeDialog.newInstance(repeatType);
         editRepeatTypeDialog.setTargetFragment(RecordFragment.this, REQUEST_EDIT_REPEAT_TYPE);
         editRepeatTypeDialog.show(getFragmentManager(), editRepeatTypeDialog.getClass().getName());

@@ -212,7 +212,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         }
     }
 
-    public void onRepeatTypeEdited(int repeatType) {
+    public void onRepeatTypeEdited(@Record.RepeatType int repeatType) {
         RecordWithUser model = getModel();
         if (model == null) {
             return;

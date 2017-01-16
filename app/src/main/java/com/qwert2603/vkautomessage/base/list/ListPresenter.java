@@ -56,6 +56,14 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
         return mShowingList;
     }
 
+    /**
+     * @return true if {@link #mShowingList} is search results, false otherwise.
+     * By default consider that showing list is full without any filters and searches.
+     */
+    protected boolean isSearching() {
+        return false;
+    }
+
     @Override
     protected void setModel(M model) {
         mShowingList = showingListFromModel().transform(model);
@@ -72,7 +80,11 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
             }
         } else {
             if (mShowingList == null || mShowingList.isEmpty()) {
-                view.showEmpty();
+                if (isSearching()) {
+                    view.showNothingFound();
+                } else {
+                    view.showEmpty();
+                }
             } else {
                 view.showList(mShowingList);
             }
@@ -198,6 +210,27 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     private void askDeleteItem(int position) {
         getView().askDeleteItem(mShowingList.get(position).getId());
         getView().setItemSelectionState(position, true);
+    }
+
+    protected final int getItemPosition(int id) {
+        List<T> list = listFromModel().transform(getModel());
+        return getItemPosition(list, id);
+    }
+
+    protected final int getShowingItemPosition(int id) {
+        return getItemPosition(mShowingList, id);
+    }
+
+    private int getItemPosition(List<T> list, int id) {
+        if (list == null) {
+            return -1;
+        }
+        for (int i = 0; i < list.size(); ++i) {
+            if (list.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

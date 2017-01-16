@@ -131,7 +131,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void showEditRepeatType(int repeatType) {
+        public void showEditRepeatType(@Record.RepeatType int repeatType) {
         }
 
         @Override

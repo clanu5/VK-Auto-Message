@@ -13,8 +13,6 @@ public interface ChooseUserView extends ListView<VkUser> {
 
     void showCantWrite();
 
-    void showNothingFound();
-
     void showDontWriteToDeveloper();
 
     void showGreatChoice();

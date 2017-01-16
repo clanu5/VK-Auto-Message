@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 public final class AndroidUtils {
 
@@ -46,6 +47,7 @@ public final class AndroidUtils {
     /**
      * Set enabled state to view and all its descendants.
      */
+    @SuppressWarnings("unused")
     public static void setViewEnabled(View view, boolean enabled) {
         view.setEnabled(enabled);
         if (view instanceof ViewGroup) {
@@ -53,6 +55,17 @@ public final class AndroidUtils {
                 setViewEnabled(((ViewGroup) view).getChildAt(i), enabled);
             }
         }
+    }
+
+    public static void setActionOnPreDraw(View view, Runnable action) {
+        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                view.getViewTreeObserver().removeOnPreDrawListener(this);
+                action.run();
+                return true;
+            }
+        });
     }
 
 }

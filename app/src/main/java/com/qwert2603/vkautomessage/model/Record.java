@@ -1,10 +1,13 @@
 package com.qwert2603.vkautomessage.model;
 
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.util.StringUtils;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.Calendar;
 
 public class Record implements Identifiable {
@@ -30,6 +33,12 @@ public class Record implements Identifiable {
      */
     public static final int REPEAT_TYPE_DAY_IN_YEAR = 2;
 
+    @IntDef({REPEAT_TYPE_HOURS_IN_DAY, REPEAT_TYPE_DAYS_IN_WEEK, REPEAT_TYPE_DAY_IN_YEAR})
+    @Target({ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.PARAMETER, ElementType.METHOD})
+    public @interface RepeatType {
+
+    }
+
     /**
      * Периоды для отправки при {@link #mRepeatType} == {@link #REPEAT_TYPE_HOURS_IN_DAY}.
      */
@@ -54,6 +63,7 @@ public class Record implements Identifiable {
     private String mMessage;
     private boolean mEnabled;
 
+    @RepeatType
     private int mRepeatType;
     private int mRepeatInfo;
     private int mHour;
@@ -71,7 +81,7 @@ public class Record implements Identifiable {
         mMinute = calendar.get(Calendar.MINUTE);
     }
 
-    public Record(int id, int userId, @NonNull String message, boolean enabled, int repeatType, int repeatInfo, int hour, int minute) {
+    public Record(int id, int userId, @NonNull String message, boolean enabled,@RepeatType int repeatType, int repeatInfo, int hour, int minute) {
         mId = id;
         mUserId = userId;
         mMessage = message;
@@ -116,11 +126,12 @@ public class Record implements Identifiable {
         mEnabled = enabled;
     }
 
+    @RepeatType
     public int getRepeatType() {
         return mRepeatType;
     }
 
-    public void setRepeatType(int repeatType) {
+    public void setRepeatType(@RepeatType int repeatType) {
         if (mRepeatType == repeatType) {
             return;
         }
@@ -278,10 +289,8 @@ public class Record implements Identifiable {
 
     /**
      * Проверить что {@link #mRepeatType} == repeatType.
-     *
-     * @throws RuntimeException
      */
-    private void checkRepeatType(int repeatType) throws RuntimeException {
+    private void checkRepeatType(@Record.RepeatType int repeatType) throws RuntimeException {
         if (mRepeatType != repeatType) {
             throw new RuntimeException(ERROR_WRONG_REPEAT_TYPE);
         }

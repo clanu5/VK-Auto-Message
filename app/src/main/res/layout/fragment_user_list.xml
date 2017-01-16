@@ -61,6 +61,14 @@
             android:textColor="@color/no_items"
             android:textSize="@dimen/loading_error_empty_text_size"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/nothing_found"
+            android:textColor="@color/no_items"
+            android:textSize="@dimen/loading_error_empty_text_size"/>
+
     </ViewAnimator>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.base.list;
 
+import android.support.annotation.NonNull;
+
 import com.qwert2603.vkautomessage.base.BaseView;
 import com.qwert2603.vkautomessage.model.Identifiable;
 
@@ -32,7 +34,9 @@ public interface ListView<T extends Identifiable> extends BaseView {
      *
      * @param list список для отображения.
      */
-    void showList(List<T> list);
+    void showList(@NonNull List<T> list);
+
+    void showNothingFound();
 
     void updateItem(int position);
 

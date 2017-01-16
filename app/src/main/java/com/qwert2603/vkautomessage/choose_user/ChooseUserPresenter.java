@@ -64,6 +64,11 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     }
 
     @Override
+    protected boolean isSearching() {
+        return super.isSearching() || (mQuery != null && !mQuery.isEmpty());
+    }
+
+    @Override
     protected void doLoadList() {
         mSubscription.unsubscribe();
         mIsLoading = true;
@@ -105,15 +110,11 @@ public class ChooseUserPresenter extends ListPresenter<VkUser, List<VkUser>, Cho
     @Override
     protected void onUpdateView(@NonNull ChooseUserView view) {
         super.onUpdateView(view);
-        if (getShowingList() == null) {
+        List<VkUser> showingList = getShowingList();
+        if (showingList == null) {
             view.setRefreshingConfig(false, false);
         } else {
             view.setRefreshingConfig(true, mIsLoading);
-            if (getShowingList().isEmpty()) {
-                if (mQuery != null && !mQuery.isEmpty()) {
-                    view.showNothingFound();
-                }
-            }
         }
     }
 

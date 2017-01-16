@@ -6,11 +6,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.TransitionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +50,10 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     private static final int POSITION_LOADING_TEXT_VIEW = 1;
     private static final int POSITION_ERROR_TEXT_VIEW = 2;
     private static final int POSITION_EMPTY_TEXT_VIEW = 3;
+    private static final int POSITION_NOTHING_FOUND_TEXT_VIEW = 4;
 
     protected static final int REQUEST_DELETE_ITEM = 1;
     protected static final int REQUEST_DETAILS_FOT_ITEM = 2;
-
-    private static final long DEFAULT_DISABLE_UI_DURATION = 500;
 
     @BindView(R.id.content_root_view)
     protected View mContentRootView;
@@ -73,6 +75,24 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     private ImageButton mActionModeSelectAllButton;
     private ImageButton mActionModeEnableAllButton;
     private VectorIntegerView mVectorIntegerView;
+
+    private boolean mIsEverResumed = false;
+
+    /**
+     * Whether item listFromModel or emptyTextView were show earlier.
+     */
+    private boolean mContentEverShown = false;
+
+    /**
+     * List of items to show.
+     * Used to show listFromModel when it will be possible (after enter transition finish).
+     */
+    @Nullable
+    private List<T> mDelayedListToShow = null;
+
+    private boolean mIsResumed = false;
+    private boolean mIsInTransition = false;
+    private boolean mIsInSharedElementTransition = false;
 
     @NonNull
     @Override
@@ -115,16 +135,49 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.setItemAnimator(mRecyclerItemAnimator);
         mRecyclerView.setHasFixedSize(true);
 
-        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> {
-            getPresenter().onReloadList();
-//            disableUI(DEFAULT_DISABLE_UI_DURATION);
-        });
+        mViewAnimator.getChildAt(POSITION_ERROR_TEXT_VIEW).setOnClickListener(v -> getPresenter().onReloadList());
 
         if (mFloatingActionMode.getOpened()) {
             initActionModeViews();
         }
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getActivity().getWindow().getEnterTransition().addListener(new TransitionUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                LogUtils.d("o4igmnw3io4g " + ListFragment.this.getClass() + " getEnterTransition onTransitionStart " + transition);
+                mIsInTransition = true;
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mIsInTransition = false;
+                showListDelayed();
+                LogUtils.d("o4igmnw3io4g " + ListFragment.this.getClass() + " getEnterTransition onTransitionEnd " + transition);
+            }
+        });
+        getActivity().getWindow().getSharedElementEnterTransition().addListener(new TransitionUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                LogUtils.d("o4igmnw3io4g " + ListFragment.this.getClass() + " getSharedElementEnterTransition onTransitionStart " + transition);
+                mIsInSharedElementTransition = true;
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mIsInSharedElementTransition = false;
+                showListDelayed();
+                LogUtils.d("o4igmnw3io4g " + ListFragment.this.getClass() + " getSharedElementEnterTransition onTransitionEnd " + transition);
+            }
+        });
+
+        getActivity().getWindow().setEnterTransition(null);
     }
 
     @Override
@@ -138,9 +191,35 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (!mIsEverResumed) {
+            mIsEverResumed = true;
+            AndroidUtils.runOnUI(() -> {
+                if (isResumed()) {
+                    mIsResumed = true;
+                    showListDelayed();
+                }
+            }, getResources().getInteger(R.integer.transition_duration) + 140);
+        } else {
+            mIsResumed = true;
+            showListDelayed();
+        }
+        LogUtils.d("o4igmnw3io4g " + getClass() + " onResume");
+    }
+
+    @Override
+    public void onPause() {
+        mIsResumed = false;
+        LogUtils.d("o4igmnw3io4g " + getClass() + " onPause");
+        super.onPause();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         LogUtils.d("onActivityResult " + requestCode + " " + resultCode + " " + data);
+        LogUtils.d("o4igmnw3io4g " + getClass() + " onActivityResult");
 
         switch (requestCode) {
             case REQUEST_DELETE_ITEM:
@@ -178,16 +257,15 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         setViewAnimatorDisplayedChild(POSITION_ERROR_TEXT_VIEW);
     }
 
-    /**
-     * Whether item listFromModel or emptyTextView were show earlier.
-     */
-    private boolean mContentEverShown = false;
-
-    /**
-     * List of items to show.
-     * Used to show listFromModel after enter transition finish.
-     */
-    private List<T> mListToShow = new ArrayList<>();
+    private void showListDelayed() {
+        LogUtils.d("showListDelayed start " + mDelayedListToShow);
+        if (mDelayedListToShow != null) {
+            List<T> list = mDelayedListToShow;
+            mDelayedListToShow = null;
+            showList(list);
+        }
+        LogUtils.d("showListDelayed end " + mDelayedListToShow);
+    }
 
     @Override
     public void showEmpty() {
@@ -196,30 +274,34 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
         setViewAnimatorDisplayedChild(POSITION_EMPTY_TEXT_VIEW);
         mContentEverShown = true;
+        mDelayedListToShow = null;
     }
 
     @Override
-    public void showList(List<T> list) {
-        LogUtils.d("showList");
-        if (!mContentEverShown) {
-            long enterDuration = getActivity().getWindow().getEnterTransition().getDuration();
-            mListToShow = list;
-            AndroidUtils.runOnUI(() -> {
-                if (!mContentEverShown) {
-                    mContentEverShown = true;
-                    setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-                    mRecyclerItemAnimator.setDelayEnter(true);
-                    mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
-                    getAdapter().replaceModelList(mListToShow);
-                    mListToShow = new ArrayList<>();
-                }
-            }, enterDuration + 50);
+    public void showList(@NonNull List<T> list) {
+        LogUtils.d("showList " + !mIsResumed + " " + mIsInTransition + " " + mIsInSharedElementTransition);
+        if (!mIsResumed || mIsInTransition || mIsInSharedElementTransition) {
+            mDelayedListToShow = list;
             return;
         }
+        LogUtils.printCurrentStack();
+
+        if (!mContentEverShown) {
+            mContentEverShown = true;
+            mRecyclerItemAnimator.setDelayEnter(true);
+            mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
+        } else {
+            mRecyclerItemAnimator.setDelayEnter(false);
+            mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
+        }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
-        mRecyclerItemAnimator.setDelayEnter(false);
-        mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
         getAdapter().replaceModelList(list);
+    }
+
+    @Override
+    public void showNothingFound() {
+        getAdapter().replaceModelList(new ArrayList<>());
+        setViewAnimatorDisplayedChild(POSITION_NOTHING_FOUND_TEXT_VIEW);
     }
 
     @Override

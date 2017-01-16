@@ -247,7 +247,7 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
     private boolean mListEverShown = false;
 
     @Override
-    public void showList(List<VkUser> list) {
+    public void showList(@NonNull List<VkUser> list) {
         if (!mListEverShown) {
             mListEverShown = true;
             mRecyclerItemAnimator.setDelayEnter(true);

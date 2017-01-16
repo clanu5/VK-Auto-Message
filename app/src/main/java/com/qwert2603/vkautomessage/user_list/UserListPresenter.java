@@ -1,5 +1,7 @@
 package com.qwert2603.vkautomessage.user_list;
 
+import android.os.SystemClock;
+
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.list.ListPresenter;
@@ -57,6 +59,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
             if (mSortState == SortState.DEFAULT) {
                 return users;
             }
+            long b = SystemClock.elapsedRealtime();
             List<User> showingList = new ArrayList<>(users);
             switch (mSortState) {
                 case FIRST_NAME:
@@ -72,6 +75,8 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                     Collections.sort(showingList, (o1, o2) -> Integer.compare(o1.getEnabledRecordsCount(), o2.getEnabledRecordsCount()));
                     break;
             }
+            long time = SystemClock.elapsedRealtime() - b;
+            LogUtils.d("showingListFromModel sorting " + time + " ms");
             return showingList;
         };
     }
@@ -143,11 +148,11 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                             if (userList == null) {
                                 return;
                             }
-                            int userPosition = getUserPosition(getModel(), user.getId());
+                            int userPosition = getItemPosition(user.getId());
                             if (userPosition != -1) {
                                 userList.set(userPosition, user);
                                 if (canUpdateView()) {
-                                    getView().updateItem(getUserPosition(getShowingList(), user.getId()));
+                                    getView().updateItem(getShowingItemPosition(user.getId()));
                                 }
                                 updateShowingList();
                             }
@@ -167,7 +172,7 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     public void onItemDeleteSubmitted(int id) {
         super.onItemDeleteSubmitted(id);
-        int position = getUserPosition(getModel(), id);
+        int position = getItemPosition(id);
         List<User> userList = getModel();
         userList.remove(position);
         updateShowingList();
@@ -189,20 +194,25 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
         if (userId < 0) {
             return;
         }
-        int userPosition = getUserPosition(getModel(), userId);
+        int userPosition = getItemPosition(userId);
         if (userPosition >= 0) {
             List<User> userList = getModel();
             UserListView view = getView();
             if (userList == null || view == null) {
                 return;
             }
-            getView().moveToDetailsForItem(userId, true, getUserPosition(getShowingList(), userId));
+            getView().moveToDetailsForItem(userId, true, getShowingItemPosition(userId));
         } else {
             mDataManager.getVkUserById(userId, true)
                     .flatMap(mDataManager::addUser)
 //                    .doOnNext(user -> {
-//                        for (int i = 0; i < 300; i++) {
-//                            mDataManager.addRecord(new Record(userId)).subscribe();
+//                        for (int i = 0; i < 1300; i++) {
+//                            Record record = new Record(userId);
+//                            record.setEnabled(true);
+//                            record.setHour(new Random().nextInt(24));
+//                            record.setMinute(new Random().nextInt(60));
+//                            record.setRepeatType(new Random().nextInt(3));
+//                            mDataManager.addRecord(record).subscribe();
 //                        }
 //                    })
                     .subscribe(user -> {
@@ -232,14 +242,5 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
 
     public SortState getSortState() {
         return mSortState;
-    }
-
-    private int getUserPosition(List<User> userList, int userId) {
-        for (int i = 0, size = (userList == null ? 0 : userList.size()); i < size; ++i) {
-            if (userList.get(i).getId() == userId) {
-                return i;
-            }
-        }
-        return -1;
     }
 }

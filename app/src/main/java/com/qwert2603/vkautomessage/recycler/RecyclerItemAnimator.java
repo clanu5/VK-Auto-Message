@@ -3,11 +3,8 @@ package com.qwert2603.vkautomessage.recycler;
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
@@ -15,13 +12,15 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class RecyclerItemAnimator extends DefaultItemAnimator {
 
-    public static final int ENTER_DURATION = 250;
-    private static final int ENTER_EACH_ITEM_DELAY = 50;
+    public static final int ENTER_DURATION = 400;
+    private static final int ENTER_EACH_ITEM_DELAY = 70;
 
     public enum EnterOrigin {
         BOTTOM,
@@ -30,18 +29,17 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         LEFT_OR_RIGHT
     }
 
+    // TODO: 15.01.2017 use not LAST, but mIdToAnimateEnter
     public enum AnimateEnterMode {
         NONE,
         LAST,
         ALL
     }
 
-    private Map<RecyclerView.ViewHolder, Animator> mEnterAnimations = new HashMap<>();
+    private Set<RecyclerView.ViewHolder> mEnterAnimations = new HashSet<>();
     private Map<RecyclerView.ViewHolder, Animator> mRemoveAnimations = new HashMap<>();
 
     private EnterOrigin mEnterOrigin = EnterOrigin.BOTTOM;
-
-    private Interpolator mEnterInterpolator = new DecelerateInterpolator();
 
     private AnimateEnterMode mAnimateEnterMode = AnimateEnterMode.NONE;
 
@@ -54,6 +52,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         if (mAnimateEnterMode == AnimateEnterMode.ALL ||
                 (mAnimateEnterMode == AnimateEnterMode.LAST && viewHolder.getAdapterPosition() == viewHolder.getItemsCount() - 1)) {
             runEnterAnimation(viewHolder);
+            return false;
         }
         dispatchAddFinished(holder);
         return false;
@@ -111,70 +110,55 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         int heightPixels = viewHolder.itemView.getResources().getDisplayMetrics().heightPixels;
         int widthPixels = viewHolder.itemView.getResources().getDisplayMetrics().widthPixels;
 
-        ObjectAnimator objectAnimator;
-
         if (mEnterOrigin == EnterOrigin.BOTTOM) {
             viewHolder.itemView.setTranslationY(heightPixels);
-            objectAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "translationY", 0);
-            objectAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    viewHolder.itemView.setTranslationY(0);
-                }
-            });
+            viewHolder.itemView.animate().translationY(0);
         } else if (mEnterOrigin == EnterOrigin.LEFT) {
             viewHolder.itemView.setTranslationX(-1 * widthPixels);
-            objectAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "translationX", 0);
-            objectAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    viewHolder.itemView.setTranslationX(0);
-                }
-            });
+            viewHolder.itemView.animate().translationX(0);
         } else if (mEnterOrigin == EnterOrigin.RIGHT) {
             viewHolder.itemView.setTranslationX(widthPixels);
-            objectAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "translationX", 0);
-            objectAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    viewHolder.itemView.setTranslationX(0);
-                }
-            });
+            viewHolder.itemView.animate().translationX(0);
         } else if (mEnterOrigin == EnterOrigin.LEFT_OR_RIGHT) {
             viewHolder.itemView.setTranslationX((viewHolder.getAdapterPosition() % 2 == 0 ? -1 : 1) * widthPixels);
-            objectAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "translationX", 0);
-            objectAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    viewHolder.itemView.setTranslationX(0);
-                }
-            });
+            viewHolder.itemView.animate().translationX(0);
         } else {
             return;
         }
 
-        objectAnimator.setDuration(ENTER_DURATION);
-
         if (mDelayEnter) {
             LogUtils.d("setStartDelay " + viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
-            objectAnimator.setStartDelay(viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
+            viewHolder.itemView.animate()
+                    .setStartDelay(viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
         }
 
-        objectAnimator.setInterpolator(mEnterInterpolator);
-        objectAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                dispatchAddFinished(viewHolder);
-                mEnterAnimations.remove(viewHolder);
-            }
-        });
-        mEnterAnimations.put(viewHolder, objectAnimator);
-        objectAnimator.start();
+        mEnterAnimations.add(viewHolder);
+
+        viewHolder.itemView.animate()
+                .setDuration(ENTER_DURATION)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        viewHolder.itemView.setTranslationX(0);
+                        viewHolder.itemView.setTranslationY(0);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        viewHolder.itemView.animate()
+                                .setStartDelay(0)
+                                .setListener(null);
+                        mEnterAnimations.remove(viewHolder);
+                        dispatchAddFinished(viewHolder);
+                    }
+                })
+                .withLayer()
+                .start();
     }
 
     private void cancelCurrentAnimationIfExist(RecyclerView.ViewHolder item) {
-        if (mEnterAnimations.containsKey(item)) {
-            mEnterAnimations.remove(item).cancel();
+        if (mEnterAnimations.remove(item)) {
+            item.itemView.animate().cancel();
         }
         if (mRemoveAnimations.containsKey(item)) {
             mRemoveAnimations.remove(item).cancel();
@@ -189,12 +173,13 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     @Override
     public void endAnimations() {
-        List<Animator> animators = new ArrayList<>(mEnterAnimations.values());
+        ArrayList<RecyclerView.ViewHolder> viewHolders = new ArrayList<>(mEnterAnimations);
         mEnterAnimations.clear();
-        for (Animator animator : animators) {
-            animator.cancel();
+        for (RecyclerView.ViewHolder viewHolder : viewHolders) {
+            viewHolder.itemView.animate().cancel();
         }
-        animators = new ArrayList<>(mRemoveAnimations.values());
+
+        List<Animator> animators = new ArrayList<>(mRemoveAnimations.values());
         mRemoveAnimations.clear();
         for (Animator animator : animators) {
             animator.cancel();

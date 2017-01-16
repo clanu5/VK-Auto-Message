@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseDialog;
+import com.qwert2603.vkautomessage.model.Record;
 
 import javax.inject.Inject;
 
@@ -19,7 +20,7 @@ public class EditRepeatTypeDialog extends BaseDialog<EditRepeatTypePresenter> im
     private static final String repeatTypeKey = "repeatType";
     public static final String EXTRA_REPEAT_TYPE = "com.qwert2603.vkautomessage.EXTRA_REPEAT_TYPE";
 
-    public static EditRepeatTypeDialog newInstance(int repeatType) {
+    public static EditRepeatTypeDialog newInstance(@Record.RepeatType int repeatType) {
         EditRepeatTypeDialog editPeriodDialog = new EditRepeatTypeDialog();
         Bundle args = new Bundle();
         args.putInt(repeatTypeKey, repeatType);
@@ -44,7 +45,8 @@ public class EditRepeatTypeDialog extends BaseDialog<EditRepeatTypePresenter> im
     @Override
     public void onCreate(Bundle savedInstanceState) {
         VkAutoMessageApplication.getAppComponent().inject(EditRepeatTypeDialog.this);
-        mEditRepeatTypePresenter.onRepeatTypeChanged(getArguments().getInt(repeatTypeKey));
+        @Record.RepeatType int repeatType = getArguments().getInt(repeatTypeKey);
+        mEditRepeatTypePresenter.onRepeatTypeChanged(repeatType);
         super.onCreate(savedInstanceState);
     }
 

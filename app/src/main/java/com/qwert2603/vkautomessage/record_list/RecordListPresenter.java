@@ -103,6 +103,11 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
     }
 
     @Override
+    protected boolean isSearching() {
+        return super.isSearching() || mFilterState != NO_FILTER;
+    }
+
+    @Override
     public void bindView(RecordListView view) {
         super.bindView(view);
         mRxBusSubscription = mRxBus.toObservable()
@@ -118,13 +123,14 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     RecordWithUser recordWithUser = (RecordWithUser) event.mObject;
                     if (model.mUser.getId() == recordWithUser.mUser.getId()) {
                         LogUtils.d("EVENT_RECORD_ENABLED_CHANGED " + recordWithUser);
-                        int recordPosition = getRecordPosition(recordWithUser.mRecord.getId());
+                        int recordPosition = getItemPosition(recordWithUser.mRecord.getId());
                         model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                         model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
                         if (canUpdateView()) {
                             showUserRecordsCount(model.mUser, getView());
-                            getView().updateItem(recordPosition);
+                            getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()));
+                            // TODO: 15.01.2017 this updateItem cancels checkBox animation
                         }
                     }
                 }, LogUtils::e);
@@ -181,7 +187,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                             if (model == null) {
                                 return;
                             }
-                            int recordPosition = getRecordPosition(recordWithUser.mRecord.getId());
+                            int recordPosition = getItemPosition(recordWithUser.mRecord.getId());
                             if (recordPosition != -1) {
                                 LogUtils.d("doLoadItem " + id + " %% " + recordWithUser);
                                 model.mUser.setRecordsCount(recordWithUser.mUser.getRecordsCount());
@@ -189,7 +195,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 LogUtils.d("doLoadItem canUpdateView() ==" + canUpdateView());
                                 if (canUpdateView()) {
-                                    getView().updateItem(recordPosition);
+                                    getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()));
                                     showUserRecordsCount(model.mUser, getView());
                                 }
                             }
@@ -283,7 +289,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     public void onItemDeleteSubmitted(int id) {
         super.onItemDeleteSubmitted(id);
-        int position = getRecordPosition(id);
+        int position = getItemPosition(id);
         RecordListWithUser model = getModel();
         RecordListView view = getView();
         List<Record> recordList = model.mRecordList;
@@ -323,16 +329,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     public int getFilterState() {
         return mFilterState;
-    }
-
-    private int getRecordPosition(int recordId) {
-        List<Record> recordList = getModel().mRecordList;
-        for (int i = 0, size = recordList.size(); i < size; ++i) {
-            if (recordList.get(i).getId() == recordId) {
-                return i;
-            }
-        }
-        return -1;
     }
 
 }

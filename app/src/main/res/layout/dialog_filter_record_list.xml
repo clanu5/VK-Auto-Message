@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
@@ -23,13 +23,13 @@
 
         <CheckBox
             android:id="@+id/filter_enabled"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enabled"/>
 
         <CheckBox
             android:id="@+id/filter_disabled"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/disabled"/>
 
@@ -53,19 +53,19 @@
 
         <CheckBox
             android:id="@+id/filter_periodically_by_hours"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/periodically_by_hours"/>
 
         <CheckBox
             android:id="@+id/filter_days_in_week"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/days_in_week"/>
 
         <CheckBox
             android:id="@+id/filter_day_in_year"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/day_in_year"/>
 
