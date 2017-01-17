@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class AvatarView extends FrameLayout {
+
+    private static final int[] COLORS = {
+            0xffe57373,
+            0xfff06292,
+            0xffba68c8,
+            0xff9575cd,
+            0xff7986cb,
+            0xff64b5f6,
+            0xff4fc3f7,
+            0xff4dd0e1,
+            0xff4db6ac,
+            0xff81c784,
+            0xffaed581,
+            0xffff8a65,
+            0xffd4e157,
+            0xffffd54f,
+            0xffffb74d,
+            0xffa1887f,
+            0xff90a4ae
+    };
 
     private TextView mInitialsTextView;
     private ImageView mPhotoImageView;
@@ -39,7 +60,6 @@ public class AvatarView extends FrameLayout {
     }
 
     private void init(@NonNull Context context) {
-        // TODO: 17.01.2017 make differ  mInitialsTextView background color.
         View view = LayoutInflater.from(context).inflate(R.layout.avatar_view, this, true);
         mInitialsTextView = (TextView) view.findViewById(R.id.initials_text_view);
         mPhotoImageView = (ImageView) view.findViewById(R.id.photo_image_view);
@@ -48,6 +68,7 @@ public class AvatarView extends FrameLayout {
 
     public void showInitials(String initials) {
         mInitialsTextView.setText(initials);
+        ((GradientDrawable) mInitialsTextView.getBackground()).setColor(COLORS[initials.hashCode() % COLORS.length]);
         mInitialsTextView.setVisibility(VISIBLE);
         mPhotoImageView.setVisibility(INVISIBLE);
     }
