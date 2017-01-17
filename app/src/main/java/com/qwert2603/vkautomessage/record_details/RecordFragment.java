@@ -30,7 +30,9 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.RoundedTransformation;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -179,6 +181,11 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Picasso.with(getActivity()).cancelRequest(mPhotoImageView);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -217,8 +224,11 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     }
 
     @Override
-    public ImageView getPhotoImageView() {
-        return mPhotoImageView;
+    public void showPhoto(String url) {
+        Picasso.with(getActivity())
+                .load(url)
+                .transform(new RoundedTransformation())
+                .into(mPhotoImageView);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class UserPresenterTest extends BaseTest {
     @Before
     public void setUp() {
         getTestComponent().inject(UserPresenterTest.this);
-        Mockito.when(mUserViewMock.getPhotoImageView()).thenReturn(Mockito.mock(ImageView.class));
+        Mockito.when(mUserViewMock.showPhoto()).thenReturn(Mockito.mock(ImageView.class));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class UserPresenterTest extends BaseTest {
         Mockito.verifyZeroInteractions(mUserViewMock);
         userPresenter.onViewReady();
 
-        Mockito.verify(mUserViewMock, Mockito.times(1)).getPhotoImageView();
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto();
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).hideRecordsCount();
     }
@@ -57,7 +57,7 @@ public class UserPresenterTest extends BaseTest {
         Mockito.verifyZeroInteractions(mUserViewMock);
         userPresenter.onViewReady();
 
-        Mockito.verify(mUserViewMock, Mockito.times(1)).getPhotoImageView();
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto();
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).showRecordsCount(7, 4);
     }
@@ -72,7 +72,7 @@ public class UserPresenterTest extends BaseTest {
         userPresenter.onViewReady();
 
         userPresenter.onViewNotReady();
-        Mockito.verify(mUserViewMock, Mockito.times(2)).getPhotoImageView();
+        Mockito.verify(mUserViewMock, Mockito.times(2)).showPhoto();
     }
 
 }

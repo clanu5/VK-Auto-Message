@@ -1,7 +1,6 @@
 package com.qwert2603.vkautomessage.record_list;
 
 import android.support.annotation.NonNull;
-import android.widget.ImageView;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.RxBus;
@@ -14,7 +13,6 @@ import com.qwert2603.vkautomessage.model.RecordWithUser;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,21 +150,9 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             view.setUser(user);
             view.showUserName(StringUtils.getUserName(user));
             showUserRecordsCount(user, view);
-            ImageView photoImageView = view.getUserPhotoImageView();
-            if (photoImageView != null) {
-                Picasso.with(photoImageView.getContext()).load(user.getPhoto()).into(photoImageView);
-            }
+            view.showUserPhoto(user.getPhoto());
         } else {
             view.showLoadingUserInfo();
-        }
-    }
-
-    @Override
-    public void onViewNotReady() {
-        super.onViewNotReady();
-        RecordListView view = getView();
-        if (view != null && view.getUserPhotoImageView() != null) {
-            Picasso.with(view.getUserPhotoImageView().getContext()).cancelRequest(view.getUserPhotoImageView());
         }
     }
 

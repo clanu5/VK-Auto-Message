@@ -1,14 +1,12 @@
 package com.qwert2603.vkautomessage.base.navigation;
 
 import android.support.annotation.NonNull;
-import android.widget.ImageView;
 
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -52,10 +50,7 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
         User user = getModel();
         if (user != null) {
             view.showMyselfName(getUserName(user));
-            ImageView myselfPhotoImageView = view.getMyselfPhotoImageView();
-            if (myselfPhotoImageView != null) {
-                Picasso.with(myselfPhotoImageView.getContext()).load(user.getPhoto()).into(myselfPhotoImageView);
-            }
+            view.showMyselfPhoto(user.getPhoto());
         } else {
             view.showLoadingMyself();
         }
@@ -65,15 +60,6 @@ public class NavigationPresenter extends BasePresenter<User, NavigationView> {
     public void unbindView() {
         mSubscription.unsubscribe();
         super.unbindView();
-    }
-
-    @Override
-    public void onViewNotReady() {
-        super.onViewNotReady();
-        NavigationView view = getView();
-        if (view != null && view.getMyselfPhotoImageView() != null) {
-            Picasso.with(view.getMyselfPhotoImageView().getContext()).cancelRequest(view.getMyselfPhotoImageView());
-        }
     }
 
     public void onLogOutClicked() {

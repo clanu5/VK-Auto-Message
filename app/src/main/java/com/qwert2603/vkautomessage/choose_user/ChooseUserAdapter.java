@@ -14,6 +14,8 @@ import com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterInteger
 import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
+import com.qwert2603.vkautomessage.util.RoundedTransformation;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -80,13 +82,22 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
         }
 
         @Override
+        public void unbindPresenter() {
+            super.unbindPresenter();
+            Picasso.with(mPhotoImageView.getContext()).cancelRequest(mPhotoImageView);
+        }
+
+        @Override
         public void showName(String name) {
             mUsernameTextView.setText(name);
         }
 
         @Override
-        public ImageView getPhotoImageView() {
-            return mPhotoImageView;
+        public void showPhoto(String url) {
+            Picasso.with(mPhotoImageView.getContext())
+                    .load(url)
+                    .transform(new RoundedTransformation())
+                    .into(mPhotoImageView);
         }
 
         @Override

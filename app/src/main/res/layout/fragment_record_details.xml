@@ -30,10 +30,10 @@
                 android:id="@+id/user_card"
                 style="@style/ViewElevation"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:layout_weight="1"
                 android:foreground="?attr/selectableItemBackground"
-                card_view:cardCornerRadius="@dimen/cardCornerRadius">
+                card_view:cardCornerRadius="10dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -42,8 +42,8 @@
 
                     <ImageView
                         android:id="@+id/photo_image_view"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/icon_"
                         android:transitionName="@string/user_photo_transition"/>
 

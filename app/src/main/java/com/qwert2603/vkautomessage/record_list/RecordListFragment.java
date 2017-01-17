@@ -45,7 +45,9 @@ import com.qwert2603.vkautomessage.transition.EpicenterExplode;
 import com.qwert2603.vkautomessage.transition.EpicenterSlide;
 import com.qwert2603.vkautomessage.transition.EpicenterTransition;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
+import com.qwert2603.vkautomessage.util.RoundedTransformation;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -201,6 +203,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Picasso.with(getActivity()).cancelRequest(mUserPhotoImageView);
+    }
+
+    @Override
     public void setUser(User user) {
         mRecordListAdapter.setUser(user);
     }
@@ -217,8 +225,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         mUserNameTextView.setText(name);
     }
 
-    public ImageView getUserPhotoImageView() {
-        return mUserPhotoImageView;
+    @Override
+    public void showUserPhoto(String url) {
+        Picasso.with(getActivity())
+                .load(url)
+                .transform(new RoundedTransformation())
+                .into(mUserPhotoImageView);
     }
 
     private boolean mRecordsCountEverShown = false;

@@ -31,6 +31,8 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
 import com.qwert2603.vkautomessage.login.MainActivity;
 import com.qwert2603.vkautomessage.util.LogUtils;
+import com.qwert2603.vkautomessage.util.RoundedTransformation;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -224,6 +226,12 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Picasso.with(getActivity()).cancelRequest(mMyselfPhotoImageView);
+    }
+
+    @Override
     public void performLogOut() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         // TODO: 16.12.2016 ??? intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -237,8 +245,11 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     }
 
     @Override
-    public ImageView getMyselfPhotoImageView() {
-        return mMyselfPhotoImageView;
+    public void showMyselfPhoto(String url) {
+        Picasso.with(getActivity())
+                .load(url)
+                .transform(new RoundedTransformation())
+                .into(mMyselfPhotoImageView);
     }
 
     @Override

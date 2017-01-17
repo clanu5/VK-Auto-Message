@@ -2,7 +2,6 @@ package com.qwert2603.vkautomessage.record_details;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.widget.ImageView;
 
 import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.R;
@@ -15,7 +14,6 @@ import com.qwert2603.vkautomessage.model.RecordWithUser;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.StringUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
@@ -79,15 +77,6 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
     }
 
     @Override
-    public void onViewNotReady() {
-        RecordView view = getView();
-        if (view != null && view.getPhotoImageView() != null) {
-            Picasso.with(view.getPhotoImageView().getContext()).cancelRequest(view.getPhotoImageView());
-        }
-        super.onViewNotReady();
-    }
-
-    @Override
     protected void onUpdateView(@NonNull RecordView view) {
         RecordWithUser recordWithUser = getModel();
         if (recordWithUser == null) {
@@ -97,10 +86,7 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         User user = recordWithUser.mUser;
         Record record = recordWithUser.mRecord;
 
-        ImageView photoImageView = view.getPhotoImageView();
-        if (photoImageView != null) {
-            Picasso.with(photoImageView.getContext()).load(user.getPhoto()).into(photoImageView);
-        }
+        view.showPhoto(user.getPhoto());
         view.showUserName(getUserName(user));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
