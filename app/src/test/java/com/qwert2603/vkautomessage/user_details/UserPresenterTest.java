@@ -1,7 +1,5 @@
 package com.qwert2603.vkautomessage.user_details;
 
-import android.widget.ImageView;
-
 import com.qwert2603.vkautomessage.BaseTest;
 import com.qwert2603.vkautomessage.model.DataManager;
 import com.qwert2603.vkautomessage.model.User;
@@ -29,7 +27,6 @@ public class UserPresenterTest extends BaseTest {
     @Before
     public void setUp() {
         getTestComponent().inject(UserPresenterTest.this);
-        Mockito.when(mUserViewMock.showPhoto()).thenReturn(Mockito.mock(ImageView.class));
     }
 
     @Test
@@ -41,7 +38,7 @@ public class UserPresenterTest extends BaseTest {
         Mockito.verifyZeroInteractions(mUserViewMock);
         userPresenter.onViewReady();
 
-        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto();
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto());
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).hideRecordsCount();
     }
@@ -57,7 +54,7 @@ public class UserPresenterTest extends BaseTest {
         Mockito.verifyZeroInteractions(mUserViewMock);
         userPresenter.onViewReady();
 
-        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto();
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto());
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).showRecordsCount(7, 4);
     }
@@ -72,7 +69,7 @@ public class UserPresenterTest extends BaseTest {
         userPresenter.onViewReady();
 
         userPresenter.onViewNotReady();
-        Mockito.verify(mUserViewMock, Mockito.times(2)).showPhoto();
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto());
     }
 
 }

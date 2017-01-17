@@ -9,8 +9,8 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 
 public class InMemoryCacheHelper {
 
-    private LruCache<Integer, User> mUsersCache = new LruCache<>(300);
-    private LruCache<Integer, Record> mRecordsCache = new LruCache<>(1000);
+    private LruCache<Integer, User> mUsersCache = new LruCache<>(500);
+    private LruCache<Integer, Record> mRecordsCache = new LruCache<>(5000);
 
     public InMemoryCacheHelper() {
     }

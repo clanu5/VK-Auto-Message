@@ -9,11 +9,10 @@
     android:orientation="horizontal"
     android:padding="@dimen/item_user_padding">
 
-    <ImageView
-        android:id="@+id/photo_image_view"
+    <com.qwert2603.vkautomessage.AvatarView
+        android:id="@+id/avatar_view"
         android:layout_width="@dimen/item_user_photo_size"
         android:layout_height="@dimen/item_user_photo_size"
-        android:layout_gravity="center_vertical"
         android:transitionName="@string/user_photo_transition"/>
 
     <TextView

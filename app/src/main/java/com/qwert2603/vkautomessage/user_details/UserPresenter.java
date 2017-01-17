@@ -4,8 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.User;
-
-import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
+import com.qwert2603.vkautomessage.util.StringUtils;
 
 public class UserPresenter extends BasePresenter<User, UserView> {
 
@@ -23,8 +22,8 @@ public class UserPresenter extends BasePresenter<User, UserView> {
             return;
         }
 
-        view.showName(getUserName(user));
-        view.showPhoto(user.getPhoto());
+        view.showName(StringUtils.getUserName(user));
+        view.showPhoto(user.getPhoto(), StringUtils.getUserInitials(user));
 
         if (user.getRecordsCount() == User.NO_INFO || user.getEnabledRecordsCount() == User.NO_INFO) {
             view.hideRecordsCount();

@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config;
 @Config(
         constants = BuildConfig.class,
         application = TestApplication.class,
-        sdk = 19,
+        sdk = 21,
         packageName ="com.qwert2603.vkautomessage",
         manifest = "AndroidManifest.xml"
 )

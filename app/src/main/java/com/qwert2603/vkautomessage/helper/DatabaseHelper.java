@@ -178,7 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public SQLiteDatabase getReadableDatabase() {
         LogUtils.d("DatabaseHelper getReadableDatabase");
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
             LogUtils.e("Access readableDatabase from main thread!!!");
         }
         return super.getReadableDatabase();
@@ -187,7 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public SQLiteDatabase getWritableDatabase() {
         LogUtils.d("DatabaseHelper getReadableDatabase");
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
             LogUtils.e("Access writableDatabase from main thread!!!");
         }
         return super.getWritableDatabase();

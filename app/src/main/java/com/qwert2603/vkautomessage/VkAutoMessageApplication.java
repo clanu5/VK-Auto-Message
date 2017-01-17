@@ -26,11 +26,6 @@ public class VkAutoMessageApplication extends Application {
 //                VkAutoMessageApplication.this.getPackageName())) {
 //            LogUtils.d("CertificateFingerprint", "CertificateFingerprint == " + s);
 //        }
-
-        // TODO: 03.12.2016 photos with rounded corners
-        // http://frogermcs.github.io/InstaMaterial-concept-part-6-user-profile/
-        // Circular user photo
-        // https://medium.com/@muthuraj57/avatarview-custom-implementation-of-imageview-4bcf0714d09d#.76lla9czn
     }
 
     protected AppComponent buildAppComponent() {

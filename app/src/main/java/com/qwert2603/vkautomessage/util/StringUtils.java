@@ -24,6 +24,10 @@ public final class StringUtils {
         return user.getFirstName() + " " + user.getLastName();
     }
 
+    public static String getUserInitials(User user) {
+        return user.getFirstName().charAt(0) + "" + user.getLastName().charAt(0);
+    }
+
     /**
      * Время отправки сообщения.
      */

@@ -246,6 +246,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
 
     @Override
     public void showMyselfPhoto(String url) {
+        // TODO: 17.01.2017 background in colors of photo (with alpha = 0.3)
         Picasso.with(getActivity())
                 .load(url)
                 .transform(new RoundedTransformation())
