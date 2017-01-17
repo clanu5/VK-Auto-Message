@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Looper;
 
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.model.User;
@@ -149,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int userId = getInt(getColumnIndex(COLUMN_RECORD_USER_ID));
             String message = getString(getColumnIndex(COLUMN_RECORD_MESSAGE));
             boolean enabled = getInt(getColumnIndex(COLUMN_RECORD_ENABLED)) > 0;
-            int repeatType = getInt(getColumnIndex(COLUMN_RECORD_REPEAT_TYPE));
+            @Record.RepeatType int repeatType = getInt(getColumnIndex(COLUMN_RECORD_REPEAT_TYPE));
             int repeatInfo = getInt(getColumnIndex(COLUMN_RECORD_REPEAT_INFO));
             int hour = getInt(getColumnIndex(COLUMN_RECORD_HOUR));
             int minute = getInt(getColumnIndex(COLUMN_RECORD_MINUTE));
@@ -174,8 +175,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public SQLiteDatabase getReadableDatabase() {
+        LogUtils.d("DatabaseHelper getReadableDatabase");
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            LogUtils.e("Access readableDatabase from main thread!!!");
+        }
+        return super.getReadableDatabase();
+    }
+
+    @Override
+    public SQLiteDatabase getWritableDatabase() {
+        LogUtils.d("DatabaseHelper getReadableDatabase");
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            LogUtils.e("Access writableDatabase from main thread!!!");
+        }
+        return super.getWritableDatabase();
+    }
+
     private List<User> doGetAllUsers() {
-        // TODO: 25.12.2016 check non-UI thread via aspects
         LogUtils.d("DatabaseHelper doGetAllUsers");
         UserCursor userCursor = new UserCursor(getReadableDatabase()
                 .query(TABLE_USER, null, null, null, null, null, COLUMN_USER_ADDING_TIME));

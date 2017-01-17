@@ -282,8 +282,11 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
-        mViewAnimator.setVisibility(position != POSITION_EMPTY_VIEW ? View.VISIBLE : View.INVISIBLE);
-//        mRecyclerView.setVisibility((position == POSITION_EMPTY_VIEW) ? View.VISIBLE : View.INVISIBLE);
+        if (position != POSITION_EMPTY_VIEW) {
+            mRecyclerView.bringToFront();
+        } else {
+            mViewAnimator.bringToFront();
+        }
     }
 
 }

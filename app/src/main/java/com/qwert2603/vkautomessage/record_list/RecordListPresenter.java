@@ -243,7 +243,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     showUserRecordsCount(user, view);
 
                     int showingItemPosition = getShowingItemPosition(record.getId());
-                    view.moveToDetailsForItem(record.getId(), showingItemPosition>=0, showingItemPosition);
+                    view.moveToDetailsForItem(record.getId(), showingItemPosition >= 0, showingItemPosition);
                 }, LogUtils::e);
     }
 
