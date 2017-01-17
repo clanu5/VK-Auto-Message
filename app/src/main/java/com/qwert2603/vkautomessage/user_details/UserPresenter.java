@@ -3,9 +3,9 @@ package com.qwert2603.vkautomessage.user_details;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.model.User;
+import com.squareup.picasso.Picasso;
 
 import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
 
@@ -27,7 +27,7 @@ public class UserPresenter extends BasePresenter<User, UserView> {
         view.showName(getUserName(user));
         ImageView photoImageView = view.getPhotoImageView();
         if (photoImageView != null) {
-            ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
+            Picasso.with(photoImageView.getContext()).load(user.getPhoto()).into(photoImageView);
         }
         if (user.getRecordsCount() == User.NO_INFO || user.getEnabledRecordsCount() == User.NO_INFO) {
             view.hideRecordsCount();
@@ -40,10 +40,11 @@ public class UserPresenter extends BasePresenter<User, UserView> {
     public void onViewNotReady() {
         UserView view = getView();
         if (view != null) {
-            if (view.getPhotoImageView() != null) {
-                view.getPhotoImageView().setImageBitmap(null);
+            ImageView photoImageView = view.getPhotoImageView();
+            if (photoImageView != null) {
+                photoImageView.setImageBitmap(null);
+                Picasso.with(photoImageView.getContext()).cancelRequest(photoImageView);
             }
-            ImageLoader.getInstance().cancelDisplayTask(view.getPhotoImageView());
         }
         super.onViewNotReady();
     }
