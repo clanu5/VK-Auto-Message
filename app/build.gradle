@@ -6,8 +6,8 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     dexOptions {
-        maxProcessCount 2
-        javaMaxHeapSize "3g"
+        maxProcessCount 4
+        javaMaxHeapSize "4g"
     }
     defaultConfig {
         applicationId "com.qwert2603.vkautomessage"

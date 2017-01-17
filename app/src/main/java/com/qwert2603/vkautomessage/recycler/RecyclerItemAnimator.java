@@ -19,8 +19,7 @@ import java.util.Set;
 
 public class RecyclerItemAnimator extends DefaultItemAnimator {
 
-    public static final int ENTER_DURATION = 400;
-    private static final int ENTER_EACH_ITEM_DELAY = 70;
+    private static final int ENTER_EACH_ITEM_DELAY = 50;
 
     public enum EnterOrigin {
         BOTTOM,
@@ -44,6 +43,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
     private AnimateEnterMode mAnimateEnterMode = AnimateEnterMode.NONE;
 
     private boolean mDelayEnter = false;
+    private long mMinEnterDelay = 0;
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
@@ -127,15 +127,15 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         }
 
         if (mDelayEnter) {
-            LogUtils.d("setStartDelay " + viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
+            LogUtils.d("setStartDelay " + (mMinEnterDelay + viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY));
             viewHolder.itemView.animate()
-                    .setStartDelay(viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
+                    .setStartDelay(mMinEnterDelay + viewHolder.getAdapterPosition() * ENTER_EACH_ITEM_DELAY);
         }
 
         mEnterAnimations.add(viewHolder);
 
         viewHolder.itemView.animate()
-                .setDuration(ENTER_DURATION)
+                .setDuration(getAddDuration())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationCancel(Animator animation) {
@@ -158,6 +158,7 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     private void cancelCurrentAnimationIfExist(RecyclerView.ViewHolder item) {
         if (mEnterAnimations.remove(item)) {
+            LogUtils.d("cancelCurrentAnimationIfExist mEnterAnimations cancel");
             item.itemView.animate().cancel();
         }
         if (mRemoveAnimations.containsKey(item)) {
@@ -213,5 +214,14 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public void setDelayEnter(boolean delayEnter) {
         mDelayEnter = delayEnter;
+    }
+
+    @SuppressWarnings("unused")
+    public long getMinEnterDelay() {
+        return mMinEnterDelay;
+    }
+
+    public void setMinEnterDelay(long minEnterDelay) {
+        mMinEnterDelay = minEnterDelay;
     }
 }

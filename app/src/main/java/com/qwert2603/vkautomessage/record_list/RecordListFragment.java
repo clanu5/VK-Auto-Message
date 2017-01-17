@@ -77,10 +77,10 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     LinearLayout mRecordsCountLinearLayout;
 
     @BindView(R.id.records_count_text_view)
-    CounterIntegerView mRecordsCountTextView;
+    CounterIntegerView mRecordsCountView;
 
     @BindView(R.id.enabled_records_count_text_view)
-    CounterIntegerView mEnabledRecordsCountTextView;
+    CounterIntegerView mEnabledRecordsCountView;
 
     @BindView(R.id.new_record_fab)
     FloatingActionButton mNewRecordFAB;
@@ -152,6 +152,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             });
             ((GridLayoutManager) mRecyclerView.getLayoutManager()).setInitialPrefetchItemCount(8);
         }
+        mRecyclerItemAnimator.setAddDuration(500);
 
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
@@ -205,6 +206,13 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
+    public void showLoadingUserInfo() {
+        mUserNameTextView.setText("");
+        mUserPhotoImageView.setImageDrawable(null);
+        mRecordsCountLinearLayout.setVisibility(View.GONE);
+    }
+
+    @Override
     public void showUserName(String name) {
         mUserNameTextView.setText(name);
     }
@@ -217,8 +225,9 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void showRecordsCount(int recordsCount, int enabledRecordsCount) {
-        mRecordsCountTextView.setInteger(recordsCount, mRecordsCountEverShown);
-        mEnabledRecordsCountTextView.setInteger(enabledRecordsCount, mRecordsCountEverShown);
+        mRecordsCountLinearLayout.setVisibility(View.VISIBLE);
+        mRecordsCountView.setInteger(recordsCount, mRecordsCountEverShown);
+        mEnabledRecordsCountView.setInteger(enabledRecordsCount, mRecordsCountEverShown);
         if (!mRecordsCountEverShown) {
             mRecordsCountEverShown = true;
         }

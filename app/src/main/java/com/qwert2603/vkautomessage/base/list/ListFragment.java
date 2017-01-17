@@ -111,7 +111,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 10);
         mRecyclerView.setAdapter(getAdapter());
 
-
         getAdapter().setClickCallback(position -> {
             mRecyclerView.scrollToPosition(position);
             getPresenter().onItemAtPositionClicked(position);
@@ -151,6 +150,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         getActivity().getWindow().getEnterTransition().addListener(new TransitionUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
+                // here we invalidateItemDecorations because mDeleteDrawable in mSimpleOnItemTouchHelperCallback blinks on return to prev. activity.
+                mRecyclerView.invalidateItemDecorations();
                 LogUtils.d("o4igmnw3io4g " + ListFragment.this.getClass() + " getEnterTransition onTransitionStart " + transition);
                 mIsInTransition = true;
             }
@@ -200,7 +201,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                     mIsResumed = true;
                     showListDelayed();
                 }
-            }, getResources().getInteger(R.integer.transition_duration) + 140);
+            }, getResources().getInteger(R.integer.transition_duration));
         } else {
             mIsResumed = true;
             showListDelayed();
@@ -317,7 +318,9 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     @Override
     public void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition) {
         LogUtils.d("moveToDetailsForItem" + itemPosition + " _ " + itemId);
-        mRecyclerView.scrollToPosition(itemPosition);
+        if (itemPosition >= 0) {
+            mRecyclerView.scrollToPosition(itemPosition);
+        }
         if (newItem) {
             AndroidUtils.runOnUI(() -> {
                 RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForItemId(itemId);
@@ -325,7 +328,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                     viewHolder.itemView.setPressed(true);
                 }
                 moveToDetailsForItem(itemId);
-            }, RecyclerItemAnimator.ENTER_DURATION + 80);
+            }, mRecyclerItemAnimator.getAddDuration() + 80);
         } else {
             moveToDetailsForItem(itemId);
         }
@@ -398,7 +401,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
-        mViewAnimator.setVisibility(position != POSITION_EMPTY_VIEW ? View.VISIBLE : View.GONE);
     }
 
     @CallSuper

@@ -7,13 +7,6 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:transitionGroup="false"/>
-
     <ViewAnimator
         android:id="@+id/view_animator"
         android:layout_width="match_parent"
@@ -23,8 +16,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible"/>
+            android:layout_height="match_parent"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -59,6 +51,12 @@
             android:textSize="@dimen/loading_error_empty_text_size"/>
 
     </ViewAnimator>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_record_fab"

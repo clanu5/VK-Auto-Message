@@ -60,7 +60,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
 
     @Override
     protected Transformer<RecordListWithUser, List<Record>> showingListFromModel() {
-        // TODO: 14.01.2017
         return recordListWithUser -> {
             if (recordListWithUser == null) {
                 return null;
@@ -157,6 +156,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             if (photoImageView != null) {
                 ImageLoader.getInstance().displayImage(user.getPhoto(), photoImageView);
             }
+        } else {
+            view.showLoadingUserInfo();
         }
     }
 
@@ -241,7 +242,8 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                     user.setRecordsCount(user.getRecordsCount() + 1);
                     showUserRecordsCount(user, view);
 
-                    view.moveToDetailsForItem(record.getId(), true, recordList.size() - 1);
+                    int showingItemPosition = getShowingItemPosition(record.getId());
+                    view.moveToDetailsForItem(record.getId(), showingItemPosition>=0, showingItemPosition);
                 }, LogUtils::e);
     }
 

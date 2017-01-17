@@ -137,6 +137,7 @@ public abstract class ListPresenter<T extends Identifiable, M, V extends ListVie
     }
 
     public void onDeleteSelectedClicked() {
+        // TODO: 17.01.2017 show progress view while deleting (and in swipe/undo too).
         List<T> list = listFromModel().transform(getModel());
         mPrevList = new ArrayList<>(list);
         CollectionUtils.removeIf(list, t -> mSelectedIds.contains(t.getId()));

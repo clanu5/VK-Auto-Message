@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DividerItemDecoration;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
@@ -31,6 +32,7 @@ import com.qwert2603.vkautomessage.delete_user.DeleteUserDialog;
 import com.qwert2603.vkautomessage.model.User;
 import com.qwert2603.vkautomessage.record_list.RecordListActivity;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 
@@ -58,6 +60,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     @Inject
     UserListAdapter mUserListAdapter;
+
+    private Slide mSlideList;
 
     @NonNull
     @Override
@@ -102,8 +106,6 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
         mChooseUserFAB.setOnClickListener(v -> mUserListPresenter.onChooseUserClicked());
 
-        // TODO: 23.12.2016 sometimes  dividerItemDecoration not drawn.
-
         // TODO: 26.12.2016 in action mode ask user delete users and records or records only
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
@@ -111,27 +113,27 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.BOTTOM);
+        mRecyclerItemAnimator.setAddDuration(600);
+        mRecyclerItemAnimator.setMinEnterDelay(600);
         mSimpleOnItemTouchHelperCallback.setBackColor(getResources().getColor(R.color.swipe_back_user_list));
 
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
-        Slide slideContent = new Slide(Gravity.BOTTOM);
-        slideContent.excludeTarget(android.R.id.navigationBarBackground, true);
-        slideContent.excludeTarget(android.R.id.statusBarBackground, true);
-        slideContent.excludeTarget(mToolbarIconImageView, true);
-        slideContent.excludeTarget(mToolbarTitleTextView, true);
-        for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
-            slideContent.excludeTarget(mViewAnimator.getChildAt(i), true);
-        }
+        mSlideList = new Slide(Gravity.BOTTOM);
+        mSlideList.addListener(new TransitionUtils.TransitionListenerAdapter(){
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mRecyclerView.invalidateItemDecorations();
+            }
+        });
 
         Slide slideToolbar = new Slide(Gravity.TOP);
-//        slideToolbar.addTarget(mToolbarIconImageView);
         slideToolbar.addTarget(mToolbarTitleTextView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(slideToolbar)
-                .addTransition(slideContent)
+                .addTransition(mSlideList)
                 .setDuration(duration);
 
         getActivity().getWindow().setExitTransition(transitionSet);
@@ -212,12 +214,31 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
             popupWindow.showAsDropDown(actionView);
         });
+
+        AndroidUtils.setActionOnPreDraw(actionView, () -> {
+            mToolbarIconImageView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+            mToolbarIconImageView.animate().setStartDelay(300).setDuration(400).translationY(0);
+
+            mToolbarTitleTextView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+            mToolbarTitleTextView.animate().setStartDelay(400).setDuration(400).translationY(0);
+
+            actionView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+            actionView.animate().setStartDelay(500).setDuration(400).translationY(0);
+
+            mChooseUserFAB.setTranslationY(mContentRootView.getHeight() - mChooseUserFAB.getTop());
+            mChooseUserFAB.animate().setStartDelay(1200).setDuration(400).translationY(0);
+        });
     }
 
     @Override
     protected void moveToDetailsForItem(int itemId) {
         LogUtils.d("moveToDetailsForItem " + itemId);
         prepareRecyclerViewForTransition();
+
+        mSlideList.getTargets().clear();
+        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+            mSlideList.addTarget(mRecyclerView.getChildAt(i));
+        }
 
         ActivityOptions activityOptions = null;
         UserListAdapter.UserViewHolder viewHolder =

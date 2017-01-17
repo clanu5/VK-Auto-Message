@@ -43,8 +43,8 @@ public interface ListView<T extends Identifiable> extends BaseView {
     /**
      * Move to details for given item. (Launch Activity with details, for example).
      *
-     * @param newItem      true if moving to just added item.
-     * @param itemPosition position of item.
+     * @param newItem      true if moving to just added item and this item is in currently showing list.
+     * @param itemPosition position of item. -1 if item is not in currently showing list.
      */
     void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition);
 
