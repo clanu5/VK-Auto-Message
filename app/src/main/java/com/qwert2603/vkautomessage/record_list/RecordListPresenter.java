@@ -127,7 +127,6 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         if (canUpdateView()) {
                             showUserRecordsCount(model.mUser, getView());
                             getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()));
-                            // TODO: 15.01.2017 this updateItem cancels checkBox animation
                         }
                     }
                 }, LogUtils::e);

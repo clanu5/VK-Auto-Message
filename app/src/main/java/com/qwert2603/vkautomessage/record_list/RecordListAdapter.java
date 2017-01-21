@@ -95,8 +95,10 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
 
         @Override
         public void showEnabled(boolean enabled) {
-            mEnableCheckBox.setChecked(enabled);
-            mEnableCheckBox.jumpDrawablesToCurrentState();
+            if (mEnableCheckBox.isChecked() != enabled) {
+                mEnableCheckBox.setChecked(enabled);
+                mEnableCheckBox.jumpDrawablesToCurrentState();
+            }
         }
 
         @Override
