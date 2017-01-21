@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
@@ -13,6 +14,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.qwert2603.vkautomessage.util.LogUtils;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 public class AvatarView extends FrameLayout {
 
@@ -68,15 +73,39 @@ public class AvatarView extends FrameLayout {
 
     public void showInitials(String initials) {
         mInitialsTextView.setText(initials);
-        ((GradientDrawable) mInitialsTextView.getBackground()).setColor(COLORS[initials.hashCode() % COLORS.length]);
+        setBackgroundResource(R.drawable.avatar_background);
+        ((GradientDrawable) getBackground()).setColor(COLORS[initials.hashCode() % COLORS.length]);
         mInitialsTextView.setVisibility(VISIBLE);
         mPhotoImageView.setVisibility(INVISIBLE);
     }
 
     public void showPhoto(Bitmap photo) {
         mPhotoImageView.setImageBitmap(photo);
+        setBackground(null);
         mPhotoImageView.setVisibility(VISIBLE);
         mInitialsTextView.setVisibility(INVISIBLE);
+    }
+
+    public static class PicassoTarget implements Target {
+        private final AvatarView mAvatarView;
+
+        public PicassoTarget(AvatarView avatarView) {
+            mAvatarView = avatarView;
+        }
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            mAvatarView.showPhoto(bitmap);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            LogUtils.e("mPicassoTarget onBitmapFailed");
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
     }
 
 }

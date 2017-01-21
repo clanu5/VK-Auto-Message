@@ -38,7 +38,7 @@ public class UserPresenterTest extends BaseTest {
         Mockito.verifyZeroInteractions(mUserViewMock);
         userPresenter.onViewReady();
 
-        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto());
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto(), StringUtils.getUserInitials(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).hideRecordsCount();
     }
@@ -54,7 +54,7 @@ public class UserPresenterTest extends BaseTest {
         Mockito.verifyZeroInteractions(mUserViewMock);
         userPresenter.onViewReady();
 
-        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto());
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto(), StringUtils.getUserInitials(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).showName(StringUtils.getUserName(user));
         Mockito.verify(mUserViewMock, Mockito.times(1)).showRecordsCount(7, 4);
     }
@@ -69,7 +69,7 @@ public class UserPresenterTest extends BaseTest {
         userPresenter.onViewReady();
 
         userPresenter.onViewNotReady();
-        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto());
+        Mockito.verify(mUserViewMock, Mockito.times(1)).showPhoto(user.getPhoto(), StringUtils.getUserInitials(user));
     }
 
 }

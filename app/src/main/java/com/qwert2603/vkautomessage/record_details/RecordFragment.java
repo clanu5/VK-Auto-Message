@@ -13,10 +13,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qwert2603.vkautomessage.AvatarView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
@@ -33,6 +33,7 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.RoundedTransformation;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import javax.inject.Inject;
 
@@ -67,8 +68,8 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @BindView(R.id.content_view)
     View mContentView;
 
-    @BindView(R.id.photo_image_view)
-    ImageView mPhotoImageView;
+    @BindView(R.id.avatar_view)
+    AvatarView mAvatarView;
 
     @BindView(R.id.user_name_text_view)
     TextView mUsernameTextView;
@@ -106,6 +107,8 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @Inject
     RecordPresenter mRecordPresenter;
 
+    private Target mPicassoTarget;
+
     @NonNull
     @Override
     protected RecordPresenter getPresenter() {
@@ -141,6 +144,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         ButterKnife.bind(RecordFragment.this, view);
+        mPicassoTarget=new AvatarView.PicassoTarget(mAvatarView);
 
         mUserCardView.setOnClickListener(v -> mRecordPresenter.onUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
@@ -184,7 +188,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Picasso.with(getActivity()).cancelRequest(mPhotoImageView);
+        Picasso.with(getActivity()).cancelRequest(mPicassoTarget);
     }
 
     @Override
@@ -224,11 +228,12 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     }
 
     @Override
-    public void showPhoto(String url) {
+    public void showPhoto(String url, String initials) {
+        mAvatarView.showInitials(initials);
         Picasso.with(getActivity())
                 .load(url)
                 .transform(new RoundedTransformation())
-                .into(mPhotoImageView);
+                .into(mPicassoTarget);
     }
 
     @Override
@@ -265,7 +270,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
     @Override
     public void showLoading() {
         LogUtils.d("RecordFragment showLoading");
-        mPhotoImageView.setImageBitmap(null);
+        mAvatarView.showInitials("");
         mUsernameTextView.setText(R.string.loading);
         mMessageTextView.setText(R.string.loading);
         mTimeTextView.setText(R.string.loading);

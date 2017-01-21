@@ -24,12 +24,12 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qwert2603.vkautomessage.AvatarView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
@@ -48,6 +48,7 @@ import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.RoundedTransformation;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import javax.inject.Inject;
 
@@ -72,8 +73,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @BindView(R.id.user_name_text_view)
     protected TextView mUserNameTextView;
 
-    @BindView(R.id.photo_image_view)
-    ImageView mUserPhotoImageView;
+    @BindView(R.id.avatar_view)
+    AvatarView mAvatarView;
 
     @BindView(R.id.records_count_layout)
     LinearLayout mRecordsCountLinearLayout;
@@ -94,6 +95,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     RecordListAdapter mRecordListAdapter;
 
     private EpicenterTransition mTransitionContent;
+
+    private Target mPicassoTarget;
 
     @NonNull
     @Override
@@ -135,6 +138,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(RecordListFragment.this, view);
+
+        mPicassoTarget = new AvatarView.PicassoTarget(mAvatarView);
 
         // to allow marquee scrolling.
         mUserNameTextView.setSelected(true);
@@ -205,7 +210,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Picasso.with(getActivity()).cancelRequest(mUserPhotoImageView);
+        Picasso.with(getActivity()).cancelRequest(mPicassoTarget);
     }
 
     @Override
@@ -216,7 +221,7 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     @Override
     public void showLoadingUserInfo() {
         mUserNameTextView.setText("");
-        mUserPhotoImageView.setImageDrawable(null);
+        mAvatarView.showInitials("");
         mRecordsCountLinearLayout.setVisibility(View.GONE);
     }
 
@@ -226,11 +231,12 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     }
 
     @Override
-    public void showUserPhoto(String url) {
+    public void showUserPhoto(String url, String initials) {
+        mAvatarView.showInitials(initials);
         Picasso.with(getActivity())
                 .load(url)
                 .transform(new RoundedTransformation())
-                .into(mUserPhotoImageView);
+                .into(mPicassoTarget);
     }
 
     private boolean mRecordsCountEverShown = false;
@@ -315,14 +321,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
         if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName()),
+                    Pair.create(mAvatarView, mAvatarView.getTransitionName()),
                     Pair.create(viewHolder.mMessageTextView, viewHolder.mMessageTextView.getTransitionName())
                     // TODO: 23.12.2016 animate icon image and make ripple effect
                     //Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
             );
         } else {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    Pair.create(mUserPhotoImageView, mUserPhotoImageView.getTransitionName())
+                    Pair.create(mAvatarView, mAvatarView.getTransitionName())
             );
         }
 

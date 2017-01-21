@@ -226,7 +226,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             actionView.animate().setStartDelay(500).setDuration(400).translationY(0);
 
             mChooseUserFAB.setTranslationY(mContentRootView.getHeight() - mChooseUserFAB.getTop());
-            mChooseUserFAB.animate().setStartDelay(1200).setDuration(400).translationY(0);
+            mChooseUserFAB.animate().setStartDelay(1500).setDuration(400).translationY(0);
         });
     }
 

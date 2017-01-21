@@ -9,8 +9,8 @@
     android:gravity="center_vertical"
     android:padding="@dimen/item_user_padding">
 
-    <ImageView
-        android:id="@+id/photo_image_view"
+    <com.qwert2603.vkautomessage.AvatarView
+        android:id="@+id/avatar_view"
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:transitionName="@string/user_photo_transition"/>

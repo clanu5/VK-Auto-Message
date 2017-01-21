@@ -282,8 +282,8 @@ public class ChooseUserDialog extends BaseDialog<ChooseUserPresenter> implements
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
-        // TODO: 17.01.2017 textViews aren't clickable
-        if (position != POSITION_EMPTY_VIEW) {
+
+        if (position == POSITION_EMPTY_VIEW) {
             mRecyclerView.bringToFront();
         } else {
             mViewAnimator.bringToFront();

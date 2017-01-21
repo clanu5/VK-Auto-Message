@@ -40,11 +40,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/photo_image_view"
+                    <com.qwert2603.vkautomessage.AvatarView
+                        android:id="@+id/avatar_view"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:src="@drawable/icon_"
                         android:transitionName="@string/user_photo_transition"/>
 
                     <TextView

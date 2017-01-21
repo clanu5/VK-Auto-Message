@@ -22,8 +22,6 @@ import javax.inject.Inject;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-import static com.qwert2603.vkautomessage.util.StringUtils.getUserName;
-
 public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
 
     private Subscription mSubscription = Subscriptions.unsubscribed();
@@ -86,8 +84,8 @@ public class RecordPresenter extends BasePresenter<RecordWithUser, RecordView> {
         User user = recordWithUser.mUser;
         Record record = recordWithUser.mRecord;
 
-        view.showPhoto(user.getPhoto());
-        view.showUserName(getUserName(user));
+        view.showPhoto(user.getPhoto(), StringUtils.getUserInitials(user));
+        view.showUserName(StringUtils.getUserName(user));
         view.showMessage(record.getMessage());
         view.showEnabled(record.isEnabled());
         view.showTime(getTimeString());

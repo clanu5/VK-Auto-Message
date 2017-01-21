@@ -150,7 +150,7 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
             view.setUser(user);
             view.showUserName(StringUtils.getUserName(user));
             showUserRecordsCount(user, view);
-            view.showUserPhoto(user.getPhoto());
+            view.showUserPhoto(user.getPhoto(), StringUtils.getUserInitials(user));
         } else {
             view.showLoadingUserInfo();
         }

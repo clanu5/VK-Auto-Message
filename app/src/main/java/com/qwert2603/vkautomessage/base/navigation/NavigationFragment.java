@@ -2,6 +2,8 @@ package com.qwert2603.vkautomessage.base.navigation;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -11,6 +13,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -22,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qwert2603.floating_action_mode.FloatingActionMode;
+import com.qwert2603.vkautomessage.AvatarView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -33,6 +37,7 @@ import com.qwert2603.vkautomessage.login.MainActivity;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.RoundedTransformation;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import javax.inject.Inject;
 
@@ -60,7 +65,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     @BindView(R.id.coordinator)
     CoordinatorLayout mCoordinatorLayout;
 
-    private ImageView mMyselfPhotoImageView;
+    private AvatarView mAvatarView;
     private TextView mMyselfNameTextView;
 
     @BindView(R.id.floating_action_mode)
@@ -87,6 +92,8 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     private InjectionsHolder mInjectionsHolder;
 
     private Subscription mRxBusSubscription = Subscriptions.unsubscribed();
+
+    private Target mPicassoTarget;
 
     protected abstract boolean isNavigationButtonVisible();
 
@@ -190,7 +197,15 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
         View headerNavigationView = inflater.inflate(R.layout.header_navigation, null);
         mNavigationView.addHeaderView(headerNavigationView);
 
-        mMyselfPhotoImageView = (ImageView) headerNavigationView.findViewById(R.id.user_photo_image_view);
+        mAvatarView = (AvatarView) headerNavigationView.findViewById(R.id.avatar_view);
+        mPicassoTarget = new AvatarView.PicassoTarget(mAvatarView) {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                super.onBitmapLoaded(bitmap, from);
+                Palette.from(bitmap).generate(palette -> headerNavigationView.setBackgroundColor(0x80_FF_FF_FF & palette.getDominantColor(Color.TRANSPARENT)));
+            }
+        };
+
         mMyselfNameTextView = (TextView) headerNavigationView.findViewById(R.id.user_name_text_view);
 
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
@@ -228,7 +243,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Picasso.with(getActivity()).cancelRequest(mMyselfPhotoImageView);
+        Picasso.with(getActivity()).cancelRequest(mPicassoTarget);
     }
 
     @Override
@@ -245,18 +260,18 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     }
 
     @Override
-    public void showMyselfPhoto(String url) {
-        // TODO: 17.01.2017 background in colors of photo (with alpha = 0.3)
+    public void showMyselfPhoto(String url, String initials) {
+        mAvatarView.showInitials(initials);
         Picasso.with(getActivity())
                 .load(url)
                 .transform(new RoundedTransformation())
-                .into(mMyselfPhotoImageView);
+                .into(mPicassoTarget);
     }
 
     @Override
     public void showLoadingMyself() {
         mMyselfNameTextView.setText(R.string.loading);
-        mMyselfPhotoImageView.setImageBitmap(null);
+        mAvatarView.showInitials("");
     }
 
     protected void startActionMode(@LayoutRes int actionContentRes) {

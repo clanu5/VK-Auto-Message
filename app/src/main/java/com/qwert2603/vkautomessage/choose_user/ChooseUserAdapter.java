@@ -1,7 +1,5 @@
 package com.qwert2603.vkautomessage.choose_user;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterInteger
 import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
-import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -59,10 +56,14 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
         @Inject
         UserPresenter mUserPresenter;
 
+        private final Target mPicassoTarget;
+
         public UserViewHolder(View itemView) {
             super(itemView);
             VkAutoMessageApplication.getAppComponent().inject(UserViewHolder.this);
             ButterKnife.bind(UserViewHolder.this, itemView);
+            mPicassoTarget = new AvatarView.PicassoTarget(mAvatarView);
+
             // items in ChooseUserList are smaller than items in UserList
             mAvatarView.getLayoutParams().height = (int) itemView.getResources().getDimension(R.dimen.item_choose_user_photo_size);
             mAvatarView.getLayoutParams().width = (int) itemView.getResources().getDimension(R.dimen.item_choose_user_photo_size);
@@ -104,22 +105,6 @@ public class ChooseUserAdapter extends BaseRecyclerViewAdapter<VkUser, ChooseUse
                     .transform(new RoundedTransformation())
                     .into(mPicassoTarget);
         }
-
-        private final Target mPicassoTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mAvatarView.showPhoto(bitmap);
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                LogUtils.e("mPicassoTarget onBitmapFailed");
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
 
         @Override
         public void hideRecordsCount() {

@@ -401,7 +401,8 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
         if (mViewAnimator.getDisplayedChild() != position) {
             mViewAnimator.setDisplayedChild(position);
         }
-        if (position != POSITION_EMPTY_VIEW) {
+
+        if (position == POSITION_EMPTY_VIEW) {
             mRecyclerView.bringToFront();
         } else {
             mViewAnimator.bringToFront();

@@ -81,7 +81,7 @@ public class RecordListAdapter extends BaseRecyclerViewAdapter<Record, RecordLis
         }
 
         @Override
-        public void showPhoto(String url) {
+        public void showPhoto(String url, String initials) {
         }
 
         @Override

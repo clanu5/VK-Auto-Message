@@ -4,7 +4,7 @@ import com.qwert2603.vkautomessage.base.BaseView;
 import com.qwert2603.vkautomessage.model.Record;
 
 public interface RecordView extends BaseView {
-    void showPhoto(String url);
+    void showPhoto(String url, String initials);
     void showUserName(String userName);
     void showMessage(String message);
     void showEnabled(boolean enabled);
