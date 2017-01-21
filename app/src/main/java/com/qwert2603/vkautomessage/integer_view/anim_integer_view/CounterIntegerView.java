@@ -90,6 +90,12 @@ public class CounterIntegerView extends LinearLayout implements IntegerView {
         do_switch(oldNumber, mInteger, b.substring(s, b.length()), e.substring(s, e.length()));
     }
 
+    public void setNothing() {
+        mInTextView.setVisibility(GONE);
+        mOutTextView.setVisibility(GONE);
+        mStableTextView.setText("-");
+    }
+
     @Override
     protected Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();

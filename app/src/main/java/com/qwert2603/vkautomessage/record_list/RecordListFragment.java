@@ -67,8 +67,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         return recordListFragment;
     }
 
-    @BindView(R.id.item_user)
-    LinearLayout mItemUserLinearLayout;
+    @BindView(R.id.toolbar_user)
+    LinearLayout mToolbarUserLinearLayout;
 
     @BindView(R.id.user_name_text_view)
     protected TextView mUserNameTextView;
@@ -96,7 +96,11 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     private EpicenterTransition mTransitionContent;
 
+    private Slide mSlideToolbarTop;
+
     private Target mPicassoTarget;
+
+    private boolean mEnterAnimationMenuItemPlayed = false;
 
     @NonNull
     @Override
@@ -174,28 +178,18 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             transitionFab = new Explode();
             transitionFab.addTarget(mNewRecordFAB);
         }
-        transitionContent.excludeTarget(android.R.id.navigationBarBackground, true);
-        transitionContent.excludeTarget(android.R.id.statusBarBackground, true);
-        transitionContent.excludeTarget(mToolbarIconImageView, true);
-        transitionContent.excludeTarget(mRecordsCountLinearLayout, true);
-        transitionContent.excludeTarget(mUserNameTextView, true);
-        transitionContent.excludeTarget(mNewRecordFAB, true);
-        for (int i = 0; i < mViewAnimator.getChildCount(); i++) {
-            transitionContent.excludeTarget(mViewAnimator.getChildAt(i), true);
-        }
+        transitionContent.addTarget(mRecyclerView);
         mTransitionContent = (EpicenterTransition) transitionContent;
 
-        Slide slideRecordsCount = new Slide(Gravity.END);
-        slideRecordsCount.addTarget(mRecordsCountLinearLayout);
-
-        Slide slideUserName = new Slide(Gravity.END);
-        slideUserName.addTarget(mUserNameTextView);
+        mSlideToolbarTop = new Slide(Gravity.TOP);
+        mSlideToolbarTop.addTarget(mRecordsCountLinearLayout);
+        mSlideToolbarTop.addTarget(mUserNameTextView);
+        mSlideToolbarTop.addTarget(mToolbarIconImageView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
                 .addTransition(transitionFab)
-                .addTransition(slideRecordsCount)
-                .addTransition(slideUserName)
+                .addTransition(mSlideToolbarTop)
                 .addTransition(transitionContent)
                 .setDuration(duration);
 
@@ -222,7 +216,8 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     public void showLoadingUserInfo() {
         mUserNameTextView.setText("");
         mAvatarView.showInitials("");
-        mRecordsCountLinearLayout.setVisibility(View.GONE);
+        mRecordsCountView.setNothing();
+        mEnabledRecordsCountView.setNothing();
     }
 
     @Override
@@ -243,7 +238,6 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
 
     @Override
     public void showRecordsCount(int recordsCount, int enabledRecordsCount) {
-        mRecordsCountLinearLayout.setVisibility(View.VISIBLE);
         mRecordsCountView.setInteger(recordsCount, mRecordsCountEverShown);
         mEnabledRecordsCountView.setInteger(enabledRecordsCount, mRecordsCountEverShown);
         if (!mRecordsCountEverShown) {
@@ -300,6 +294,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
             popupWindow.showAsDropDown(actionView);
         });
 
+        if (!mEnterAnimationMenuItemPlayed) {
+            mEnterAnimationMenuItemPlayed = true;
+            AndroidUtils.setActionOnPreDraw(actionView, () -> {
+                actionView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+                actionView.animate().setStartDelay(200).setDuration(400).translationY(0);
+                mSlideToolbarTop.addTarget(actionView);
+            });
+        }
     }
 
     @Override
@@ -317,14 +319,19 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
         }
         mTransitionContent.setEpicenterRect(rect);
 
+        Transition transition = ((Transition) mTransitionContent);
+        transition.getTargets().clear();
+        transition.addTarget(mRecyclerView);
+        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+            transition.addTarget(mRecyclerView.getChildAt(i));
+        }
+
         ActivityOptions activityOptions;
 
         if (viewHolder != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                     Pair.create(mAvatarView, mAvatarView.getTransitionName()),
                     Pair.create(viewHolder.mMessageTextView, viewHolder.mMessageTextView.getTransitionName())
-                    // TODO: 23.12.2016 animate icon image and make ripple effect
-                    //Pair.create(mToolbarIconImageView, mToolbarIconImageView.getTransitionName())
             );
         } else {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
@@ -353,6 +360,14 @@ public class RecordListFragment extends ListFragment<Record> implements RecordLi
     protected void performBackPressed() {
         int widthPixels = Resources.getSystem().getDisplayMetrics().widthPixels;
         mTransitionContent.setEpicenterRect(new Rect(widthPixels / 2, 0, widthPixels / 2, 0));
+
+        Transition transition = ((Transition) mTransitionContent);
+        transition.getTargets().clear();
+        transition.addTarget(mRecyclerView);
+        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+            transition.addTarget(mRecyclerView.getChildAt(i));
+        }
+
         prepareRecyclerViewForTransition();
         Intent intent = new Intent();
         intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(userIdKey));

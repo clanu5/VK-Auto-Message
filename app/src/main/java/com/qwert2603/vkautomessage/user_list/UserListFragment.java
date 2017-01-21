@@ -63,6 +63,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     private Slide mSlideList;
 
+    private Slide mSlideToolbar;
+
     private boolean mEnterAnimationPlayed = false;
 
     @NonNull
@@ -122,6 +124,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
         mSlideList = new Slide(Gravity.BOTTOM);
+        mSlideList.addTarget(mChooseUserFAB);
         mSlideList.addListener(new TransitionUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionEnd(Transition transition) {
@@ -129,12 +132,13 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             }
         });
 
-        Slide slideToolbar = new Slide(Gravity.TOP);
-        slideToolbar.addTarget(mToolbarTitleTextView);
+        mSlideToolbar = new Slide(Gravity.TOP);
+        mSlideToolbar.addTarget(mToolbarTitleTextView);
+        mSlideToolbar.addTarget(mToolbarIconImageView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
-                .addTransition(slideToolbar)
+                .addTransition(mSlideToolbar)
                 .addTransition(mSlideList)
                 .setDuration(duration);
 
@@ -175,6 +179,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         menu.findItem(R.id.sort).setActionView(R.layout.menu_item_sort);
 
         View actionView = menu.findItem(R.id.sort).getActionView();
+        mSlideToolbar.addTarget(actionView);
         actionView.setOnClickListener(v -> {
             View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_sort_user_list, null);
             RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.sort_radio_group);
@@ -250,6 +255,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         prepareRecyclerViewForTransition();
 
         mSlideList.getTargets().clear();
+        mSlideList.addTarget(mChooseUserFAB);
         for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
             mSlideList.addTarget(mRecyclerView.getChildAt(i));
         }

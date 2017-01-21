@@ -177,8 +177,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                 LogUtils.d("o4igmnw3io4g " + ListFragment.this.getClass() + " getSharedElementEnterTransition onTransitionEnd " + transition);
             }
         });
-
-        getActivity().getWindow().setEnterTransition(null);
     }
 
     @Override

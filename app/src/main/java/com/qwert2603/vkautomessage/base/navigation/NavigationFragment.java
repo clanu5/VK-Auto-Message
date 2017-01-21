@@ -220,7 +220,6 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
                     ImageButton btn = (ImageButton) child;
                     if (btn.getDrawable() == mToolbar.getNavigationIcon()) {
                         mToolbarIconImageView = btn;
-                        mToolbarIconImageView.setTransitionName(getString(R.string.toolbar_icon_transition));
                         break;
                     }
                 }

@@ -25,7 +25,9 @@ public final class StringUtils {
     }
 
     public static String getUserInitials(User user) {
-        return user.getFirstName().charAt(0) + "" + user.getLastName().charAt(0);
+        String firstLetter = user.getFirstName().isEmpty() ? "" : String.valueOf(user.getFirstName().charAt(0));
+        String lastLetter = user.getLastName().isEmpty() ? "" : String.valueOf(user.getLastName().charAt(0));
+        return firstLetter + "" + lastLetter;
     }
 
     /**

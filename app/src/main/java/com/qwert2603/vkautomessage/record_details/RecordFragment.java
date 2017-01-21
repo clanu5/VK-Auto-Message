@@ -144,7 +144,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         ButterKnife.bind(RecordFragment.this, view);
-        mPicassoTarget=new AvatarView.PicassoTarget(mAvatarView);
+        mPicassoTarget = new AvatarView.PicassoTarget(mAvatarView);
 
         mUserCardView.setOnClickListener(v -> mRecordPresenter.onUserClicked());
         mEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mRecordPresenter.onEnableClicked(isChecked));
@@ -153,9 +153,9 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         mTimeCardView.setOnClickListener(v -> mRecordPresenter.onEditTimeClicked());
         mRepeatInfoCardView.setOnClickListener(v -> mRecordPresenter.onEditRepeatInfoClicked());
 
-        // чтобы toolbar title не моргал. // TODO: 23.12.2016 все равно моргает.
+        // чтобы mAvatarView не моргал.
         mAppBarLayout.setAlpha(0);
-        AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 170);
+        AndroidUtils.setActionOnPreDraw(mAppBarLayout, () -> AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(1), 70));
 
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
@@ -169,6 +169,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
 
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(mToolbarTitleTextView);
+        slide.addTarget(mToolbarIconImageView);
 
         int duration = getResources().getInteger(R.integer.transition_duration);
         TransitionSet transitionSet = new TransitionSet()
@@ -330,7 +331,7 @@ public class RecordFragment extends NavigationFragment<RecordPresenter> implemen
         intent.putExtra(BaseActivity.EXTRA_ITEM_ID, getArguments().getInt(recordIdKey));
         getActivity().setResult(Activity.RESULT_OK, intent);
 
-        // чтобы toolbar title не моргал.
+        // чтобы mAvatarView не моргал.
         AndroidUtils.runOnUI(() -> mAppBarLayout.setAlpha(0), getResources().getInteger(R.integer.transition_duration));
         super.performBackPressed();
     }
