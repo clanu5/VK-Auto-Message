@@ -25,7 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qwert2603.floating_action_mode.FloatingActionMode;
-import com.qwert2603.vkautomessage.AvatarView;
+import com.qwert2603.vkautomessage.avatar_view.AvatarView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.RxBus;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
@@ -35,7 +35,7 @@ import com.qwert2603.vkautomessage.base.BasePresenter;
 import com.qwert2603.vkautomessage.errors_show.ErrorsShowDialog;
 import com.qwert2603.vkautomessage.login.MainActivity;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.qwert2603.vkautomessage.util.RoundedTransformation;
+import com.qwert2603.vkautomessage.avatar_view.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -248,7 +248,7 @@ public abstract class NavigationFragment<P extends BasePresenter> extends BaseFr
     @Override
     public void performLogOut() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
-        // TODO: 16.12.2016 ??? intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         getActivity().finish();
     }

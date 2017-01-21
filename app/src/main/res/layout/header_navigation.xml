@@ -7,7 +7,7 @@
     android:background="@color/header_view_background"
     android:paddingTop="24dp">
 
-    <com.qwert2603.vkautomessage.AvatarView
+    <com.qwert2603.vkautomessage.avatar_view.AvatarView
         android:id="@+id/avatar_view"
         android:layout_width="120dp"
         android:layout_height="120dp"

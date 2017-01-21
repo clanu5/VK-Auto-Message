@@ -9,6 +9,7 @@ import com.qwert2603.vkautomessage.Const;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.model.Record;
 import com.qwert2603.vkautomessage.service.SendMessageService;
+import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 
 import java.util.Calendar;
@@ -21,7 +22,7 @@ public class SendMessageHelper {
     @Inject
     Context mContext;
 
-    AlarmManager mAlarmManager;
+    private AlarmManager mAlarmManager;
 
     public SendMessageHelper() {
         VkAutoMessageApplication.getAppComponent().inject(SendMessageHelper.this);
@@ -35,11 +36,11 @@ public class SendMessageHelper {
         if (record.isEnabled()) {
             long nextSendingInMillis = getNextSendingInMillis(record, System.currentTimeMillis());
             LogUtils.d("onRecordChanged nextSendingInMillis == " + String.valueOf(new Date(nextSendingInMillis)));
-            // TODO: 14.01.2017 use correct method on api >= 23
-            mAlarmManager.setExact(
-                    AlarmManager.RTC_WAKEUP,
-                    nextSendingInMillis,
-                    pendingIntent);
+            if (AndroidUtils.isMarshmallowOrHigher()) {
+                mAlarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextSendingInMillis, pendingIntent);
+            } else {
+                mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, nextSendingInMillis, pendingIntent);
+            }
         } else {
             mAlarmManager.cancel(pendingIntent);
             pendingIntent.cancel();
@@ -50,7 +51,7 @@ public class SendMessageHelper {
      * @param record объект записи
      * @return время следующей отправки для записи в миллисекундах.
      */
-    public static long getNextSendingInMillis(Record record, long currentTimeMillis) {
+    static long getNextSendingInMillis(Record record, long currentTimeMillis) {
         int delta = Const.MILLIS_PER_MINUTE;  // используется, чтобы избежать повторной отправки в одно время.
         int repeatType = record.getRepeatType();
 

@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qwert2603.vkautomessage.AvatarView;
+import com.qwert2603.vkautomessage.avatar_view.AvatarView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseActivity;
@@ -30,7 +30,7 @@ import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_repeat_type.
 import com.qwert2603.vkautomessage.record_details.edit_dialogs.edit_time.EditTimeDialog;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
-import com.qwert2603.vkautomessage.util.RoundedTransformation;
+import com.qwert2603.vkautomessage.avatar_view.RoundedTransformation;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;

@@ -2,6 +2,7 @@ package com.qwert2603.vkautomessage.util;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
@@ -29,6 +30,10 @@ public final class AndroidUtils {
      */
     public static boolean isPortraitOrientation(Activity activity) {
         return activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+    public static boolean isMarshmallowOrHigher() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     /**

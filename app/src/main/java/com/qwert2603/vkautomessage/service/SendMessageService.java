@@ -2,10 +2,10 @@ package com.qwert2603.vkautomessage.service;
 
 import android.app.IntentService;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
 import com.qwert2603.vkautomessage.R;
@@ -52,9 +52,7 @@ public class SendMessageService extends IntentService {
                     return mDataManager.sendVkMessage(user.getId(), recordWithUser.mRecord.getMessage(), recordWithUser);
                 })
                 .subscribe(
-                        record -> {
-                            showResultNotification((RecordWithUser) record, true);
-                        },
+                        record -> showResultNotification((RecordWithUser) record, true),
                         throwable -> {
                             LogUtils.e(throwable);
                             RecordWithUser record = (RecordWithUser) ((VkApiHelper.SendMessageException) throwable).mToken;
@@ -87,12 +85,14 @@ public class SendMessageService extends IntentService {
                 .setContentText(contentText)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
+                .setGroup("FF_HH_RR")
+                .setGroupSummary(true)
                 .build();
 
         // TODO: 14.01.2017 group notification in api >=24
 
         int lastNotificationId = mDataManager.getLastNotificationId();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(SendMessageService.this);
         notificationManager.notify(++lastNotificationId, notification);
         mDataManager.setLastNotificationId(lastNotificationId);
 

@@ -38,7 +38,7 @@ public interface ListView<T extends Identifiable> extends BaseView {
 
     void showNothingFound();
 
-    void updateItem(int position);
+    void updateItem(int position, T item);
 
     /**
      * Move to details for given item. (Launch Activity with details, for example).

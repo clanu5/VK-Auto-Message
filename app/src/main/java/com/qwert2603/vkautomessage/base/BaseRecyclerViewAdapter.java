@@ -249,8 +249,10 @@ public abstract class BaseRecyclerViewAdapter
      *
      * @param holder VH containing view for item
      */
-    public void updateItem(@NonNull RecyclerViewHolder holder) {
+    public void updateItem(@NonNull RecyclerViewHolder holder, M item) {
         holder.unbindPresenter();
+        mModelList.set(holder.getAdapterPosition(), item);
+        holder.setModel(item);
         holder.bindPresenter();
     }
 

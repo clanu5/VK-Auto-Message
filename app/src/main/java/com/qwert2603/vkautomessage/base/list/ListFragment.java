@@ -28,6 +28,7 @@ import com.qwert2603.vkautomessage.integer_view.vector_integer_view.VectorIntege
 import com.qwert2603.vkautomessage.model.Identifiable;
 import com.qwert2603.vkautomessage.recycler.RecyclerItemAnimator;
 import com.qwert2603.vkautomessage.recycler.SimpleOnItemTouchHelperCallback;
+import com.qwert2603.vkautomessage.service.SendMessageService;
 import com.qwert2603.vkautomessage.util.AndroidUtils;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.qwert2603.vkautomessage.util.TransitionUtils;
@@ -116,6 +117,11 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             getPresenter().onItemAtPositionClicked(position);
         });
         getAdapter().setLongClickCallback(position -> {
+            {//todo delete
+                Intent intent = new Intent(getActivity(), SendMessageService.class);
+                intent.putExtra(SendMessageService.EXTRA_RECORD_ID, 484);
+                getActivity().startService(intent);
+            }
             mRecyclerView.scrollToPosition(position);
             getPresenter().onItemAtPositionLongClicked(position);
         });
@@ -230,7 +236,6 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
                 }
                 break;
             case REQUEST_DETAILS_FOT_ITEM:
-                // TODO: 05.12.2016 при возвращении от активити, созданной через TaskStackBuilder onActivityResult не вызывается =(
                 if (data == null) {
                     LogUtils.e("onActivityResult REQUEST_DETAILS_FOT_ITEM data == null");
                     break;
@@ -305,17 +310,18 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     @SuppressWarnings("unchecked")
-    public void updateItem(int position) {
+    public void updateItem(int position, T item) {
         LogUtils.d("updateItem " + position);
         BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder = (BaseRecyclerViewAdapter.RecyclerViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position);
         if (viewHolder != null) {
-            getAdapter().updateItem(viewHolder);
+            getAdapter().updateItem(viewHolder, item);
         }
     }
 
     @Override
     public void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition) {
         mRecyclerItemAnimator.setIdToAnimateEnter(itemId);
+        // TODO: 21.01.2017 create different methods for view to let it know how to animate list changes
         LogUtils.d("moveToDetailsForItem" + itemPosition + " _ " + itemId);
         if (itemPosition >= 0) {
             mRecyclerView.scrollToPosition(itemPosition);

@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage;
+package com.qwert2603.vkautomessage.avatar_view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.util.LogUtils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;

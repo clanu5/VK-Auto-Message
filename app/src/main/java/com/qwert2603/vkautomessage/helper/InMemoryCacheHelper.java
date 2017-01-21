@@ -9,6 +9,8 @@ import com.qwert2603.vkautomessage.util.LogUtils;
 
 public class InMemoryCacheHelper {
 
+    private static final boolean WORK = false;
+
     private LruCache<Integer, User> mUsersCache = new LruCache<>(500);
     private LruCache<Integer, Record> mRecordsCache = new LruCache<>(5000);
 
@@ -16,29 +18,41 @@ public class InMemoryCacheHelper {
     }
 
     public void putUser(User user) {
-        LogUtils.d("InMemoryCacheHelper putUser " + user);
-        mUsersCache.put(user.getId(), user);
+        if (WORK) {
+            LogUtils.d("InMemoryCacheHelper putUser " + user);
+            mUsersCache.put(user.getId(), user);
+        }
     }
 
     @Nullable
     public User getUser(int userId) {
-        LogUtils.d("InMemoryCacheHelper getUser " + userId);
-        return mUsersCache.get(userId);
+        if (WORK) {
+            LogUtils.d("InMemoryCacheHelper getUser " + userId);
+            return mUsersCache.get(userId);
+        }
+        return null;
     }
 
     public void putRecord(Record record) {
-        LogUtils.d("InMemoryCacheHelper putRecord " + record);
-        mRecordsCache.put(record.getId(), record);
+        if (WORK) {
+            LogUtils.d("InMemoryCacheHelper putRecord " + record);
+            mRecordsCache.put(record.getId(), record);
+        }
     }
 
     @Nullable
     public Record getRecord(int recordId) {
-        LogUtils.d("InMemoryCacheHelper getRecord " + recordId);
-        return mRecordsCache.get(recordId);
+        if (WORK) {
+            LogUtils.d("InMemoryCacheHelper getRecord " + recordId);
+            return mRecordsCache.get(recordId);
+        }
+        return null;
     }
 
     public void clear() {
-        mUsersCache.evictAll();
-        mRecordsCache.evictAll();
+        if (WORK) {
+            mUsersCache.evictAll();
+            mRecordsCache.evictAll();
+        }
     }
 }

@@ -9,7 +9,7 @@
     android:orientation="horizontal"
     android:padding="@dimen/item_user_padding">
 
-    <com.qwert2603.vkautomessage.AvatarView
+    <com.qwert2603.vkautomessage.avatar_view.AvatarView
         android:id="@+id/avatar_view"
         android:layout_width="@dimen/item_user_photo_size"
         android:layout_height="@dimen/item_user_photo_size"

@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.qwert2603.vkautomessage.AvatarView;
+import com.qwert2603.vkautomessage.avatar_view.AvatarView;
 import com.qwert2603.vkautomessage.R;
 import com.qwert2603.vkautomessage.VkAutoMessageApplication;
 import com.qwert2603.vkautomessage.base.BaseRecyclerViewAdapter;
@@ -14,7 +14,7 @@ import com.qwert2603.vkautomessage.integer_view.anim_integer_view.CounterInteger
 import com.qwert2603.vkautomessage.model.VkUser;
 import com.qwert2603.vkautomessage.user_details.UserPresenter;
 import com.qwert2603.vkautomessage.user_details.UserView;
-import com.qwert2603.vkautomessage.util.RoundedTransformation;
+import com.qwert2603.vkautomessage.avatar_view.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 

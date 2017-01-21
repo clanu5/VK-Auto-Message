@@ -1,4 +1,4 @@
-package com.qwert2603.vkautomessage.util;
+package com.qwert2603.vkautomessage.avatar_view;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
 
+import com.qwert2603.vkautomessage.util.LogUtils;
 import com.squareup.picasso.Transformation;
 
 public class RoundedTransformation implements Transformation {

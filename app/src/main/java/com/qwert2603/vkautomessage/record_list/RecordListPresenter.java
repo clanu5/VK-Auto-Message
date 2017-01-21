@@ -126,8 +126,9 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                         model.mUser.setEnabledRecordsCount(recordWithUser.mUser.getEnabledRecordsCount());
                         if (canUpdateView()) {
                             showUserRecordsCount(model.mUser, getView());
-                            getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()));
+                            getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()), recordWithUser.mRecord);
                         }
+                        updateShowingList();
                     }
                 }, LogUtils::e);
     }
@@ -190,9 +191,10 @@ public class RecordListPresenter extends ListPresenter<Record, RecordListWithUse
                                 model.mRecordList.set(recordPosition, recordWithUser.mRecord);
                                 LogUtils.d("doLoadItem canUpdateView() ==" + canUpdateView());
                                 if (canUpdateView()) {
-                                    getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()));
+                                    getView().updateItem(getShowingItemPosition(recordWithUser.mRecord.getId()), recordWithUser.mRecord);
                                     showUserRecordsCount(model.mUser, getView());
                                 }
+                                updateShowingList();
                             }
                         },
                         throwable -> {

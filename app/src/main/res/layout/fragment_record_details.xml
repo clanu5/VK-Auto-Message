@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.qwert2603.vkautomessage.AvatarView
+                    <com.qwert2603.vkautomessage.avatar_view.AvatarView
                         android:id="@+id/avatar_view"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
@@ -165,7 +165,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="12dp"
                     android:gravity="center"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="Su Mo Tu We Th"
                     android:textColor="@color/repeat_info"
                     android:textSize="20sp"/>
