@@ -250,6 +250,13 @@ public class UserListFragment extends ListFragment<User> implements UserListView
     }
 
     @Override
+    public void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition) {
+        mRecyclerItemAnimator.setEnterOrigin(RecyclerItemAnimator.EnterOrigin.LEFT);
+        mRecyclerItemAnimator.setAddDuration(500);
+        super.moveToDetailsForItem(itemId, newItem, itemPosition);
+    }
+
+    @Override
     protected void moveToDetailsForItem(int itemId) {
         LogUtils.d("moveToDetailsForItem " + itemId);
         prepareRecyclerViewForTransition();

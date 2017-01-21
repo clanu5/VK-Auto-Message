@@ -291,7 +291,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
             mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.ALL);
         } else {
             mRecyclerItemAnimator.setDelayEnter(false);
-            mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.LAST);
+            mRecyclerItemAnimator.setAnimateEnterMode(RecyclerItemAnimator.AnimateEnterMode.SPECIFIED_ID);
         }
         setViewAnimatorDisplayedChild(POSITION_EMPTY_VIEW);
         getAdapter().replaceModelList(list);
@@ -315,6 +315,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
 
     @Override
     public void moveToDetailsForItem(int itemId, boolean newItem, int itemPosition) {
+        mRecyclerItemAnimator.setIdToAnimateEnter(itemId);
         LogUtils.d("moveToDetailsForItem" + itemPosition + " _ " + itemId);
         if (itemPosition >= 0) {
             mRecyclerView.scrollToPosition(itemPosition);

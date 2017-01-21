@@ -28,17 +28,19 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         LEFT_OR_RIGHT
     }
 
-    // TODO: 15.01.2017 use not LAST, but mIdToAnimateEnter
     public enum AnimateEnterMode {
         NONE,
-        LAST,
+        SPECIFIED_ID,
         ALL
     }
+
+    private static final int NO_SPECIFIED_ID = -1;
 
     private Set<RecyclerView.ViewHolder> mEnterAnimations = new HashSet<>();
     private Map<RecyclerView.ViewHolder, Animator> mRemoveAnimations = new HashMap<>();
 
     private EnterOrigin mEnterOrigin = EnterOrigin.BOTTOM;
+    private int mIdToAnimateEnter = NO_SPECIFIED_ID;
 
     private AnimateEnterMode mAnimateEnterMode = AnimateEnterMode.NONE;
 
@@ -50,7 +52,10 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
         LogUtils.d("animateAdd " + holder);
         BaseRecyclerViewAdapter.RecyclerViewHolder viewHolder = (BaseRecyclerViewAdapter.RecyclerViewHolder) holder;
         if (mAnimateEnterMode == AnimateEnterMode.ALL ||
-                (mAnimateEnterMode == AnimateEnterMode.LAST && viewHolder.getAdapterPosition() == viewHolder.getItemsCount() - 1)) {
+                (mAnimateEnterMode == AnimateEnterMode.SPECIFIED_ID && viewHolder.getItemId() == mIdToAnimateEnter)) {
+            if (viewHolder.getItemId() == mIdToAnimateEnter) {
+                mIdToAnimateEnter = NO_SPECIFIED_ID;
+            }
             runEnterAnimation(viewHolder);
             return false;
         }
@@ -223,5 +228,14 @@ public class RecyclerItemAnimator extends DefaultItemAnimator {
 
     public void setMinEnterDelay(long minEnterDelay) {
         mMinEnterDelay = minEnterDelay;
+    }
+
+    @SuppressWarnings("unused")
+    public int getIdToAnimateEnter() {
+        return mIdToAnimateEnter;
+    }
+
+    public void setIdToAnimateEnter(int idToAnimateEnter) {
+        mIdToAnimateEnter = idToAnimateEnter;
     }
 }
