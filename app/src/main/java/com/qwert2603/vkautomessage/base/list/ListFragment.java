@@ -56,7 +56,7 @@ public abstract class ListFragment<T extends Identifiable> extends NavigationFra
     protected static final int REQUEST_DETAILS_FOT_ITEM = 2;
 
     @BindView(R.id.content_root_view)
-    protected View mContentRootView;
+    protected ViewGroup mContentRootView;
 
     @BindView(R.id.view_animator)
     protected ViewAnimator mViewAnimator;

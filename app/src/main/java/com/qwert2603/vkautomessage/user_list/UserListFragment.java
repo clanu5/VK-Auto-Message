@@ -63,6 +63,8 @@ public class UserListFragment extends ListFragment<User> implements UserListView
 
     private Slide mSlideList;
 
+    private boolean mEnterAnimationPlayed = false;
+
     @NonNull
     @Override
     protected UserListPresenter getPresenter() {
@@ -120,7 +122,7 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         TransitionUtils.setSharedElementTransitions(getActivity(), R.transition.shared_element);
 
         mSlideList = new Slide(Gravity.BOTTOM);
-        mSlideList.addListener(new TransitionUtils.TransitionListenerAdapter(){
+        mSlideList.addListener(new TransitionUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionEnd(Transition transition) {
                 mRecyclerView.invalidateItemDecorations();
@@ -140,6 +142,12 @@ public class UserListFragment extends ListFragment<User> implements UserListView
         getActivity().getWindow().setEnterTransition(transitionSet);
         getActivity().getWindow().setReenterTransition(transitionSet);
         getActivity().getWindow().setReturnTransition(transitionSet);
+
+        if (!mEnterAnimationPlayed) {
+            mToolbarIconImageView.setVisibility(View.INVISIBLE);
+            mToolbarTitleTextView.setVisibility(View.INVISIBLE);
+            mChooseUserFAB.setVisibility(View.INVISIBLE);
+        }
 
         return view;
     }
@@ -215,19 +223,25 @@ public class UserListFragment extends ListFragment<User> implements UserListView
             popupWindow.showAsDropDown(actionView);
         });
 
-        AndroidUtils.setActionOnPreDraw(actionView, () -> {
-            mToolbarIconImageView.setTranslationY(-mToolbar.getHeight() * 1.5f);
-            mToolbarIconImageView.animate().setStartDelay(300).setDuration(400).translationY(0);
+        if (!mEnterAnimationPlayed) {
+            mEnterAnimationPlayed = true;
+            AndroidUtils.setActionOnPreDraw(actionView, () -> {
+                mToolbarIconImageView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+                mToolbarIconImageView.setVisibility(View.VISIBLE);
+                mToolbarIconImageView.animate().setStartDelay(300).setDuration(400).translationY(0);
 
-            mToolbarTitleTextView.setTranslationY(-mToolbar.getHeight() * 1.5f);
-            mToolbarTitleTextView.animate().setStartDelay(400).setDuration(400).translationY(0);
+                mToolbarTitleTextView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+                mToolbarTitleTextView.setVisibility(View.VISIBLE);
+                mToolbarTitleTextView.animate().setStartDelay(400).setDuration(400).translationY(0);
 
-            actionView.setTranslationY(-mToolbar.getHeight() * 1.5f);
-            actionView.animate().setStartDelay(500).setDuration(400).translationY(0);
+                actionView.setTranslationY(-mToolbar.getHeight() * 1.5f);
+                actionView.animate().setStartDelay(500).setDuration(400).translationY(0);
 
-            mChooseUserFAB.setTranslationY(mContentRootView.getHeight() - mChooseUserFAB.getTop());
-            mChooseUserFAB.animate().setStartDelay(1500).setDuration(400).translationY(0);
-        });
+                mChooseUserFAB.setTranslationY(mContentRootView.getHeight() - mChooseUserFAB.getTop());
+                mChooseUserFAB.setVisibility(View.VISIBLE);
+                mChooseUserFAB.animate().setStartDelay(1200).setDuration(400).translationY(0);
+            });
+        }
     }
 
     @Override
