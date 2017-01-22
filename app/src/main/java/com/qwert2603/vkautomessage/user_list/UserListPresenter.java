@@ -108,9 +108,13 @@ public class UserListPresenter extends ListPresenter<User, List<User>, UserListV
                             updatedPositions.add(i);
                         }
                     }
-                    UserListView view1 = getView();
-                    if (view1 == null || updatedPositions.isEmpty()) {
+                    if (updatedPositions.isEmpty()) {
                         return;
+                    }
+                    if (canUpdateView()) {
+                        for (Integer updatedPosition : updatedPositions) {
+                            getView().updateItem(updatedPosition, userList.get(updatedPosition));
+                        }
                     }
                     updateShowingList();
                 }, LogUtils::e);
